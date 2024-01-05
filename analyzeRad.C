@@ -98,10 +98,10 @@ void analyzeRad(const char* filename)
     // drs=1, group=1, ch=6
     //  int ich1 = (1024 * 9 * 2) * 0 + (1024 * 9) * 1 + 1024 * 5;
     //  int ich2 = (1024 * 9 * 2) * 1 + (1024 * 9) * 1 + 1024 * 6;
-    int it00  = (1024 * 2) * 0 + 1024 * 0;
-    int it01  = (1024 * 2) * 0 + 1024 * 1;
-    int it10  = (1024 * 2) * 1 + 1024 * 0;
-    int it11  = (1024 * 2) * 1 + 1024 * 1;
+    int it00  = (1024 * 2) * 0 + 1024 * 0; // DRS 0, channels 0 to 8
+    int it01  = (1024 * 2) * 0 + 1024 * 1; // DRS 0, channels 9 to 17
+    int it10  = (1024 * 2) * 1 + 1024 * 0; // DRS 1, channels 0 to 8
+    int it11  = (1024 * 2) * 1 + 1024 * 1; // DRS 1, channels 9 to 17
     
     const int totalGroups = 2; // Number of groups
     const int totalChannelsPerGroup = 18; // Number of channels per group
@@ -140,17 +140,20 @@ void analyzeRad(const char* filename)
                                200,0,1000,200,0,1000);
     
     TH2D *hCaloSum  = new TH2D("hSum", "Sum of Channels;Sum of Low Gain Channels;Sum of Pb Glass Channels",
-                               5000, 0, 5000, 500, 0, 500);
+                               100, 0, 5000, 100, 0, 5000);
     
     TH1F *hPbGlass  = new TH1F("hPbGlass", "Sum of the 4 Pb Glass; Total Sum (mV); # of Events",
-                               500,0,500);
+                               500,0,5000);
     TH1F *hLGRad    = new TH1F("hLGRad", "Sum of the 8 Low Gain RADiCAL; Total Sum (mV); # of Events",
-                               5000,0,5000);
+                               500,0,5000);
     
     TH1F *hWCX      = new TH1F("hWCX", "Wire Chamber Track X; x Track (mm); # of Events",
                                100,-50,50);
     TH1F *hWCY      = new TH1F("hWCY", "Wire Chamber Track Y; x Track (mm); # of Events",
                                100,-50,50);
+    
+    TH1F *hMCP      = new TH1F("hMCP", "MCP Timing; Time (ns); # of Events",
+                               1000,0,200);
     
     
     std::vector<TString> detectorNames =
@@ -251,7 +254,7 @@ void analyzeRad(const char* filename)
             hWCY->Fill(y_trk);
         }
         
-        if(isOK)// && (FindAmplitudeAndTime( &timevalue[it00], &amplitude[ich[0][7]] ).peak > 10.))
+        if(isOK)// && (FindAmplitudeAndTime( &timevalue[it01], &amplitude[ich[0][15]] ).peak < 60.))
         {
             for (int group = 0; group < totalGroups; ++group)
             {
@@ -280,25 +283,26 @@ void analyzeRad(const char* filename)
                         waveFormProfiles[group][channel]->Fill(timeSlice*0.2, -1*(amplitude[ich[group][channel]+timeSlice] - reco[group][channel].pedestal));
                         hWaveProfiles[group][channel]->Fill(timeSlice*0.2, -1*(amplitude[ich[group][channel]+timeSlice] - reco[group][channel].pedestal));
                     }
-                    
-                    double sumPbGlass = reco[0][10].peak + reco[0][11].peak +
-                    reco[0][12].peak + reco[0][13].peak;
-                    
-                    double sumLowGain = reco[1][0].peak + reco[1][1].peak +
-                    reco[1][2].peak + reco[1][3].peak +
-                    reco[1][4].peak + reco[1][5].peak +
-                    reco[1][6].peak + reco[1][7].peak;
-                    hCaloSum->Fill(sumLowGain, sumPbGlass);
-                    hPbGlass->Fill(sumPbGlass);
-                    hLGRad->Fill(sumLowGain);
                 }
             }
+            double sumPbGlass = reco[0][10].peak + reco[0][11].peak +
+            reco[0][12].peak + reco[0][13].peak;
+            
+            double sumLowGain = reco[1][0].peak + reco[1][1].peak +
+            reco[1][2].peak + reco[1][3].peak +
+            reco[1][4].peak + reco[1][5].peak +
+            reco[1][6].peak + reco[1][7].peak;
+            hCaloSum->Fill(sumLowGain, sumPbGlass);
+            hPbGlass->Fill(sumPbGlass);
+            hLGRad->Fill(sumLowGain);
+            
+            hMCP->Fill(reco[0][7].peakTime);
         }
         
         event++;
         if(event % 1000 == 0)
         {
-            //            break;
+//                        break;
             cout << " Event " << event << endl;
         }
     }
@@ -317,6 +321,24 @@ void analyzeRad(const char* filename)
             histograms[group][channel]->Draw("colz");
             histograms[group][channel]->GetZaxis()->SetRangeUser(0,1000);
             histograms[group][channel]->GetZaxis()->SetTitleOffset(1.5);
+            
+            TEllipse *sensitiveCircle = new TEllipse(6.5, 4.5, 2.5, 2.5);
+            sensitiveCircle->SetLineColor(kRed); // Set the line color to red
+            sensitiveCircle->SetLineWidth(2);    // Set the line width
+            sensitiveCircle->SetFillStyle(0);    // Set fill style to 0 (hollow)
+            sensitiveCircle->Draw("SAME");
+            
+            TEllipse *photoCathode = new TEllipse(6.5, 4.5, 5.5, 5.5);
+            photoCathode->SetLineColor(kRed); // Set the line color to red
+            photoCathode->SetLineWidth(2);    // Set the line width
+            photoCathode->SetFillStyle(0);    // Set fill style to 0 (hollow)
+            photoCathode->Draw("SAME");
+            
+            TArc *mcpHousing = new TArc(6.5, 4.5, 45/2,-137,43);
+            mcpHousing->SetLineColor(kRed); // Set the line color to red
+            mcpHousing->SetLineWidth(2);    // Set the line width
+            mcpHousing->SetFillStyle(0);    // Set fill style to 0 (hollow)
+            mcpHousing->Draw("SAMEONLY");
             
             canvas->cd(2);
             waveFormProfiles[group][channel]->GetYaxis()->SetTitleOffset(1.5);
@@ -341,15 +363,22 @@ void analyzeRad(const char* filename)
     
     TCanvas *canvas2 = new TCanvas("canvas2", "Canvas2", 800*2, 600*2);
     canvas2->Divide(2,2);
+    
     canvas2->cd(1);
     hCaloSum->Draw("colz");
+    
     canvas2->cd(2);
     hPbGlass->Draw();
+    gPad->SetLogy();
+    
     canvas2->cd(3);
-//    hLGRad->Draw();
-    hWCY->Draw();
+    gPad->SetLogy();
+    hLGRad->Draw();
+//    hWCY->Draw();
+    
     canvas2->cd(4);
-    hWCX->Draw();
+//    hWCX->Draw();
+    hMCP->Draw();
     
     canvas2->Print(TString(filename)+"_morehistograms.pdf");
     canvas2->Write();
