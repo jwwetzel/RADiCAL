@@ -146,5 +146,15 @@ and
 
 amplitude
 
+See analyzeRad.C for more.
 
 This analysis code is based on the prescription set forth by Alexander Ledovskoy here: https://github.com/ledovsk/RADiCAL_TB_May2023/blob/main/README.md
+
+
+# Step Four - analyzing the data
+
+There are two locations for the data:
+
+The Iowa Argon Cluster: /Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/rec
+
+Lxplus at CERN: /eos/experiment/iucmsdata/Data/2023/H2TB-202305-RADiCAL/RADiCAL_2023May/rec
