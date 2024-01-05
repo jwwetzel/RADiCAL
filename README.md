@@ -147,3 +147,4 @@ and
 amplitude
 
 
+This analysis code is based on the prescription set forth by Alexander Ledovskoy here: https://github.com/ledovsk/RADiCAL_TB_May2023/blob/main/README.md
