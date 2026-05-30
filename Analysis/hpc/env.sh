@@ -10,7 +10,9 @@
 # file's location (Analysis/hpc/env.sh -> ../.. = repo root).  Works wherever
 # the repo is cloned and in -cwd batch jobs; override by exporting RAD_REPO.
 _ENV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-export RAD_REPO="${RAD_REPO:-$(cd "$_ENV_DIR/../.." && pwd)}"
+# Always re-derived (NOT ${RAD_REPO:-...}) so re-sourcing self-heals any stale
+# value left exported in your shell by a previous source of this file.
+export RAD_REPO="$(cd "$_ENV_DIR/../.." && pwd)"
 
 # Raw reconstructed run files: <REC_DIR>/RUN<run>.root
 export REC_DIR="${REC_DIR:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/rec}"
@@ -21,8 +23,9 @@ export REC_DIR="${REC_DIR:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/r
 export RAD_WORK="${RAD_WORK:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/analysis_work}"
 
 # Manifest (committed in repo) and the resolved per-run task list (made on Argon).
-export MANIFEST="${MANIFEST:-$RAD_REPO/Analysis/hpc/manifest_dsb1.csv}"
-export TASKLIST="${TASKLIST:-$RAD_WORK/tasks.txt}"
+# Derived directly so re-sourcing self-heals stale exported values.
+export MANIFEST="$RAD_REPO/Analysis/hpc/manifest_dsb1.csv"
+export TASKLIST="$RAD_WORK/tasks.txt"
 
 # SGE queue / resources (adjust to Argon + your group's allocation).
 export RAD_QUEUE="${RAD_QUEUE:-UI}"          # e.g. UI (free) or an investor queue
