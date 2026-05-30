@@ -130,6 +130,9 @@ static double GFit(TH1F* h) {
 struct ChData {
     // CFD events: all four fractions valid AND hg_peak >= kHG_minPeak
     std::vector<double> t10, t20, t30, t50;
+    std::vector<double> t05;    // CFD-5% (the adopted headline fraction); for the
+                                // page-3 leading-edge diagnostic. May be empty if
+                                // the hg_cfd05 branch is absent (old ntuples).
     std::vector<double> amp;    // hg_peak [mV] for each CFD event
     std::vector<double> lgamp;  // lg_peak [mV]; 0 if below kLG_minPeak
 
@@ -270,6 +273,7 @@ void timingMethods()
 
         // Branch addresses
         Float_t hg_peak[8], hg_cfd[8], hg_cfd10[8], hg_cfd30[8], hg_cfd50[8];
+        Float_t hg_cfd05[8];
         Float_t hg_led[8], hg_tot[8], lg_peak[8];
         Float_t x_trk, y_trk, mcp_peak, mcp2_peak;
         Bool_t  wc_ok;
@@ -282,6 +286,13 @@ void timingMethods()
         tree->SetBranchAddress("hg_led",    hg_led);
         tree->SetBranchAddress("hg_tot",    hg_tot);
         tree->SetBranchAddress("lg_peak",   lg_peak);
+
+        // CFD-5% (adopted headline fraction) — present in all current ntuples.
+        // If absent (pre-reprocess), fill with a sentinel so the page-3 diagnostic
+        // simply skips the CFD-5% overlay rather than crashing.
+        bool hasCFD05 = (tree->GetBranch("hg_cfd05") != nullptr);
+        if (hasCFD05) tree->SetBranchAddress("hg_cfd05", hg_cfd05);
+        else for (int i = 0; i < 8; ++i) hg_cfd05[i] = -1e6f;  // kNoTime sentinel
         tree->SetBranchAddress("x_trk",     &x_trk);
         tree->SetBranchAddress("y_trk",     &y_trk);
         tree->SetBranchAddress("mcp_peak",  &mcp_peak);
@@ -350,6 +361,9 @@ void timingMethods()
                     chd[i].t20.push_back(hg_cfd[i]);
                     chd[i].t30.push_back(hg_cfd30[i]);
                     chd[i].t50.push_back(hg_cfd50[i]);
+                    // CFD-5%: only the leading-edge diagnostic uses this; push the
+                    // value when valid so its histogram can be built independently.
+                    if (hg_cfd05[i] > kNoTimeCut_tm) chd[i].t05.push_back(hg_cfd05[i]);
                     chd[i].amp.push_back(hg_peak[i]);
                     chd[i].lgamp.push_back(
                         (lg_peak[i] >= kLG_minPeak) ? (double)lg_peak[i] : 0.);
@@ -580,154 +594,175 @@ void timingMethods()
         c2.Print(outPDF + "");  // middle page — keep PDF open for Page 3
 
         // -------------------------------------------------------------------
-        // Per-energy PDF — Page 3: DRS4 satellite peak: LED vs CFD comparison
+        // Per-energy PDF — Page 3: the "elbow" is a CFD-fraction effect, not a
+        //   DRS4 satellite, and it lives on the Down capillaries.
         //
-        // Background: the CAEN DT5742 DRS4 digitizer records waveforms at 5 GSPS
-        // (one sample every 0.2 ns).  A fixed-threshold algorithm (LED, method M4)
-        // assigns the crossing time to the nearest digitizer sample, so when a
-        // pulse straddles a sample boundary ~15% of events receive a time shifted
-        // by +0.2 ns — one sample later.  This appears as a small satellite peak
-        // at +0.2 ns relative to the main peak (first reported in arXiv:2401.01747
-        // Fig. 19).
+        // What you see in the per-channel CFD-20% distribution (M1) on the four
+        // DOWN capillaries (NW-D, NE-D, SE-D, SW-D) is a broad, slightly skewed
+        // peak with a low-side shoulder — visibly ~2x wider than the UP
+        // capillaries.  Direct investigation of the ntuple (Analysis/
+        // elbowInvestigation.C) established its origin:
         //
-        // Our CFD methods (M0–M3) interpolate between samples, so the crossing
-        // time is never quantised to a sample boundary and the satellite is absent.
+        //   * It is NOT a +0.2 ns DRS4 sampling satellite.  The signed offset
+        //     distribution (t20 - median) is a single broad skew with no bump at
+        //     one sample-width (0.2 ns); LED here is among the CLEANEST methods,
+        //     not the worst.
+        //   * It is NOT a selection effect.  The shoulder events are not
+        //     saturated, not spikes, have near-normal amplitude and beam radius,
+        //     and the MCP reference is shared across the group (an MCP-side
+        //     effect would hit every channel, not just the Down ones).
+        //   * It is NOT amplitude walk in the correctable sense: a 1/sqrt(A) or
+        //     profile walk correction trained out-of-sample removes <30 ps (and
+        //     can worsen it) — see Analysis/walkCorrTest.C.
+        //   * It IS a leading-edge SHAPE effect — but NOT the mean slope.  The
+        //     mean rising edge is actually STEEPER at 20% than at 5% (see
+        //     edgeMechanism.C), so electronic noise would make 20% *better*.
+        //     Instead the edge shape varies pulse-to-pulse, and that jitter
+        //     sigma(t_f - t_5%) grows the higher the threshold and is larger on
+        //     the Down capillaries.  CFD-5% times low on the edge where it is most
+        //     reproducible — the adopted headline fraction — collapsing the
+        //     shoulder (~140 ps) with zero events lost.  The Up capillaries depend
+        //     far less on fraction: they are the control.
         //
-        // This page shows LED (M4) and CFD-20% (M1) on a wide x-range so the
-        // satellite (if present) is visible in M4 but absent in M1.
+        // This page overlays CFD-20% (the shouldered M1) and CFD-5% (the adopted
+        // headline fraction) per channel, with the windowed RMS of each, so the
+        // before/after is immediate.  The headline (DW-UP)/2 already uses CFD-5%,
+        // so it never carried this shoulder.
         // -------------------------------------------------------------------
         {
+            // windowed RMS (ns) within +/- win of the median — reflects the width
+            // the eye sees, including the shoulder (unlike a Gaussian core fit).
+            auto winRMS = [](const std::vector<double>& v, double win)->double {
+                if (v.size() < 5) return -1.;
+                std::vector<double> s = v;
+                std::nth_element(s.begin(), s.begin() + s.size()/2, s.end());
+                double med = s[s.size()/2];
+                double sum = 0., sum2 = 0.; int k = 0;
+                for (double x : v) if (std::fabs(x - med) <= win) { sum += x; sum2 += x*x; ++k; }
+                if (k < 2) return -1.;
+                double m = sum/k, var = sum2/k - m*m;
+                return var > 0. ? std::sqrt(var) : 0.;
+            };
+
             TCanvas c3("c_tm3", "", 2400, 1400);
             c3.Divide(3, 3, 0.003, 0.003);
 
             // Keep histogram pointers alive until AFTER c3.Print().
-            // Deleting them inside the per-pad loop (before Print) leaves the
-            // pads blank because ROOT re-renders all registered objects at Print
-            // time and finds dangling pointers.
-            TH1F* hLEDsave[8] = {};
-            TH1F* hCFDsave[8] = {};
+            TH1F* h20save[8] = {};
+            TH1F* h05save[8] = {};
 
             for (int i = 0; i < 8; ++i) {
                 c3.cd(i+1);
                 StylePad();
 
-                // Build wide-range histograms: µ ± 1.2 ns (6× one DRS4 sample)
-                // so the satellite at +0.2 ns is clearly visible.
-                const std::vector<double>& vLED = chd[i].tled;
-                const std::vector<double>& vCFD = chd[i].t20;
+                const std::vector<double>& v20 = chd[i].t20;   // CFD-20% (shouldered)
+                const std::vector<double>& v05 = chd[i].t05;   // CFD-5%  (clean)
+                if (v20.size() < 20) continue;
 
-                if (vLED.size() < 20 || vCFD.size() < 20) continue;
-
-                double mu_led  = Vm(vLED);
-                double rms_led = Vrms(vLED, mu_led);
-                if (rms_led < 0.010) rms_led = 0.150;
-
-                // Wide range: ±max(6*rms, 0.60) ns, shifted right by 0.3 ns so
-                // the +0.2 ns satellite has visible space to the right of the peak.
-                double half_w = std::max(6.0 * rms_led, 0.60);
-                double xlo_w  = mu_led - half_w;
-                double xhi_w  = mu_led + half_w + 0.30;
-
+                // Each method is shifted to its OWN median so the comparison is of
+                // SHAPE/WIDTH, not the (uninteresting) 5%->20% rise-time offset in
+                // absolute time.  Window +/-1.6 ns shows the shoulder without the
+                // failed-crossing garbage tail.
+                auto medianOf = [](std::vector<double> s)->double {
+                    if (s.empty()) return 0.;
+                    std::nth_element(s.begin(), s.begin()+s.size()/2, s.end());
+                    return s[s.size()/2];
+                };
+                double med20 = medianOf(v20);
+                double med05 = v05.empty() ? med20 : medianOf(v05);
+                double half_w = 1.6;
                 const int nBinW = 160;
-                TH1F* hLEDw = new TH1F(Form("hLED_sat_%s_%d", rc.label.Data(), i),
-                                        "", nBinW, xlo_w, xhi_w);
-                TH1F* hCFDw = new TH1F(Form("hCFD_sat_%s_%d", rc.label.Data(), i),
-                                        "", nBinW, xlo_w, xhi_w);
-                hLEDw->SetDirectory(nullptr);
-                hCFDw->SetDirectory(nullptr);
-                for (auto t : vLED) hLEDw->Fill(t);
-                for (auto t : vCFD) hCFDw->Fill(t);
+                TH1F* h20 = new TH1F(Form("hC20_%s_%d", rc.label.Data(), i), "", nBinW, -half_w, half_w);
+                TH1F* h05 = new TH1F(Form("hC05_%s_%d", rc.label.Data(), i), "", nBinW, -half_w, half_w);
+                h20->SetDirectory(nullptr); h05->SetDirectory(nullptr);
+                for (double t : v20) h20->Fill(t - med20);
+                for (double t : v05) h05->Fill(t - med05);
 
-                // Normalize to peak = 1
-                double mxL = hLEDw->GetMaximum();
-                double mxC = hCFDw->GetMaximum();
-                if (mxL > 0.) hLEDw->Scale(1. / mxL);
-                if (mxC > 0.) hCFDw->Scale(1. / mxC);
+                double mx20 = h20->GetMaximum(), mx05 = h05->GetMaximum();
+                if (mx20 > 0.) h20->Scale(1./mx20);
+                if (mx05 > 0.) h05->Scale(1./mx05);
 
-                hLEDw->SetLineColor(kRed+1);
-                hLEDw->SetLineWidth(2);
-                hLEDw->SetFillColorAlpha(kRed-9, 0.40);
-                hLEDw->SetFillStyle(1001);
-                hLEDw->GetXaxis()->SetTitle("t (ns)");
-                hLEDw->GetXaxis()->SetTitleSize(0.054);
-                hLEDw->GetYaxis()->SetTitle("Normalised counts");
-                hLEDw->GetYaxis()->SetTitleSize(0.050);
-                hLEDw->GetYaxis()->SetRangeUser(0., 1.45);
-                hLEDw->Draw("HIST");
+                // CFD-5% drawn first as a filled green reference (the "after"),
+                // CFD-20% overlaid as a blue outline (the "before", shoulder visible).
+                bool have05 = (v05.size() >= 20);
+                if (have05) {
+                    h05->SetLineColor(kGreen+2); h05->SetLineWidth(2);
+                    h05->SetFillColorAlpha(kGreen-9, 0.45); h05->SetFillStyle(1001);
+                    h05->GetXaxis()->SetTitle("t #minus median  (ns)");
+                    h05->GetXaxis()->SetTitleSize(0.054);
+                    h05->GetYaxis()->SetTitle("normalised counts");
+                    h05->GetYaxis()->SetTitleSize(0.050);
+                    h05->GetYaxis()->SetRangeUser(0., 1.45);
+                    h05->Draw("HIST");
+                    h20->SetLineColor(kBlue+1); h20->SetLineWidth(2); h20->SetFillStyle(0);
+                    h20->Draw("HIST SAME");
+                } else {
+                    h20->SetLineColor(kBlue+1); h20->SetLineWidth(2); h20->SetFillStyle(0);
+                    h20->GetXaxis()->SetTitle("t #minus t_{MCP}  (ns)");
+                    h20->GetXaxis()->SetTitleSize(0.054);
+                    h20->GetYaxis()->SetTitle("normalised counts");
+                    h20->GetYaxis()->SetTitleSize(0.050);
+                    h20->GetYaxis()->SetRangeUser(0., 1.45);
+                    h20->Draw("HIST");
+                }
 
-                hCFDw->SetLineColor(kBlue+1);
-                hCFDw->SetLineWidth(2);
-                hCFDw->SetFillStyle(0);
-                hCFDw->Draw("HIST SAME");
+                // windowed RMS (ps) for each
+                double r20 = winRMS(v20, 1.5);
+                double r05 = winRMS(v05, 1.5);
 
-                // Mark expected satellite position at main-peak + 0.2 ns
-                double t_main = hLEDw->GetXaxis()->GetBinCenter(
-                    hLEDw->GetMaximumBin());
-                double t_sat  = t_main + 0.200;
-                TLine* satLine = new TLine(t_sat, 0., t_sat, 1.35);
-                satLine->SetLineColor(kOrange+1);
-                satLine->SetLineStyle(2);
-                satLine->SetLineWidth(2);
-                satLine->Draw("SAME");
-
-                // Annotations
-                TLatex tit;
-                tit.SetNDC(); tit.SetTextSize(0.064); tit.SetTextAlign(22);
-                tit.DrawLatex(0.54, 0.93,
-                    Form("%.0f GeV  %s", rc.energy_GeV, kCap[i].name));
+                TLatex tit; tit.SetNDC(); tit.SetTextSize(0.064); tit.SetTextAlign(22);
+                tit.DrawLatex(0.54, 0.93, Form("%.0f GeV  %s", rc.energy_GeV, kCap[i].name));
 
                 TLatex ann; ann.SetNDC(); ann.SetTextSize(0.046);
-                ann.SetTextColor(kRed+1);
-                ann.DrawLatex(0.17, 0.84,
-                    Form("LED (M4):  %.0fps", sig[i][4]>0. ? sig[i][4] : 0.));
                 ann.SetTextColor(kBlue+1);
-                ann.DrawLatex(0.17, 0.75,
-                    Form("CFD-20%% (M1):  %.0fps", sig[i][1]>0. ? sig[i][1] : 0.));
-                ann.SetTextColor(kOrange+1);
-                ann.SetTextSize(0.040);
-                ann.DrawLatex(0.17, 0.64, Form("Sat. @ +0.20 ns"));
+                ann.DrawLatex(0.16, 0.84, Form("CFD-20%%:  %.0f ps", r20 > 0. ? r20*1000. : 0.));
+                if (have05) {
+                    ann.SetTextColor(kGreen+2);
+                    ann.DrawLatex(0.16, 0.75, Form("CFD-5%%:  %.0f ps", r05 > 0. ? r05*1000. : 0.));
+                    // Signed delta on EVERY channel (negative = CFD-5% better,
+                    // positive = CFD-5% worse — honest for the Up channels too).
+                    if (r20 > 0. && r05 > 0.) {
+                        double d = (r20 - r05) * 1000.;   // >0 means 5% improves
+                        ann.SetTextColor(kGray+3); ann.SetTextSize(0.040);
+                        ann.DrawLatex(0.16, 0.66, Form("#Delta = %s%.0f ps",
+                                      d >= 0. ? "#minus" : "+", std::fabs(d)));
+                    }
+                }
 
-                // Save — do NOT delete here; histograms must stay alive until Print
-                hLEDsave[i] = hLEDw;
-                hCFDsave[i] = hCFDw;
+                h20save[i] = h20; h05save[i] = h05;
             }
 
-            // Pad 9: explanation legend
+            // Pad 9: corrected explanation
             c3.cd(9);
             gPad->SetLeftMargin(0.05); gPad->SetTopMargin(0.05);
             TLatex info; info.SetNDC();
-            info.SetTextSize(0.065);
-            info.SetTextColor(kBlack);
-            info.DrawLatex(0.08, 0.93, Form("%.0f GeV", rc.energy_GeV));
-            info.SetTextSize(0.052);
-            info.DrawLatex(0.08, 0.84, "DRS4 Satellite Peak");
-            info.SetTextSize(0.040);
-            info.SetTextColor(kGray+2);
-            info.DrawLatex(0.08, 0.74, "At 5 GSPS one sample = 0.2 ns.");
-            info.DrawLatex(0.08, 0.66, "LED (fixed threshold) assigns");
-            info.DrawLatex(0.08, 0.59, "~15% of crossings one sample");
-            info.DrawLatex(0.08, 0.52, "late, creating a satellite peak");
-            info.DrawLatex(0.08, 0.45, "at t_{main} + 0.2 ns.");
-            info.DrawLatex(0.08, 0.35, "CFD interpolates between");
-            info.DrawLatex(0.08, 0.28, "samples and is immune.");
+            info.SetTextSize(0.060); info.SetTextColor(kBlack);
+            info.DrawLatex(0.06, 0.93, Form("%.0f GeV", rc.energy_GeV));
+            info.SetTextSize(0.048);
+            info.DrawLatex(0.06, 0.85, "Down-capillary timing shoulder");
+            info.SetTextSize(0.038); info.SetTextColor(kGray+2);
+            info.DrawLatex(0.06, 0.75, "The CFD-20% peak on the Down");
+            info.DrawLatex(0.06, 0.69, "capillaries is broad + skewed:");
+            info.DrawLatex(0.06, 0.63, "the rising-edge shape jitters");
+            info.DrawLatex(0.06, 0.57, "more high on the edge.");
+            info.DrawLatex(0.06, 0.48, "Timing lower on the edge (CFD-5%,");
+            info.DrawLatex(0.06, 0.42, "the headline fraction) collapses");
+            info.DrawLatex(0.06, 0.36, "it - no events lost.  Up channels");
+            info.DrawLatex(0.06, 0.30, "depend far less on fraction.");
+            info.DrawLatex(0.06, 0.22, "#Delta>0: CFD-5% better (see also");
+            info.DrawLatex(0.06, 0.16, "the CFD-fraction trend figure).");
             // Color key
-            TGraph* dLED = new TGraph(1); dLED->SetLineColor(kRed+1);  dLED->SetLineWidth(2);
-            TGraph* dCFD = new TGraph(1); dCFD->SetLineColor(kBlue+1); dCFD->SetLineWidth(2);
-            TLine*  dSat = new TLine(0,0,1,1); dSat->SetLineColor(kOrange+1); dSat->SetLineStyle(2); dSat->SetLineWidth(2);
-            TLegend* legS = new TLegend(0.08, 0.05, 0.95, 0.25);
-            legS->SetBorderSize(0); legS->SetTextSize(0.042);
-            legS->AddEntry(dLED, "M4: LED 20 mV (satellite present)", "l");
-            legS->AddEntry(dCFD, "M1: CFD 20% (satellite absent)", "l");
-            legS->AddEntry(dSat, "Expected satellite position", "l");
+            TGraph* d20 = new TGraph(1); d20->SetLineColor(kBlue+1);  d20->SetLineWidth(2);
+            TGraph* d05 = new TGraph(1); d05->SetLineColor(kGreen+2); d05->SetLineWidth(2);
+            TLegend* legS = new TLegend(0.06, 0.01, 0.97, 0.11);
+            legS->SetBorderSize(0); legS->SetTextSize(0.040);
+            legS->AddEntry(d20, "CFD 20% (shouldered)", "l");
+            legS->AddEntry(d05, "CFD 5% (adopted, clean)", "l");
             legS->Draw();
 
             c3.Print(outPDF + ")");  // close PDF with page 3 — histograms still alive here
 
-            // Now safe to clean up the per-pad satellite histograms
-            for (int i = 0; i < 8; ++i) {
-                delete hLEDsave[i];
-                delete hCFDsave[i];
-            }
+            for (int i = 0; i < 8; ++i) { delete h20save[i]; delete h05save[i]; }
         }
 
         // Clean up histograms

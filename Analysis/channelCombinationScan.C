@@ -193,7 +193,11 @@ void channelCombinationScan()
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
         t->SetBranchAddress("hg_peak",   hg_peak);
-        t->SetBranchAddress("hg_cfd",    hg_cfd);
+        // CFD-5% (adopted headline fraction); guarded fallback to CFD-20%.  This
+        // brings the brute-force subset scan onto the same basis as the headline
+        // and timingResolution.C (reconciling the former CFD-20% ~78 ps all-8 combo
+        // with the CFD-5% ~62 ps one).
+        t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
 
         Long64_t nEv = t->GetEntries();
         for (Long64_t ev = 0; ev < nEv; ++ev) {

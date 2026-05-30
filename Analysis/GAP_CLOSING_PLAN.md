@@ -154,5 +154,5 @@ low-stat point).  HEADLINE 150 GeV: in-sample 38.7 -> 5-fold OOS 38.9 ps
   (train-even / test-odd) before claiming a gain, and never ship a correction
   that can harm the result without a self-protection guard.
 - ALWAYS open the regenerated PNG before claiming a plot is fixed.
-- Headline result remains σ_t = 38 ps at 150 GeV via the MCP-free (DW−UP)/2
+- Headline result remains σ_t ≈ 37 ps at 150 GeV via the MCP-free (DW−UP)/2
   estimator; combination methods are MCP-reference-limited.

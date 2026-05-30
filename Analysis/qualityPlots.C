@@ -94,7 +94,8 @@ struct EvtData {
     float mcp_peak;   // MCP1 amplitude [mV]
     float mcp2_peak;  // MCP2 amplitude [mV]
     float hg_peak[8]; // HG amplitudes [mV]
-    float hg_cfd[8];  // HG CFD-20% timing [ns]
+    float hg_cfd[8];  // HG timing [ns] — CFD-5% (adopted headline fraction) when
+                      // the hg_cfd05 branch is present, else CFD-20% fallback.
 };
 
 // ---------------------------------------------------------------------------
@@ -380,7 +381,12 @@ void qualityPlots()
         tree->SetBranchAddress("y_trk",    &y_trk);
         tree->SetBranchAddress("mcp_peak", &mcp_peak);
         tree->SetBranchAddress("hg_peak",  hg_peak);
-        tree->SetBranchAddress("hg_cfd",   hg_cfd);
+        // Per-channel timing uses CFD-5% (adopted headline fraction) when available:
+        // it removes the broad CFD-20% shoulder on the Down capillaries (whose
+        // leading-edge SHAPE jitters more high on the edge — not a mean-slope
+        // effect).  Falls back to CFD-20% for pre-reprocess ntuples.  See
+        // timingMethods.C page 3 and edgeMechanism.C.
+        tree->SetBranchAddress(tree->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
         tree->SetBranchAddress("lg_peak",  lg_peak);
 
         // MCP2 and LED/TOT may be absent in older ntuples

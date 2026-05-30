@@ -49,10 +49,16 @@
 // Number of channels: 8 HG capillaries + 1 MCP1
 static const int kNWF = 9;
 
-// TProfile binning: 300 bins, −6 to +18 ns around CFD crossing
+// TProfile binning: 300 bins, −6 to +18 ns around CFD crossing (HG: fast pulse)
 static const int    kNBins   = 300;
 static const double kTMin    = -6.0;
 static const double kTMax    = 18.0;
+
+// LG pulses (full-length fibre → energy) are much slower/longer than HG, so
+// they need a wider window to show the full rise, peak and fall.
+static const int    kNBins_LG = 320;
+static const double kTMin_LG  = -10.0;
+static const double kTMax_LG  =  1000.0;
 
 // Maximum events per energy (raw data is large; keep runtime reasonable)
 static const Long64_t kNMax  = 5000LL;
@@ -73,12 +79,13 @@ static const char* ChanName(int i)
 // ---------------------------------------------------------------------------
 // Helper: book a TProfile for waveform averaging
 // ---------------------------------------------------------------------------
-static TProfile* BookWF(const char* label, const char* name)
+static TProfile* BookWF(const char* label, const char* name,
+                        int nbins = kNBins, double tmin = kTMin, double tmax = kTMax)
 {
     TProfile* p = new TProfile(
         Form("wf_%s_%s", label, name),
         Form(";t #minus t_{CFD} (ns);Amplitude (mV)"),
-        kNBins, kTMin, kTMax);
+        nbins, tmin, tmax);
     p->SetErrorOption("S");   // store RMS (std-dev) in error bars
     p->SetDirectory(nullptr); // keep in memory; do not attach to a TFile
     return p;
@@ -159,7 +166,7 @@ static void DrawWFPad(TProfile* hWF, const char* title,
 // Returns true if at least one file was found and events were processed.
 // hWF[0..7] → HG capillaries, hWF[8] → MCP1
 // ---------------------------------------------------------------------------
-static bool ProcessEnergy(const RunCfg& run, TProfile* hWF[])
+static bool ProcessEnergy(const RunCfg& run, TProfile* hWF[], TProfile* hLG[])
 {
     // Build TChain: split run.inFiles on ';'
     TChain* chain = new TChain("pulse");
@@ -249,6 +256,27 @@ static bool ProcessEnergy(const RunCfg& run, TProfile* hWF[])
                 if (t_rel < (float)kTMin || t_rel > (float)kTMax) continue;
                 float signal = ped - Aa[s];
                 hWF[i]->Fill(t_rel, signal);
+            }
+        }
+
+        // ── Fill LG capillary waveforms (indices 0-7) ────────────────────
+        //    Persisted for the Layer-1 hero glance; not drawn in this macro's
+        //    own PDFs.  Aligned on each LG channel's own CFD-20% crossing.
+        for (int i = 0; i < 8; ++i) {
+            const float* Aa = A + kCap[i].lg;
+            const float* Ta = T + kCap[i].lg_t;
+
+            Pulse p = ExtractPulse(Ta, Aa, 0.20f, kLG_minPeak);
+            if (!p.valid) continue;
+            if (p.crossingTime == kNoTime) continue;
+
+            float t_cfd = p.crossingTime;
+            float ped   = p.pedestal;
+
+            for (int s = 0; s < 1024; ++s) {
+                float t_rel = Ta[s] - t_cfd;
+                if (t_rel < (float)kTMin_LG || t_rel > (float)kTMax_LG) continue;
+                hLG[i]->Fill(t_rel, ped - Aa[s]);
             }
         }
 
@@ -406,11 +434,13 @@ void averageWaveforms()
     // ── Storage for all-energy summary: hAllWF[energy][channel] ─────────────
     // Allocated on heap because 6×9 TProfiles are each ~300 bins
     TProfile* hAllWF[6][kNWF];
+    TProfile* hAllLG[6][8];          // 8 LG capillaries (persisted for the hero glance)
     bool      validRun[6] = {};
 
-    for (int r = 0; r < kNRuns; ++r)
-        for (int i = 0; i < kNWF; ++i)
-            hAllWF[r][i] = nullptr;
+    for (int r = 0; r < kNRuns; ++r) {
+        for (int i = 0; i < kNWF; ++i) hAllWF[r][i] = nullptr;
+        for (int i = 0; i < 8;    ++i) hAllLG[r][i] = nullptr;
+    }
 
     // ── Per-energy loop ───────────────────────────────────────────────────────
     for (int r = 0; r < kNRuns; ++r) {
@@ -423,24 +453,33 @@ void averageWaveforms()
         for (int i = 0; i < 8; ++i)
             hWF[i] = BookWF(run.label.Data(), kCap[i].name);
         hWF[8] = BookWF(run.label.Data(), "MCP1");
+        TProfile* hLG[8];
+        for (int i = 0; i < 8; ++i)
+            hLG[i] = BookWF(run.label.Data(), Form("%s_LG", kCap[i].name),
+                            kNBins_LG, kTMin_LG, kTMax_LG);
 
         // Fill from raw data
-        bool ok = ProcessEnergy(run, hWF);
+        bool ok = ProcessEnergy(run, hWF, hLG);
         if (!ok) {
             for (int i = 0; i < kNWF; ++i) delete hWF[i];
+            for (int i = 0; i < 8;    ++i) delete hLG[i];
             continue;
         }
         validRun[r] = true;
 
-        // Save clones for the summary before drawing (DrawWFPad clones too,
-        // but we keep clean copies here for the overlay page)
+        // Save clones for the summary / hero (HG+MCP1 drawn here; LG persisted only)
         for (int i = 0; i < kNWF; ++i) {
             hAllWF[r][i] = (TProfile*)hWF[i]->Clone(
                 Form("sum_%s_%s", run.label.Data(), ChanName(i)));
             hAllWF[r][i]->SetDirectory(nullptr);
         }
+        for (int i = 0; i < 8; ++i) {
+            hAllLG[r][i] = (TProfile*)hLG[i]->Clone(
+                Form("sum_%s_%s_LG", run.label.Data(), kCap[i].name));
+            hAllLG[r][i]->SetDirectory(nullptr);
+        }
 
-        // Write per-energy PDF
+        // Write per-energy PDF (HG + MCP1 only — appendix layout unchanged)
         TString pdfPath = Form("Analysis/Output/%s/average_waveforms.pdf",
                                run.label.Data());
         DrawEnergyPage(hWF, run, r, pdfPath.Data());
@@ -448,6 +487,7 @@ void averageWaveforms()
 
         // Clean up per-energy profiles
         for (int i = 0; i < kNWF; ++i) delete hWF[i];
+        for (int i = 0; i < 8;    ++i) delete hLG[i];
     }
 
     // ── Summary page ──────────────────────────────────────────────────────────
@@ -462,10 +502,25 @@ void averageWaveforms()
         std::cerr << "[averageWaveforms] No valid energies — summary skipped.\n";
     }
 
+    // ── Persist average-waveform profiles for the Layer-1 hero plot ─────────
+    //   Keys: sum_<label>_<chan> (e.g. sum_150GeV_NW-D).  layer1Summary.C reads
+    //   these to build the clean "average pulse shape per capillary" figure.
+    if (anyValid) {
+        TFile fout(Form("%saverage_waveforms.root", kSumDir), "RECREATE");
+        for (int r = 0; r < kNRuns; ++r) {
+            for (int i = 0; i < kNWF; ++i) if (hAllWF[r][i]) hAllWF[r][i]->Write();
+            for (int i = 0; i < 8;    ++i) if (hAllLG[r][i]) hAllLG[r][i]->Write();
+        }
+        fout.Close();
+        std::cout << "[averageWaveforms] Wrote " << kSumDir
+                  << "average_waveforms.root\n";
+    }
+
     // ── Cleanup ───────────────────────────────────────────────────────────────
-    for (int r = 0; r < kNRuns; ++r)
-        for (int i = 0; i < kNWF; ++i)
-            if (hAllWF[r][i]) delete hAllWF[r][i];
+    for (int r = 0; r < kNRuns; ++r) {
+        for (int i = 0; i < kNWF; ++i) if (hAllWF[r][i]) delete hAllWF[r][i];
+        for (int i = 0; i < 8;    ++i) if (hAllLG[r][i]) delete hAllLG[r][i];
+    }
 
     std::cout << "\n[averageWaveforms] Done.\n";
 }

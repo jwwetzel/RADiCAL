@@ -57,7 +57,7 @@
 static const float kNoTime = -1e9f;
 
 // ---------------------------------------------------------------------------
-// A^2-weighted combination of the 8 HG CFD-20% channels (MCP-referenced).
+// A^2-weighted combination of the 8 HG CFD-5% channels (MCP-referenced).
 // Returns kNoTime if fewer than 2 valid channels.  (Same estimator as M3.)
 // ---------------------------------------------------------------------------
 static float A2Combo(const Float_t hg_peak[8], const Float_t hg_cfd[8])
@@ -195,7 +195,8 @@ void positionCorrection()
         t->SetBranchAddress("sum_lg",  &sum_lg);
         t->SetBranchAddress("sum_pb",  &sum_pb);
         t->SetBranchAddress("hg_peak",  hg_peak);
-        t->SetBranchAddress("hg_cfd",   hg_cfd);
+        // CFD-5% (adopted headline fraction); guarded fallback to CFD-20%.
+        t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
         t->SetBranchAddress("lg_peak",  lg_peak);
 
         std::vector<PCEvent> ev;

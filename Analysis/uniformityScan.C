@@ -9,7 +9,7 @@
 // crystal edges.  The NW-Up underperformance may be spatial (beam hits near
 // the fiber boundary) rather than intrinsic to the channel.
 //
-// Timing estimator: A^2-weighted combination of all 8 HG CFD-20% channels.
+// Timing estimator: A^2-weighted combination of all 8 HG CFD-5% channels.
 //   t_combo = sum(hg_peak[i]^2 * hg_cfd[i]) / sum(hg_peak[i]^2)
 //   Requires >= 2 valid channels (hg_peak[i] >= kHG_minPeak AND
 //   hg_cfd[i] > -1e5f).
@@ -211,7 +211,10 @@ void uniformityScan()
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
         t->SetBranchAddress("hg_peak",   hg_peak);
-        t->SetBranchAddress("hg_cfd",    hg_cfd);
+        // CFD-5% (adopted headline fraction) when present; guarded fallback to
+        // CFD-20% for pre-reprocess ntuples.  Consistent with the headline and the
+        // per-channel diagnostics (removes the Down-capillary CFD-20% shoulder).
+        t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
 
         // Accumulators: tvecGrid[ix][iy] and tvecRad[rb]
         std::vector<float> tvecGrid[kNCell][kNCell];

@@ -650,6 +650,27 @@ void channelIntegrity()
         c.Print(pdfPath + ")");
     }
 
+    // ── Persist per-channel vitals for the Layer-1 hero plot ────────────────
+    //   gActiveFrac_<chan>, gHGLG_<chan> : value vs beam energy.  layer1Summary.C
+    //   reads these for the "channel vitals" figure.
+    {
+        TFile fout("Analysis/Output/Summary/channel_integrity.root", "RECREATE");
+        for (int i = 0; i < 8; ++i) {
+            TGraph gAF, gRR;
+            for (int iRun = 0; iRun < kNRuns; ++iRun) {
+                if (activeFrac[iRun][i] > 0.)
+                    gAF.SetPoint(gAF.GetN(), energies[iRun], activeFrac[iRun][i]);
+                if (hglgRatio[iRun][i] > 0.)
+                    gRR.SetPoint(gRR.GetN(), energies[iRun], hglgRatio[iRun][i]);
+            }
+            gAF.Write(Form("gActiveFrac_%s", kCap[i].name));
+            gRR.Write(Form("gHGLG_%s",       kCap[i].name));
+        }
+        fout.Close();
+        std::cout << "[channelIntegrity] Wrote "
+                  << "Analysis/Output/Summary/channel_integrity.root\n";
+    }
+
     std::cout << "\n[channelIntegrity] Done.\n"
               << "  " << pdfPath << "\n";
 }

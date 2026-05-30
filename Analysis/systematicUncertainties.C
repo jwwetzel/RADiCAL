@@ -5,10 +5,15 @@
 // Runs the A2-weighted combination timing analysis under cut variations to
 // evaluate systematic uncertainties on sigma_t at each beam energy.
 //
-// For each variation, the full event loop is re-run with the altered cut,
-// a Gaussian is fit to the resulting t_combo distribution, and the shift in
-// sigma_t relative to the nominal is recorded as a systematic contribution.
-// The total systematic at each energy is the quadrature sum of all shifts.
+// For each variation, the full event loop is re-run with the altered cut, a
+// ROBUST core sigma_t (truncated-RMS, truncation-bias corrected -- see
+// RobustCoreSigma) is computed for the resulting t_combo distribution, and the
+// shift relative to the nominal is recorded as a systematic contribution.  A
+// robust estimator is used instead of a Gaussian core fit because at low
+// statistics (25, 125 GeV) the fit latches onto an inflated core and produces
+// large spurious cut-variation shifts.  The total systematic at each energy is
+// the quadrature sum of the cut-variation shifts (no fit-model term: the single
+// fixed robust estimator has no fit-shape ambiguity to assign).
 //
 // ── Systematic variations ───────────────────────────────────────────────────
 //
@@ -140,6 +145,62 @@ static void StatsFromVec(const std::vector<float>& v, double& mean, double& sigm
 }
 
 // ---------------------------------------------------------------------------
+// RobustCoreSigma -- core timing resolution via an iteratively-truncated RMS
+// within +/- k*sigma of the median, corrected for the Gaussian truncation bias.
+//
+// This REPLACES an iterative Gaussian core fit (FitGaussCore) for the systematic
+// study.  At low statistics / with non-Gaussian tails (e.g. the A^2-combo at 25
+// and 125 GeV) the Gaussian fit can latch onto an inflated core, so a small cut
+// variation makes the fit re-stabilise and produces a large *spurious* shift --
+// the failure mode that made three independent cut variations all move ~-39 ps
+// in lock-step at 125 GeV.  A truncated RMS has no such latching: seeded from the
+// median + MAD it converges deterministically, so the cut-variation deltas
+// reflect real sample changes, not fit instability.  The truncation-bias factor
+// (variance of a Gaussian truncated at +/-k*sigma) is divided out so the result
+// matches a Gaussian-core sigma for a Gaussian core.  Returns sigma in v's units.
+// ---------------------------------------------------------------------------
+static void RobustCoreSigma(const std::vector<float>& v, double k,
+                            double& mu, double& sigma, double& sigErr)
+{
+    mu = sigma = sigErr = 0.;
+    const int n = static_cast<int>(v.size());
+    if (n < 20) return;
+
+    std::vector<float> s(v.begin(), v.end());
+    std::sort(s.begin(), s.end());
+    const double med = s[n / 2];
+
+    std::vector<double> dev(n);
+    for (int i = 0; i < n; ++i) dev[i] = std::fabs(v[i] - med);
+    std::sort(dev.begin(), dev.end());
+    double scale = 1.4826 * dev[n / 2];        // MAD -> Gaussian-equivalent sigma
+    if (scale < 0.005) scale = 0.200;          // 200 ps safety floor
+
+    double c = med, sg = scale;
+    long kIn = 0;
+    for (int it = 0; it < 5; ++it) {           // converges in 2-3 iterations
+        const double lo = c - k * sg, hi = c + k * sg;
+        double sum = 0., sum2 = 0.; kIn = 0;
+        for (float x : v) if (x >= lo && x <= hi) { sum += x; sum2 += x * x; ++kIn; }
+        if (kIn < 5) return;
+        const double m = sum / kIn, var = sum2 / kIn - m * m;
+        c = m; sg = (var > 0.) ? std::sqrt(var) : sg;
+    }
+
+    // Truncation-bias correction: Var of N(0,sigma^2) truncated to +/-k*sigma is
+    //   sigma^2 * [ 1 - 2k phi(k)/(2Phi(k)-1) ].  Divide it out.
+    const double TWO_PI = 6.283185307179586;
+    const double phi = std::exp(-0.5 * k * k) / std::sqrt(TWO_PI);
+    const double Phi = 0.5 * (1.0 + std::erf(k / std::sqrt(2.0)));
+    const double fac = 1.0 - 2.0 * k * phi / (2.0 * Phi - 1.0);
+    const double corr = (fac > 0.) ? 1.0 / std::sqrt(fac) : 1.0;
+
+    mu     = c;
+    sigma  = sg * corr;
+    sigErr = sigma / std::sqrt(2.0 * static_cast<double>(kIn));
+}
+
+// ---------------------------------------------------------------------------
 // PageTitle -- small centered title at the very top of the canvas
 // ---------------------------------------------------------------------------
 static void PageTitle(const char* t)
@@ -162,9 +223,9 @@ void systematicUncertainties()
     // Results: sigma_t [ps] and statistical error indexed [variation][run]
     double sigT   [kNVars][kNRuns] = {};
     double sigTErr[kNVars][kNRuns] = {};
-    // #G2 fit-model systematic: |sigma_Gauss - sigma_CrystalBall| on the nominal
-    // distribution per run (captures the fit-shape ambiguity from non-Gaussian tails).
-    double fitModelSyst[kNRuns]    = {};
+    // NB: this is a CUT-systematic study, so the total is the quadrature of the
+    // cut variations only.  No fit-model term: a single fixed robust estimator
+    // (RobustCoreSigma) is used, so there is no fit-shape ambiguity to assign.
 
     // =========================================================================
     // Main event loop -- one pass per run per variation
@@ -190,7 +251,10 @@ void systematicUncertainties()
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
         t->SetBranchAddress("hg_peak",   hg_peak);
-        t->SetBranchAddress("hg_cfd",    hg_cfd);
+        // CFD-5% (adopted headline fraction); guarded fallback to CFD-20%.  The
+        // cut-variation systematic is thus evaluated on the same basis as the
+        // headline analysis.
+        t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
 
         // Per-variation t_combo accumulator
         std::vector<float> tvec[kNVars];
@@ -229,14 +293,9 @@ void systematicUncertainties()
         t->ResetBranchAddresses();
         fin->Close(); delete fin;
 
-        // Histogram range from the nominal distribution
-        double tMean, tSig;
-        StatsFromVec(tvec[0], tMean, tSig);
-        if (tSig < 0.020) tSig = 0.200;  // 200 ps safety floor
-        double histLo = tMean - 4. * tSig;
-        double histHi = tMean + 4. * tSig;
-
-        // Fit each variation
+        // Robust core sigma for each variation (truncated RMS at +/-2.5 sigma,
+        // truncation-bias corrected).  Stable at low stats -- no Gaussian-fit
+        // latching, so the cut-variation deltas are real (see RobustCoreSigma).
         for (int v = 0; v < kNVars; ++v) {
             if (static_cast<int>(tvec[v].size()) < 50) {
                 std::cout << "  " << kRuns[r].label
@@ -244,22 +303,11 @@ void systematicUncertainties()
                           << ": too few events (" << tvec[v].size() << ")\n";
                 continue;
             }
-            TH1F h(Form("hSU_%d_%d", r, v), "", 200, histLo, histHi);
-            h.SetDirectory(nullptr);
-            for (float x : tvec[v]) h.Fill(x);
-
-            double fitMu, fitMuErr, fitSig, fitSigErr;
-            FitGaussCore(&h, 2.0, fitMu, fitMuErr, fitSig, fitSigErr);
-
-            if (fitSig > 0.) {
-                sigT[v][r]    = fitSig * 1000.;     // ns -> ps
-                sigTErr[v][r] = fitSigErr * 1000.;
-                if (v == 0) {   // nominal: also fit Crystal Ball -> fit-model systematic
-                    double cbMu, cbMuE, cbSig, cbSigE;
-                    FitCrystalBall(&h, 2.0, cbMu, cbMuE, cbSig, cbSigE);
-                    if (cbSig > 0.)
-                        fitModelSyst[r] = std::fabs(cbSig * 1000. - sigT[0][r]);
-                }
+            double rMu, rSig, rSigErr;
+            RobustCoreSigma(tvec[v], 2.5, rMu, rSig, rSigErr);
+            if (rSig > 0.) {
+                sigT[v][r]    = rSig * 1000.;       // ns -> ps
+                sigTErr[v][r] = rSigErr * 1000.;
             }
         }
 
@@ -286,8 +334,6 @@ void systematicUncertainties()
             delta[v][r] = sigT[v][r] - sigT[0][r];
             sumSq += delta[v][r] * delta[v][r];
         }
-        // #G2: add the fit-model (Gauss vs Crystal Ball) term in quadrature
-        sumSq += fitModelSyst[r] * fitModelSyst[r];
         systTotal[r] = std::sqrt(sumSq);
     }
 

@@ -24,3 +24,6 @@ legacy/*.pdf
 
 # macOS
 .DS_Store
+
+# Local Claude Code agent state (machine-specific)
+.claude/

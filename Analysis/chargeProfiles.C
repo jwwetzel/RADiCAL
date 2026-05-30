@@ -303,6 +303,17 @@ void chargeProfiles()
         TString ampPdf = "Analysis/Output/Summary/hg_amplitude_vs_energy.pdf";
         cAmp.Print(ampPdf);   // single page — "(" + ")" emitted two identical pages
         std::cout << "  -> " << ampPdf << "\n";
+
+        // ── Persist mean-HG-amplitude-vs-energy graphs for the Layer-1 hero plot ─
+        //   gHGAmp_<chan> : mean HG amplitude [mV] vs beam energy [GeV].
+        TFile fAmp("Analysis/Output/Summary/hg_amplitude_vs_energy.root", "RECREATE");
+        for (int i = 0; i < kNCap; ++i) {
+            TGraph g(N);
+            for (int p = 0; p < N; ++p) g.SetPoint(p, vE[p], vMeanHG[i][p]);
+            g.Write(Form("gHGAmp_%s", kCap[i].name));
+        }
+        fAmp.Close();
+        std::cout << "  -> Analysis/Output/Summary/hg_amplitude_vs_energy.root\n";
     }
 
     // =========================================================================

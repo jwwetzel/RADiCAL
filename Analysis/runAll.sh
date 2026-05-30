@@ -69,6 +69,14 @@ echo " RADiCAL analysis — $(date)"
 echo " ROOT $(root --version 2>&1 | head -1)"
 echo "================================================================"
 echo ""
+# SKIP_PROCESS=1 skips raw->ntuple processing and runs the analysis on
+# pre-existing Analysis/Output/<E>/ntuple.root.  Used by the Argon HPC pipeline,
+# where processRun is run per-run as a parallel array job and merged separately.
+if [[ -n "$SKIP_PROCESS" ]]; then
+    echo "Step 1: SKIPPED (SKIP_PROCESS set) — using existing Analysis/Output/<E>/ntuple.root"
+    echo ""
+else
+
 echo "Step 1: Processing all energies in parallel"
 echo "  Each energy is an independent process — all cores used at once."
 echo ""
@@ -151,6 +159,8 @@ fi
 
 # Clean up per-energy log files on success
 rm -f Analysis/Output/*.log
+
+fi   # end SKIP_PROCESS guard
 
 echo ""
 echo "Step 2: Multi-energy resolution analysis"
@@ -254,11 +264,74 @@ echo ""
 $ROOT_CMD 'Analysis/channelIntegrity.C+'
 
 echo ""
+echo "Step 14b: Average waveform profiles (Layer 1)"
+echo "  Mean +/- RMS HG pulse shapes per capillary (reads raw waveforms)"
+echo ""
+
+$ROOT_CMD 'Analysis/averageWaveforms.C+'
+
+echo ""
+echo "Step 14c: HG charge / amplitude profiles (Layer 1)"
+echo "  Mean HG amplitude vs energy + position maps per capillary"
+echo ""
+
+$ROOT_CMD 'Analysis/chargeProfiles.C+'
+
+echo ""
+echo "Step 14d: Layer 1 hero figures (Ledovskoy-clean summary)"
+echo "  layer1_pulse_shapes / vitals / linearity / timebase"
+echo ""
+
+$ROOT_CMD 'Analysis/layer1Summary.C+'
+
+echo ""
+echo "Step 14e: Layer 2 hero figures (Ledovskoy-clean summary)"
+echo "  layer2_mcp_jitter / sub_mcp / per_channel"
+echo ""
+
+$ROOT_CMD 'Analysis/layer2Summary.C+'
+
+echo ""
+echo "Step 14f: Layer 3 hero figures (Ledovskoy-clean summary)"
+echo "  layer3_beam_map / containment / quality"
+echo ""
+
+$ROOT_CMD 'Analysis/layer3Summary.C+'
+
+echo ""
+echo "Step 14g: Layer 4 hero figures (Ledovskoy-clean summary)"
+echo "  layer4_ladder / walk"
+echo ""
+
+$ROOT_CMD 'Analysis/layer4Summary.C+'
+
+echo ""
+echo "Step 14h: CFD-fraction trend (Down vs Up groups, all energies)"
+echo "  layer4_cfd_fraction_down / _up  — the timing-shoulder optimisation figure"
+echo ""
+
+$ROOT_CMD 'Analysis/elbowFractionTrend.C+'
+
+echo ""
+echo "Step 14i: CFD-fraction MECHANISM (mean edge + edge-shape jitter)"
+echo "  layer4_edge_shape / layer4_edge_jitter  — the cause behind the trend"
+echo ""
+
+$ROOT_CMD 'Analysis/edgeMechanism.C+'
+
+echo ""
 echo "Step 15: Spatial uniformity scan (Layer 5)"
 echo "  A2-weighted combo sigma_t vs beam position (x,y)"
 echo ""
 
 $ROOT_CMD 'Analysis/uniformityScan.C+'
+
+echo ""
+echo "Step 15b: Layer 5 hero figures (Ledovskoy-clean summary)"
+echo "  layer5_timing / energy / uniformity  (needs uniformity_scan.root from Step 15)"
+echo ""
+
+$ROOT_CMD 'Analysis/layer5Summary.C+'
 
 echo ""
 echo "Step 16: Systematic uncertainty evaluation (Layer 6)"
@@ -268,7 +341,21 @@ echo ""
 $ROOT_CMD 'Analysis/systematicUncertainties.C+'
 
 echo ""
-echo "Step 17: Generate interactive web report"
+echo "Step 16b: Layer 6 hero figures (Ledovskoy-clean summary)"
+echo "  layer6_budget / band"
+echo ""
+
+$ROOT_CMD 'Analysis/layer6Summary.C+'
+
+echo ""
+echo "Step 17: Harvest results -> Output/Summary/results.json"
+echo "  Single source of truth for every number quoted in the report"
+echo ""
+
+$ROOT_CMD 'Analysis/harvestResults.C+'
+
+echo ""
+echo "Step 18: Generate interactive web report"
 echo "  Converts all PDFs to PNG and assembles Analysis/Output/report.html"
 echo ""
 

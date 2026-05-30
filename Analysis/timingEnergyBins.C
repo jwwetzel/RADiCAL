@@ -357,10 +357,13 @@ void timingEnergyBins()
         tree->SetBranchAddress("y_trk",    &y_trk);
         tree->SetBranchAddress("mcp_peak", &mcp_peak);
         tree->SetBranchAddress("mcp_time", &mcp_time);
-        // CFD-3% adopted as the base timing fraction (#6a): per-channel timing
-        // improves substantially (esp. Down channels) and the headline holds/
-        // improves vs CFD-20%.  Falls back to hg_cfd (20%) if the 3% branch is
-        // absent (pre-reprocess ntuples).  hg_cfd (20%) remains in the ntuple.
+        // CFD-5% adopted as the base timing fraction: per-channel timing improves
+        // substantially (esp. the Down capillaries, whose leading-edge shape jitters
+        // more high on the edge and produces a broad shoulder at CFD-20%) and the
+        // headline holds/improves vs CFD-20%.  CFD-3% is marginally sharper still on
+        // high-amplitude pulses but REGRESSES at low energy (the 3% level dips into
+        // noise on small pulses), so 5% is the evidence-based choice.  Falls back to
+        // hg_cfd (20%) if the 5% branch is absent (pre-reprocess ntuples).
         tree->SetBranchAddress(
             tree->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
         tree->SetBranchAddress("hg_peak",   hg_peak);

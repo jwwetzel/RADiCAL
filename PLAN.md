@@ -5,7 +5,7 @@
 
 ## Executive Context
 
-We have confirmed ~38–55 ps timing resolution across 25–150 GeV with three complementary
+We have confirmed ~37–56 ps timing resolution across 25–150 GeV with three complementary
 methods. The path to understanding where the remaining resolution goes — and to demonstrating
 this detector as a reproducible platform — requires answering five questions simultaneously:
 
@@ -216,7 +216,7 @@ RADiCAL Analysis Report                        [sidebar TOC — sticky, scrollab
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━            ┌─────────────────────────────────────┐
                                           │ 0  Executive Summary                │
   0  EXECUTIVE SUMMARY                   │ 1  Beam & Data Quality              │
-     Best timing: 38 ps @ 150 GeV        │    1.1  Hit maps                    │
+     Best timing: 37 ps @ 150 GeV        │    1.1  Hit maps                    │
      Stochastic term: a = 181 ps√GeV     │    1.2  MCP amplitude               │
      Constant term:   b = 34.9 ps        │    1.3  Energy distributions        │
      Status vs paper: [table]            │    1.4  Channel integrity            │

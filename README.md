@@ -5,7 +5,7 @@ the CERN SPS H2 electron beam (25–150 GeV) in May 2023. The pipeline goes from
 raw CAEN DT5742 (DRS4) waveforms to energy- and timing-resolution results and a
 single browsable HTML report.
 
-**Headline result:** σ_t ≈ 38 ps at 150 GeV (MCP-free (DW−UP)/2 estimator).
+**Headline result:** σ_t ≈ 37 ps at 150 GeV (MCP-free (DW−UP)/2 estimator).
 
 ---
 

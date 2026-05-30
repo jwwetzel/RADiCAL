@@ -147,7 +147,7 @@ static Pop ClassifyEvent(float sum_lg, float sum_pb, float r_beam)
 }
 
 // ---------------------------------------------------------------------------
-// ComboTime — compute A²-weighted mean CFD-20% time for one event.
+// ComboTime — compute A²-weighted mean CFD-5% time for one event.
 //
 // Returns kNoTimeSentinel if fewer than two channels pass quality cuts.
 // The returned value is in nanoseconds (= Δt relative to MCP).
@@ -298,7 +298,8 @@ void investigatePbGlass()
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
         t->SetBranchAddress("hg_peak",   hg_peak);
-        t->SetBranchAddress("hg_cfd",    hg_cfd);
+        // CFD-5% (adopted headline fraction); guarded fallback to CFD-20%.
+        t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
 
         Long64_t nEv = t->GetEntries();
         for (Long64_t ev = 0; ev < nEv; ++ev) {
@@ -717,6 +718,24 @@ void investigatePbGlass()
     c.cd(0);
     PageTitle("#Sigma_{LG} spectra for Pop. A (green) vs Pop. B (red)  |  normalised to unit area");
     c.Print(outPDF + ")");
+
+    // =========================================================================
+    // Persist headline numbers for the data-driven report (results.json harvest)
+    //   punch-through fraction = Pop.B / (Pop.A + Pop.B), per energy
+    // =========================================================================
+    {
+        TGraph gPunch;  // x = beam energy [GeV], y = punch-through fraction [%]
+        for (int r = 0; r < kNRuns; ++r) {
+            long denom = std::max(1L, nPopA[r] + nPopB[r]);
+            gPunch.SetPoint(gPunch.GetN(), kRuns[r].energy_GeV,
+                            100. * static_cast<double>(nPopB[r]) / denom);
+        }
+        TFile fout(Form("%spbglass_investigation.root", kSumDir), "RECREATE");
+        gPunch.Write("gPunchThroughFrac");
+        fout.Close();
+        std::cout << "investigatePbGlass: wrote pbglass_investigation.root "
+                     "(gPunchThroughFrac)\n";
+    }
 
     // =========================================================================
     // Cleanup

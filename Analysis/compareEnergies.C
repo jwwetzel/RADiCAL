@@ -638,6 +638,14 @@ static void PlotGroup2_Containment()
     PageTitle("Shower containment efficiency vs beam energy");
     c.Print(outPDF + ")");
 
+    // Persist the headline contained-fraction graph for the data-driven report.
+    {
+        TFile fout(Form("%scross_energy.root", kSumDir), "RECREATE");
+        gCont->Write("gContainedFrac");
+        fout.Close();
+        std::cout << "compareEnergies: wrote cross_energy.root (gContainedFrac)\n";
+    }
+
     // Cleanup.  mgCR destructor owns and deletes all gContR[r] graphs.
     delete mgCR;    // owns and deletes gContR[0..5]
     delete gCont;
@@ -786,7 +794,7 @@ static void PlotGroup3_Channels()
         pleg1->AddEntry(gTResAvg, "8-ch average", "lp");
     }
     pleg1->Draw();
-    PageTitle("Per-channel CFD-20% timing resolution vs beam energy");
+    PageTitle("Per-channel CFD-5% timing resolution vs beam energy");
     c.Print(outPDF + "(");
 
     // ── Page 2: Mean HG peak per channel, 6-panel grid ───────────────────────
@@ -903,7 +911,7 @@ static void PlotGroup3_Channels()
     gStyle->SetPaintTextFormat("%.0f");   // integer ps values in cells
     hHeat->Draw("COLZ TEXT");  // TEXT overlays the numeric value in each cell
 
-    PageTitle("#sigma_{t} (ps) per capillary per energy  [CFD-20%, timing fiducial]");
+    PageTitle("#sigma_{t} (ps) per capillary per energy  [CFD-5%, timing fiducial]");
     c.Print(outPDF + ")");
     gStyle->SetPaintTextFormat("%g");     // restore default AFTER printing
 
@@ -1260,7 +1268,7 @@ static void PlotGroup4_TimingMethods()
             "arXiv: a = 256 ps#sqrt{GeV}, b = 17.5 ps");
     }
 
-    // Beam-energy labels near the bottom axis.  The data band sits at >=38 ps,
+    // Beam-energy labels near the bottom axis.  The data band sits at >=37 ps,
     // so labels at y ~ 0.07*frameTop are well clear of both the data and the
     // (now top-left) legend that the top placement collided with.
     if (gTEB[0] && gTEB[0]->GetN() > 0) {

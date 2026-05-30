@@ -1,31 +1,40 @@
 // ============================================================================
-// mcpJitter.C — MCP timing reference jitter decomposition
+// mcpJitter.C — inter-group (mezzanine) timing-reference jitter
 // ============================================================================
 //
-// Every timing measurement hg_cfd[i] = t_crystal[i] - t_MCP1 includes the
-// jitter of the MCP1 timing reference.  The measured σ_t is therefore:
+// HARDWARE FACT (verified from data: corr(MCP1,MCP2)=1.000, equal amplitude):
+// MCP1 and MCP2 are NOT two independent MCPs — they are ONE MCP signal passively
+// split into the two DT5742 readout groups (group 0 = ch 0-7, group 1 = ch 9-16,
+// on separate mezzanines).  Each group digitises its own copy with its own
+// free-running DRS4 domino wave / stop cell.  Channels are referenced to the MCP
+// copy IN THEIR OWN GROUP (ch 0-6 → MCP1; SW-U, the only group-1 capillary →
+// MCP2) so that same-group timing is free of the group-to-group jitter.
 //
-//   σ_measured² = σ_crystal² + σ_MCP1²
+// WHAT σ(MCP1 - MCP2) ACTUALLY MEASURES:
+//   t_MCPk = T + j_MCP + d_k + n_k   (k = group 0,1)
+//     T      = beam arrival,  j_MCP = the MCP's own jitter (SAME in both copies),
+//     d_k    = group-k DRS4 digitisation timing (stop cell / clock / cell width),
+//     n_k    = CFD/baseline noise on that copy.
+//   ⇒ MCP1 - MCP2 = (d_0 - d_1) + (n_0 - n_1)   —  j_MCP and T CANCEL.
+// So σ(MCP1-MCP2) is the INTER-GROUP (inter-mezzanine) relative timing jitter,
+// NOT the MCP's intrinsic resolution (which is common-mode and cancels here).
+// The cable-length difference between the two copies is a fixed offset (mean of
+// the difference), not jitter.
 //
-// We can estimate σ_MCP1 from the MCP1–MCP2 time difference, since both MCPs
-// see the same beam particle and have comparable intrinsic jitter:
+//   σ(MCP1-MCP2) = √(σ_d0² + σ_d1² + ...)  ≈  √2 × σ_pergroup
+//   σ_pergroup   = σ(MCP1-MCP2)/√2  ≈ 71 ps   (per-group reference jitter)
 //
-//   σ(MCP1 - MCP2)² = σ_MCP1² + σ_MCP2²  ≈  2 × σ_MCP_single²
-//
-// Assuming σ_MCP1 ≈ σ_MCP2 (same device type, same operating conditions):
-//
-//   σ_MCP_single = σ(MCP1 - MCP2) / √2
-//
-// The true crystal timing resolution is then:
-//
-//   σ_crystal = √(σ_measured² - σ_MCP_single²)
-//
-// This subtraction is applied to the per-channel timing resolution
-// (gTimingResolution in summary.root, ~230–280 ps) to produce corrected graphs.
-//
-// NOTE: the (DW−UP)/2 estimator in timing_energy_bins.root is MCP-JITTER-FREE
-// by construction (t_MCP cancels exactly in the difference), so that 38–56 ps
-// result needs no correction.
+// CONSEQUENCES:
+//   * The corner estimators kept WITHIN group 0 (NW, NE, SE: both D and U on
+//     MCP1) are EXACTLY free of both the MCP jitter and the inter-group jitter —
+//     which is why the headline (DW−UP)/2 sits below the 71 ps per-group floor.
+//     Only SW-U sits in group 1 (MCP2), so the SW corner carries a sub-dominant
+//     inter-group residual; the 3 group-0 corners do not.
+//   * CAVEAT: the σ_crystal = √(σ_meas² − σ_pergroup²) subtraction below is only
+//     valid for estimators that actually MIX the two groups (e.g. mean-all-8 with
+//     SW-U on MCP2).  For a SAME-GROUP single channel (t_ch − t_MCP1) the group-0
+//     digitisation d_0 cancels, so the inter-group term is NOT present and must
+//     not be subtracted.  Treat the per-channel "crystal" graphs with this caveat.
 //
 // ── What this tells us ───────────────────────────────────────────────────────
 //

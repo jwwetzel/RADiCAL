@@ -180,7 +180,14 @@ void analyzeResolution()
         t->SetBranchAddress("mcp_peak", &mcp_peak);
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
-        t->SetBranchAddress("hg_cfd",    hg_cfd);
+        // Per-channel timing uses CFD-5% (the adopted headline fraction), not
+        // CFD-20%.  On the Down capillaries the leading-edge SHAPE jitters more
+        // pulse-to-pulse high on the edge (not a mean-slope effect — the mean edge
+        // is steeper at 20%), producing a broad, shouldered peak (~2x wider);
+        // CFD-5% times low on the edge where it is most reproducible and removes it
+        // (see timingMethods.C page 3, edgeMechanism.C, elbowInvestigation.C).
+        // Falls back to hg_cfd (20%) for pre-reprocess ntuples without hg_cfd05.
+        t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
         t->SetBranchAddress("hg_peak",   hg_peak);
         t->SetBranchAddress("lg_peak",   lg_peak);
 

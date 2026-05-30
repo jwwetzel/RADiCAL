@@ -56,6 +56,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TROOT.h"
+#include "TString.h"
 
 // ---------------------------------------------------------------------------
 // Custom color IDs
@@ -135,15 +136,15 @@ static void ApplyRADiCALStyle()
     s->SetOptFit(0);
     s->SetOptTitle(0);
 
-    // Grid: light gray, dotted — ON by default for 1D and 2D position plots.
-    // Pads that draw COLZ amplitude maps (chargeProfiles, qualityPlots) call
-    // StylePad(rightPalette=true) which explicitly disables the grid there.
+    // Grid: OFF globally (Ledovskoy house style — gridlines are clutter; the
+    // plot reads faster without them).  Colour/style retained for the rare pad
+    // that opts back in via gPad->SetGridx(1).
     const Int_t gridColor = TColor::GetColor(0xCC, 0xCC, 0xCC);
     s->SetGridColor(gridColor);
     s->SetGridStyle(3);   // dotted
     s->SetGridWidth(1);
-    s->SetPadGridX(kTRUE);
-    s->SetPadGridY(kTRUE);
+    s->SetPadGridX(kFALSE);
+    s->SetPadGridY(kFALSE);
 
     // Tick marks on all four sides
     s->SetPadTickX(1);
@@ -228,14 +229,9 @@ static void StylePad(bool rightPalette = false, bool sidebar = false)
 
     gPad->SetTickx(1);
     gPad->SetTicky(1);
-    // COLZ palette maps look cleaner without grid lines crossing the colour scale
-    if (rightPalette) {
-        gPad->SetGridx(0);
-        gPad->SetGridy(0);
-    } else {
-        gPad->SetGridx(1);
-        gPad->SetGridy(1);
-    }
+    // Grid OFF everywhere (house style) — see ApplyRADiCALStyle.
+    gPad->SetGridx(0);
+    gPad->SetGridy(0);
 }
 
 // ---------------------------------------------------------------------------
@@ -269,8 +265,8 @@ static void SetupSidebar(TCanvas& c,
     plotPad->SetTopMargin   (0.10f);
     plotPad->SetTickx(1);
     plotPad->SetTicky(1);
-    plotPad->SetGridx(1);
-    plotPad->SetGridy(1);
+    plotPad->SetGridx(0);
+    plotPad->SetGridy(0);
     plotPad->Draw();
 
     legPad = new TPad("rpad_leg", "", split, 0.f, 1.f, 1.f);
@@ -346,8 +342,9 @@ static void DrawPadTitle(const char* text, float textSize = 0.060f)
 
     TLatex ptit;
     ptit.SetNDC();
-    ptit.SetTextFont(42);
+    ptit.SetTextFont(52);    // italic — Ledovskoy-style descriptive pad caption
     ptit.SetTextSize(textSize);
+    ptit.SetTextColor(kGray + 3);
     ptit.SetTextAlign(22);   // centre-centre
     ptit.DrawLatex(xc, yc, text);
 }
@@ -365,6 +362,170 @@ static void DrawPageTitle(const char* text, float textSize = 0.022f)
     lab.SetTextSize(textSize);
     lab.SetTextAlign(12);   // left-centre
     lab.DrawLatex(0.01f, 0.975f, text);   // y<0.99 so tall glyphs aren't clipped at the canvas top
+}
+
+// ===========================================================================
+// SQUARE-FRAME CANVASES
+//
+// House rule: the data frame is SQUARE; the canvas is rectangular, made wider/
+// taller than the frame by *pixel* margins that are guaranteed large enough to
+// hold the axis titles and labels.  We size the margins (not the title offset)
+// to fit the title — never crank SetTitleOffset to shove a title that then
+// clips off the canvas edge.
+//
+// Margins are given in PIXELS and converted to the fractional margins ROOT
+// wants, so frame_px = canvas_px − margins_px is exactly square.
+// ===========================================================================
+
+// Default pixel margins for a single square panel.  Left holds a rotated y-title
+// + numeric labels; bottom holds the x-title + labels; top a little breathing
+// room (or a pad caption); right a thin margin.
+static const int kSqML = 108, kSqMB = 94, kSqMT = 54, kSqMR = 36;
+
+// ROOT's batch canvas/PNG output comes out a few pixels smaller than the
+// requested TCanvas size (≈ −4 px wide, −28 px tall on this build — the latter
+// is the suppressed title-bar allowance).  We pad the request by these so the
+// *actual* canvas, and hence the frame, comes out exactly square.
+static const int kCanvasShrinkW = 4, kCanvasShrinkH = 28;
+
+// ---------------------------------------------------------------------------
+// NewSquareCanvas — one square-frame plot on a rectangular canvas.
+//   frame = side of the square data frame in pixels.
+// Returns the canvas; draw straight onto it (it is the pad).
+// ---------------------------------------------------------------------------
+static TCanvas* NewSquareCanvas(const char* name, int frame = 660,
+                                int mL = kSqML, int mB = kSqMB,
+                                int mT = kSqMT, int mR = kSqMR)
+{
+    const int W = frame + mL + mR + kCanvasShrinkW;
+    const int H = frame + mT + mB + kCanvasShrinkH;
+    TCanvas* c = new TCanvas(name, name, W, H);
+    c->SetFillColor(kWhite);
+    // Fractions are relative to the ACTUAL (shrunk) canvas, so frame = exactly
+    // (frame×frame) px and the margins hold the full titles/labels.
+    const double Wa = W - kCanvasShrinkW, Ha = H - kCanvasShrinkH;
+    c->SetLeftMargin  (static_cast<double>(mL) / Wa);
+    c->SetRightMargin (static_cast<double>(mR) / Wa);
+    c->SetTopMargin   (static_cast<double>(mT) / Ha);
+    c->SetBottomMargin(static_cast<double>(mB) / Ha);
+    c->SetTickx(1); c->SetTicky(1);
+    c->SetGridx(0); c->SetGridy(0);
+    // Title offsets matched to the pixel margins (so titles land inside them).
+    gStyle->SetTitleOffset(1.15, "X");
+    gStyle->SetTitleOffset(1.55, "Y");
+    return c;
+}
+
+// ---------------------------------------------------------------------------
+// NewSquareGrid — nx×ny grid of SQUARE-frame pads, with a top band reserved for
+// a page title (DrawPageTitle on c->cd(0) never overprints a pad).
+//   frame = side of each square pad frame in pixels.
+//   returns the grid TPad — call grid->cd(i+1), i = 0..nx*ny−1.
+// Per-pad margins are smaller (titles are smaller in a small pad) but still in
+// pixels, so every pad frame is exactly square and titles stay on-canvas.
+// ---------------------------------------------------------------------------
+static TPad* NewSquareGrid(TCanvas*& c, const char* name, int nx, int ny,
+                           int frame = 300, int mL = 74, int mB = 66,
+                           int mT = 46, int mR = 24, int band = 48)
+{
+    const int cellW = frame + mL + mR;
+    const int cellH = frame + mT + mB;
+    const int W = nx * cellW + kCanvasShrinkW;
+    const int H = ny * cellH + band + kCanvasShrinkH;
+    c = new TCanvas(name, name, W, H);
+    c->SetFillColor(kWhite);
+    c->cd();
+    // Grid pad spans the actual (shrunk) canvas below the title band; each
+    // sub-pad then comes out exactly cellW×cellH ⇒ square frames.
+    const double Ha = H - kCanvasShrinkH;            // = ny*cellH + band
+    const double top = static_cast<double>(ny * cellH) / Ha;
+    TPad* grid = new TPad(Form("%s_grid", name), "", 0., 0., 1., top);
+    grid->SetBorderMode(0);
+    grid->SetFillStyle(0);
+    grid->Draw();
+    grid->Divide(nx, ny, 0., 0.);   // no inter-pad gap; per-pad margins separate frames
+    for (int i = 1; i <= nx * ny; ++i) {
+        grid->cd(i);
+        gPad->SetLeftMargin  (static_cast<double>(mL) / cellW);
+        gPad->SetRightMargin (static_cast<double>(mR) / cellW);
+        gPad->SetTopMargin   (static_cast<double>(mT) / cellH);
+        gPad->SetBottomMargin(static_cast<double>(mB) / cellH);
+        gPad->SetTickx(1); gPad->SetTicky(1);
+        gPad->SetGridx(0); gPad->SetGridy(0);
+    }
+    gStyle->SetTitleOffset(1.05, "X");
+    gStyle->SetTitleOffset(1.25, "Y");
+    c->cd();
+    return grid;
+}
+
+// ---------------------------------------------------------------------------
+// MakeCornerLegend — small, borderless, transparent legend in a corner of the
+// current pad (Ledovskoy style).  corner: "tr"(default)/"tl"/"br"/"bl"
+// (1st char = top/bottom, 2nd char = left/right).  Call AddEntry + Draw.
+// ---------------------------------------------------------------------------
+static TLegend* MakeCornerLegend(int nEntries, const char* corner = "tr",
+                                 double textSize = 0.040)
+{
+    const double pad = 0.02, w = 0.30;
+    double h = nEntries * 0.055 + 0.012;
+    if (h > 0.55) h = 0.55;
+
+    const double L = gPad->GetLeftMargin(),       R = 1.0 - gPad->GetRightMargin();
+    const double B = gPad->GetBottomMargin(),      T = 1.0 - gPad->GetTopMargin();
+
+    const bool left   = (corner[0] && corner[1] == 'l');
+    const bool bottom = (corner[0] == 'b');
+
+    double x1 = left ? (L + pad)         : (R - pad - w);
+    double x2 = x1 + w;
+    double y1 = bottom ? (B + pad)       : (T - pad - h);
+    double y2 = y1 + h;
+
+    TLegend* leg = new TLegend(x1, y1, x2, y2);
+    leg->SetBorderSize(0);
+    leg->SetFillStyle(0);
+    leg->SetTextFont(42);
+    leg->SetTextSize(textSize);
+    return leg;
+}
+
+// ---------------------------------------------------------------------------
+// StyleColz — one-call COLZ styling for the current pad: kFall palette, wide
+// right margin for the colour bar, no grid, optional log-z.  Call before
+// Draw("COLZ").  (Set the z-axis title on the histogram: h->GetZaxis()->SetTitle("events").)
+// ---------------------------------------------------------------------------
+static void StyleColz(bool logz = false)
+{
+    gPad->SetLeftMargin  (0.13);
+    gPad->SetBottomMargin(0.12);
+    gPad->SetTopMargin   (0.10);
+    gPad->SetRightMargin (0.16);
+    gPad->SetTickx(1);
+    gPad->SetTicky(1);
+    gPad->SetGridx(0);
+    gPad->SetGridy(0);
+    if (logz) gPad->SetLogz(1);
+    gStyle->SetPalette(kFall);
+}
+
+// ---------------------------------------------------------------------------
+// PrintClean — print a canvas to PDF/PNG with the page sized to the canvas's
+// own aspect ratio.  Fixes ROOT's default behaviour of letterboxing every
+// canvas into a fixed A4-proportioned page (the "half-empty canvas" bug):
+// without this, a wide canvas renders into the top strip of a portrait page.
+// ---------------------------------------------------------------------------
+static void PrintClean(TCanvas* c, const char* path)
+{
+    if (!c) return;
+    const double w = static_cast<double>(c->GetWw());
+    const double h = static_cast<double>(c->GetWh());
+    if (w > 0. && h > 0.) {
+        const double longest = (w > h) ? w : h;
+        const double scale   = 20.0 / longest;   // longest side → 20 cm
+        gStyle->SetPaperSize(w * scale, h * scale);
+    }
+    c->Print(path);
 }
 
 #endif // RADICALSTYLE_H

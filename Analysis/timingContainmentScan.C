@@ -11,7 +11,7 @@
 // answers: does tightening the containment cut improve σ_t, and at what
 // efficiency cost?
 //
-// Timing estimator: A²-weighted combination of 8 HG CFD-20% channels (M3).
+// Timing estimator: A²-weighted combination of 8 HG CFD-5% channels (M3).
 //   t_combo = Σ(A_i² × hg_cfd[i]) / Σ(A_i²)
 //
 // Containment thresholds scanned:  0.10, 0.15, 0.20, 0.25, 0.30 (baseline),
@@ -193,7 +193,8 @@ void timingContainmentScan()
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
         t->SetBranchAddress("hg_peak",   hg_peak);
-        t->SetBranchAddress("hg_cfd",    hg_cfd);
+        // CFD-5% (adopted headline fraction); guarded fallback to CFD-20%.
+        t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
 
         // Per-threshold combo-timing accumulator and baseline count
         std::vector<float> tvec[kNScan];
