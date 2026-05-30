@@ -294,14 +294,15 @@ void qualityPlots()
                 Form(";%s LG amplitude (mV);Mean HG amplitude (mV)", kCap[i].name),
                 50, 0, 3000);
 
-        // Time walk: mean t_cfd vs 1/hg_peak — the correct physics model is
-        // t = a + b/A, so this should be LINEAR.  Method M6 corrects this slope.
-        // x-axis range: 1/500 to 1/20 (1/mV) = 0.002 to 0.05
+        // Time walk: mean t_cfd vs 1/hg_peak for TIMEABLE pulses.  First-order walk
+        // gives t = a + b/A (linear on a 1/A axis).  Restricted to A > 100 mV
+        // (1/A < 0.01): below that the CFD has no real leading edge and floors at
+        // the search-window edge (~-90 ns) — mistiming, not walk.  See the fill cut.
         TProfile* pWalk[8];
         for (int i = 0; i < 8; ++i)
             pWalk[i] = new TProfile(Form("pWalk_%s_%d", rc.label.Data(), i),
                 ";1/A_{HG} (1/mV);Mean t_{CFD} (ns)",
-                50, 0.002, 0.055);
+                40, 0.001, 0.011);
 
         // TOT distribution and LED vs TOT correlation (if new branches present)
         TH1F*    hTOT[8];
@@ -508,8 +509,12 @@ void qualityPlots()
                 hHG[i]->Fill(hg_peak[i]);
                 hLG[i]->Fill(lg_peak[i]);
                 if (lg_peak[i] > 0.) pCorr[i]->Fill(lg_peak[i], hg_peak[i]);
-                // Walk diagnostic: fill t_CFD vs 1/A (physics model: t = a + b/A)
-                if (hg_peak[i] > kHG_minPeak && hg_cfd[i] > -1e5f)
+                // Walk diagnostic: fill t_CFD vs 1/A for TIMEABLE pulses only —
+                // A > 100 mV AND a correctly-timed crossing (t > -50 ns).  Below
+                // ~100 mV the CFD finds no real leading edge and floors near the
+                // search-window edge (~-90 ns); that is mistiming, not walk, and it
+                // would swamp the genuine (sub-ns) amplitude dependence.
+                if (hg_peak[i] > 100.f && hg_cfd[i] > -50.f)
                     pWalk[i]->Fill(1.0f / hg_peak[i], hg_cfd[i]);
                 if (hasNewBranches && hg_tot[i] > 0.f
                         && hg_peak[i] > kHG_minPeak && hg_led[i] > -1e5f) {
@@ -796,42 +801,53 @@ void qualityPlots()
                 pWalk[i]->SetMarkerColor(kRChannelCols[i]);
                 pWalk[i]->SetMarkerStyle(20);
                 pWalk[i]->SetMarkerSize(0.8);
+                // Zoom the y-axis around the good-timing band (all channels sit
+                // near -26 ns) so the genuine, SUB-NS walk is visible.  The old
+                // -20..-100 span was entirely the low-amplitude mistiming floor,
+                // which is now excluded by the fill cut.
+                pWalk[i]->GetYaxis()->SetRangeUser(-34., -18.);
                 pWalk[i]->Draw("EP");
 
-                // Walk model: t = a + b/A.  On a 1/A axis this is LINEAR (pol1).
-                // The slope b is exactly what M6 (CFD + 1/A walk corr.) removes.
-                // A flat profile means negligible walk; positive slope means early
-                // arrival at high amplitude (positive b).
-                TF1 fwalk(Form("fw_%d", i), "pol1",
-                          1.0f/500.f, 1.0f/kHG_minPeak);  // 1/A range in 1/mV
+                // First-order walk model t = a + b/A is LINEAR on this 1/A axis.
+                // Fit only the timeable region (A > 100 mV, 1/A < 0.01).  A flat
+                // profile (b ~ 0) means negligible residual walk.
+                TF1 fwalk(Form("fw_%d", i), "pol1", 0.001f, 0.010f);
                 fwalk.SetLineColor(kRed+1);
                 fwalk.SetLineWidth(1);
                 fwalk.SetLineStyle(2);
-                if (pWalk[i]->GetEntries() > 20)
+                double bslope = 0.;
+                if (pWalk[i]->GetEntries() > 20) {
                     pWalk[i]->Fit(&fwalk, "RQN");
+                    bslope = fwalk.GetParameter(1);   // ns*mV
+                }
                 fwalk.DrawCopy("SAME");
 
                 { TLatex t; t.SetNDC(); t.SetTextSize(0.060);
                   t.SetTextAlign(22);
                   t.DrawLatex(0.54, 0.93,
                       Form("%.0f GeV  %s  walk", rc.energy_GeV, kCap[i].name)); }
-                { TLatex t; t.SetNDC(); t.SetTextSize(0.048);
+                { TLatex t; t.SetNDC(); t.SetTextSize(0.044);
                   t.SetTextColor(kGray+2);
-                  t.DrawLatex(0.15, 0.76, "t = a + b/A   (red dashed = pol1 fit)"); }
+                  t.DrawLatex(0.15, 0.80, "timeable pulses (A > 100 mV)");
+                  t.DrawLatex(0.15, 0.74, Form("b = %.0f ns#upointmV  (pol1 fit)", bslope)); }
             }
 
             // Pad 9: interpretation note
             c.cd(9); gPad->SetLeftMargin(0.05); gPad->SetTopMargin(0.08);
-            TLatex note; note.SetNDC(); note.SetTextSize(0.060);
-            note.DrawLatex(0.05, 0.93, "Time walk diagnostic");
-            note.SetTextSize(0.046); note.SetTextColor(kGray+1);
-            note.DrawLatex(0.05, 0.83, "X-axis: 1/A_{HG}  (1/mV)");
-            note.DrawLatex(0.05, 0.74, "Walk model:  t = a + b/A");
-            note.DrawLatex(0.05, 0.65, "Linear on this axis  =>  correct model.");
-            note.DrawLatex(0.05, 0.56, "Slope b = M6 correction coefficient.");
-            note.DrawLatex(0.05, 0.47, "Flat profile = no residual walk.");
-            note.DrawLatex(0.05, 0.36, "Down channels (steep risetime) show");
-            note.DrawLatex(0.05, 0.27, "stronger walk than Up channels.");
+            TLatex note; note.SetNDC(); note.SetTextSize(0.058);
+            note.DrawLatex(0.05, 0.93, "Time-walk diagnostic");
+            note.SetTextSize(0.043); note.SetTextColor(kGray+1);
+            note.DrawLatex(0.05, 0.84, "Mean t_{CFD} vs 1/A_{HG} for TIMEABLE");
+            note.DrawLatex(0.05, 0.78, "pulses (A > 100 mV).  Walk model t = a + b/A");
+            note.DrawLatex(0.05, 0.72, "is linear on this axis; slope b is the");
+            note.DrawLatex(0.05, 0.66, "amplitude->time coupling.");
+            note.DrawLatex(0.05, 0.56, "Result: residual walk is SUB-NS over A = 100-");
+            note.DrawLatex(0.05, 0.50, "1000 mV (slightly larger on the Down capillaries)");
+            note.DrawLatex(0.05, 0.44, "— no explicit correction needed (headline = CFD-5%).");
+            note.SetTextColor(kGray+2);
+            note.DrawLatex(0.05, 0.32, "NB: below ~100 mV the CFD has no leading");
+            note.DrawLatex(0.05, 0.26, "edge to find and floors near the window edge");
+            note.DrawLatex(0.05, 0.20, "(~-90 ns) — mistiming, excluded here.");
 
             c.Print(pdfPath);
         }
