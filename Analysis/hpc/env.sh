@@ -6,8 +6,11 @@
 # ============================================================================
 
 # --- paths -----------------------------------------------------------------
-# Repository root (where the Analysis/ directory lives) on Argon.
-export RAD_REPO="${RAD_REPO:-$HOME/RADiCAL}"
+# Repository root (where the Analysis/ directory lives), derived from THIS
+# file's location (Analysis/hpc/env.sh -> ../.. = repo root).  Works wherever
+# the repo is cloned and in -cwd batch jobs; override by exporting RAD_REPO.
+_ENV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+export RAD_REPO="${RAD_REPO:-$(cd "$_ENV_DIR/../.." && pwd)}"
 
 # Raw reconstructed run files: <REC_DIR>/RUN<run>.root
 export REC_DIR="${REC_DIR:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/rec}"
