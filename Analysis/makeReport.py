@@ -259,7 +259,9 @@ def _converter() -> Optional[str]:
         "/opt/homebrew/opt/ghostscript/bin", "/opt/homebrew/opt/poppler/bin",
         "/usr/bin", "/bin",
     )
-    for tool in ("gs", "pdftoppm"):
+    # Prefer pdftoppm (poppler): cleaner multi-page output and fewer font-stack
+    # surprises than Ghostscript.
+    for tool in ("pdftoppm", "gs"):
         found = shutil.which(tool)
         if found:
             return found
@@ -268,6 +270,21 @@ def _converter() -> Optional[str]:
             if os.path.isfile(cand) and os.access(cand, os.X_OK):
                 return cand
     return None
+
+
+def _clean_env() -> dict:
+    """Environment for the PDF->PNG subprocess with LD_LIBRARY_PATH stripped.
+
+    A SYSTEM converter (/bin/gs, /usr/bin/pdftoppm) must resolve SYSTEM libs.
+    On HPC, `module load root` prepends toolchain libs (e.g. gcc-9.4.0 fontconfig
+    / freetype that require a newer GLIBC than the compute node provides), which
+    makes the system binary fail to load (`GLIBC_2.33 not found`).  Removing
+    LD_LIBRARY_PATH lets it use the compatible system libs.  Harmless on macOS
+    (which uses DYLD_*), so this is safe everywhere.
+    """
+    env = dict(os.environ)
+    env.pop("LD_LIBRARY_PATH", None)
+    return env
 
 
 def convert_pdf_to_pngs(pdf_path: Path, output_dir: Path,
@@ -305,7 +322,7 @@ def convert_pdf_to_pngs(pdf_path: Path, output_dir: Path,
             "-sDEVICE=png16m", f"-r{dpi}",
             f"-sOutputFile={out_pattern}", str(pdf_path),
         ]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, env=_clean_env())
         if result.returncode != 0:
             print(f"  [WARN] gs failed for {pdf_path.name}: {result.stderr[:300]}")
             return []
@@ -317,7 +334,7 @@ def convert_pdf_to_pngs(pdf_path: Path, output_dir: Path,
             conv, "-r", str(dpi), "-png",
             str(pdf_path), str(prefix),
         ]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, env=_clean_env())
         if result.returncode != 0:
             print(f"  [WARN] pdftoppm failed for {pdf_path.name}: {result.stderr[:300]}")
             return []
