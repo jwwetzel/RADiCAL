@@ -31,18 +31,17 @@ export RAD_HRT="${RAD_HRT:-2:00:00}"         # per-task hard runtime
 # it in after running the probe in README.md "Step 0".  This MUST work in a
 # non-interactive shell (batch jobs do not source your ~/.bashrc by default).
 setup_root() {
-    # (A) Environment module:
-    #     module load root            # or e.g. `module load stack/root 6.x`
-    #
-    # (B) CVMFS / LCG view (if /cvmfs is mounted on the compute nodes):
-    #     source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc13-opt/setup.sh
-    #
-    # (C) Container (Singularity/Apptainer): handled in the job script via
-    #     `apptainer exec <image> ...` — leave this function empty in that case.
-    #
-    # (D) A local ROOT install:
-    #     source /path/to/root/bin/thisroot.sh
-    : # <-- REPLACE this line with your chosen option above
+    # Argon: `module load root` (also loads python/3.9.9 for makeReport.py).
+    # In a non-interactive SGE batch shell the `module` function is often not
+    # defined yet, so initialise the module system first if needed.
+    if ! command -v module >/dev/null 2>&1; then
+        for init in /etc/profile.d/lmod.sh /etc/profile.d/z00_lmod.sh \
+                    /etc/profile.d/00-modulepath.sh /etc/profile.d/modules.sh \
+                    /opt/apps/lmod/lmod/init/bash; do
+            [ -f "$init" ] && source "$init" && break
+        done
+    fi
+    module load root
 }
 
 # Compile-cache dir so concurrent ACLiC builds never collide and the cache
