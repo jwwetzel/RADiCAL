@@ -21,6 +21,9 @@ if [ -e Analysis/Output ] && [ ! -L Analysis/Output ]; then
 fi
 ln -sfn "$RAD_WORK/Output" Analysis/Output
 
+# Raw-file symlink farm for the Layer-1 raw-waveform macros (avg waveforms, drs4 timebase).
+setup_data_links
+
 root -l -b -q -e '.L Analysis/processRun.C+' || true
 ls -l Analysis/processRun_C*.so
 echo "compile.sh done."

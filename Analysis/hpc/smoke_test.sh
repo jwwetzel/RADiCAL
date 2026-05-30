@@ -40,7 +40,8 @@ done
 echo "=== smoke subset: $(wc -l < "$SMOKE_TASKS") runs ($N per energy) ==="
 cat "$SMOKE_TASKS"
 
-echo "=== [1/4] compile processRun ==="
+echo "=== [1/4] compile processRun + raw-file symlinks ==="
+setup_data_links
 root -l -b -q -e '.L Analysis/processRun.C+' || true
 ls -l Analysis/processRun_C*.so || { echo "compile FAILED"; exit 1; }
 

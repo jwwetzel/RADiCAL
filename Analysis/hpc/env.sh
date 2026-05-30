@@ -52,6 +52,31 @@ setup_root() {
     module load root
 }
 
+# Two Layer-1 macros (averageWaveforms.C, drs4TimeBase.C) read RAW waveforms and
+# locate files via kRuns[].inFiles, i.e. Data/RUN<n>_<E>_GeV.root.  Build a Data/
+# symlink farm so those names resolve to the HPC rec files.  If a specific kRuns
+# run is missing, fall back to the first available run of that energy.
+setup_data_links() {
+    mkdir -p "$RAD_REPO/Data"
+    grep -oE 'Data/RUN[0-9]+_[0-9]+_GeV\.root' "$RAD_REPO/Analysis/ChannelConfig.h" | sort -u | \
+    while read -r name; do
+        local run lab src alt
+        run=$(printf '%s' "$name" | sed -E 's#Data/RUN([0-9]+)_.*#\1#')
+        lab=$(printf '%s' "$name" | sed -E 's#Data/RUN[0-9]+_([0-9]+)_GeV\.root#\1GeV#')
+        src="$REC_DIR/RUN${run}.root"
+        if [ ! -f "$src" ] && [ -s "$TASKLIST" ]; then
+            alt=$(awk -F'\t' -v l="$lab" '$2==l{print $4; exit}' "$TASKLIST")
+            [ -n "$alt" ] && src="$alt"
+        fi
+        if [ -f "$src" ]; then
+            ln -sfn "$src" "$RAD_REPO/$name"
+        else
+            echo "WARN: no raw file for $name — Layer-1 macros will skip $lab" >&2
+        fi
+    done
+    echo "Data/ raw-file symlinks:"; ls -l "$RAD_REPO/Data" 2>/dev/null | grep -c '\->' | xargs echo "  links:"
+}
+
 # Compile-cache dir so concurrent ACLiC builds never collide and the cache
 # persists between stages.
 export RAD_ACLIC="${RAD_ACLIC:-$RAD_WORK/aclic_cache}"
