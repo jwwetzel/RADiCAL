@@ -23,9 +23,11 @@ export REC_DIR="${REC_DIR:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/r
 export RAD_WORK="${RAD_WORK:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/analysis_work}"
 
 # Manifest (committed in repo) and the resolved per-run task list (made on Argon).
-# Derived directly so re-sourcing self-heals stale exported values.
+# Derived directly so re-sourcing self-heals stale exported values.  Override the
+# task list for a subset run by exporting RAD_TASKLIST (env.sh never sets that,
+# so it can't self-poison): e.g.  RAD_TASKLIST=$RAD_WORK/tasks_smoke.txt bash submit_all.sh
 export MANIFEST="$RAD_REPO/Analysis/hpc/manifest_dsb1.csv"
-export TASKLIST="$RAD_WORK/tasks.txt"
+export TASKLIST="${RAD_TASKLIST:-$RAD_WORK/tasks.txt}"
 
 # SGE queue / resources (adjust to Argon + your group's allocation).
 export RAD_QUEUE="${RAD_QUEUE:-UI}"          # e.g. UI (free) or an investor queue

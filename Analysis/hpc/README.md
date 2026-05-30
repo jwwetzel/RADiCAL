@@ -76,6 +76,22 @@ bash Analysis/hpc/discover_tasklist.sh
 Globs `REC_DIR`, handles zero-padding (`RUN1034.root`, `RUN0100.root`, …), writes
 `$RAD_WORK/tasks.txt`, and reports any manifest run with no file.
 
+## Step 3.5 — smoke test (recommended before the full run)
+
+Run the whole pipeline on a few runs per energy, end-to-end, on a compute node.
+This catches the things a subset uniquely reveals: that `processRun` works on the
+real `rec` files (raw `pulse`-tree schema matches), that `hadd` merges, and that
+every analysis macro compiles under Argon's ROOT + `makeReport` runs — before you
+commit 221 array tasks.
+
+```bash
+qlogin                                       # interactive compute node (NOT the login node)
+cd <repo>
+bash Analysis/hpc/smoke_test.sh 2            # 2 runs/energy; writes to Output_smoke/
+```
+Inspect `$RAD_WORK/Output_smoke/report.html` + `Summary/`. If it's clean, proceed.
+(The script uses a separate output dir and restores the `Output` symlink at the end.)
+
 ## Step 4 — submit
 
 ```bash
