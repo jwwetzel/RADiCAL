@@ -98,6 +98,16 @@ class _Results:
             raise SystemExit(f"[makeReport] '{key}' is an array — use at().")
         return v
 
+    def get_opt(self, key: str, default=None):
+        """Scalar value by key, or `default` if missing/null — does NOT hard-fail.
+        For genuinely OPTIONAL diagnostics (e.g. the Layer-1 DRS4 timebase numbers,
+        which need raw waveforms that may be absent on a remote/HPC run).  A missing
+        optional number must not block an otherwise-complete report."""
+        v = self._d.get(key)
+        if v is None or isinstance(v, list):
+            return default
+        return v
+
     def at(self, key: str, energy: int) -> float:
         """Per-energy array value at a beam energy (hard-fail if missing/null)."""
         arr = self._require(key)
@@ -136,8 +146,10 @@ COMBO_150   = f"{R.at('combo_a2_8ch', 150):.0f}"                     # 63
 MCP         = f"{R.get('mcp_jitter_mean'):.0f}"                      # 71
 ERES_150    = f"{R.at('eres', 150):.1f}"                             # 11.6
 SYST_150    = f"{R.at('syst_total', 150):.1f}"                       # 11.7
-DRS4_BEF    = f"{R.get('drs4_combo_before'):.1f}"                    # 120.7
-DRS4_AFT    = f"{R.get('drs4_combo_after'):.1f}"                     # 99.5
+_drs4_bef   = R.get_opt('drs4_combo_before')                         # 120.7 (optional)
+_drs4_aft   = R.get_opt('drs4_combo_after')                          # 99.5  (optional)
+DRS4_BEF    = f"{_drs4_bef:.1f}" if _drs4_bef is not None else "n/a"
+DRS4_AFT    = f"{_drs4_aft:.1f}" if _drs4_aft is not None else "n/a"
 PUNCH_150   = f"{R.at('punch_through', 150):.1f}"                    # 13.6
 PUNCH_25    = f"{R.at('punch_through', 25):.1f}"                     # 4.2
 CONT_150    = f"{R.at('containment', 150):.1f}"                      # 92.8
