@@ -23,7 +23,9 @@ for label in $(cut -f2 "$TASKLIST" | sort -u); do
         continue
     fi
     echo "[${label}] merging ${#files[@]} run-ntuples -> ${outdir}/ntuple.root"
-    hadd -f -j 4 "${outdir}/ntuple.root" "${files[@]}"
+    # -k: skip corrupt/zombie inputs (e.g. a processRun task killed mid-write by a
+    # full disk) instead of aborting the whole merge.
+    hadd -k -f -j 4 "${outdir}/ntuple.root" "${files[@]}"
 done
 echo "sge_merge.sh done."
 echo "Per-energy event counts:"
