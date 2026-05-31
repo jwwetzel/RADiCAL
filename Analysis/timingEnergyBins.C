@@ -785,30 +785,31 @@ void timingEnergyBins()
                         Form("walk corr. gain: %.1f%%", gain));
                 }
 
+                // N_events annotation (placed first, well clear of the lines below)
+                TLatex nev;
+                nev.SetNDC();
+                nev.SetTextSize(0.046);
+                nev.SetTextColor(kGray+2);
+                nev.DrawLatex(0.17, 0.45, Form("N = %d", nBin[ib]));
+
                 // Star annotation for best-estimator bins
                 if (ib >= 5) {
                     TLatex star;
                     star.SetNDC();
-                    star.SetTextSize(0.062);
+                    star.SetTextSize(0.052);
                     star.SetTextColor(kOrange+1);
-                    star.DrawLatex(0.17, 0.45, "#bullet  best estimator");
+                    star.DrawLatex(0.17, 0.36, "#bullet  best-estimator bin");
                     // #G4: 5-fold cross-validation of the M7 walk correction
-                    // (pooled over best bins) — shown once, on the last bin.
+                    // (pooled over best bins) — shown once, on the last bin, in its
+                    // own slot so it never overprints the N / best-estimator labels.
                     if (ib == kNBins_teb - 1 && sigC_crossval > 0.) {
-                        TLatex lcv; lcv.SetNDC(); lcv.SetTextSize(0.033);
+                        TLatex lcv; lcv.SetNDC(); lcv.SetTextSize(0.030);
                         lcv.SetTextColor(kGray+2);
-                        lcv.DrawLatex(0.17, 0.37,
-                            Form("M7 walk CV: in-samp %.0f #rightarrow 5-fold OOS %.0f ps",
+                        lcv.DrawLatex(0.17, 0.28,
+                            Form("M7 walk-corr CV: %.0f #rightarrow %.0f ps (OOS)",
                                  sigC_insample, sigC_crossval));
                     }
                 }
-
-                // N_events annotation
-                TLatex nev;
-                nev.SetNDC();
-                nev.SetTextSize(0.048);
-                nev.SetTextColor(kGray+2);
-                nev.DrawLatex(0.17, 0.36, Form("N = %d", nBin[ib]));
             }
 
             c1.Print(outPDF + "(");
