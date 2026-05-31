@@ -89,6 +89,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -194,6 +195,7 @@ static TH1F* VecToHist_teb(const char* name, const std::vector<float>& v,
 // Per-event storage struct
 // ---------------------------------------------------------------------------
 struct EbEvent {
+    int   run;        // run number (for run-level cross-validation folds; #G5)
     float sum_lg;
     float dt[8];      // hg_cfd[i] directly from ntuple (already MCP-referenced):
                       //   ch0–6: hg_cfd20[i] − mcp_time  (MCP1-ref)
@@ -311,6 +313,8 @@ void timingEnergyBins()
     double vSigBestCBErr[kNRuns][kNMeth_teb]= {};
     double vBestEff[kNRuns]                 = {};  // best-bin efficiency (% of fiducial)
     double vBestEmeas[kNRuns]               = {};  // best-bin E_meas center (mV)
+    double vSigBestOOS[kNRuns]              = {};  // #G5: run-folded OUT-OF-SAMPLE best-bin σ (Method A)
+    double vSigBestOOSErr[kNRuns]           = {};
     int    nValidRuns = 0;
 
     // =========================================================================
@@ -349,11 +353,13 @@ void timingEnergyBins()
         // Branch setup — guard for optional mcp2_* branches
         // -----------------------------------------------------------------------
         Bool_t  wc_ok;
+        Int_t   run = 0;
         Float_t x_trk, y_trk, mcp_peak, mcp_time, mcp2_peak, mcp2_time;
         Float_t hg_cfd[8], hg_peak[8], lg_peak[8], sum_lg, sum_pb;
         (void)mcp2_peak;  // declared for compatibility; not used — validity of ch7 is
                           // already encoded in hg_cfd[7] by processRun.C
 
+        if (tree->GetBranch("run")) tree->SetBranchAddress("run", &run);
         tree->SetBranchAddress("wc_ok",    &wc_ok);
         tree->SetBranchAddress("x_trk",    &x_trk);
         tree->SetBranchAddress("y_trk",    &y_trk);
@@ -403,6 +409,7 @@ void timingEnergyBins()
             if (dx*dx + dy*dy >= rFid2)          continue;
 
             EbEvent ev;
+            ev.run    = run;
             ev.sum_lg = sum_lg;
 
             // hg_cfd[i] from the ntuple is already MCP-referenced (processRun.C
@@ -715,8 +722,76 @@ void timingEnergyBins()
             else                 std::cout << "      - ps        - ps (CB)\n";
         }
 
+        // -----------------------------------------------------------------------
+        // Step 6b (#G5): RUN-FOLDED CROSS-VALIDATION of the best-bin SELECTION.
+        // Picking the single min-σ bin and then quoting that σ biases the headline
+        // low (you partly select a downward statistical fluctuation — the classic
+        // "optimize-on-the-test-statistic" / look-elsewhere bias).  Here we remove
+        // that bias for the headline Method A ((DW−UP)/2 CFD, which has NO trained
+        // parameters): in each of 5 folds we SELECT the best bin on the training
+        // runs and MEASURE σ on the held-out runs, folding by RUN so no event from
+        // a run is split across train/test.  Pooling the held-out events across
+        // folds gives an unbiased OOS estimate of the selection procedure.
+        // -----------------------------------------------------------------------
+        double sigBestOOS_A = -1., sigBestOOSErr_A = 0.;
+        {
+            const int kF = 5;
+            std::vector<int> uruns; uruns.reserve(events.size());
+            for (auto& ev : events) uruns.push_back(ev.run);
+            std::sort(uruns.begin(), uruns.end());
+            uruns.erase(std::unique(uruns.begin(), uruns.end()), uruns.end());
+            auto foldOf = [&](int r)->int{
+                int idx = (int)(std::lower_bound(uruns.begin(), uruns.end(), r) - uruns.begin());
+                return idx % kF;
+            };
+            const int kTrainMinN = (kMinBinN_teb * (kF - 1)) / kF;  // scale floor to train size
+            std::vector<float> poolOOS;
+            for (int f = 0; f < kF; ++f) {
+                // (1) per-bin Method-A σ on the TRAINING runs (all folds but f)
+                std::vector<std::vector<float>> trainBin(kNBins_teb);
+                for (auto& ev : events) {
+                    if (foldOf(ev.run) == f) continue;            // hold out fold f
+                    int ib = -1;
+                    for (int b = 0; b < kNBins_teb; ++b)
+                        if (ev.sum_lg >= binEdge[b] && ev.sum_lg < binEdge[b+1]) { ib = b; break; }
+                    if (ib < 0) continue;
+                    float out[kNMeth_teb];
+                    if (ComputeMethods_teb(ev.dt, ev.dt7_mcp1, ev.hg, ev.lg, k7, meanR7, out))
+                        trainBin[ib].push_back(out[0]);           // Method A
+                }
+                // (2) SELECT the min-σ bin on the training data
+                int selBin = -1; double selSig = 1e30;
+                for (int b = 0; b < kNBins_teb; ++b) {
+                    if ((int)trainBin[b].size() < kTrainMinN) continue;
+                    TH1F* h = VecToHist_teb(Form("_oosTr_%s_f%d_b%d", rc.label.Data(), f, b), trainBin[b]);
+                    double mu, muE, s, sE; FitGaussCore(h, 2.0, mu, muE, s, sE); delete h;
+                    if (s > 0. && s*1000. < selSig) { selSig = s*1000.; selBin = b; }
+                }
+                if (selBin < 0) continue;
+                // (3) MEASURE on the held-out fold, in the bin selected on the training data
+                for (auto& ev : events) {
+                    if (foldOf(ev.run) != f) continue;
+                    if (ev.sum_lg < binEdge[selBin] || ev.sum_lg >= binEdge[selBin+1]) continue;
+                    float out[kNMeth_teb];
+                    if (ComputeMethods_teb(ev.dt, ev.dt7_mcp1, ev.hg, ev.lg, k7, meanR7, out))
+                        poolOOS.push_back(out[0]);
+                }
+            }
+            if (poolOOS.size() >= 100) {
+                TH1F* h = VecToHist_teb(Form("_oosPool_%s", rc.label.Data()), poolOOS);
+                double mu, muE, s, sE; FitGaussCore(h, 2.0, mu, muE, s, sE); delete h;
+                if (s > 0.) { sigBestOOS_A = s*1000.; sigBestOOSErr_A = sE*1000.; }
+            }
+            std::cout << Form("  #G5 best-bin selection CV (Method A, run-folded over %zu runs): "
+                              "in-sample %.1f ps -> OOS %.1f ps  (opt. bias %.1f ps)\n",
+                              uruns.size(), sigBest[0], sigBestOOS_A,
+                              (sigBestOOS_A > 0. && sigBest[0] > 0.) ? sigBestOOS_A - sigBest[0] : 0.);
+        }
+
         // Store for summary (Gauss and Crystal Ball)
         vEnergy[nValidRuns] = rc.energy_GeV;
+        vSigBestOOS[nValidRuns]    = sigBestOOS_A;
+        vSigBestOOSErr[nValidRuns] = sigBestOOSErr_A;
         vBestEff[nValidRuns]   = bestEff_teb;
         vBestEmeas[nValidRuns] = (bestBinIdx >= 0) ? binCenter[bestBinIdx] : 0.;
         for (int m = 0; m < kNMeth_teb; ++m) {
@@ -1011,6 +1086,24 @@ void timingEnergyBins()
         gSumCB[m]->SetLineWidth(2);
     }
 
+    // #G5: out-of-sample best-bin σ vs energy (Method A, run-folded selection CV).
+    // This is the BIAS-CORRECTED headline curve — the floor fit is run on it.
+    TGraphErrors* gOOS = new TGraphErrors();
+    gOOS->SetName("gBestSigmaOOS_teb_m0");
+    gOOS->SetTitle("(DW#minusUP)/2 CFD, out-of-sample");
+    for (int ir = 0; ir < nValidRuns; ++ir) {
+        if (vSigBestOOS[ir] > 0.) {
+            int np = gOOS->GetN();
+            gOOS->SetPoint(np, vEnergy[ir], vSigBestOOS[ir]);
+            gOOS->SetPointError(np, 0., vSigBestOOSErr[ir]);
+        }
+    }
+    gOOS->SetMarkerStyle(21);
+    gOOS->SetMarkerColor(kRed+1);
+    gOOS->SetLineColor(kRed+1);
+    gOOS->SetMarkerSize(1.4);
+    gOOS->SetLineWidth(2);
+
     // Paper's published curve: σ = sqrt(256²/E + 17.5²)
     TGraphErrors* gPaper = new TGraphErrors();
     gPaper->SetName("gPaper_teb");
@@ -1084,6 +1177,8 @@ void timingEnergyBins()
         }
         for (int p = 0; p < gPaper->GetN(); ++p)
             yMax = std::max(yMax, gPaper->GetY()[p]);
+        for (int p = 0; p < gOOS->GetN(); ++p)
+            yMax = std::max(yMax, gOOS->GetY()[p]);
         yMax = (yMax > 0.) ? yMax * 1.45 : 400.;
 
         TH1F* frame = (TH1F*)cS.DrawFrame(15., 0., 165., yMax,
@@ -1112,6 +1207,8 @@ void timingEnergyBins()
         }
         if (gPaper->GetN() > 0)
             gPaper->Draw("P SAME");
+        if (gOOS->GetN() > 0)
+            gOOS->Draw("P SAME");   // #G5 out-of-sample (bias-corrected) headline points
 
         // Title
         TLatex sumTit;
@@ -1142,6 +1239,9 @@ void timingEnergyBins()
         }
         leg->AddEntry(gPaper,
             "arXiv:2401.01747  (a=256 #oplus b=17.5)", "lp");
+        if (gOOS->GetN() > 0)
+            leg->AddEntry(gOOS,
+                "(DW#minusUP)/2 out-of-sample (run-folded selection CV)", "lp");
         leg->Draw();
 
         cS.Print(sumPDF);
@@ -1154,6 +1254,7 @@ void timingEnergyBins()
         gSumCB[m]->Write();
     }
     gPaper->Write();
+    gOOS->Write();   // #G5 bias-corrected (out-of-sample) headline curve
     // Best-bin disclosure: efficiency (% of fiducial) and E_meas (mV) vs energy,
     // so the report can quote the best-bin sigma WITH its selection/efficiency.
     {

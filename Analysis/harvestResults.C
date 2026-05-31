@@ -99,6 +99,46 @@ void fitAB(const char* file, const char* gname, double& a, double& b)
     delete f;
 }
 
+// High-energy timing FLOOR.  Two parametrisations of the sigma_t-vs-E curve:
+//   paper  : sigma_t = sqrt(a^2/E + b^2)              -> floor = b   (matches arXiv:2401.01747)
+//   timing : sigma_t = sqrt((a/E)^2 + (b/sqrt(E))^2 + c^2) -> floor = c
+// The 1/E term is the physically correct scaling for the electronics-noise/slew
+// contribution to TIMING resolution (slew rate dV/dt ∝ amplitude ∝ E), which the
+// paper's pure 1/sqrt(E) form omits.  We report both so the extrapolated floor is
+// not hostage to one parametrisation.  Returns floor value + its fit error.
+void fitFloorPaper(const char* file, const char* gname, double& b, double& bErr)
+{
+    b = NAN; bErr = NAN;
+    TFile* f = TFile::Open(Form("%s%s", kSumDir, file));
+    if (!f || f->IsZombie()) { if (f) delete f; return; }
+    TGraphErrors* g = dynamic_cast<TGraphErrors*>(f->Get(gname));
+    if (g && g->GetN() >= 2) {
+        TF1 fit("fitFP", "sqrt([0]*[0]/x + [1]*[1])", 20., 160.);
+        fit.SetParameters(220., 25.);
+        g->Fit(&fit, "QN");
+        b    = std::fabs(fit.GetParameter(1));
+        bErr = fit.GetParError(1);
+    }
+    delete f;
+}
+
+void fitFloorTiming(const char* file, const char* gname, double& c, double& cErr)
+{
+    c = NAN; cErr = NAN;
+    TFile* f = TFile::Open(Form("%s%s", kSumDir, file));
+    if (!f || f->IsZombie()) { if (f) delete f; return; }
+    TGraphErrors* g = dynamic_cast<TGraphErrors*>(f->Get(gname));
+    if (g && g->GetN() >= 3) {   // 3 free parameters
+        TF1 fit("fitFT", "sqrt([0]*[0]/(x*x) + [1]*[1]/x + [2]*[2])", 20., 160.);
+        fit.SetParameters(1500., 200., 20.);
+        fit.SetParLimits(2, 0., 100.);
+        g->Fit(&fit, "QN");
+        c    = std::fabs(fit.GetParameter(2));
+        cErr = fit.GetParError(2);
+    }
+    delete f;
+}
+
 double nEventsAt(double E)
 {
     TFile* f = TFile::Open(Form("Analysis/Output/%dGeV/ntuple.root", (int)E));
@@ -149,6 +189,18 @@ void harvestResults()
     double teb_a = NAN, teb_b = NAN;
     fitAB("timing_energy_bins.root", "gBestSigma_teb_m0", teb_a, teb_b);
 
+    // #G5 bias-corrected (out-of-sample, run-folded selection CV) headline curve.
+    std::vector<double> teb_sigma_oos     = arrFromGraph("timing_energy_bins.root", "gBestSigmaOOS_teb_m0");
+    std::vector<double> teb_sigma_oos_err = arrFromGraph("timing_energy_bins.root", "gBestSigmaOOS_teb_m0", true);
+    // High-energy floor, fit on the OOS curve, in BOTH parametrisations.
+    double teb_floor_paper = NAN,  teb_floor_paper_err = NAN;
+    double teb_floor_timing = NAN, teb_floor_timing_err = NAN;
+    fitFloorPaper ("timing_energy_bins.root", "gBestSigmaOOS_teb_m0", teb_floor_paper,  teb_floor_paper_err);
+    fitFloorTiming("timing_energy_bins.root", "gBestSigmaOOS_teb_m0", teb_floor_timing, teb_floor_timing_err);
+    // Lowest MEASURED point (no extrapolation): the highest-energy OOS sigma.
+    double teb_low_meas = NAN;
+    for (double s : teb_sigma_oos) if (!std::isnan(s) && (std::isnan(teb_low_meas) || s < teb_low_meas)) teb_low_meas = s;
+
     // ── Channel-combination timing ──────────────────────────────────────────
     std::vector<double> combo_a2_8ch  = arrFromGraph("timing_summary.root", "gTiming_M3"); // A^2-wgt all-8 (CFD-5%)
     std::vector<double> scan_all8     = arrFromGraph("channel_combination_scan.root", "gAll8");
@@ -189,6 +241,13 @@ void harvestResults()
     o << "  \"paper_sigma\":     " << arr(paper_sigma)   << ",\n";
     o << "  \"teb_eff\":         " << arr(teb_eff)       << ",\n";
     o << "  \"teb_ebin_mV\":     " << arr(teb_ebin_mV)   << ",\n";
+    o << "  \"teb_sigma_oos\":     " << arr(teb_sigma_oos)     << ",\n";
+    o << "  \"teb_sigma_oos_err\": " << arr(teb_sigma_oos_err) << ",\n";
+    o << "  \"teb_floor_paper\":      " << num(teb_floor_paper)      << ",\n";
+    o << "  \"teb_floor_paper_err\":  " << num(teb_floor_paper_err)  << ",\n";
+    o << "  \"teb_floor_timing\":     " << num(teb_floor_timing)     << ",\n";
+    o << "  \"teb_floor_timing_err\": " << num(teb_floor_timing_err) << ",\n";
+    o << "  \"teb_low_meas\":         " << num(teb_low_meas)         << ",\n";
     o << "  \"combo_a2_8ch\":    " << arr(combo_a2_8ch)  << ",\n";
     o << "  \"scan_all8\":       " << arr(scan_all8)     << ",\n";
     o << "  \"scan_best7\":      " << arr(scan_best7)    << ",\n";

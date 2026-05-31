@@ -149,6 +149,16 @@ TEB_EFF_25  = f"{R.at('teb_eff', 25):.1f}"                           # 7.4
 _EALL       = [25, 50, 75, 100, 125, 150]
 TEB_EFF_MIN = f"{R.lo('teb_eff', _EALL):.1f}"                        # tightest bin's efficiency (150 GeV)
 TEB_EFF_MAX = f"{R.hi('teb_eff', _EALL):.1f}"                        # loosest (25 GeV)
+# Out-of-sample (run-folded selection CV) headline + optimization-bias check.
+TEB_OOS_150 = f"{R.at('teb_sigma_oos', 150):.0f}"                    # 27
+TEB_BIAS_150= f"{R.at('teb_sigma_oos', 150) - R.at('teb_sigma', 150):+.1f}"  # +0.0
+TEB_BIAS_MAX= f"{max(abs(R.at('teb_sigma_oos', e) - R.at('teb_sigma', e)) for e in _EALL):.1f}"  # 0.2
+# High-energy timing floor (asymptotic constant term, fit on the OOS curve).
+TEB_LOWMEAS = f"{R.get('teb_low_meas'):.0f}"                         # 27  (lowest MEASURED, no extrapolation)
+TEB_FLOOR   = f"{R.get('teb_floor_paper'):.1f}"                      # 23.2 (paper-form b, headline floor)
+TEB_FLOOR_E = f"{R.get('teb_floor_paper_err'):.1f}"                  # 1.2
+TEB_FLOOR_T = f"{R.get('teb_floor_timing'):.1f}"                     # 24.4 (timing-form c, cross-check)
+TEB_FLOOR_TE= f"{R.get('teb_floor_timing_err'):.1f}"                 # 2.9
 COMBO_150   = f"{R.at('combo_a2_8ch', 150):.0f}"                     # 63
 MCP         = f"{R.get('mcp_jitter_mean'):.0f}"                      # 71
 ERES_150    = f"{R.at('eres', 150):.1f}"                             # 11.6
@@ -1071,7 +1081,22 @@ def _executive_summary_html() -> str:
   most fully-contained) energy bin at each beam energy — the standard energy-binned method of arXiv:2401.01747 §5.3,
   carried to its tightest single bin. That bin holds {TEB_EFF_150}% of fiducial events at 150 GeV
   ({TEB_EFF_MAX}% at 25 GeV); see the σ<sub>t</sub>-vs-E<sub>meas</sub> curve (Layer 5) for the full
-  resolution-vs-containment trade-off across all bins.</span>
+  resolution-vs-containment trade-off across all bins.
+  <strong>The selection adds no optimization bias:</strong> a run-folded cross-validation that picks the
+  best bin on training runs and measures σ<sub>t</sub> on held-out runs reproduces the headline to within
+  {TEB_BIAS_MAX} ps at every energy ({TEB_OOS_150} ps out-of-sample at 150 GeV), so the number is a real
+  detector capability, not a selected fluctuation.</span>
+</div>
+<div class="callout">
+  <span class="callout-label">High-energy limit</span>
+  Fitting the (out-of-sample) σ<sub>t</sub>-vs-E curve gives an asymptotic timing floor of
+  <strong>≈{TEB_FLOOR} ± {TEB_FLOOR_E} ps</strong> (constant term of σ<sub>t</sub> = a/√E ⊕ b; a timing-correct
+  (a/E)² ⊕ (b/√E)² ⊕ c² fit agrees at {TEB_FLOOR_T} ± {TEB_FLOOR_TE} ps). Our lowest <em>measured</em> point is
+  {TEB_LOWMEAS} ps at 150 GeV — already within a few ps of the floor — so at a future collider's higher
+  energies this calorimeter projects toward ≈{TEB_FLOOR} ps. This floor is set by the DRS4 timebase and
+  electronics systematics of this readout; arXiv:2401.01747's lower 17.5 ps constant term indicates headroom
+  recoverable with improved cell-width calibration. We quote the floor as a DAQ-limited value, not an
+  irreducible detector limit.
 </div>
 <h3>How this analysis compares</h3>
 <div class="summary-box">
