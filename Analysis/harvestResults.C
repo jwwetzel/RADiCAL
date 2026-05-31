@@ -142,6 +142,10 @@ void harvestResults()
     std::vector<double> teb_sigma     = arrFromGraph("timing_energy_bins.root", "gBestSigma_teb_m0");
     std::vector<double> teb_sigma_err = arrFromGraph("timing_energy_bins.root", "gBestSigma_teb_m0", true);
     std::vector<double> paper_sigma   = arrFromGraph("timing_energy_bins.root", "gPaper_teb");
+    // Best-bin disclosure: efficiency (% of fiducial) and E_meas (mV) of the single
+    // best E_meas bin whose sigma is the advertised teb_sigma headline.
+    std::vector<double> teb_eff       = arrFromGraph("timing_energy_bins.root", "gBestEff_teb");
+    std::vector<double> teb_ebin_mV   = arrFromGraph("timing_energy_bins.root", "gBestEmeas_teb");
     double teb_a = NAN, teb_b = NAN;
     fitAB("timing_energy_bins.root", "gBestSigma_teb_m0", teb_a, teb_b);
 
@@ -183,6 +187,8 @@ void harvestResults()
     o << "  \"teb_fit_a\":       " << num(teb_a)         << ",\n";
     o << "  \"teb_fit_b\":       " << num(teb_b)         << ",\n";
     o << "  \"paper_sigma\":     " << arr(paper_sigma)   << ",\n";
+    o << "  \"teb_eff\":         " << arr(teb_eff)       << ",\n";
+    o << "  \"teb_ebin_mV\":     " << arr(teb_ebin_mV)   << ",\n";
     o << "  \"combo_a2_8ch\":    " << arr(combo_a2_8ch)  << ",\n";
     o << "  \"scan_all8\":       " << arr(scan_all8)     << ",\n";
     o << "  \"scan_best7\":      " << arr(scan_best7)    << ",\n";

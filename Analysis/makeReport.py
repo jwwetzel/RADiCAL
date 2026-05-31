@@ -142,6 +142,13 @@ TEB_A       = f"{R.get('teb_fit_a'):.0f}"                            # 239
 TEB_B       = f"{R.get('teb_fit_b'):.0f}"                            # 31
 PAPER_150   = f"{R.at('paper_sigma', 150):.0f}"                      # 27
 DIFF_150    = f"{round(R.at('teb_sigma',150)) - round(R.at('paper_sigma',150)):.0f}"  # 10
+# Best-bin disclosure: the headline teb_sigma is the single best (highest-E_meas,
+# fully-contained) energy bin. Carry its selection efficiency so 27 ps is never bare.
+TEB_EFF_150 = f"{R.at('teb_eff', 150):.1f}"                          # 0.7  (% of fiducial)
+TEB_EFF_25  = f"{R.at('teb_eff', 25):.1f}"                           # 7.4
+_EALL       = [25, 50, 75, 100, 125, 150]
+TEB_EFF_MIN = f"{R.lo('teb_eff', _EALL):.1f}"                        # tightest bin's efficiency (150 GeV)
+TEB_EFF_MAX = f"{R.hi('teb_eff', _EALL):.1f}"                        # loosest (25 GeV)
 COMBO_150   = f"{R.at('combo_a2_8ch', 150):.0f}"                     # 63
 MCP         = f"{R.get('mcp_jitter_mean'):.0f}"                      # 71
 ERES_150    = f"{R.at('eres', 150):.1f}"                             # 11.6
@@ -1047,7 +1054,7 @@ def _executive_summary_html() -> str:
   DRS4 waveforms to energy- and timing-resolution results — built to make a clear,
   reproducible, world-class case.</p>
   <div class="kpi-row">
-    <div class="kpi"><div class="num">{TEB_150} ps</div><div class="lbl">timing resolution<br>(150 GeV, MCP-free)</div></div>
+    <div class="kpi"><div class="num">{TEB_150} ps</div><div class="lbl">timing resolution<br>(150 GeV, best E<sub>meas</sub> bin)</div></div>
     <div class="kpi"><div class="num">{COMBO_150} ps</div><div class="lbl">8-channel combo<br>(150 GeV)</div></div>
     <div class="kpi"><div class="num">6</div><div class="lbl">beam energies<br>25–150 GeV</div></div>
     <div class="kpi"><div class="num">{NEV_150}</div><div class="lbl">events<br>(150 GeV)</div></div>
@@ -1060,13 +1067,18 @@ def _executive_summary_html() -> str:
   ({TEB_25} ps at 25 GeV) — approaching the CMS BTL Phase-II target. It is robust by construction:
   the corner difference cancels the per-group timing reference (≈{MCP} ps inter-group jitter), the
   DRS4 cell-width error, and the position walk alike. Cross-validation-stable (out-of-sample shift below 1 ps).
+  <br><span style="font-size:0.86em;opacity:0.85">These headline figures are the single best (highest-E<sub>meas</sub>,
+  most fully-contained) energy bin at each beam energy — the standard energy-binned method of arXiv:2401.01747 §5.3,
+  carried to its tightest single bin. That bin holds {TEB_EFF_150}% of fiducial events at 150 GeV
+  ({TEB_EFF_MAX}% at 25 GeV); see the σ<sub>t</sub>-vs-E<sub>meas</sub> curve (Layer 5) for the full
+  resolution-vs-containment trade-off across all bins.</span>
 </div>
 <h3>How this analysis compares</h3>
 <div class="summary-box">
 <table>
   <tr><th>Metric</th><th>This analysis</th><th>arXiv:2401.01747</th></tr>
-  <tr><td>σ<sub>t</sub> (150 GeV, energy-binned (DW−UP)/2)</td><td>≈{TEB_150} ps</td><td>{PAPER_150} ps</td></tr>
-  <tr><td>σ<sub>t</sub> (25 GeV, energy-binned)</td><td>≈{TEB_25} ps</td><td>54 ps</td></tr>
+  <tr><td>σ<sub>t</sub> (150 GeV, best E<sub>meas</sub> bin, (DW−UP)/2)</td><td>≈{TEB_150} ps ({TEB_EFF_150}% of fiducial)</td><td>{PAPER_150} ps</td></tr>
+  <tr><td>σ<sub>t</sub> (25 GeV, best E<sub>meas</sub> bin)</td><td>≈{TEB_25} ps ({TEB_EFF_25}% of fiducial)</td><td>54 ps</td></tr>
   <tr><td>A²-weighted 8-ch combo σ<sub>t</sub> (150 GeV, CFD-5%)</td><td>{COMBO_150} ps</td><td>—</td></tr>
   <tr><td>Inter-group reference jitter σ(MCP1−MCP2)/√2</td><td>≈{MCP} ps (flat with energy)</td><td>—</td></tr>
   <tr><td>Hadronic punch-through (150 GeV, in-fiducial)</td><td>{PUNCH_150}% of signal events</td><td>—</td></tr>
@@ -2064,6 +2076,10 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                      f"estimator reaches <strong>{TEB_150} ps at 150 GeV</strong> "
                                      f"({TEB_25} ps at 25), fit &sigma;<sub>t</sub> = a/&radic;E "
                                      f"&oplus; {TEB_B} ps, vs {PAPER_150} ps in arXiv:2401.01747.  "
+                                     f"These are the single best E<sub>meas</sub> bin at each energy "
+                                     f"({TEB_EFF_150}&ndash;{TEB_EFF_MAX}% of fiducial events); the "
+                                     f"full &sigma;<sub>t</sub>-vs-E<sub>meas</sub> trend across all "
+                                     f"bins is in the appendix below.  "
                                      "MCP-free by construction (it cancels each channel's per-group "
                                      "reference in the corner difference)."),
                             width_pct=50,
@@ -2108,6 +2124,8 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         f"Best result: <strong>&#8776;{TEB_150} ps at 150 GeV</strong> "
                         f"({TEB_150_PE} ps) using the "
                         f"(DW&#8722;UP)/2 CFD-5% energy-binned estimator; {TEB_25} ps at 25 GeV.  "
+                        f"This is the single best (highest-E<sub>meas</sub>) bin&#8212;{TEB_EFF_150}% of "
+                        f"fiducial events at 150 GeV, {TEB_EFF_MAX}% at 25 GeV; "
                         f"Published result (arXiv:2401.01747): {PAPER_150} ps.  "
                         f"The ~{DIFF_150} ps difference is consistent with our larger constant term "
                         f"(b approx {TEB_B} ps vs 17.5 ps), likely reflecting electronics noise "

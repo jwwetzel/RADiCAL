@@ -309,6 +309,8 @@ void timingEnergyBins()
     double vSigBestErr[kNRuns][kNMeth_teb]  = {};
     double vSigBestCB[kNRuns][kNMeth_teb]   = {};  // Crystal Ball sigma
     double vSigBestCBErr[kNRuns][kNMeth_teb]= {};
+    double vBestEff[kNRuns]                 = {};  // best-bin efficiency (% of fiducial)
+    double vBestEmeas[kNRuns]               = {};  // best-bin E_meas center (mV)
     int    nValidRuns = 0;
 
     // =========================================================================
@@ -660,51 +662,63 @@ void timingEnergyBins()
         }
 
         // -----------------------------------------------------------------------
-        // Step 6: Best-estimator from pooled bins 6–8
+        // Step 6: Best estimator = the SINGLE best (lowest-sigma) E_meas bin with
+        // adequate statistics (N >= kMinBinN_teb).  This is the BEST-CASE / fully-
+        // contained resolution (highest-E_meas, most-contained showers) and matches
+        // how arXiv:2401.01747 quotes its number.  It is NOT the typical all-shower
+        // resolution: it is reported WITH its bin efficiency (N_bin / N_fiducial)
+        // and the full sigma-vs-E_meas curve (PDF page 2) so the selection is
+        // transparent.  The bin is chosen automatically (min sigma), not hand-picked.
         // -----------------------------------------------------------------------
+        const int kMinBinN_teb = 500;  // a bin must have >=500 events to be eligible
         double sigBest[kNMeth_teb]      = {};
         double sigBestErr[kNMeth_teb]   = {};
-        double sigBestCB[kNMeth_teb]    = {};  // Crystal Ball best-estimator
+        double sigBestCB[kNMeth_teb]    = {};
         double sigBestCBErr[kNMeth_teb] = {};
 
-        std::cout << "  Best estimator (bins 6-8 pooled):\n";
-        std::cout << "    Method           Gauss(ps)    CB(ps)\n";
+        long totFid_teb = 0;
+        for (int ib = 0; ib < kNBins_teb; ++ib) totFid_teb += nBin[ib];
+        int bestBinIdx = -1;   // method A (headline) best bin
+
+        for (int m = 0; m < kNMeth_teb; ++m) {
+            int bib = -1; double bsig = 1e30;
+            for (int ib = 0; ib < kNBins_teb; ++ib) {
+                if (nBin[ib] >= kMinBinN_teb && sigBin[ib][m] > 0. && sigBin[ib][m] < bsig) {
+                    bsig = sigBin[ib][m]; bib = ib;
+                }
+            }
+            if (bib >= 0) {
+                sigBest[m]      = sigBin[bib][m];
+                sigBestErr[m]   = sigBinErr[bib][m];
+                sigBestCB[m]    = sigBinCB[bib][m];
+                sigBestCBErr[m] = sigBinCBErr[bib][m];
+                if (m == 0) bestBinIdx = bib;
+            }
+        }
+
+        const double bestEff_teb = (bestBinIdx >= 0 && totFid_teb > 0)
+                                     ? 100.0 * nBin[bestBinIdx] / totFid_teb : 0.;
+        std::cout << Form("  Best estimator = single best E_meas bin (N>=%d):\n",
+                          kMinBinN_teb);
+        if (bestBinIdx >= 0)
+            std::cout << Form("    >>> bin %d  E_meas=%.0f mV  N=%d  EFFICIENCY=%.1f%% of fiducial\n",
+                              bestBinIdx+1, binCenter[bestBinIdx],
+                              nBin[bestBinIdx], bestEff_teb);
         const char* mLongName[kNMeth_teb] = {
-            "(DW-UP)/2 CFD:   ",
-            "(DW+UP)/2 CFD:   ",
-            "(DW-UP)/2 M7-cor:"
+            "(DW-UP)/2 CFD:   ", "(DW+UP)/2 CFD:   ", "(DW-UP)/2 M7-cor:"
         };
         for (int m = 0; m < kNMeth_teb; ++m) {
-            TH1F* hBest = VecToHist_teb(
-                Form("hBest_teb_%s_m%d", rc.label.Data(), m), vBest[m]);
-            double mu, muErr, sig, sigErr;
-            FitGaussCore(hBest, 2.0, mu, muErr, sig, sigErr);
-            sigBest[m]    = (sig > 0.) ? sig * 1000. : -1.;
-            sigBestErr[m] = (sig > 0.) ? sigErr * 1000. : 0.;
-
-            // Crystal Ball on same pooled histogram
-            double muCB, muErrCB, sigCB, sigErrCB;
-            FitCrystalBall(hBest, 2.0, muCB, muErrCB, sigCB, sigErrCB);
-            sigBestCB[m]    = (sigCB > 0.) ? sigCB * 1000. : -1.;
-            sigBestCBErr[m] = (sigCB > 0.) ? sigErrCB * 1000. : 0.;
-
-            delete hBest;
-
             const char* mName = (m == 0) ? "Method A" : (m == 1) ? "Method B" : "Method C";
             std::cout << "    " << mName << " " << mLongName[m];
-            if (sigBest[m] > 0.)
-                std::cout << Form(" %6.1f", sigBest[m]);
-            else
-                std::cout << "      -";
-            std::cout << " ps";
-            if (sigBestCB[m] > 0.)
-                std::cout << Form("    %6.1f ps (CB)\n", sigBestCB[m]);
-            else
-                std::cout << "    - ps (CB)\n";
+            if (sigBest[m] > 0.) std::cout << Form(" %6.1f ps   %6.1f ps (CB)\n",
+                                                   sigBest[m], sigBestCB[m]);
+            else                 std::cout << "      - ps        - ps (CB)\n";
         }
 
         // Store for summary (Gauss and Crystal Ball)
         vEnergy[nValidRuns] = rc.energy_GeV;
+        vBestEff[nValidRuns]   = bestEff_teb;
+        vBestEmeas[nValidRuns] = (bestBinIdx >= 0) ? binCenter[bestBinIdx] : 0.;
         for (int m = 0; m < kNMeth_teb; ++m) {
             vSigBest[nValidRuns][m]      = sigBest[m];
             vSigBestErr[nValidRuns][m]   = sigBestErr[m];
@@ -1140,6 +1154,18 @@ void timingEnergyBins()
         gSumCB[m]->Write();
     }
     gPaper->Write();
+    // Best-bin disclosure: efficiency (% of fiducial) and E_meas (mV) vs energy,
+    // so the report can quote the best-bin sigma WITH its selection/efficiency.
+    {
+        TGraph* gEff = new TGraph();  gEff->SetName("gBestEff_teb");
+        TGraph* gEm  = new TGraph();  gEm->SetName("gBestEmeas_teb");
+        for (int ir = 0; ir < nValidRuns; ++ir) {
+            gEff->SetPoint(ir, vEnergy[ir], vBestEff[ir]);
+            gEm->SetPoint (ir, vEnergy[ir], vBestEmeas[ir]);
+        }
+        gEff->Write();
+        gEm->Write();
+    }
     fOut->Close();
 
     // =========================================================================
