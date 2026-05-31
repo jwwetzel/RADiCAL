@@ -53,7 +53,9 @@ cd RADiCAL
 
 Edit `Analysis/hpc/env.sh`:
 - `REC_DIR`  — raw files (default: `/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/rec`)
-- `RAD_WORK` — large scratch for outputs (NOT home)
+- `RAD_WORK` — outputs; use roomy SHARED scratch (Argon `/nfsscratch`, default), **not** the
+  group LSS (it's small/full — raw data lives there). `/nfsscratch` is auto-purged, so copy the
+  final `report.html` + `Summary/` + merged ntuples to permanent storage when done.
 - `RAD_QUEUE`, `RAD_MEM`, `RAD_HRT` — your group's queue/limits
 - `setup_root()` — from Step 0
 

@@ -14,13 +14,16 @@ _ENV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 # value left exported in your shell by a previous source of this file.
 export RAD_REPO="$(cd "$_ENV_DIR/../.." && pwd)"
 
-# Raw reconstructed run files: <REC_DIR>/RUN<run>.root
+# Raw reconstructed run files (READ-only input): <REC_DIR>/RUN<run>.root.
+# These live on the group LSS allocation.
 export REC_DIR="${REC_DIR:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/rec}"
 
-# Work/scratch area for all outputs (per-run ntuples, merged ntuples, plots,
-# report).  Should be on fast, large storage — NOT your home dir.  Argon: use
-# your group's /Shared/lss_yonel space or local node scratch staged back.
-export RAD_WORK="${RAD_WORK:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/analysis_work}"
+# Work area for ALL outputs (per-run ntuples, merged ntuples, plots, report).
+# Put this on roomy, fast, SHARED storage — Argon's /nfsscratch (303 TB) — NOT on
+# the group LSS allocation, which is small and fills up (the raw data already
+# lives there).  /nfsscratch is auto-purged periodically, so copy the final
+# report.html + Summary/ + merged ntuples to permanent storage when done.
+export RAD_WORK="${RAD_WORK:-/nfsscratch/$USER/RADiCAL_CERN_May2023/analysis_work}"
 
 # Manifest (committed in repo) and the resolved per-run task list (made on Argon).
 # Derived directly so re-sourcing self-heals stale exported values.  Override the
