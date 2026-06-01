@@ -65,7 +65,14 @@ void HeroBeamAndContainment()
     for (Long64_t i = 0; i < N; ++i) { t->GetEntry(i); if (in_fid) { sx += x_trk; sy += y_trk; ++nfid; } }
     const double xc = nfid ? sx / nfid : 0., yc = nfid ? sy / nfid : 0.;
 
-    TH2F* hBeam = new TH2F("hBeam", "", 60, xc - 10., xc + 10., 60, yc - 10., yc + 10.);
+    // Bin at the canonical WC resolution (kWC_resBin = 1 mm, SelectionCuts.h) —
+    // the same grid used by the qualityPlots and compareEnergies hit maps.
+    // The wire-chamber study found the track position quantises in ~0.25 mm
+    // steps (x) with a ~0.5 mm peak-sample comb (y); hit/illumination maps
+    // belong at 1-2 mm.  The previous hardcoded 0.33 mm binning resolved that
+    // comb -> cross-hatch + aliased dead-wire stripes, not the true beam profile.
+    const int nBeam = static_cast<int>(std::round(20. / kWC_resBin));  // 20 mm span
+    TH2F* hBeam = new TH2F("hBeam", "", nBeam, xc - 10., xc + 10., nBeam, yc - 10., yc + 10.);
     hBeam->SetDirectory(nullptr);
     TH2F* hPb = new TH2F("hPb", "", 120, 0., 6500., 120, 0., 3000.);
     hPb->SetDirectory(nullptr);
