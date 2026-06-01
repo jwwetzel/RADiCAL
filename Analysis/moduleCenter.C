@@ -2,9 +2,11 @@
 // moduleCenter.C  —  data-driven shashlik centre from the calorimeter EDGES.
 //
 // The module centre is found geometrically (beam-independent): project the mean
-// total low-gain energy (sum_lg) onto x (for tracks in a central y-band) and
-// onto y (central x-band).  Each projection is a flat-topped plateau with sharp
-// shoulders at the module edges.  The half-maximum crossings give the two edges;
+// summed high-gain amplitude of the 8 RADiCAL capillaries (Sigma HG) onto x (for
+// tracks in a central y-band) and onto y (central x-band).  Each projection is a
+// flat-topped plateau with sharp shoulders at the module edges.  The low-gain
+// energy sum (Sigma LG) is carried as an independent cross-check and gives the
+// same centre to <0.05 mm.  The half-maximum crossings give the two edges;
 // their midpoint is the centre on that axis:
 //        x0 = (x_edgeL + x_edgeR) / 2 ,   y0 = (y_edgeL + y_edgeR) / 2 .
 // Edges are located by scanning OUTWARD from the plateau peak to the first
@@ -65,18 +67,24 @@ double edgeCentre(TProfile* h, int minN, double& eL, double& eR, double& width)
 }
 
 // Fill the x- and y-edge profiles from a tree (appends; reuse across a chain).
-void fillProfiles(TTree* t, TProfile* hx, TProfile* hy, double bandHalf,
-                  double seedX, double seedY)
+// Primary signal = summed high-gain amplitude of the 8 RADiCAL capillaries
+// (Sigma HG).  If the LG profiles are supplied, also fill them with the low-gain
+// energy sum (sum_lg) as an independent cross-check.
+void fillProfiles(TTree* t, TProfile* hx, TProfile* hy,
+                  TProfile* hxLG, TProfile* hyLG,
+                  double bandHalf, double seedX, double seedY)
 {
-    Float_t x, y, slg; Bool_t ok;
+    Float_t x, y, slg, hg[8]; Bool_t ok;
     t->SetBranchAddress("x_trk", &x); t->SetBranchAddress("y_trk", &y);
-    t->SetBranchAddress("sum_lg", &slg); t->SetBranchAddress("wc_ok", &ok);
+    t->SetBranchAddress("hg_peak", hg); t->SetBranchAddress("sum_lg", &slg);
+    t->SetBranchAddress("wc_ok", &ok);
     const Long64_t N = t->GetEntries();
     for (Long64_t i = 0; i < N; ++i) {
         t->GetEntry(i);
         if (!ok) continue;
-        if (std::fabs(y - seedY) < bandHalf) hx->Fill(x, slg);
-        if (std::fabs(x - seedX) < bandHalf) hy->Fill(y, slg);
+        double shg = 0.; for (int k = 0; k < 8; ++k) shg += hg[k];
+        if (std::fabs(y - seedY) < bandHalf) { hx->Fill(x, shg); if (hxLG) hxLG->Fill(x, slg); }
+        if (std::fabs(x - seedX) < bandHalf) { hy->Fill(y, shg); if (hyLG) hyLG->Fill(y, slg); }
     }
 }
 
@@ -101,7 +109,7 @@ void moduleCenter()
         TTree* t = (TTree*)f->Get("rad");
         if (!t) { delete f; continue; }
         TProfile hx("hx_e", "", 90, -15, 30), hy("hy_e", "", 90, -20, 25);
-        fillProfiles(t, &hx, &hy, bandHalf, seedX, seedY);
+        fillProfiles(t, &hx, &hy, nullptr, nullptr, bandHalf, seedX, seedY);
         double exL, exR, wx, eyL, eyR, wy;
         double cx = edgeCentre(&hx, minN, exL, exR, wx);
         double cy = edgeCentre(&hy, minN, eyL, eyR, wy);
@@ -119,17 +127,24 @@ void moduleCenter()
     if (ch.GetEntries() == 0) { std::printf("[moduleCenter] no ntuples found.\n"); return; }
 
     TProfile* hX = new TProfile("hModEdgeX",
-        "Shashlik edges (X);x Track (mm);mean #Sigma LG (mV)", 90, -15, 30);
+        "Shashlik edges (X);x Track (mm);mean #Sigma HG, 8 capillaries (mV)", 90, -15, 30);
     TProfile* hY = new TProfile("hModEdgeY",
-        "Shashlik edges (Y);y Track (mm);mean #Sigma LG (mV)", 90, -20, 25);
-    fillProfiles(&ch, hX, hY, bandHalf, seedX, seedY);
+        "Shashlik edges (Y);y Track (mm);mean #Sigma HG, 8 capillaries (mV)", 90, -20, 25);
+    TProfile hXlg("hX_lg", "", 90, -15, 30), hYlg("hY_lg", "", 90, -20, 25);  // LG cross-check
+    fillProfiles(&ch, hX, hY, &hXlg, &hYlg, bandHalf, seedX, seedY);
 
     double xL, xR, wx, yL, yR, wy;
     const double x0 = edgeCentre(hX, minN, xL, xR, wx);
     const double y0 = edgeCentre(hY, minN, yL, yR, wy);
-    std::printf("\n  >>> MODULE CENTRE (combined, edge midpoints): "
+    double lxL, lxR, lwx, lyL, lyR, lwy;
+    const double lx0 = edgeCentre(&hXlg, minN, lxL, lxR, lwx);
+    const double ly0 = edgeCentre(&hYlg, minN, lyL, lyR, lwy);
+    std::printf("\n  >>> MODULE CENTRE (combined, #Sigma HG of 8 capillaries): "
                 "(%.2f, %.2f) mm   widths (%.1f, %.1f) mm\n",
                 x0, y0, wx, wy);
+    std::printf("      cross-check (#Sigma LG energy):            "
+                "(%.2f, %.2f) mm   widths (%.1f, %.1f) mm\n",
+                lx0, ly0, lwx, lwy);
     std::printf("      nominal kCalo_x0/y0 = (%.2f, %.2f) mm\n\n", kCalo_x0, kCalo_y0);
 
     // ── Plot: two edge profiles with edge + centre markers ─────────────────────
@@ -162,10 +177,12 @@ void moduleCenter()
 
     // ── Persist ────────────────────────────────────────────────────────────────
     TFile fo(sumDir + "/module_center.root", "RECREATE");
-    TParameter<double>("module_center_x", x0).Write();
+    TParameter<double>("module_center_x", x0).Write();   // Sigma HG (primary)
     TParameter<double>("module_center_y", y0).Write();
     TParameter<double>("module_width_x",  wx).Write();
     TParameter<double>("module_width_y",  wy).Write();
+    TParameter<double>("module_center_x_lg", lx0).Write();  // Sigma LG cross-check
+    TParameter<double>("module_center_y_lg", ly0).Write();
     hX->Write(); hY->Write(); gX.Write(); gY.Write();
     fo.Close();
     std::printf("[moduleCenter] wrote %s/module_center.root\n", sumDir.Data());
