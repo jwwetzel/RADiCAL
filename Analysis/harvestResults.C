@@ -228,6 +228,14 @@ void harvestResults()
     double mod_width_x  = scalarFromFile("module_center.root", "module_width_x");
     double mod_width_y  = scalarFromFile("module_center.root", "module_width_y");
 
+    // Transverse alignment (alignmentAnalysis.C; optional).
+    double mcp_center_x  = scalarFromFile("alignment.root", "mcp_center_x");
+    double mcp_center_y  = scalarFromFile("alignment.root", "mcp_center_y");
+    double beam_center_x = scalarFromFile("alignment.root", "beam_center_x");
+    double beam_center_y = scalarFromFile("alignment.root", "beam_center_y");
+    double off_mcp_rad   = scalarFromFile("alignment.root", "off_mcp_rad");
+    double off_beam_rad  = scalarFromFile("alignment.root", "off_beam_rad");
+
     double drs4_cellwidth_rms = scalarFromFile("drs4_timebase.root", "cellWidthRMS_D0G0_ps");
     double drs4_combo_before  = scalarFromFile("drs4_timebase.root", "sigma_combo_before_ps");
     double drs4_combo_after   = scalarFromFile("drs4_timebase.root", "sigma_combo_after_ps");
@@ -281,6 +289,12 @@ void harvestResults()
     o << "  \"mod_center_y\":    " << num(mod_center_y) << ",\n";
     o << "  \"mod_width_x\":     " << num(mod_width_x)  << ",\n";
     o << "  \"mod_width_y\":     " << num(mod_width_y)  << ",\n";
+    o << "  \"mcp_center_x\":    " << num(mcp_center_x)  << ",\n";
+    o << "  \"mcp_center_y\":    " << num(mcp_center_y)  << ",\n";
+    o << "  \"beam_center_x\":   " << num(beam_center_x) << ",\n";
+    o << "  \"beam_center_y\":   " << num(beam_center_y) << ",\n";
+    o << "  \"off_mcp_rad\":     " << num(off_mcp_rad)   << ",\n";
+    o << "  \"off_beam_rad\":    " << num(off_beam_rad)  << ",\n";
     o << "  \"drs4_cellwidth_rms\": " << num(drs4_cellwidth_rms) << ",\n";
     o << "  \"drs4_combo_before\":  " << num(drs4_combo_before)  << ",\n";
     o << "  \"drs4_combo_after\":   " << num(drs4_combo_after)   << ",\n";

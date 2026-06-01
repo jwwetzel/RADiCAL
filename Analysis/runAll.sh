@@ -273,6 +273,13 @@ echo ""
 $ROOT_CMD 'Analysis/moduleCenter.C+'
 
 echo ""
+echo "Step 12e: Transverse detector alignment (Layer 1)"
+echo "  RADiCAL / MCP / beam centres in the WC frame + offsets (Pb-glass for context)"
+echo ""
+
+$ROOT_CMD 'Analysis/alignmentAnalysis.C+'
+
+echo ""
 echo "Step 13: DRS4 hardware diagnostics (Layer 1)"
 echo "  Cell-level noise floor, saturation fractions, spike rates"
 echo ""
