@@ -1496,79 +1496,78 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     anchor="l1-waveforms",
                     title="Do the pulse shapes hold up across all six energies?",
                     note=(
-                        "Mean +/- RMS band of 5000 DRS4 HG waveforms per energy, "
-                        "aligned on each channel's CFD-20% crossing (t = 0, dashed red line). "
-                        "Produced by <code>averageWaveforms.C</code> reading raw pulse TTrees "
-                        "directly -- waveforms are not stored in the compact ntuple."
+                        "A clean time base is necessary but not sufficient &mdash; the pulse "
+                        "<em>shape</em> itself must stay invariant as the energy climbs, or the "
+                        "CFD timing point would walk.  Each panel below overlays all six beam "
+                        "energies for one HG capillary (mean &plusmn; RMS band, 5000 DRS4 "
+                        "waveforms each), aligned on that channel's CFD-20% crossing "
+                        "(t&nbsp;=&nbsp;0, dashed red).  Produced by <code>averageWaveforms.C</code> "
+                        "reading the raw pulse TTrees directly &mdash; waveforms are not stored "
+                        "in the compact ntuple."
                     ),
                     plots=[
                         PlotEntry(
                             sumPDF("average_waveforms_summary.pdf"),
                             caption=(
-                                "All 6 beam energies overlaid per HG capillary "
-                                "(4x2 summary canvas). "
-                                "Colours: violet = 25 GeV to red = 150 GeV. "
-                                "Peak amplitude scales linearly with energy."
+                                "All six beam energies overlaid per HG capillary (4&times;2). "
+                                "Colours: violet&nbsp;=&nbsp;25&nbsp;GeV &rarr; red&nbsp;=&nbsp;150&nbsp;GeV. "
+                                "The pulse shape is energy-invariant; only the amplitude scales. "
+                                "SE-U sits visibly low &mdash; the same channel flagged elsewhere."
                             ),
                         ),
-                    ] + per_energy_plots(
-                        "average_waveforms.pdf",
-                        "{E} GeV average HG waveforms -- 3x3 grid: "
-                        "8 capillary channels + MCP1 reference. "
-                        "Mean +/- RMS band (+/-1 sigma).  "
-                        "Dashed red line = CFD-20% crossing alignment.",
-                        width=100,
-                    ),
+                    ],
                     finding=(
-                        "All 8 HG capillaries produce well-formed negative-going pulses "
-                        "with clean CFD-20% crossings.  Peak amplitude grows linearly with "
-                        "beam energy (approx 5--6 mV/GeV per downstream capillary).  "
-                        "Pulse <em>shapes</em> are consistent across channels -- NW-Up's "
-                        "timing underperformance is not due to a distorted waveform, "
-                        "pointing instead to electronic noise (see hg_ped_rms) or a "
-                        "reduced light yield from the WLS fibre coupling."
+                        "<strong>The pulse shape is energy-invariant.</strong>  All eight HG "
+                        "capillaries produce well-formed negative-going pulses whose shape is "
+                        "fixed across 25&ndash;150&nbsp;GeV &mdash; only the amplitude grows with "
+                        "energy.  That is exactly what a stable CFD timing point requires.  "
+                        "SE-U's lower amplitude is a reduced light yield (WLS-fibre coupling), "
+                        "not a distorted waveform &mdash; its <em>shape</em> matches the others."
                     ),
                 ),
                 Subsection(
                     anchor="l1-charge",
                     title="Is the response uniform across the beam spot?",
                     note=(
-                        "TProfile2D of hg_peak[i] vs beam impact position (x_trk, y_trk) "
-                        "for each capillary.  Events must satisfy the full timing selection "
-                        "(MCP quality, energy fiducial r &lt; 2 mm, containment cut).  "
+                        "Energy-invariant <em>shape</em> still leaves one question: does each "
+                        "capillary respond the same regardless of <em>where</em> in the beam "
+                        "spot the particle lands?  Two views answer it &mdash; the mean HG "
+                        "amplitude versus beam energy per channel (left), and the HG/LG "
+                        "amplitude-ratio maps across the impact position at 150&nbsp;GeV "
+                        "(right, inverted-kRust COLZ).  Events satisfy the full timing "
+                        "selection (MCP quality, energy fiducial r&nbsp;&lt;&nbsp;2&nbsp;mm). "
                         "Produced by <code>chargeProfiles.C</code>."
                     ),
                     plots=[
                         PlotEntry(
                             sumPDF("hg_amplitude_vs_energy.pdf"),
                             caption=(
-                                "Mean HG amplitude vs beam energy for each capillary.  "
-                                "Confirms linear response and reveals any channel that "
-                                "gains less per GeV -- a sign of reduced light yield."
+                                "Mean HG amplitude vs beam energy, one panel per capillary. "
+                                "All eight scale smoothly; SE-U and SW-U gain less per GeV "
+                                "(reduced light yield), and every channel softens above "
+                                "~100&nbsp;GeV as the high-gain stage approaches saturation."
                             ),
+                            width_pct=50,
                         ),
                         PlotEntry(
                             sumPDF("hg_lg_ratio_maps.pdf"),
                             caption=(
-                                "HG/LG amplitude ratio maps at 150 GeV.  "
-                                "Uniform ratio indicates consistent HG/LG gain matching "
-                                "across the beam profile; non-uniformity flags fibre or "
-                                "SiPM coupling problems."
+                                "HG/LG amplitude-ratio maps at 150&nbsp;GeV (tight 12&nbsp;mm "
+                                "frame around the beam spot).  A flat ratio across the spot "
+                                "means consistent HG/LG gain matching; structure would flag a "
+                                "fibre or SiPM coupling problem."
                             ),
+                            width_pct=50,
                         ),
-                    ] + per_energy_plots(
-                        "hg_charge_profiles.pdf",
-                        "{E} GeV HG peak amplitude maps -- 4x2 grid, one panel per capillary. "
-                        "COLZ palette shows mean HG amplitude [mV] as a function of beam position.",
-                        width=100,
-                    ),
+                    ],
                     finding=(
-                        "HG amplitude maps are spatially uniform within the 2 mm fiducial "
-                        "for all channels at all energies.  No geometric shadow or hot/dead "
-                        "region is visible.  The amplitude-vs-energy curves confirm that "
-                        "all 8 capillaries scale linearly, but SW-U and SE-U show "
-                        "systematically lower mean HG amplitude (~10--15%) -- consistent with "
-                        "the longer WLS fibre path for the upstream capillaries."
+                        "<strong>The response is position-independent within the fiducial.</strong>  "
+                        "The HG/LG ratio is flat across the beam spot for every capillary &mdash; "
+                        "no geometric shadow, hot, or dead region.  The amplitude-vs-energy curves "
+                        "confirm all eight scale together, with SE-U and SW-U running ~10&ndash;15% "
+                        "low (longer upstream WLS-fibre path) and a gentle high-energy roll-off as "
+                        "the high-gain stage saturates &mdash; which is exactly why the energy "
+                        "measurement is anchored on the low-gain channels."
                     ),
                 ),
                 Subsection(

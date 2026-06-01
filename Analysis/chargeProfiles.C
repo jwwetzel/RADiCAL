@@ -99,7 +99,7 @@ void chargeProfiles()
         // ---------------------------------------------------------------------
         // Book histograms
         // ---------------------------------------------------------------------
-        const double cm_hw = 10.;  // half-width of per-cap map [mm]
+        const double cm_hw = 6.;  // half-width of per-cap map [mm] (tight frame: ~4 mm spot)
 
         int nBinsCM = static_cast<int>(std::round(2.*cm_hw / kWC_resBin)); // 1 mm/bin
         TProfile2D* hHGMap[8];
