@@ -887,7 +887,7 @@ static void PlotGroup3_Channels()
     gPad->SetLeftMargin(0.14); gPad->SetBottomMargin(0.11);
     gPad->SetRightMargin(0.18); gPad->SetTopMargin(0.10);
     gPad->SetTickx(0); gPad->SetTicky(0);
-    gStyle->SetPalette(kRust); TColor::InvertPalette();
+    gStyle->SetPalette(kRust);  // inverted kRust (house): high sigma = light/warm = worst (outlier)
 
     TH2F* hHeat = new TH2F("hHeat", "", kNRuns, 0, kNRuns, kNCap, 0, kNCap);
     hHeat->SetDirectory(nullptr);
@@ -905,15 +905,35 @@ static void PlotGroup3_Channels()
     hHeat->GetXaxis()->SetLabelSize(0.055);
     hHeat->GetYaxis()->SetLabelSize(0.055);
     hHeat->GetZaxis()->SetTitleOffset(1.5);
-    // SetPaintTextFormat is GLOBAL and applied at PAINT (Print) time, not at
-    // Draw time — so the format must still be "%.0f" when c.Print() runs.
-    // Restoring "%g" before Print made every cell paint as the literal "%g".
-    gStyle->SetPaintTextFormat("%.0f");   // integer ps values in cells
-    hHeat->Draw("COLZ TEXT");  // TEXT overlays the numeric value in each cell
+    hHeat->Draw("COLZ");
+    // Overlay the integer ps value in each cell with TLatex.  The auto
+    // "COLZ TEXT" painter + gStyle->SetPaintTextFormat() rendered the literal
+    // format string ("%.0f") in every cell on this ROOT build, so we paint the
+    // numbers by hand (same approach as the channelIntegrity correlation matrix).
+    {
+        double zmin = 1e9, zmax = -1e9;
+        for (int ic = 0; ic < kNCap; ++ic)
+            for (int ie = 0; ie < kNRuns; ++ie)
+                if (heatSig[ic][ie] > 0.) {
+                    zmin = std::min(zmin, heatSig[ic][ie]);
+                    zmax = std::max(zmax, heatSig[ic][ie]);
+                }
+        const double zmid = 0.5 * (zmin + zmax);
+        TLatex cell; cell.SetTextAlign(22); cell.SetTextSize(0.030); cell.SetTextFont(42);
+        for (int ic = 0; ic < kNCap; ++ic)
+            for (int ie = 0; ie < kNRuns; ++ie)
+                if (heatSig[ic][ie] > 0.) {
+                    // inverted kRust: high sigma = light cell (dark text),
+                    // low sigma = dark cell (white text).
+                    cell.SetTextColor(heatSig[ic][ie] > zmid ? kBlack : kWhite);
+                    cell.DrawLatex(ie + 0.5, ic + 0.5, Form("%.0f", heatSig[ic][ie]));
+                }
+    }
 
     PageTitle("#sigma_{t} (ps) per capillary per energy  [CFD-5%, timing fiducial]");
+    // Standalone hero for the promoted Layer-2 chapter (the per-capillary outlier map).
+    c.Print(Form("%scross_energy_sigma_heatmap.png", kSumDir));
     c.Print(outPDF + ")");
-    gStyle->SetPaintTextFormat("%g");     // restore default AFTER printing
 
     // Cleanup
     for (int ic = 0; ic < kNCap; ++ic) delete gAct[ic];

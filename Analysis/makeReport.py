@@ -1666,6 +1666,41 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         ),
                     ],
                 ),
+                Subsection(
+                    anchor="l2-outlier",
+                    title="Which capillary limits the timing &mdash; and is it the same one at every energy?",
+                    note=(
+                        "The per-channel jitter above is a single number; this map breaks it "
+                        "open.  Every cell is the single-channel CFD-5% &sigma;<sub>t</sub> (ps) "
+                        "for one capillary at one energy &mdash; eight rows &times; six energies, "
+                        "the whole reference-limited landscape on one page (inverted-kRust: "
+                        "<em>bright = worse</em>).  Produced by <code>compareEnergies.C</code>."
+                    ),
+                    finding=(
+                        "<strong>The limiting channel changes with energy &mdash; which is exactly "
+                        "why we bin in energy and combine corners.</strong>  At 25&nbsp;GeV the "
+                        "<em>Down</em> capillaries blow up (SE-D 379, NE-D 345, NW-D 329&nbsp;ps): "
+                        "low amplitude means residual time-walk even at CFD-5%.  By "
+                        "100&ndash;150&nbsp;GeV that walk is gone and the best channels reach "
+                        "162&ndash;185&nbsp;ps.  Two <em>Up</em> capillaries, NW-U and SW-U, stay "
+                        "warm at every energy (226&ndash;261&nbsp;ps) &mdash; the persistent "
+                        "light-yield laggards seen in Layer&nbsp;1.  No single channel is good "
+                        "enough alone; the (DW&minus;UP)/2 corner average plus per-energy binning "
+                        "(Layers&nbsp;4&ndash;5) is what turns this spread into the headline."
+                    ),
+                    plots=[
+                        PlotEntry(
+                            sumPDF("cross_energy_sigma_heatmap.png"),
+                            caption=(
+                                "Single-channel CFD-5% &sigma;<sub>t</sub> (ps) for all 8 capillaries "
+                                "&times; 6 energies.  Bright = worse timing; the worst cell is SE-D at "
+                                "25&nbsp;GeV (379&nbsp;ps), the best are the Up channels at "
+                                "100&ndash;125&nbsp;GeV (~162&nbsp;ps)."
+                            ),
+                            width_pct=66,
+                        )
+                    ],
+                ),
             ],
             appendix_label=("Full Layer 2 diagnostics -- MCP decomposition, per-channel & "
                             "per-energy detail (click to expand)"),
