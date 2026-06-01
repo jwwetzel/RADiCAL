@@ -291,6 +291,7 @@ class Subsection:
     note:    str  = ""        # italic note (HTML allowed)
     finding: str  = ""        # amber "Key Finding" callout box
     missing: str  = ""        # coral "Missing Data" callout box
+    html:    str  = ""        # raw block HTML (e.g. interactive widgets), unwrapped
 
 
 # ---------------------------------------------------------------------------
@@ -585,6 +586,8 @@ def _render_subsection(sub: Subsection, png_dir: Path) -> str:
     ]
     if sub.note:
         parts.append(f'<p class="note">{sub.note}</p>')
+    if sub.html:
+        parts.append(sub.html)
     if sub.missing:
         parts.append(
             f'<div class="callout missing-box">'
@@ -1025,6 +1028,23 @@ details.appendix > summary:hover { color: var(--accent); }
 .appendix-body { padding: .5rem 1.2rem 1.2rem; border-top: 1px solid var(--border); }
 .appendix-body h3 { font-size: 1.02rem; }
 .appendix-body .subsection { margin-top: 1.4rem; }
+
+/* embedded interactive simulators (mirrors the field guide) */
+.simrow { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:.5rem 0 1rem; }
+@media (max-width:760px){ .simrow { grid-template-columns:1fr; } }
+.simbox { background:#0b0e14; border:1px solid var(--border); border-radius:10px; padding:.8rem .9rem; color:#e6edf6; }
+.simbox h4 { margin:0 0 .15rem; font-size:.95rem; color:#fff; font-weight:650; }
+.simbox canvas { width:100%; height:auto; background:#0a0f18; border:1px solid #232c42; border-radius:7px; display:block; margin:.4rem 0; }
+.simbox .ctl { display:flex; gap:.5rem; align-items:center; font-size:.78rem; color:#9aa7bd; margin:.3rem 0; }
+.simbox .ctl input[type=range] { accent-color:#27e0c8; width:140px; vertical-align:middle; }
+.simbox .ctl b { color:#ffb454; font-family:ui-monospace,Menlo,monospace; }
+.simbox .cap { font-size:.74rem; color:#9aa7bd; margin:.2rem 0 0; line-height:1.45; }
+.simbox .rd { font-family:ui-monospace,Menlo,monospace; font-size:.76rem; color:#27e0c8; margin:.35rem 0 0; }
+.sim-intro { font-size:.85rem; color:var(--muted); margin:.2rem 0 .5rem; }
+.guide-badge { display:inline-flex; align-items:center; gap:.4rem; margin-top:.6rem;
+  padding:.4rem .8rem; border-radius:20px; background:rgba(45,108,223,.12); border:1px solid var(--accent);
+  color:var(--accent); font-weight:650; font-size:.82rem; text-decoration:none; }
+.guide-badge:hover { background:var(--accent); color:#fff; }
 """
 
 _SCRIPT = """
@@ -1045,6 +1065,73 @@ _SCRIPT = """
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 })();
+
+/* embedded simulators: time-walk vs CFD, and the corner trick */
+(function(){
+  const cw=document.getElementById('cvWalk');
+  if(cw){ const x=cw.getContext('2d'),W=cw.width,H=cw.height;
+    const mL=46,mR=14,mT=16,mB=30,tMax=12,tr=3,vMax=110,THR=14,FRAC=0.05;
+    const shape=t=>t<=0?0:(t/tr)*Math.exp(1-t/tr);
+    const PX=t=>mL+t/tMax*(W-mL-mR), PY=v=>H-mB-v/vMax*(H-mB-mT);
+    let tCFD=0; for(let t=0;t<tr;t+=0.004){ if(shape(t)>=FRAC){tCFD=t;break;} }
+    const leTime=a=>{ for(let t=0;t<tr;t+=0.004){ if(a*shape(t)>=THR) return t; } return tr; };
+    const pulse=(a,col,lw)=>{ x.strokeStyle=col;x.lineWidth=lw;x.beginPath();
+      for(let t=0;t<=tMax;t+=0.05){ const y=Math.min(a*shape(t),vMax),px=PX(t),py=PY(y);
+        t===0?x.moveTo(px,py):x.lineTo(px,py);} x.stroke(); };
+    const vline=(t,col)=>{ const px=PX(t);x.strokeStyle=col;x.lineWidth=2;x.setLineDash([4,3]);
+      x.beginPath();x.moveTo(px,PY(0));x.lineTo(px,mT);x.stroke();x.setLineDash([]); };
+    function draw(){ x.clearRect(0,0,W,H);
+      x.strokeStyle='#232c42';x.lineWidth=1;x.beginPath();x.moveTo(mL,mT);x.lineTo(mL,PY(0));x.lineTo(W-mR,PY(0));x.stroke();
+      x.fillStyle='#9aa7bd';x.font='10px monospace';x.fillText('amplitude',6,mT+10);x.fillText('time \\u2192',W-54,PY(0)+18);
+      x.strokeStyle='#46527a';x.setLineDash([2,3]);x.beginPath();x.moveTo(mL,PY(THR));x.lineTo(W-mR,PY(THR));x.stroke();x.setLineDash([]);
+      x.fillStyle='#46527a';x.fillText('fixed threshold',W-120,PY(THR)-4);
+      const a=+document.getElementById('ampWalk').value;
+      [a-22,a+22].forEach(g=>{ if(g>=20&&g<=vMax){ pulse(g,'#2a3450',1.2); vline(leTime(g),'rgba(255,92,138,.35)'); }});
+      pulse(a,'#cdd6e6',2.2); const tle=leTime(a);
+      vline(tle,'#ff5c8a'); vline(tCFD,'#27e0c8');
+      document.getElementById('rdWalk').textContent='LE time = '+tle.toFixed(2)+' (drifts) \\u00b7 CFD time = '+tCFD.toFixed(2)+' (locked)';
+    }
+    document.getElementById('ampWalk').addEventListener('input',draw); draw();
+  }
+  const cc=document.getElementById('cvCorner');
+  if(cc){ const x=cc.getContext('2d'),W=cc.width,H=cc.height,mL=10,mR=10,mT=12,mB=26,SCH=25,xMax=170;
+    const curve=(sig,col,fill)=>{ const peak=(H-mT-mB)*0.95*(17.7/sig); x.beginPath();
+      for(let p=-xMax;p<=xMax;p+=2){ const y=Math.exp(-p*p/(2*sig*sig)),px=mL+(p+xMax)/(2*xMax)*(W-mL-mR),py=(H-mB)-y*peak;
+        p===-xMax?x.moveTo(px,py):x.lineTo(px,py); }
+      x.strokeStyle=col;x.lineWidth=2.2;x.stroke();
+      x.lineTo(W-mR,H-mB);x.lineTo(mL,H-mB);x.closePath();x.fillStyle=fill;x.fill(); };
+    function draw(){ x.clearRect(0,0,W,H);
+      x.strokeStyle='#232c42';x.beginPath();x.moveTo(mL,H-mB);x.lineTo(W-mR,H-mB);x.stroke();
+      x.fillStyle='#9aa7bd';x.font='10px monospace';x.fillText('measured time (ps) \\u2192',W/2-58,H-8);
+      const mcp=+document.getElementById('mcpJit').value, sS=Math.sqrt(SCH*SCH+mcp*mcp), sE=SCH/Math.SQRT2;
+      curve(sS,'#ff5c8a','rgba(255,92,138,.10)'); curve(sE,'#27e0c8','rgba(39,224,200,.13)');
+      document.getElementById('mcpVal').textContent=mcp+' ps';
+      document.getElementById('rdCorner').textContent='single channel \\u03c3 = '+sS.toFixed(0)+' ps \\u00b7 (DW\\u2212UP)/2 \\u03c3 = '+sE.toFixed(0)+' ps (locked)';
+    }
+    document.getElementById('mcpJit').addEventListener('input',draw); draw();
+  }
+})();
+"""
+
+
+# Embedded interactive simulators for the timing section (mirrors the field guide).
+_SIMS_HTML = """
+<p class="sim-intro">The headline rests on two ideas. Don't take them on faith &mdash; move the sliders
+(or open the full <a href="https://jwwetzel.github.io/RADiCAL/" target="_blank" rel="noopener">field guide &#9656;</a>):</p>
+<div class="simrow">
+ <div class="simbox"><h4>&#9312; Why CFD, not a fixed threshold</h4>
+   <canvas id="cvWalk" width="600" height="230"></canvas>
+   <div class="ctl"><label>pulse amplitude <input type="range" id="ampWalk" min="25" max="100" value="60"></label></div>
+   <p class="cap"><span style="color:#ff5c8a">&#9679;</span> a fixed-threshold time <b>walks</b> with amplitude;
+      <span style="color:#27e0c8">&#9679;</span> CFD (5% of the peak) stays <b>locked</b> &mdash; why we time at CFD-5%.</p>
+   <p class="rd" id="rdWalk"></p></div>
+ <div class="simbox"><h4>&#9313; Why (DW&minus;UP)/2 beats the reference jitter</h4>
+   <canvas id="cvCorner" width="600" height="230"></canvas>
+   <div class="ctl"><label>MCP reference jitter <input type="range" id="mcpJit" min="0" max="80" value="40"> <b id="mcpVal"></b></label></div>
+   <p class="cap">Crank the MCP jitter: the <span style="color:#ff5c8a">single channel</span> balloons while the
+      <span style="color:#27e0c8">(DW&minus;UP)/2</span> estimator doesn't move &mdash; the reference cancels.</p>
+   <p class="rd" id="rdCorner"></p></div>
+</div>
 """
 
 
@@ -1087,6 +1174,8 @@ def _executive_summary_html() -> str:
   <p class="sub">An electron test beam from 25 to 150 GeV, analysed end-to-end from raw
   DRS4 waveforms to energy- and timing-resolution results — built to make a clear,
   reproducible, world-class case.</p>
+  <a class="guide-badge" href="https://jwwetzel.github.io/RADiCAL/" target="_blank" rel="noopener">
+    &#9656; New here? Open the interactive field guide</a>
   <div class="kpi-row">
     <div class="kpi"><div class="num">{TEB_150} ps</div><div class="lbl">timing resolution<br>(150 GeV, best E<sub>meas</sub> bin)</div></div>
     <div class="kpi"><div class="num">{COMBO_150} ps</div><div class="lbl">8-channel combo<br>(150 GeV)</div></div>
@@ -2290,6 +2379,11 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                             width_pct=50,
                         ),
                     ],
+                ),
+                Subsection(
+                    anchor="l5-techniques",
+                    title="See the two techniques live",
+                    html=_SIMS_HTML,
                 ),
             ],
             appendix_label=("Full Layer 5 detail -- energy-binned fits, 255-subset combination scan, "
