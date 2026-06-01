@@ -15,7 +15,7 @@
 // show up as fixed rings in the ch15 map at ~(7,5) and ~(20,3) mm.
 //
 // Binning: x at 0.25 mm (x_trk is continuous), y at 0.5 mm (suppresses the
-// peak-sample comb in y) — "finest but no finer".  Palette: inverted kCherry
+// peak-sample comb in y) — "finest but no finer".  Palette: inverted kRust
 // (perceptually uniform, colour-blind safe).
 //
 // Reads raw waveforms (Data/ via kRuns, like drs4TimeBase.C).  No reprocessing.
@@ -47,9 +47,12 @@ const int    kCh15_t  = kT_D0G1;
 const float  kCh15_trig = 60.0f;          // mV: 1x1 trigger threshold (valley
                                           // between no-hit pedestal ~40 mV and
                                           // the fired-signal continuum)
-// Map axes — match the raw scan view.
-const int kNX = 160; const double kX0 = -10., kX1 = 30.;   // 0.25 mm/bin
-const int kNY =  80; const double kY0 = -20., kY1 = 20.;   // 0.50 mm/bin
+// Map axes — symmetric 40 mm window CENTRED ON THE MODULE (kCalo_x0/y0, the
+// calorimeter face centre in WC coords), so the module sits at the frame centre.
+// Absolute WC coordinates are kept (connector positions stay (7,5)/(20,3) mm).
+const double kHalfWin = 20.;                                       // mm
+const int kNX = 160; const double kX0 = kCalo_x0 - kHalfWin, kX1 = kCalo_x0 + kHalfWin;  // 0.25 mm/bin
+const int kNY =  80; const double kY0 = kCalo_y0 - kHalfWin, kY1 = kCalo_y0 + kHalfWin;  // 0.50 mm/bin
 
 void drawGrid(TCanvas& c, TProfile2D* m[9], const char* tag, const char* outPDF)
 {
@@ -75,7 +78,7 @@ void drawGrid(TCanvas& c, TProfile2D* m[9], const char* tag, const char* outPDF)
 void transverseMaps(int energyIndex = -1)
 {
     gStyle->SetOptStat(0);
-    gStyle->SetPalette(kCherry); TColor::InvertPalette();  // inverted cherry: signal dark on white
+    gStyle->SetPalette(kRust); TColor::InvertPalette();  // inverted rust: signal dark on white
     TString sumDir = "Analysis/Output/Summary";
     gSystem->mkdir(sumDir, kTRUE);
 

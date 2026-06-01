@@ -79,7 +79,7 @@ void HeroBeamAndContainment()
             hPb->Fill(sum_lg, sum_pb);
     }
 
-    gStyle->SetPalette(kCherry); TColor::InvertPalette();
+    gStyle->SetPalette(kRust); TColor::InvertPalette();
 
     // ── H1: beam illumination + fiducial circles ──────────────────────────
     {

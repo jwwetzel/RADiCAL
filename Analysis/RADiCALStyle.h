@@ -154,13 +154,14 @@ static void ApplyRADiCALStyle()
     s->SetFrameLineWidth(1);
     s->SetFrameBorderMode(0);
 
-    // 2D colour palette: INVERTED kCherry — a single-hue white→dark-red lightness
-    // ramp.  Chosen because empty bins draw white (no events): with this ramp the
-    // intense signal is DARK (pops against white) and low occupancy is pale (melts
-    // into the background), so the eye goes to structure, not isolated noise specks.
-    // A monotonic lightness ramp is also colour-blind- and greyscale-safe.
+    // 2D colour palette: INVERTED kRust — a single-hue pale-tan→dark-brown
+    // lightness ramp.  Empty bins draw white (no events); with this ramp the
+    // intense signal is DARK (pops against the white field) while low-occupancy
+    // bins stay a muted tan — still visible against white (so low tails / the
+    // beam halo aren't lost), unlike a near-white low end.  A monotonic lightness
+    // ramp is also colour-blind- and greyscale-safe.
     // (InvertPalette() toggles the current palette; pair it 1:1 with SetPalette.)
-    s->SetPalette(kCherry);
+    s->SetPalette(kRust);
     TColor::InvertPalette();
     s->SetNumberContours(99);
 
@@ -497,7 +498,7 @@ static TLegend* MakeCornerLegend(int nEntries, const char* corner = "tr",
 }
 
 // ---------------------------------------------------------------------------
-// StyleColz — one-call COLZ styling for the current pad: inverted-kCherry palette, wide
+// StyleColz — one-call COLZ styling for the current pad: inverted-kRust palette, wide
 // right margin for the colour bar, no grid, optional log-z.  Call before
 // Draw("COLZ").  (Set the z-axis title on the histogram: h->GetZaxis()->SetTitle("events").)
 // ---------------------------------------------------------------------------
@@ -512,7 +513,7 @@ static void StyleColz(bool logz = false)
     gPad->SetGridx(0);
     gPad->SetGridy(0);
     if (logz) gPad->SetLogz(1);
-    gStyle->SetPalette(kCherry);   // inverted kCherry: white(low)->dark-red(high),
+    gStyle->SetPalette(kRust);   // inverted kRust: pale-tan(low)->dark-brown(high),
     TColor::InvertPalette();       // so signal is dark on the white empty-bin field
 }
 
