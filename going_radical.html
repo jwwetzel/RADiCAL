@@ -75,6 +75,23 @@
               padding:6px 9px;border-radius:7px;margin-top:9px}
   .quiz .why,.quiz .fact{filter:blur(5px);transition:.15s}
   .quiz .card:hover .why,.quiz .card:hover .fact{filter:none}
+
+  /* exercises */
+  .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}
+  .ex .lvl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--hot);
+           background:rgba(255,92,138,.13);padding:2px 8px;border-radius:20px}
+  .ex .q{font-size:14px;color:var(--ink);margin:2px 0 0}
+  details{margin-top:9px;border-top:1px dashed var(--line);padding-top:8px}
+  details summary{cursor:pointer;color:var(--accent);font-size:12.5px;font-weight:600;list-style:none;outline:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"\25B8  ";color:var(--accent)}
+  details[open] summary::before{content:"\25BE  "}
+  details .body{margin-top:8px;font-size:13px;color:#cdd6e6}
+  details .body b{color:var(--ink)}
+  .code{display:block;white-space:pre-wrap;font-family:var(--mono);font-size:12px;
+        background:#0c111b;border:1px solid var(--line);border-radius:8px;padding:10px;
+        color:#bfe9e2;margin:8px 0;overflow-x:auto;line-height:1.55}
+  .code .c{color:#6b7689}
   mark{background:var(--hot);color:#fff;border-radius:3px;padding:0 2px}
   .none{color:var(--dim);font-family:var(--mono);padding:30px 0}
 
@@ -143,6 +160,7 @@
     <button class="tab" data-p="signals">Signals &amp; cables</button>
     <button class="tab" data-p="electronics">Electronics</button>
     <button class="tab" data-p="measure">The measurement</button>
+    <button class="tab" data-p="try">Try it yourself</button>
     <button class="tab" data-p="glossary">Glossary</button>
   </div>
   <button class="quizbtn" id="quiz">Test me</button>
@@ -370,6 +388,138 @@
     <p><b>What:</b> pick your selection on one half of the data, measure on the other half. Stops you from fooling yourself by tuning on noise.</p>
     <p class="why"><b>Here:</b> the best-bin choice is validated out-of-sample → the 27 ps is real, not a lucky fluctuation.</p>
     <p class="fact">⚡ Golden rule: never quote a number from the same data you optimized on.</p></div>
+ </div>
+</section>
+
+<!-- TRY IT YOURSELF -->
+<section class="panel" data-p="try">
+ <p class="lead">Reading is not understanding. Work these in order — each has a <b>hint</b> and a full
+   <b>solution</b> you reveal when ready. The keyboard exercises run on the real ntuples in this repo
+   (<span class="code" style="display:inline;padding:2px 6px">Analysis/Output/&lt;E&gt;GeV/ntuple.root</span>),
+   so you actually touch the data.</p>
+
+ <h2>Pencil &amp; paper</h2>
+ <div class="grid2">
+
+  <div class="card ex"><h3>The picosecond ruler <span class="lvl">★ warm-up</span></h3>
+    <p class="q">Our best time resolution is 27 ps. How far does light travel in that time? Why does that
+       number make 27 ps feel "small"?</p>
+    <details><summary>Hint</summary><div class="body">c ≈ 3×10⁸ m/s = 0.3 mm/ps.</div></details>
+    <details><summary>Solution</summary><div class="body">0.3 mm/ps × 27 ps ≈ <b>8 mm</b>. We pin a particle's arrival
+       time better than the time it takes light to cross a fingernail — and better than the size of the
+       detector itself. That's why ps timing is hard: every cable length, every mm of geometry matters.</div></details></div>
+
+  <div class="card ex"><h3>Is the module deep enough? <span class="lvl">★ warm-up</span></h3>
+    <p class="q">Tungsten's radiation length is X₀ ≈ 3.5 mm and the module is ~14 mm deep. How many X₀ is
+       that? A 150 GeV shower peaks around 6–7 X₀ — what does that tell you about energy containment?</p>
+    <details><summary>Hint</summary><div class="body">Depth in X₀ = 14 mm ÷ 3.5 mm.</div></details>
+    <details><summary>Solution</summary><div class="body">14/3.5 = <b>4 X₀</b> — the module ends <i>before</i> the shower
+       even reaches its maximum (~6–7 X₀). So a lot of energy <b>leaks</b> out the back. That's exactly why
+       the energy resolution has a large <b>constant term</b>: it's a short, leakage-dominated prototype,
+       not a full-depth calorimeter.</div></details></div>
+
+  <div class="card ex"><h3>Why CFD beats time-walk <span class="lvl">★★ reason it out</span></h3>
+    <p class="q">Two pulses have the same shape but one is twice as tall: V(t) = A·f(t) with different A.
+       Show that the time at a fixed <i>fraction</i> of the peak is the same for both, while the time at a
+       fixed <i>voltage</i> threshold is not.</p>
+    <details><summary>Hint</summary><div class="body">Set V(t) = (fraction)·A·f(peak) vs V(t) = (fixed volts), and ask
+       which one still depends on A.</div></details>
+    <details><summary>Solution</summary><div class="body">Fixed fraction φ: solve A·f(t) = φ·A·f<sub>peak</sub> →
+       f(t) = φ·f<sub>peak</sub>. <b>A cancels</b> — the crossing time depends only on the shape, not the
+       height. Fixed voltage V₀: solve A·f(t) = V₀ → f(t) = V₀/A, which <b>depends on A</b> → bigger pulses
+       cross earlier = <b>time-walk</b>. CFD = timing at a constant fraction → amplitude-independent.</div></details></div>
+
+  <div class="card ex"><h3>The corner trick <span class="lvl">★★ algebra</span></h3>
+    <p class="q">Each channel measures its time relative to the MCP: t<sub>D</sub> = T<sub>D</sub> − T<sub>MCP</sub>
+       and t<sub>U</sub> = T<sub>U</sub> − T<sub>MCP</sub>. Show the MCP drops out of (t<sub>D</sub> − t<sub>U</sub>).
+       Why is that a big deal?</p>
+    <details><summary>Solution</summary><div class="body">(t<sub>D</sub> − t<sub>U</sub>) = (T<sub>D</sub> − T<sub>MCP</sub>)
+       − (T<sub>U</sub> − T<sub>MCP</sub>) = <b>T<sub>D</sub> − T<sub>U</sub></b>. The MCP time — and <i>all</i> its
+       jitter — cancels exactly because it's common to both. So you can measure the detector's intrinsic
+       timing <b>without</b> being limited by your reference clock. (The same cancellation kills the DRS4
+       timebase error and beam-arrival jitter.)</div></details></div>
+
+  <div class="card ex"><h3>Quadrature &amp; the ÷2 <span class="lvl">★★ statistics</span></h3>
+    <p class="q">Two independent channels each have timing jitter σ. What's the jitter of their <b>difference</b>?
+       Of their <b>average</b>? Why is the headline estimator (t<sub>D</sub>−t<sub>U</sub>)/2?</p>
+    <details><summary>Hint</summary><div class="body">Independent errors add in quadrature: σ²<sub>sum</sub> = σ²₁ + σ²₂.</div></details>
+    <details><summary>Solution</summary><div class="body">Difference: √(σ²+σ²) = <b>√2·σ</b>. Average (or here, /2 of the
+       difference): √2·σ / 2 = <b>σ/√2</b>. So dividing the corner difference by 2 turns the √2 penalty of
+       subtracting into a √2 <i>improvement</i> over a single channel — you both cancel the reference and
+       average two measurements.</div></details></div>
+
+  <div class="card ex"><h3>Noise, slew &amp; jitter <span class="lvl">★★ estimate</span></h3>
+    <p class="q">Timing jitter ≈ (electronic noise) ÷ (slew rate on the edge). If the noise is 2 mV and the
+       pulse rises at 100 mV/ns, what's the jitter? What two things would you change to improve it?</p>
+    <details><summary>Solution</summary><div class="body">σ<sub>t</sub> ≈ 2 mV / (100 mV/ns) = 0.02 ns = <b>20 ps</b>.
+       Improve it by (1) <b>lowering noise</b> and (2) <b>increasing slew rate</b> — i.e. a faster, brighter
+       pulse (fast scintillator, more light, bigger sensor signal). This is the whole game of timing detectors.</div></details></div>
+
+  <div class="card ex"><h3>Reading the energy resolution <span class="lvl">★★★ put it together</span></h3>
+    <p class="q">Energy resolution is σ<sub>E</sub>/E = a/√E ⊕ b. Take a = 25%·√GeV and b = 11%. Compute
+       σ<sub>E</sub>/E at 25 GeV and at 150 GeV. Which term dominates at high energy, and why?</p>
+    <details><summary>Hint</summary><div class="body">⊕ means √(·²+·²). At 25 GeV: a/√E = 25/5 = 5%.</div></details>
+    <details><summary>Solution</summary><div class="body">25 GeV: √(5² + 11²) ≈ <b>12.1%</b>. 150 GeV: a/√E = 25/√150 ≈
+       2.0%, so √(2.0² + 11²) ≈ <b>11.2%</b>. The <b>constant term b dominates at high E</b> because the
+       stochastic term shrinks as 1/√E while b doesn't. For this short module, b is large (leakage) — see the
+       containment exercise above.</div></details></div>
+ </div>
+
+ <h2>At the keyboard (real data)</h2>
+ <div class="grid2">
+
+  <div class="card ex"><h3>Find the module centre from edges <span class="lvl">★★ ROOT</span></h3>
+    <p class="q">Project the calorimeter energy vs track-x in a central y-band. You get a flat-topped plateau
+       with sharp shoulders — the module edges. Read the half-max edges; the midpoint is the centre.
+       Compare to (6.6, 4.7) mm.</p>
+    <span class="code"><span class="c">// in ROOT, on the 150 GeV ntuple</span>
+root -l Analysis/Output/150GeV/ntuple.root
+rad-&gt;Draw("sum_lg:x_trk&gt;&gt;px(90,-15,30)",
+          "wc_ok &amp;&amp; abs(y_trk-4.7)&lt;4","prof")
+<span class="c">// repeat with y_trk for the y centre</span></span>
+    <details><summary>What to look for</summary><div class="body">The profile is ~flat across the module and drops
+       steeply at the edges. Find where it falls to <b>half</b> its plateau height on the left and right; the
+       average of those two x-values is the centre. You should land near <b>x ≈ 6.6 mm</b> (y ≈ 4.7 mm).
+       This is beam-independent — the edges are geometry, not where the beam happened to sit.</div></details></div>
+
+  <div class="card ex"><h3>The beam profile <span class="lvl">★ ROOT</span></h3>
+    <p class="q">Histogram the track positions. How wide is the beam (σ)? Is it centred on the module, or
+       steered off to one side?</p>
+    <span class="code">rad-&gt;Draw("y_trk:x_trk&gt;&gt;h(120,-15,30,120,-20,20)","wc_ok","colz")
+rad-&gt;Draw("x_trk&gt;&gt;hx","wc_ok")   <span class="c">// then: hx-&gt;Fit("gaus")</span></span>
+    <details><summary>Solution</summary><div class="body">The 2-D plot shows a blob ~7 mm wide in x, ~5 mm in y. Its
+       centroid sits a couple of mm off the module centre (the beam was steered ~2.5 mm toward +x). Lesson:
+       the <b>beam centre ≠ the module centre</b> — which is why we find the module from its edges, not from
+       where the beam landed.</div></details></div>
+
+  <div class="card ex"><h3>See the MCP cancel <span class="lvl">★★ ROOT</span></h3>
+    <p class="q">Each <span class="code" style="display:inline;padding:1px 5px">hg_cfd05[i]</span> is a channel's
+       CFD-5% time minus the MCP (in ns). Fit one channel's time → that width includes the MCP jitter. Now
+       fit the <i>difference</i> of a Down and an Up readout of the same corner — the MCP should cancel and
+       the peak should sharpen.</p>
+    <span class="code"><span class="c">// single channel (includes MCP jitter):</span>
+rad-&gt;Draw("hg_cfd05[0]&gt;&gt;h1(200,-1,1)",
+          "wc_ok &amp;&amp; hg_cfd05[0]&gt;-100")   <span class="c">// h1-&gt;Fit("gaus")</span>
+<span class="c">// Down minus Up of the NW corner (MCP cancels):</span>
+rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
+          "wc_ok &amp;&amp; hg_cfd05[0]&gt;-100 &amp;&amp; hg_cfd05[4]&gt;-100")</span>
+    <details><summary>What to look for</summary><div class="body">Fit each with a Gaussian; σ is in <b>ns</b> (×1000 → ps).
+       The single-channel width carries the MCP jitter. The difference cancels the common MCP term — its width
+       reflects the two channels' own jitter (divide by √2 for per-channel). This is the corner trick from the
+       algebra exercise, in real data.</div></details></div>
+
+  <div class="card ex"><h3>Why the wire-chamber <i>sum</i> works <span class="lvl">★★★ explain + run</span></h3>
+    <p class="q">A delay-line wire chamber gives position from the <i>difference</i> of two end-times,
+       x ∝ (t<sub>R</sub> − t<sub>L</sub>). Argue that the <i>sum</i> (t<sub>R</sub> + t<sub>L</sub>) is
+       independent of where the hit was — and therefore that its spread measures the timing resolution. Then
+       check the number with our macro.</p>
+    <details><summary>Solution + run it</summary><div class="body">A hit at position x sends a pulse to both ends; if v
+       is the propagation speed, t<sub>R</sub> = t₀ + (L/2+x)/v and t<sub>L</sub> = t₀ + (L/2−x)/v. The
+       <b>difference</b> = 2x/v (position), but the <b>sum</b> = 2t₀ + L/v — <b>no x</b>. So the sum's
+       spread is pure timing noise → it gives the resolution without needing a second tracker. Run it:
+       <span class="code">root -l -b -q 'Analysis/wireChamberResolution.C+'</span>
+       You should get σ<sub>x</sub> ≈ 3.6 mm — coarse because the wire-chamber pulses are timed on a slow
+       digitiser, which is fine for a fiducial cut over a ~7 mm beam.</div></details></div>
  </div>
 </section>
 
