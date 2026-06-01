@@ -250,6 +250,14 @@ echo ""
 $ROOT_CMD 'Analysis/drs4TimeBase.C+'
 
 echo ""
+echo "Step 12b: Wire-chamber spatial resolution (Layer 1)"
+echo "  Delay-line self-calibration (sum-of-end-times); data-driven sigma_x/y"
+echo "  for track binning (reads raw waveforms; uses highest-energy run)"
+echo ""
+
+$ROOT_CMD 'Analysis/wireChamberResolution.C+'
+
+echo ""
 echo "Step 13: DRS4 hardware diagnostics (Layer 1)"
 echo "  Cell-level noise floor, saturation fractions, spike rates"
 echo ""

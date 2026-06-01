@@ -211,6 +211,17 @@ void harvestResults()
     // ── Reference / DRS4 ────────────────────────────────────────────────────
     std::vector<double> mcp_jitter    = arrFromGraph("mcp_jitter.root", "gMCP_jitter");
     double mcp_jitter_mean            = meanIgnoringNaN(mcp_jitter);
+    // Wire-chamber spatial resolution (data-driven self-calibration; reads raw
+    // waveforms, so optional — null on a run without the raw files).
+    double wc_res_x_mm   = scalarFromFile("wire_chamber_resolution.root", "wc_res_x_ub_um");
+    double wc_res_y_mm   = scalarFromFile("wire_chamber_resolution.root", "wc_res_y_ub_um");
+    double wc_res_cfd_mm = scalarFromFile("wire_chamber_resolution.root", "wc_res_x_ub_cfd_um");
+    double wc_beam_sx    = scalarFromFile("wire_chamber_resolution.root", "wc_beam_sigma_x_mm");
+    double wc_beam_sy    = scalarFromFile("wire_chamber_resolution.root", "wc_beam_sigma_y_mm");
+    if (!std::isnan(wc_res_x_mm))   wc_res_x_mm   /= 1000.;   // um -> mm
+    if (!std::isnan(wc_res_y_mm))   wc_res_y_mm   /= 1000.;
+    if (!std::isnan(wc_res_cfd_mm)) wc_res_cfd_mm /= 1000.;
+
     double drs4_cellwidth_rms = scalarFromFile("drs4_timebase.root", "cellWidthRMS_D0G0_ps");
     double drs4_combo_before  = scalarFromFile("drs4_timebase.root", "sigma_combo_before_ps");
     double drs4_combo_after   = scalarFromFile("drs4_timebase.root", "sigma_combo_after_ps");
@@ -255,6 +266,11 @@ void harvestResults()
     o << "  \"scan_bestN4\":     " << arr(scan_bestN4)   << ",\n";
     o << "  \"mcp_jitter\":      " << arr(mcp_jitter)    << ",\n";
     o << "  \"mcp_jitter_mean\": " << num(mcp_jitter_mean) << ",\n";
+    o << "  \"wc_res_x_mm\":     " << num(wc_res_x_mm)   << ",\n";
+    o << "  \"wc_res_y_mm\":     " << num(wc_res_y_mm)   << ",\n";
+    o << "  \"wc_res_cfd_mm\":   " << num(wc_res_cfd_mm) << ",\n";
+    o << "  \"wc_beam_sx_mm\":   " << num(wc_beam_sx)    << ",\n";
+    o << "  \"wc_beam_sy_mm\":   " << num(wc_beam_sy)    << ",\n";
     o << "  \"drs4_cellwidth_rms\": " << num(drs4_cellwidth_rms) << ",\n";
     o << "  \"drs4_combo_before\":  " << num(drs4_combo_before)  << ",\n";
     o << "  \"drs4_combo_after\":   " << num(drs4_combo_after)   << ",\n";
