@@ -980,8 +980,7 @@ p.note  { font-size: .85rem; }
    one line — the base rule assumed a smaller gap and was wrapping them. */
 figure.w50 { width: calc(50% - 11px); }
 figure.w33 { width: calc(33.333% - 15px); }
-figure.w66 { width: calc(66% - 11px); }   /* single, centred narrative figure */
-.plot-row { justify-content: center; }     /* centre solo figures; neutral for full rows */
+figure.w66 { width: calc(66% - 11px); }   /* single narrative figure, left-aligned to the content rail */
 figure, .page-card { box-sizing: border-box; border: 1px solid var(--border); border-radius: 14px;
   box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; }
 figure:hover, .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }

@@ -149,7 +149,7 @@ void HeroVitals()
     if (fd.IsZombie()) { printf("[layer1Summary] no drs4_diagnostics.root — skip H2\n"); return; }
     TFile fc(Form("%schannel_integrity.root", kSumDir));   // may be absent
 
-    TCanvas* c = NewSquareCanvas("c_l1_vitals");
+    TCanvas* c = NewSquareCanvas("c_l1_vitals", 660, 128);  // wider left margin for the y-title
     c->cd();
 
     TH1F* hPed = new TH1F("hPedVitals", "", 8, 0.5, 8.5);
@@ -176,6 +176,7 @@ void HeroVitals()
     hPed->SetMarkerStyle(20); hPed->SetMarkerSize(1.8); hPed->SetMarkerColor(kRData);
     hPed->SetLineColor(kRData);
     hPed->GetYaxis()->SetTitle("pedestal RMS (mV)");
+    hPed->GetYaxis()->SetTitleOffset(1.45);
     hPed->GetXaxis()->SetLabelSize(0.050);
     hPed->GetYaxis()->SetTitleSize(0.050);
     double ymax = hPed->GetMaximum() * 1.4; if (ymax < 6.) ymax = 6.;
@@ -184,8 +185,8 @@ void HeroVitals()
 
     TLine* l5 = new TLine(0.5, 5., 8.5, 5.);
     l5->SetLineColor(kRRed); l5->SetLineStyle(2); l5->SetLineWidth(2); l5->Draw();
-    { TLatex t; t.SetNDC(); t.SetTextSize(0.032); t.SetTextColor(kRRed); t.SetTextAlign(31);
-      t.DrawLatex(0.94, 0.80, "5 mV noise floor"); }   // right-aligned, just above the line
+    { TLatex t; t.SetNDC(); t.SetTextSize(0.030); t.SetTextColor(kRRed); t.SetTextAlign(31);
+      t.DrawLatex(0.90, 0.815, "5 mV noise floor"); }   // right-aligned, clear of the right frame
 
     { TLatex v; v.SetNDC(); v.SetTextSize(0.040); v.SetTextColor(kGray + 3);
       TString verdict = "all 8 capillaries active";
