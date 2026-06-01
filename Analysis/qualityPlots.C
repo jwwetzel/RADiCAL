@@ -690,6 +690,10 @@ void qualityPlots()
             st.DrawLatex(0.05, 0.18, "  dashed = timing cut (3.0 mm)");
             st.DrawLatex(0.05, 0.10, "Red/orange lines = MCP lo/sat cuts");
 
+            // Standalone "completeness overview" hero for the headline energy,
+            // used as the single figure in the report's quality-report chapter.
+            if (rc.energy_GeV > 149. && rc.energy_GeV < 151.)
+                c.Print("Analysis/Output/Summary/quality_overview_150.png");
             c.Print(pdfPath + "(");
         }
 
