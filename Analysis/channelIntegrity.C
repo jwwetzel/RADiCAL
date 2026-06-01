@@ -614,7 +614,7 @@ void channelIntegrity()
         h2Corr->SetMinimum(0.85);
         h2Corr->SetMaximum(1.00);
 
-        // Palette (inverted kRust) already set by ApplyRADiCALStyle
+        gStyle->SetPalette(kRust); TColor::InvertPalette();  // inverted kRust (house palette)
         h2Corr->Draw("COLZ");
 
         // Print rho values as text in each cell
@@ -628,8 +628,8 @@ void channelIntegrity()
                     // Bin center in user coordinates
                     double bx = h2Corr->GetXaxis()->GetBinCenter(i+1);
                     double by = h2Corr->GetYaxis()->GetBinCenter(j+1);
-                    // On the zoomed 0.85-1.0 scale: bright (high-rho) cells get
-                    // dark text, darker (low-rho) cells get white text.
+                    // Inverted kRust: high-rho cells are light (dark text),
+                    // low-rho cells are dark (white text).
                     cell.SetTextColor(rho > 0.93 ? kBlack : kWhite);
                     cell.DrawLatex(bx, by, Form("%.2f", rho));
                 }
@@ -646,6 +646,9 @@ void channelIntegrity()
             ann.DrawLatex(0.52, 0.03,
                 "High #rho: common-mode shower sharing, not electronic cross-talk");
         }
+        // Clean standalone figure for the report (matrix + pad title + annotation,
+        // no page-title banner) — the single hero for the channel-independence chapter.
+        c.Print("Analysis/Output/Summary/layer1_channelcorr.png");
         c.cd(0); DrawPageTitle("RADiCAL Channel Integrity -- Page 5: Correlation Matrix (150 GeV)");
         c.Print(pdfPath + ")");
     }
