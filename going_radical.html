@@ -92,6 +92,26 @@
         background:#0c111b;border:1px solid var(--line);border-radius:8px;padding:10px;
         color:#bfe9e2;margin:8px 0;overflow-x:auto;line-height:1.55}
   .code .c{color:#6b7689}
+
+  /* playground / simulators */
+  .simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px}
+  .sim canvas{width:100%;height:auto;background:#0a0f18;border:1px solid var(--line);
+              border-radius:8px;display:block;margin:6px 0}
+  .ctl{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:6px 0;font-size:12.5px;color:var(--dim)}
+  .ctl label{display:flex;gap:8px;align-items:center}
+  .ctl input[type=range]{accent-color:var(--accent);width:150px}
+  .ctl b{color:var(--accent2);font-family:var(--mono)}
+  .simcap{font-size:12px;color:var(--dim);margin:4px 0}
+  .simread{font-family:var(--mono);font-size:12.5px;color:var(--accent2);margin:5px 0 0}
+  .tg{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .tg button{background:var(--bg2);border:1px solid var(--line);color:var(--dim);padding:8px 11px;
+             border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600}
+  .tg button.on{background:var(--accent);color:#04201c;border-color:var(--accent)}
+  .tg button.veto.on{background:var(--hot);color:#fff;border-color:var(--hot)}
+  .out{font-family:var(--mono);font-weight:700;padding:11px;border-radius:8px;text-align:center;
+       margin-top:6px;border:1px solid var(--line);letter-spacing:.05em}
+  .out.fire{background:rgba(39,224,200,.16);color:var(--accent);border-color:var(--accent)}
+  .out.no{background:rgba(255,92,138,.1);color:var(--hot);border-color:rgba(255,92,138,.4)}
   mark{background:var(--hot);color:#fff;border-radius:3px;padding:0 2px}
   .none{color:var(--dim);font-family:var(--mono);padding:30px 0}
 
@@ -160,6 +180,7 @@
     <button class="tab" data-p="signals">Signals &amp; cables</button>
     <button class="tab" data-p="electronics">Electronics</button>
     <button class="tab" data-p="measure">The measurement</button>
+    <button class="tab" data-p="play">⚡ Playground</button>
     <button class="tab" data-p="try">Try it yourself</button>
     <button class="tab" data-p="glossary">Glossary</button>
   </div>
@@ -388,6 +409,48 @@
     <p><b>What:</b> pick your selection on one half of the data, measure on the other half. Stops you from fooling yourself by tuning on noise.</p>
     <p class="why"><b>Here:</b> the best-bin choice is validated out-of-sample → the 27 ps is real, not a lucky fluctuation.</p>
     <p class="fact">⚡ Golden rule: never quote a number from the same data you optimized on.</p></div>
+ </div>
+</section>
+
+<!-- PLAYGROUND -->
+<section class="panel" data-p="play">
+ <p class="lead">Don't take our word for it — <b>move the sliders</b>. Each toy is the real physics, live in your
+   browser. No install, no data download.</p>
+ <div class="simgrid">
+
+  <div class="card sim"><h3>Time-walk vs CFD <span class="t">⚡ play</span></h3>
+    <canvas id="cvWalk" width="600" height="250"></canvas>
+    <div class="ctl"><label>pulse amplitude <input type="range" id="ampWalk" min="25" max="100" value="60"></label></div>
+    <p class="simcap"><span style="color:#ff5c8a">●</span> fixed-threshold time <b>walks</b> as the pulse grows ·
+       <span style="color:#27e0c8">●</span> CFD (5% of peak) stays <b>locked</b>.</p>
+    <p class="simread" id="rdWalk"></p></div>
+
+  <div class="card sim"><h3>The corner trick cancels the MCP <span class="t">⚡ play</span></h3>
+    <canvas id="cvCorner" width="600" height="250"></canvas>
+    <div class="ctl"><label>MCP reference jitter <input type="range" id="mcpJit" min="0" max="80" value="40"> <b id="mcpVal"></b></label></div>
+    <p class="simcap">Crank up the MCP jitter: the <span style="color:#ff5c8a">single channel</span> balloons,
+       the <span style="color:#27e0c8">(DW−UP)/2</span> estimator doesn't move — the reference cancels.</p>
+    <p class="simread" id="rdCorner"></p></div>
+
+  <div class="card sim"><h3>Why calorimeters are deep <span class="t">⚡ play</span></h3>
+    <canvas id="cvShower" width="600" height="250"></canvas>
+    <div class="ctl"><label>detector depth <input type="range" id="depth" min="2" max="30" value="4"> <b id="depthVal"></b></label></div>
+    <p class="simcap">The shower (150 GeV e⁻) develops in radiation lengths. Drag the back wall:
+       everything past it <span style="color:#ff5c8a">leaks</span>. Our prototype is only <b>4 X₀</b>.</p>
+    <p class="simread" id="rdShower"></p></div>
+
+  <div class="card sim"><h3>Build the trigger <span class="t">⚡ play</span></h3>
+    <p class="simcap" style="margin-top:2px">Logic: <b style="color:#e6edf6">TRIGGER = ScintA · ScintB · Finger · &not;Veto</b>.
+       Click inputs on/off — a real beam particle fires all three counters and misses the veto.</p>
+    <div class="tg" id="trigIn">
+      <button data-k="A">Scint A</button>
+      <button data-k="B">Scint B</button>
+      <button data-k="F">1×1 Finger</button>
+      <button class="veto" data-k="V">Veto</button>
+    </div>
+    <div class="out no" id="trigOut">— no trigger —</div>
+    <p class="simcap" id="rdTrig" style="margin-top:8px"></p></div>
+
  </div>
 </section>
 
@@ -637,6 +700,97 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
         el.classList.add('hl');setTimeout(()=>el.classList.remove('hl'),1600);},180);
     });
   });
+})();
+</script>
+
+<script>
+/* ---- interactive simulators (vanilla canvas) ---- */
+(function(){
+  // 1. Time-walk vs CFD
+  const cw=document.getElementById('cvWalk');
+  if(cw){ const x=cw.getContext('2d'),W=cw.width,H=cw.height;
+    const mL=46,mR=14,mT=16,mB=30,tMax=12,tr=3,vMax=110,THR=14,FRAC=0.05;
+    const shape=t=>t<=0?0:(t/tr)*Math.exp(1-t/tr);
+    const PX=t=>mL+t/tMax*(W-mL-mR), PY=v=>H-mB-v/vMax*(H-mB-mT);
+    let tCFD=0; for(let t=0;t<tr;t+=0.004){ if(shape(t)>=FRAC){tCFD=t;break;} }
+    const leTime=a=>{ for(let t=0;t<tr;t+=0.004){ if(a*shape(t)>=THR) return t; } return tr; };
+    const pulse=(a,col,lw)=>{ x.strokeStyle=col;x.lineWidth=lw;x.beginPath();
+      for(let t=0;t<=tMax;t+=0.05){ const y=Math.min(a*shape(t),vMax),px=PX(t),py=PY(y);
+        t===0?x.moveTo(px,py):x.lineTo(px,py);} x.stroke(); };
+    const vline=(t,col)=>{ const px=PX(t);x.strokeStyle=col;x.lineWidth=2;x.setLineDash([4,3]);
+      x.beginPath();x.moveTo(px,PY(0));x.lineTo(px,mT);x.stroke();x.setLineDash([]); };
+    function draw(){ x.clearRect(0,0,W,H);
+      x.strokeStyle='#232c42';x.lineWidth=1;x.beginPath();x.moveTo(mL,mT);x.lineTo(mL,PY(0));x.lineTo(W-mR,PY(0));x.stroke();
+      x.fillStyle='#9aa7bd';x.font='10px monospace';x.fillText('amplitude',6,mT+10);x.fillText('time →',W-54,PY(0)+18);
+      x.strokeStyle='#46527a';x.setLineDash([2,3]);x.beginPath();x.moveTo(mL,PY(THR));x.lineTo(W-mR,PY(THR));x.stroke();x.setLineDash([]);
+      x.fillStyle='#46527a';x.fillText('fixed threshold',W-120,PY(THR)-4);
+      const a=+document.getElementById('ampWalk').value;
+      [a-22,a+22].forEach(g=>{ if(g>=20&&g<=vMax){ pulse(g,'#2a3450',1.2); vline(leTime(g),'rgba(255,92,138,.35)'); }});
+      pulse(a,'#cdd6e6',2.2); const tle=leTime(a);
+      vline(tle,'#ff5c8a'); vline(tCFD,'#27e0c8');
+      document.getElementById('rdWalk').textContent='LE time = '+tle.toFixed(2)+' (drifts with the ghosts) · CFD time = '+tCFD.toFixed(2)+' (always the same)';
+    }
+    document.getElementById('ampWalk').addEventListener('input',draw); draw();
+  }
+
+  // 2. Corner trick
+  const cc=document.getElementById('cvCorner');
+  if(cc){ const x=cc.getContext('2d'),W=cc.width,H=cc.height,mL=10,mR=10,mT=12,mB=26,SCH=25,xMax=170;
+    const curve=(sig,col,fill)=>{ const peak=(H-mT-mB)*0.95*(17.7/sig); x.beginPath();
+      for(let p=-xMax;p<=xMax;p+=2){ const y=Math.exp(-p*p/(2*sig*sig)),px=mL+(p+xMax)/(2*xMax)*(W-mL-mR),py=(H-mB)-y*peak;
+        p===-xMax?x.moveTo(px,py):x.lineTo(px,py); }
+      x.strokeStyle=col;x.lineWidth=2.2;x.stroke();
+      x.lineTo(W-mR,H-mB);x.lineTo(mL,H-mB);x.closePath();x.fillStyle=fill;x.fill(); };
+    function draw(){ x.clearRect(0,0,W,H);
+      x.strokeStyle='#232c42';x.beginPath();x.moveTo(mL,H-mB);x.lineTo(W-mR,H-mB);x.stroke();
+      x.fillStyle='#9aa7bd';x.font='10px monospace';x.fillText('measured time (ps) →',W/2-58,H-8);
+      const mcp=+document.getElementById('mcpJit').value, sS=Math.sqrt(SCH*SCH+mcp*mcp), sE=SCH/Math.SQRT2;
+      curve(sS,'#ff5c8a','rgba(255,92,138,.10)'); curve(sE,'#27e0c8','rgba(39,224,200,.13)');
+      document.getElementById('mcpVal').textContent=mcp+' ps';
+      document.getElementById('rdCorner').textContent='single channel σ = '+sS.toFixed(0)+' ps  ·  (DW−UP)/2 σ = '+sE.toFixed(0)+' ps (locked)';
+    }
+    document.getElementById('mcpJit').addEventListener('input',draw); draw();
+  }
+
+  // 3. Shower depth & containment
+  const cs=document.getElementById('cvShower');
+  if(cs){ const x=cs.getContext('2d'),W=cs.width,H=cs.height,mL=40,mR=14,mT=16,mB=28,tMax=30,a=3,b=0.5;
+    const prof=t=>Math.pow(t,a)*Math.exp(-b*t), pk=prof(a/b);
+    let TOT=0; for(let t=0;t<tMax;t+=0.05) TOT+=prof(t)*0.05;
+    const PX=t=>mL+t/tMax*(W-mL-mR), PY=v=>(H-mB)-v/pk*(H-mB-mT);
+    const fillSeg=(t0,t1,col)=>{ x.beginPath();x.moveTo(PX(t0),H-mB);
+      for(let t=t0;t<=t1;t+=0.1) x.lineTo(PX(t),PY(prof(t))); x.lineTo(PX(t1),H-mB);x.closePath();x.fillStyle=col;x.fill(); };
+    function draw(){ x.clearRect(0,0,W,H); const D=+document.getElementById('depth').value;
+      fillSeg(0,D,'rgba(39,224,200,.22)'); fillSeg(D,tMax,'rgba(255,92,138,.18)');
+      x.strokeStyle='#cdd6e6';x.lineWidth=2;x.beginPath();
+      for(let t=0.001;t<=tMax;t+=0.1){const px=PX(t),py=PY(prof(t)); t<=0.101?x.moveTo(px,py):x.lineTo(px,py);}x.stroke();
+      x.strokeStyle='#ff5c8a';x.lineWidth=2;x.beginPath();x.moveTo(PX(D),mT);x.lineTo(PX(D),H-mB);x.stroke();
+      x.fillStyle='#ff5c8a';x.font='10px monospace';x.fillText('back wall',PX(D)+4,mT+10);
+      x.strokeStyle='#46527a';x.setLineDash([3,3]);x.beginPath();x.moveTo(PX(4),mT);x.lineTo(PX(4),H-mB);x.stroke();x.setLineDash([]);
+      x.fillStyle='#46527a';x.fillText('4 X₀ proto',PX(4)-58,H-mB-6);
+      x.strokeStyle='#232c42';x.beginPath();x.moveTo(mL,H-mB);x.lineTo(W-mR,H-mB);x.stroke();
+      x.fillStyle='#9aa7bd';x.fillText('depth (radiation lengths X₀) →',W/2-86,H-8);
+      let c=0; for(let t=0;t<D;t+=0.05) c+=prof(t)*0.05; c=100*c/TOT;
+      document.getElementById('depthVal').textContent=D+' X₀';
+      document.getElementById('rdShower').textContent='depth '+D+' X₀ → '+c.toFixed(0)+'% of the shower contained'+(D<=6?'   ⚠ big leakage':'');
+    }
+    document.getElementById('depth').addEventListener('input',draw); draw();
+  }
+
+  // 4. Trigger logic
+  const ti=document.getElementById('trigIn');
+  if(ti){ const st={A:false,B:false,F:false,V:false},
+      out=document.getElementById('trigOut'), rd=document.getElementById('rdTrig');
+    ti.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.k;
+      st[k]=!st[k]; btn.classList.toggle('on',st[k]); upd(); });
+    function upd(){ const fire=st.A&&st.B&&st.F&&!st.V;
+      out.className='out '+(fire?'fire':'no');
+      out.textContent=fire?'★ TRIGGER — record this event!':'— no trigger —';
+      rd.textContent=fire?'All three counters fired and the veto is clear — a clean beam particle.'
+        :(st.V?'Veto is set — event rejected even if the others fired.'
+              :'Need Scint A AND Scint B AND the 1×1 Finger, with Veto off.'); }
+    upd();
+  }
 })();
 </script>
 </body>
