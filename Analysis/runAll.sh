@@ -199,6 +199,13 @@ echo ""
 $ROOT_CMD 'Analysis/timingEnergyBins.C+'
 
 echo ""
+echo "Step 6b: Timing fiducial-radius optimisation (defends the r<3mm timing cut)"
+echo "  Corner sigma_t vs fiducial radius at 150 GeV, stable high-E_meas selection"
+echo ""
+
+$ROOT_CMD 'Analysis/fiducialTimingScan.C+'
+
+echo ""
 echo "Step 7: Cross-energy collated plots (all 6 energies side-by-side)"
 echo "  Beam quality · shower containment · channel performance · timing methods"
 echo ""
