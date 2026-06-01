@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOING RADiCAL — a test-beam field guide</title>
+<style>
+  :root{
+    --bg:#0b0e14; --bg2:#121723; --card:#161c2b; --line:#232c42;
+    --ink:#e6edf6; --dim:#9aa7bd; --accent:#27e0c8; --accent2:#ffb454; --hot:#ff5c8a;
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;font-size:15px}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+
+  /* hero */
+  header{background:radial-gradient(1200px 400px at 70% -10%,rgba(39,224,200,.14),transparent),
+                   radial-gradient(900px 380px at 10% -20%,rgba(255,92,138,.12),transparent),var(--bg2);
+         border-bottom:1px solid var(--line);padding:46px 0 30px}
+  .kick{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--accent);text-transform:uppercase}
+  h1{margin:.18em 0 .1em;font-size:54px;letter-spacing:-1.5px;font-weight:800;line-height:1}
+  h1 .r{color:var(--accent)}
+  .tag{color:var(--dim);font-size:18px;max-width:680px}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px}
+  .stat{font-family:var(--mono)}
+  .stat b{display:block;font-size:24px;color:var(--accent2)}
+  .stat span{font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+  .how{margin-top:18px;font-size:13px;color:var(--dim);border-left:2px solid var(--accent);padding-left:12px}
+
+  /* beamline diagram */
+  .chain{margin:26px 0 6px;overflow-x:auto}
+  .chain svg{display:block;min-width:920px}
+  .chain text{font-family:var(--mono);fill:var(--ink)}
+  .node{cursor:pointer}
+  .node rect{fill:var(--card);stroke:var(--line);stroke-width:1.5;rx:7;transition:.15s}
+  .node:hover rect{stroke:var(--accent);fill:#1b2336}
+  .node text{pointer-events:none}
+  .flow{stroke:var(--line);stroke-width:2;fill:none;marker-end:url(#arr)}
+  .cap{fill:var(--dim);font-size:10px}
+
+  /* sticky controls */
+  .bar{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.93);backdrop-filter:blur(8px);
+       border-bottom:1px solid var(--line);padding:10px 0}
+  .bar .wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #search{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+          padding:9px 12px;border-radius:8px;font-size:14px;font-family:var(--mono)}
+  #search::placeholder{color:#6b7689}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{background:var(--bg2);border:1px solid var(--line);color:var(--dim);padding:8px 12px;border-radius:8px;
+       cursor:pointer;font-size:13px;font-weight:600}
+  .tab.on{background:var(--accent);color:#04201c;border-color:var(--accent)}
+  .quizbtn{background:transparent;border:1px solid var(--accent2);color:var(--accent2);padding:8px 12px;
+           border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+  .quizbtn.on{background:var(--accent2);color:#221603}
+
+  /* sections + cards */
+  main{padding:26px 0 70px}
+  .panel{display:none}.panel.on{display:block}
+  .lead{color:var(--dim);font-size:15px;margin:0 0 18px;max-width:760px}
+  h2{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+     margin:26px 0 12px;font-family:var(--mono)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+  .card h3{margin:0 0 8px;font-size:16px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .card h3 .t{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+              color:var(--accent);background:rgba(39,224,200,.1);padding:2px 7px;border-radius:20px}
+  .card p{margin:5px 0;font-size:13.5px;color:#cdd6e6}
+  .card b{color:var(--ink)}
+  .card .why{color:var(--dim)}
+  .card .fact{font-family:var(--mono);font-size:12.5px;color:var(--accent2);
+              background:rgba(255,180,84,.08);border:1px solid rgba(255,180,84,.22);
+              padding:6px 9px;border-radius:7px;margin-top:9px}
+  .quiz .why,.quiz .fact{filter:blur(5px);transition:.15s}
+  .quiz .card:hover .why,.quiz .card:hover .fact{filter:none}
+  mark{background:var(--hot);color:#fff;border-radius:3px;padding:0 2px}
+  .none{color:var(--dim);font-family:var(--mono);padding:30px 0}
+
+  /* glossary */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--accent);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  td:first-child{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+  footer{border-top:1px solid var(--line);padding:22px 0 50px;color:var(--dim);font-size:12.5px}
+  .hl{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px;transition:.2s}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <div class="kick">CERN SPS · electron test beam · May 2023</div>
+  <h1>GOING <span class="r">RADiCAL</span></h1>
+  <p class="tag">A field guide to particle detectors, fast electronics, and timing light to a
+     trillionth of a second. Everything you need to read this experiment — chapter and verse.</p>
+  <div class="stats">
+   <div class="stat"><b>27 ps</b><span>best time resolution</span></div>
+   <div class="stat"><b>25–150 GeV</b><span>electron beam</span></div>
+   <div class="stat"><b>5 GS/s</b><span>waveform sampling</span></div>
+   <div class="stat"><b>0.3 mm</b><span>light travel in 1 ps</span></div>
+  </div>
+  <p class="how">How to use: skim the <b>beamline</b> below — click any box to jump to it.
+     Use <b>search</b> to find a term. Hit <b>Test me</b> to blur the answers and quiz yourself.</p>
+
+  <!-- clickable beamline -->
+  <div class="chain">
+   <svg viewBox="0 0 940 200" role="img" aria-label="beamline signal chain">
+    <defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#46527a"/></marker></defs>
+    <!-- main signal row -->
+    <path class="flow" d="M70 56 H120"/><path class="flow" d="M210 56 H250"/>
+    <path class="flow" d="M340 56 H380"/><path class="flow" d="M470 56 H510"/>
+    <path class="flow" d="M600 56 H640"/><path class="flow" d="M730 56 H770"/>
+    <a class="node" href="#testbeam"><g><rect x="10" y="36" width="60" height="40"/><text x="40" y="61" text-anchor="middle" font-size="12">beam</text></g></a>
+    <a class="node" href="#mcp"><g><rect x="120" y="36" width="90" height="40"/><text x="165" y="56" text-anchor="middle" font-size="12">MCP</text><text x="165" y="69" text-anchor="middle" font-size="9" class="cap">t₀</text></g></a>
+    <a class="node" href="#wirechamber"><g><rect x="250" y="36" width="90" height="40"/><text x="295" y="56" text-anchor="middle" font-size="11">wire ch.</text><text x="295" y="69" text-anchor="middle" font-size="9" class="cap">where</text></g></a>
+    <a class="node" href="#radical"><g><rect x="380" y="36" width="90" height="40"/><text x="425" y="56" text-anchor="middle" font-size="11">RADiCAL</text><text x="425" y="69" text-anchor="middle" font-size="9" class="cap">E + t</text></g></a>
+    <a class="node" href="#coax"><g><rect x="510" y="36" width="90" height="40"/><text x="555" y="56" text-anchor="middle" font-size="11">cables</text><text x="555" y="69" text-anchor="middle" font-size="9" class="cap">50 Ω</text></g></a>
+    <a class="node" href="#digitizer"><g><rect x="640" y="36" width="90" height="40"/><text x="685" y="56" text-anchor="middle" font-size="11">DRS4</text><text x="685" y="69" text-anchor="middle" font-size="9" class="cap">digitize</text></g></a>
+    <a class="node" href="#timeres"><g><rect x="770" y="36" width="110" height="40"/><text x="825" y="56" text-anchor="middle" font-size="11">analysis</text><text x="825" y="69" text-anchor="middle" font-size="9" class="cap">27 ps</text></g></a>
+    <!-- trigger row -->
+    <path class="flow" d="M165 76 V108 H120"/>
+    <path class="flow" d="M70 128 H120"/><path class="flow" d="M210 128 H250"/><path class="flow" d="M340 128 H380"/>
+    <path class="flow" d="M470 128 V96 H640" stroke-dasharray="4 4"/>
+    <a class="node" href="#scintillator"><g><rect x="10" y="108" width="60" height="40"/><text x="40" y="128" text-anchor="middle" font-size="10">scint.</text><text x="40" y="141" text-anchor="middle" font-size="9" class="cap">paddle</text></g></a>
+    <a class="node" href="#discriminator"><g><rect x="120" y="108" width="90" height="40"/><text x="165" y="132" text-anchor="middle" font-size="10">discrim.</text></g></a>
+    <a class="node" href="#coincidence"><g><rect x="250" y="108" width="90" height="40"/><text x="295" y="128" text-anchor="middle" font-size="10">coinc.</text><text x="295" y="141" text-anchor="middle" font-size="9" class="cap">AND</text></g></a>
+    <a class="node" href="#trigger"><g><rect x="380" y="108" width="90" height="40"/><text x="425" y="132" text-anchor="middle" font-size="11">TRIGGER</text></g></a>
+    <text x="495" y="92" font-size="9" class="cap">gate ▸</text>
+    <text x="10" y="172" font-size="10" class="cap">top row = signal path · bottom row = NIM trigger logic · click any box</text>
+   </svg>
+  </div>
+ </div>
+</header>
+
+<div class="bar"><div class="wrap">
+  <input id="search" placeholder="search: MCP, CFD, time-walk, shashlik, 50 ohm…" autocomplete="off">
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-p="start">Start here</button>
+    <button class="tab" data-p="detectors">Detectors</button>
+    <button class="tab" data-p="signals">Signals &amp; cables</button>
+    <button class="tab" data-p="electronics">Electronics</button>
+    <button class="tab" data-p="measure">The measurement</button>
+    <button class="tab" data-p="glossary">Glossary</button>
+  </div>
+  <button class="quizbtn" id="quiz">Test me</button>
+</div></div>
+
+<main class="wrap">
+
+<!-- START -->
+<section class="panel on" data-p="start">
+ <p class="lead">A <b>test beam</b> is a controlled rehearsal: take a known particle beam, point it at a
+   prototype detector, and measure exactly how the detector responds. Here we shot electrons into
+   <b>RADiCAL</b>, a prototype calorimeter, to see how precisely it measures a particle's <b>energy</b>
+   and its <b>arrival time</b>.</p>
+ <div class="grid">
+  <div class="card" id="testbeam"><h3>Test beam <span class="t">the setup</span></h3>
+    <p><b>What:</b> a particle beam of known type &amp; energy, steered down a beamline onto your detector.</p>
+    <p class="why"><b>Here:</b> CERN SPS, H2 line — electrons from 25 to 150 GeV, a few per spill.</p>
+    <p class="fact">⚡ "GeV" = energy. 1 GeV ≈ the rest-energy of a proton; a 150 GeV e⁻ is ultra-relativistic.</p></div>
+  <div class="card"><h3>Why timing? <span class="t">motivation</span></h3>
+    <p><b>What:</b> future colliders pile ~100s of collisions into one beam crossing.</p>
+    <p class="why"><b>Here:</b> tag each particle's time to a few <b>picoseconds</b> and you can untangle which collision it came from — "4D" calorimetry.</p>
+    <p class="fact">⚡ Target of CMS's timing upgrade: ~30 ps. We reach 27 ps.</p></div>
+  <div class="card"><h3>The whole chain <span class="t">one breath</span></h3>
+    <p><b>What:</b> beam → trigger scintillators (decide "record this") → MCP (start the clock) →
+       wire chambers (where did it hit) → RADiCAL (energy + time) → cables → digitizer → laptop → analysis.</p>
+    <p class="why"><b>Here:</b> every box in the diagram above is one link in this chain.</p>
+    <p class="fact">⚡ Two paths: a fast <b>trigger</b> (NIM logic) that says "go," and the <b>signals</b> that get recorded.</p></div>
+  <div class="card"><h3>What we measured <span class="t">the result</span></h3>
+    <p><b>What:</b> energy resolution (how well we know E) and time resolution (how well we know <i>when</i>).</p>
+    <p class="why"><b>Here:</b> best time resolution <b>27 ps</b> at 150 GeV using a clever reference-free trick (see <a href="#cornerdiff">corner difference</a>).</p>
+    <p class="fact">⚡ 27 ps is the time for light to cross ~8 mm. We measure time better than that.</p></div>
+ </div>
+</section>
+
+<!-- DETECTORS -->
+<section class="panel" data-p="detectors">
+ <p class="lead">Particles are invisible. A detector's only job is to turn a particle into something you can
+   measure — usually <b>light</b> or <b>charge</b> — without disturbing the measurement you care about.</p>
+ <h2>Calorimetry</h2>
+ <div class="grid">
+  <div class="card"><h3>Calorimeter <span class="t">detector</span></h3>
+    <p><b>What:</b> a block that <b>absorbs</b> a particle entirely and measures the energy it dumps.</p>
+    <p class="why"><b>Here:</b> RADiCAL is an <i>electromagnetic</i> calorimeter — built to stop electrons &amp; photons.</p>
+    <p class="fact">⚡ Energy ∝ amount of light produced. More energy → bigger pulse.</p></div>
+  <div class="card"><h3>EM shower <span class="t">physics</span></h3>
+    <p><b>What:</b> a high-energy e⁻/γ doesn't stop at once — it cascades: bremsstrahlung → pair-production → more e⁻/γ, doubling until the energy runs out.</p>
+    <p class="why"><b>Here:</b> the calorimeter samples this shower; its depth/width set containment.</p>
+    <p class="fact">⚡ <b>Radiation length (X₀)</b>: the depth scale of a shower. Tungsten X₀ ≈ 3.5 mm — very compact.</p></div>
+  <div class="card"><h3>Sampling calorimeter <span class="t">design</span></h3>
+    <p><b>What:</b> alternate dense <b>absorber</b> (makes the shower) with <b>scintillator</b> (samples the light). Cheaper/compact vs a solid crystal.</p>
+    <p class="why"><b>Here:</b> RADiCAL samples; only a fraction of the shower makes light → a "sampling" term in the resolution.</p>
+    <p class="fact">⚡ Trade-off: sampling = compact &amp; cheap, but worse energy resolution than homogeneous.</p></div>
+  <div class="card" id="radical"><h3>RADiCAL <span class="t">our detector</span></h3>
+    <p><b>What:</b> a shashlik module of <b>tungsten</b> (absorber) + <b>LYSO</b> (scintillator) plates, read out by wavelength-shifting capillaries to SiPMs.</p>
+    <p class="why"><b>Here:</b> ~14×14 mm active face; 8 readout channels (4 corners × 2 depths). Designed for radiation-hard, fast, compact calorimetry.</p>
+    <p class="fact">⚡ Two gains per corner: <b>HG</b> (high-gain, at shower max → timing) and <b>LG</b> (low-gain, full length → energy).</p></div>
+  <div class="card"><h3>Shashlik <span class="t">geometry</span></h3>
+    <p><b>What:</b> a stack of absorber/scintillator plates with fibers threaded through holes ("shashlik" = skewered kebab).</p>
+    <p class="why"><b>Here:</b> the capillaries run longitudinally through the W/LYSO stack to pipe light out the back.</p></div>
+  <div class="card"><h3>LYSO &amp; tungsten <span class="t">materials</span></h3>
+    <p><b>What:</b> <b>LYSO</b> = a fast, dense, bright scintillating crystal. <b>Tungsten (W)</b> = very dense absorber.</p>
+    <p class="why"><b>Here:</b> LYSO's speed (~40 ns) helps timing; W's density makes the module short.</p>
+    <p class="fact">⚡ "Fast + dense + bright" is the holy trinity for a timing calorimeter.</p></div>
+ </div>
+ <h2>Turning particles into a signal</h2>
+ <div class="grid">
+  <div class="card"><h3>Scintillation <span class="t">light</span></h3>
+    <p><b>What:</b> certain materials emit a flash of light when ionizing radiation passes through.</p>
+    <p class="why"><b>Here:</b> the LYSO scintillates; that light is the energy signal.</p></div>
+  <div class="card"><h3>WLS capillary / fiber <span class="t">light pipe</span></h3>
+    <p><b>What:</b> a <b>wavelength-shifting</b> fiber absorbs scintillation light and re-emits it at a longer wavelength that travels down the fiber to a sensor.</p>
+    <p class="why"><b>Here:</b> 8 capillaries collect light from the shower and guide it to the SiPMs.</p>
+    <p class="fact">⚡ "Capillary" here = a thin WLS light guide running through the module.</p></div>
+  <div class="card"><h3>SiPM <span class="t">photosensor</span></h3>
+    <p><b>What:</b> a <b>silicon photomultiplier</b> — a grid of tiny avalanche diodes in Geiger mode. One photon → an avalanche → a measurable pulse.</p>
+    <p class="why"><b>Here:</b> reads the capillary light into an electrical pulse. Compact, magnetic-field-immune, gain ~10⁶.</p>
+    <p class="fact">⚡ Biased just above breakdown ("over-voltage"); each fired cell gives ~the same charge.</p></div>
+  <div class="card" id="mcp"><h3>MCP / MCP-PMT <span class="t">timing reference</span></h3>
+    <p><b>What:</b> a <b>micro-channel plate</b> photomultiplier — a thin plate pierced by millions of tiny channels, each a continuous electron multiplier. Ultra-fast.</p>
+    <p class="why"><b>Here:</b> the MCP gives the precise <b>time-zero</b> (t₀) against which everything else is timed.</p>
+    <p class="fact">⚡ MCP single-hit timing ~tens of ps. Its jitter cancels in our corner trick.</p></div>
+  <div class="card" id="wirechamber"><h3>Wire chamber <span class="t">tracking</span></h3>
+    <p><b>What:</b> a gas detector that reports <b>where</b> the particle crossed. This one is a <b>delay-line</b> type: position = difference of pulse arrival times at the two ends of a line.</p>
+    <p class="why"><b>Here:</b> gives (x, y) of each track so we can map the detector and cut on beam position.</p>
+    <p class="fact">⚡ Self-calibration: the <i>sum</i> of the two end-times is position-independent → it measures the resolution. We get ~3.6 mm.</p></div>
+  <div class="card"><h3>Pb-glass <span class="t">leakage catcher</span></h3>
+    <p><b>What:</b> lead-glass blocks that radiate <b>Cherenkov</b> light when a shower passes. A simple Cherenkov calorimeter.</p>
+    <p class="why"><b>Here:</b> sits behind/beside RADiCAL to catch energy that leaks out the small module.</p>
+    <p class="fact">⚡ Cherenkov light = the optical "sonic boom" of a charged particle faster than light-in-the-medium.</p></div>
+  <div class="card" id="scintillator"><h3>Trigger scintillator <span class="t">beam tag</span></h3>
+    <p><b>What:</b> a small scintillator paddle/finger read by a PMT — fires when a particle passes.</p>
+    <p class="why"><b>Here:</b> a 1×1 cm "finger" defines a clean beam particle; its coincidence makes the trigger.</p>
+    <p class="fact">⚡ Used as a <b>cut</b> later: require the finger fired → reject events with no clean particle.</p></div>
+ </div>
+</section>
+
+<!-- SIGNALS -->
+<section class="panel" data-p="signals">
+ <p class="lead">Every detector outputs a tiny voltage <b>pulse</b> on a cable. Before you can analyze it you have
+   to understand its shape, how it travels, and the connectors that carry it.</p>
+ <h2>The pulse</h2>
+ <div class="grid">
+  <div class="card" id="pulse"><h3>Pulse <span class="t">the raw signal</span></h3>
+    <p><b>What:</b> voltage vs time. Key features: <b>baseline</b> (flat), a fast <b>edge</b>, a <b>peak</b> (amplitude), then a tail.</p>
+    <p class="why"><b>Here:</b> our SiPM/MCP pulses go <i>negative</i>; "amplitude" = baseline − minimum.</p>
+    <p class="fact">⚡ Two numbers matter: <b>amplitude</b> (∝ peak rate of light) and <b>charge</b> = area (∝ energy).</p></div>
+  <div class="card"><h3>Pedestal / baseline <span class="t">reference</span></h3>
+    <p><b>What:</b> the voltage with no signal. You measure it from early samples and subtract it.</p>
+    <p class="why"><b>Here:</b> averaged over the first ~50 samples of every waveform before finding the pulse.</p></div>
+  <div class="card"><h3>Charge integral <span class="t">energy proxy</span></h3>
+    <p><b>What:</b> the area under the pulse, ∫V dt. Proportional to the total light = the energy.</p>
+    <p class="why"><b>Here:</b> the low-gain (LG) charge is our energy estimator; ΣLG maps the shower.</p></div>
+  <div class="card"><h3>Rise time &amp; slew rate <span class="t">timing</span></h3>
+    <p><b>What:</b> how fast the edge climbs. <b>Slew rate</b> = dV/dt on the edge.</p>
+    <p class="why"><b>Here:</b> timing precision ≈ (electronic noise) ÷ (slew rate). Faster edge → better time.</p>
+    <p class="fact">⚡ This is why fast scintillator + fast sensor = good timing.</p></div>
+ </div>
+ <h2>Cables &amp; connectors</h2>
+ <div class="grid">
+  <div class="card" id="coax"><h3>Coax &amp; 50 Ω <span class="t">transmission</span></h3>
+    <p><b>What:</b> a <b>coaxial</b> cable (center conductor + shield) carries fast pulses. Its <b>characteristic impedance</b> is 50 Ω in physics.</p>
+    <p class="why"><b>Here:</b> every fast signal rides 50 Ω coax into the digitizer.</p>
+    <p class="fact">⚡ Match impedances or you get <b>reflections</b> — an echo of the pulse bouncing back.</p></div>
+  <div class="card"><h3>Reflection / termination <span class="t">gotcha</span></h3>
+    <p><b>What:</b> at any impedance mismatch, part of the pulse reflects. A 50 Ω <b>terminator</b> absorbs it.</p>
+    <p class="why"><b>Here:</b> the delay-line wire chamber <i>uses</i> propagation time; everywhere else reflections are noise to avoid.</p></div>
+  <div class="card" id="bnc"><h3>BNC connector <span class="t">connector</span></h3>
+    <p><b>What:</b> a bayonet (twist-lock) coax connector — the workhorse of lab electronics.</p>
+    <p class="why"><b>Here:</b> the MCP's signal BNC sits in the beam — beam hitting it <b>pre-showers</b>, making the ring we see in the maps.</p>
+    <p class="fact">⚡ A connector body is ~1 radiation length of metal → it starts EM showers if it's in the beam.</p></div>
+  <div class="card"><h3>SMA connector <span class="t">connector</span></h3>
+    <p><b>What:</b> a small screw-on coax connector (sub-miniature, version A). Smaller than BNC, good to high frequency.</p>
+    <p class="why"><b>Here:</b> the MCP's high-voltage SMA is the off-center connector ring in the maps.</p></div>
+  <div class="card"><h3>LEMO &amp; HV <span class="t">connector</span></h3>
+    <p><b>What:</b> <b>LEMO</b> = push-pull connector common on NIM modules. <b>HV</b> = high-voltage line that biases PMTs/MCPs/SiPMs.</p>
+    <p class="why"><b>Here:</b> NIM logic signals hop between modules on LEMO; HV powers the sensors.</p></div>
+ </div>
+</section>
+
+<!-- ELECTRONICS -->
+<section class="panel" data-p="electronics">
+ <p class="lead">Analog pulses are messy. <b>NIM electronics</b> turn them into clean yes/no logic for <i>triggering</i>,
+   and a <b>digitizer</b> records the full waveform for <i>analysis</i>.</p>
+ <h2>NIM trigger logic</h2>
+ <div class="grid">
+  <div class="card" id="nim"><h3>NIM standard <span class="t">the crate</span></h3>
+    <p><b>What:</b> <b>Nuclear Instrumentation Module</b> — a 1960s mechanical + electrical standard. Modules slot into a powered <b>crate/bin</b>.</p>
+    <p class="why"><b>Here:</b> the trigger is built from a few NIM modules wired together.</p>
+    <p class="fact">⚡ NIM logic levels: logic-0 = 0 V, logic-1 = −0.8 V (into 50 Ω). Fast (ns) and simple.</p></div>
+  <div class="card" id="discriminator"><h3>Discriminator <span class="t">analog → logic</span></h3>
+    <p><b>What:</b> outputs a clean fixed-width logic pulse <i>only if</i> the input crosses a set <b>threshold</b>.</p>
+    <p class="why"><b>Here:</b> turns each scintillator's messy pulse into a crisp "a particle was here" bit.</p>
+    <p class="fact">⚡ Threshold rejects small noise; the output time/width is standardized.</p></div>
+  <div class="card"><h3>Leading-edge &amp; time-walk <span class="t">the problem</span></h3>
+    <p><b>What:</b> a simple discriminator fires when the rising edge crosses a fixed threshold. Big pulses reach it sooner than small ones.</p>
+    <p class="why"><b>Here:</b> this amplitude-dependent timing error is <b>time-walk</b> — the enemy of precision timing.</p>
+    <p class="fact">⚡ Same particle time, different pulse height → different measured time. Bad.</p></div>
+  <div class="card" id="cfd"><h3>CFD <span class="t">the fix</span></h3>
+    <p><b>What:</b> a <b>constant-fraction discriminator</b> fires at a fixed <i>fraction</i> of each pulse's own peak (e.g. 5%), not a fixed voltage.</p>
+    <p class="why"><b>Here:</b> the fraction point lands at the same place on the edge regardless of amplitude → kills time-walk. We use <b>CFD-5%</b>.</p>
+    <p class="fact">⚡ We do CFD in software on the recorded waveform — same idea, done offline.</p></div>
+  <div class="card" id="coincidence"><h3>Coincidence (AND) <span class="t">logic</span></h3>
+    <p><b>What:</b> a module that outputs a pulse only if two (or more) inputs overlap in time.</p>
+    <p class="why"><b>Here:</b> require scint-A <b>AND</b> scint-B → a real particle went through both → suppress noise &amp; stray hits.</p></div>
+  <div class="card"><h3>OR gate <span class="t">logic</span></h3>
+    <p><b>What:</b> outputs a pulse if <i>any</i> input fires.</p>
+    <p class="why"><b>Here:</b> e.g. "fire if any veto counter hit," or to fan signals together.</p>
+    <p class="fact">⚡ AND/OR/NOT + delays = the whole trigger decision, in nanoseconds.</p></div>
+  <div class="card" id="trigger"><h3>Trigger <span class="t">"record this!"</span></h3>
+    <p><b>What:</b> the logic signal that tells the DAQ to capture an event.</p>
+    <p class="why"><b>Here:</b> beam scintillators in coincidence form the trigger that <b>gates</b> the digitizer.</p>
+    <p class="fact">⚡ No trigger = no data. The trigger defines what "an event" even is.</p></div>
+ </div>
+ <h2>Digitization (DAQ)</h2>
+ <div class="grid">
+  <div class="card" id="digitizer"><h3>Digitizer / DRS4 <span class="t">record the wave</span></h3>
+    <p><b>What:</b> instead of just a time or charge, a <b>waveform digitizer</b> records the whole pulse shape. The CAEN <b>DT5742</b> uses the <b>DRS4</b> chip.</p>
+    <p class="why"><b>Here:</b> we keep the full pulse so we can do CFD, charge, and timing offline, any way we like.</p>
+    <p class="fact">⚡ DRS4 = a <b>switched-capacitor array</b>: 1024 capacitors sample the voltage in turn at 5 GS/s.</p></div>
+  <div class="card"><h3>Sampling rate <span class="t">5 GS/s</span></h3>
+    <p><b>What:</b> samples per second. 5 GS/s = one sample every 0.2 ns.</p>
+    <p class="why"><b>Here:</b> fine enough to resolve LYSO/MCP edges; we interpolate between samples for sub-sample timing.</p></div>
+  <div class="card"><h3>Stop cell / timebase <span class="t">DRS4 quirk</span></h3>
+    <p><b>What:</b> the DRS4's capacitors aren't perfectly evenly spaced in time, and sampling stops at a rotating "<b>stop cell</b>."</p>
+    <p class="why"><b>Here:</b> we calibrate this timebase so it doesn't fake a timing error; it cancels in the corner trick anyway.</p></div>
+  <div class="card"><h3>ADC &amp; TDC <span class="t">classic readout</span></h3>
+    <p><b>What:</b> <b>ADC</b> = analog-to-digital (measures charge/amplitude). <b>TDC</b> = time-to-digital (measures a time).</p>
+    <p class="why"><b>Here:</b> a waveform digitizer is effectively a fast ADC at every time-slice — it gives you both at once.</p></div>
+ </div>
+</section>
+
+<!-- MEASURE -->
+<section class="panel" data-p="measure">
+ <p class="lead">Now the physics: turning recorded waveforms into <b>resolutions</b>, and the tricks that make a
+   small detector measure time to a picosecond.</p>
+ <div class="grid">
+  <div class="card" id="timeres"><h3>Time resolution (jitter) <span class="t">the headline</span></h3>
+    <p><b>What:</b> measure the same kind of event many times; the spread (σ) of the measured time is the <b>resolution</b>.</p>
+    <p class="why"><b>Here:</b> quoted as a Gaussian σ in picoseconds. Best: <b>27 ps</b> at 150 GeV.</p>
+    <p class="fact">⚡ 1 ps = 10⁻¹² s. Light goes 0.3 mm in 1 ps — we beat that.</p></div>
+  <div class="card"><h3>Why you need a reference <span class="t">key idea</span></h3>
+    <p><b>What:</b> you can't measure "absolute" time — only a <b>difference</b> between two clocks. Resolution always involves a reference.</p>
+    <p class="why"><b>Here:</b> the MCP is the reference clock; but its own jitter then pollutes the measurement…</p></div>
+  <div class="card" id="cornerdiff"><h3>(DW−UP)/2 corner trick <span class="t">the clever bit</span></h3>
+    <p><b>What:</b> take the <b>difference</b> of two channels that share the same reference. The common reference time <b>cancels</b> in the subtraction.</p>
+    <p class="why"><b>Here:</b> Down-corner minus Up-corner, ÷2 → an MCP-<i>free</i> time estimator. This is how we get 27 ps.</p>
+    <p class="fact">⚡ Same idea kills the DRS4 timebase error and the beam-arrival jitter too. Subtraction is powerful.</p></div>
+  <div class="card"><h3>Energy resolution <span class="t">σE/E</span></h3>
+    <p><b>What:</b> spread in measured energy. Parameterized σE/E = a/√E ⊕ b: a <b>stochastic</b> term (sampling/statistics) and a <b>constant</b> term (leakage, calibration).</p>
+    <p class="why"><b>Here:</b> a short prototype leaks energy → a big constant term; expected for a 14 mm module.</p>
+    <p class="fact">⚡ "⊕" means add in quadrature: a⊕b = √(a²+b²).</p></div>
+  <div class="card"><h3>Gaussian fit &amp; σ <span class="t">how we quote it</span></h3>
+    <p><b>What:</b> histogram the measurements, fit a <b>Gaussian</b>; its width σ is the resolution. We fit the <b>core</b> to avoid tails.</p>
+    <p class="why"><b>Here:</b> every "ps" and "%" number in the report is a fitted σ.</p></div>
+  <div class="card"><h3>Time-walk (again) <span class="t">watch for it</span></h3>
+    <p><b>What:</b> the amplitude-dependent timing bias. Fix it with CFD, or correct it offline using the measured amplitude.</p>
+    <p class="why"><b>Here:</b> CFD-5% removes most; a residual "walk correction" cleans the rest.</p></div>
+  <div class="card"><h3>Fiducial cut <span class="t">selection</span></h3>
+    <p><b>What:</b> only keep events whose track hit a clean region of the detector.</p>
+    <p class="why"><b>Here:</b> a radius cut around the module center (found from the calorimeter <b>edges</b>, not the beam) keeps well-contained showers.</p></div>
+  <div class="card"><h3>Energy binning / containment <span class="t">selection</span></h3>
+    <p><b>What:</b> sort events by how much energy they deposited; the best-contained showers give the best resolution.</p>
+    <p class="why"><b>Here:</b> the headline uses the best-contained bin — the standard method — disclosed with its efficiency.</p></div>
+  <div class="card"><h3>Cross-validation <span class="t">honesty</span></h3>
+    <p><b>What:</b> pick your selection on one half of the data, measure on the other half. Stops you from fooling yourself by tuning on noise.</p>
+    <p class="why"><b>Here:</b> the best-bin choice is validated out-of-sample → the 27 ps is real, not a lucky fluctuation.</p>
+    <p class="fact">⚡ Golden rule: never quote a number from the same data you optimized on.</p></div>
+ </div>
+</section>
+
+<!-- GLOSSARY -->
+<section class="panel" data-p="glossary">
+ <p class="lead">One-line definitions, alphabetical. Use search above to filter everything at once.</p>
+ <table><thead><tr><th>Term</th><th>In one line</th></tr></thead><tbody>
+  <tr><td>ADC</td><td>Analog-to-digital converter — measures charge/amplitude as a number.</td></tr>
+  <tr><td>BNC</td><td>Bayonet twist-lock coax connector; common signal connector.</td></tr>
+  <tr><td>Bremsstrahlung</td><td>"Braking radiation" — a charged particle radiates a photon when deflected; drives EM showers.</td></tr>
+  <tr><td>Calorimeter</td><td>Detector that absorbs a particle and measures its energy.</td></tr>
+  <tr><td>CFD</td><td>Constant-fraction discriminator — times a pulse at a fixed fraction of its peak; beats time-walk.</td></tr>
+  <tr><td>Cherenkov</td><td>Light emitted by a charged particle moving faster than light-in-the-medium.</td></tr>
+  <tr><td>Coincidence</td><td>Logic AND in time — output only if inputs overlap; selects real particles.</td></tr>
+  <tr><td>Constant term</td><td>The energy-independent floor of energy resolution (leakage, calibration).</td></tr>
+  <tr><td>Coax / 50 Ω</td><td>Shielded cable for fast pulses; physics standard impedance is 50 Ω.</td></tr>
+  <tr><td>DAQ</td><td>Data acquisition — the electronics + software that record events.</td></tr>
+  <tr><td>Discriminator</td><td>Fires a logic pulse when input crosses a threshold.</td></tr>
+  <tr><td>DRS4</td><td>Switched-capacitor waveform-sampling chip (in the CAEN DT5742) at 5 GS/s.</td></tr>
+  <tr><td>EM shower</td><td>Cascade of e⁺e⁻/γ that develops as a high-energy e/γ is absorbed.</td></tr>
+  <tr><td>Fiducial</td><td>The clean region of a detector you trust; events outside are cut.</td></tr>
+  <tr><td>GS/s</td><td>Giga-samples per second; 5 GS/s = one sample every 0.2 ns.</td></tr>
+  <tr><td>HG / LG</td><td>High-gain (timing, at shower max) / low-gain (energy, full length) readout.</td></tr>
+  <tr><td>HV</td><td>High voltage — biases PMTs, MCPs, SiPMs.</td></tr>
+  <tr><td>Jitter</td><td>Random spread in a measured time; = time resolution.</td></tr>
+  <tr><td>LYSO</td><td>Fast, dense, bright scintillating crystal.</td></tr>
+  <tr><td>MCP</td><td>Micro-channel plate (PMT) — ultra-fast photosensor; our timing reference.</td></tr>
+  <tr><td>NIM</td><td>Standard for modular fast-logic electronics and their crate.</td></tr>
+  <tr><td>Pedestal</td><td>The baseline voltage with no signal; subtracted before analysis.</td></tr>
+  <tr><td>Picosecond</td><td>10⁻¹² s. Light travels 0.3 mm in one.</td></tr>
+  <tr><td>PMT</td><td>Photomultiplier tube — vacuum photosensor with high gain.</td></tr>
+  <tr><td>Radiation length X₀</td><td>Depth scale of an EM shower; tungsten ≈ 3.5 mm.</td></tr>
+  <tr><td>Sampling calorimeter</td><td>Alternating absorber + scintillator; compact but adds a stochastic term.</td></tr>
+  <tr><td>Shashlik</td><td>Plate stack with fibers through holes (skewer geometry).</td></tr>
+  <tr><td>SiPM</td><td>Silicon photomultiplier — Geiger-mode diode array; gain ~10⁶.</td></tr>
+  <tr><td>SMA</td><td>Small screw-on coax connector for high frequency.</td></tr>
+  <tr><td>Slew rate</td><td>dV/dt on a pulse edge; faster edge → better timing.</td></tr>
+  <tr><td>Stochastic term</td><td>The a/√E part of energy resolution from sampling/statistics.</td></tr>
+  <tr><td>TDC</td><td>Time-to-digital converter — measures a time as a number.</td></tr>
+  <tr><td>Test beam</td><td>Controlled beam of known particles aimed at a prototype detector.</td></tr>
+  <tr><td>Time-walk</td><td>Amplitude-dependent timing error of a fixed-threshold discriminator.</td></tr>
+  <tr><td>Trigger</td><td>The logic decision to record an event.</td></tr>
+  <tr><td>WLS</td><td>Wavelength-shifting fiber/capillary that absorbs and re-pipes light.</td></tr>
+  <tr><td>X₀</td><td>See radiation length.</td></tr>
+  <tr><td>σ ⊕ (quadrature)</td><td>a ⊕ b = √(a²+b²); how independent resolution terms combine.</td></tr>
+ </tbody></table>
+</section>
+
+<p class="none" id="noresults" style="display:none">No matches. Try a shorter term.</p>
+
+</main>
+
+<footer><div class="wrap">
+  <b>GOING RADiCAL</b> — a field guide to the RADiCAL CERN SPS electron test beam (May 2023).
+  Built for the curious. If a term here isn't in the report, it should be — ask.
+</div></footer>
+
+<script>
+(function(){
+  const tabs=[...document.querySelectorAll('.tab')];
+  const panels=[...document.querySelectorAll('.panel')];
+  const search=document.getElementById('search');
+  const noRes=document.getElementById('noresults');
+  function show(p){
+    tabs.forEach(t=>t.classList.toggle('on',t.dataset.p===p));
+    panels.forEach(s=>s.classList.toggle('on',s.dataset.p===p));
+    window.scrollTo({top:document.querySelector('.bar').offsetTop-2,behavior:'smooth'});
+  }
+  tabs.forEach(t=>t.onclick=()=>{search.value='';clearFilter();show(t.dataset.p)});
+
+  // quiz mode
+  const quiz=document.getElementById('quiz');
+  quiz.onclick=()=>{document.querySelector('main').classList.toggle('quiz');quiz.classList.toggle('on');
+                    quiz.textContent=quiz.classList.contains('on')?'Reveal':'Test me';};
+
+  // search across all cards + glossary rows
+  const cards=[...document.querySelectorAll('.card')];
+  const rows=[...document.querySelectorAll('tbody tr')];
+  function clearFilter(){
+    cards.forEach(c=>{c.style.display='';unmark(c);});
+    rows.forEach(r=>{r.style.display='';unmark(r);});
+    noRes.style.display='none';
+  }
+  function unmark(el){el.querySelectorAll('mark').forEach(m=>{m.outerHTML=m.innerHTML;});}
+  function mark(el,q){
+    // light highlight of headings only, to keep it cheap
+    el.querySelectorAll('h3,td:first-child').forEach(h=>{
+      const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig');
+      h.innerHTML=h.innerHTML.replace(re,'<mark>$1</mark>');
+    });
+  }
+  search.oninput=()=>{
+    const q=search.value.trim().toLowerCase();
+    if(!q){clearFilter();return;}
+    // show every panel while searching
+    panels.forEach(s=>s.classList.add('on'));
+    tabs.forEach(t=>t.classList.remove('on'));
+    let n=0;
+    cards.forEach(c=>{unmark(c);const hit=c.textContent.toLowerCase().includes(q);
+      c.style.display=hit?'':'none';if(hit){mark(c,q);n++;}});
+    rows.forEach(r=>{unmark(r);const hit=r.textContent.toLowerCase().includes(q);
+      r.style.display=hit?'':'none';if(hit){mark(r,q);n++;}});
+    noRes.style.display=n?'none':'block';
+  };
+
+  // beamline + internal links: open the right tab, scroll, highlight
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{
+      const id=a.getAttribute('href').slice(1);
+      const el=document.getElementById(id);if(!el)return;
+      e.preventDefault();
+      const panel=el.closest('.panel');
+      if(panel){search.value='';clearFilter();show(panel.dataset.p);}
+      setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'center'});
+        el.classList.add('hl');setTimeout(()=>el.classList.remove('hl'),1600);},180);
+    });
+  });
+})();
+</script>
+</body>
+</html>
