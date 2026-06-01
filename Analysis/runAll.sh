@@ -258,6 +258,14 @@ echo ""
 $ROOT_CMD 'Analysis/wireChamberResolution.C+'
 
 echo ""
+echo "Step 12c: Per-channel transverse maps, before/after 1x1 trigger (Layer 1)"
+echo "  Mean amplitude vs beam track (x,y) for each capillary + the 1x1 trigger,"
+echo "  good-track vs 1x1-trigger selection (reads raw waveforms; all energies)"
+echo ""
+
+$ROOT_CMD 'Analysis/transverseMaps.C+'
+
+echo ""
 echo "Step 13: DRS4 hardware diagnostics (Layer 1)"
 echo "  Cell-level noise floor, saturation fractions, spike rates"
 echo ""

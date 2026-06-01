@@ -154,8 +154,9 @@ static void ApplyRADiCALStyle()
     s->SetFrameLineWidth(1);
     s->SetFrameBorderMode(0);
 
-    // 2D colour palette (kFall: blue → warm yellow/red)
-    s->SetPalette(kFall);
+    // 2D colour palette: kViridis — perceptually uniform, colour-blind safe,
+    // greyscale-safe, and publication standard (replaces kFall).
+    s->SetPalette(kViridis);
     s->SetNumberContours(99);
 
     // Font: 42 = Helvetica (clean, sans-serif)
@@ -491,7 +492,7 @@ static TLegend* MakeCornerLegend(int nEntries, const char* corner = "tr",
 }
 
 // ---------------------------------------------------------------------------
-// StyleColz — one-call COLZ styling for the current pad: kFall palette, wide
+// StyleColz — one-call COLZ styling for the current pad: kViridis palette, wide
 // right margin for the colour bar, no grid, optional log-z.  Call before
 // Draw("COLZ").  (Set the z-axis title on the histogram: h->GetZaxis()->SetTitle("events").)
 // ---------------------------------------------------------------------------
@@ -506,7 +507,7 @@ static void StyleColz(bool logz = false)
     gPad->SetGridx(0);
     gPad->SetGridy(0);
     if (logz) gPad->SetLogz(1);
-    gStyle->SetPalette(kFall);
+    gStyle->SetPalette(kViridis);
 }
 
 // ---------------------------------------------------------------------------

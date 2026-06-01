@@ -407,6 +407,11 @@ void timingEnergyBins()
             float dx = x_trk - xcf;
             float dy = y_trk - ycf;
             if (dx*dx + dy*dy >= rFid2)          continue;
+            // NOTE: an MCP-BNC connector veto (disk at track (7,5) mm) was tested
+            // here and REJECTED — the BNC sits on the beam core, so vetoing it
+            // removes the highest-E_meas/best-contained showers and WORSENS the
+            // 150 GeV headline (27.4 -> 30.5 ps at r=2 mm).  The connectors do not
+            // contaminate the calorimeter timing; no veto is applied.
 
             EbEvent ev;
             ev.run    = run;
