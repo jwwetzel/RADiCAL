@@ -257,9 +257,9 @@ class PlotEntry:
             raise ValueError(
                 f"PlotEntry for '{self.pdf_path}' has an empty caption."
             )
-        if self.width_pct not in (33, 50, 100):
+        if self.width_pct not in (33, 50, 66, 100):
             raise ValueError(
-                f"width_pct must be 33, 50, or 100, got {self.width_pct}"
+                f"width_pct must be 33, 50, 66, or 100, got {self.width_pct}"
             )
         if not self.png_stem:
             parent = self.pdf_path.parent.name
@@ -980,6 +980,8 @@ p.note  { font-size: .85rem; }
    one line — the base rule assumed a smaller gap and was wrapping them. */
 figure.w50 { width: calc(50% - 11px); }
 figure.w33 { width: calc(33.333% - 15px); }
+figure.w66 { width: calc(66% - 11px); }   /* single, centred narrative figure */
+.plot-row { justify-content: center; }     /* centre solo figures; neutral for full rows */
 figure, .page-card { box-sizing: border-box; border: 1px solid var(--border); border-radius: 14px;
   box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; }
 figure:hover, .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
@@ -1332,78 +1334,97 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
             anchor="layer1",
             title="Layer 1 -- Hardware Integrity",
             intro=(
-                "Status: COMPLETE -- hardware diagnostics and channel integrity verified. "
-                "RADiCAL is a shashlik-geometry crystal calorimeter prototype for "
-                "precision timing in HL-LHC environments.  The May 2023 campaign at "
-                "the CERN SPS H2 beamline collected electron data at six energies "
-                "(25--150 GeV) using a DRS4-based digitiser.  This layer verifies that "
-                "the DRS4 digitiser is operating correctly (noise floor, saturation rate, "
-                "spike artefacts) and that all 8 capillary channels are active and "
-                "produce well-formed waveforms."
+                "Before any physics, one question: <em>is the instrument sound?</em>  RADiCAL is a "
+                "W/LYSO shashlik prototype read out by eight high-gain capillaries (fast &rarr; timing) "
+                "and eight low-gain capillaries (slow &rarr; energy) on a DRS4 digitiser; the May 2023 "
+                "CERN-SPS H2 run took electrons at 25&ndash;150 GeV.  We walk the readout from the ground "
+                "up &mdash; are the channels alive, are the pulses clean, can we trust the clock, is the "
+                "response linear &mdash; so every number in the layers that follow rests on a verified detector."
             ),
             subsections=[
                 Subsection(
-                    anchor="l1-hero",
-                    title="Hardware integrity at a glance",
-                    note=("Four figures distil the full Layer-1 diagnostics — every capillary "
-                          "is alive, quiet, and consistent, and the DRS4 time-base is sound. "
-                          "Expand the panel beneath them for the complete per-channel and "
-                          "per-energy detail."),
-                    plots=[
-                        PlotEntry(
-                            sumPDF("layer1_pulse_shapes.png"),
-                            caption=("Average pulse shape of all 16 readout channels "
-                                     "(150 GeV, normalized): 8 high-gain capillaries (top, fast "
-                                     "&rarr; timing, shown over the 0&ndash;18 ns prompt window) and "
-                                     "8 low-gain capillaries (bottom, slow &rarr; energy, shown over "
-                                     "the full 1&thinsp;&micro;s readout window).  Every channel "
-                                     "produces a clean, consistent pulse.  The LG chain is "
-                                     "AC-coupled, so each pulse is followed by a balancing "
-                                     "undershoot (&asymp;35%) that recovers cleanly to baseline by "
-                                     "&asymp;500 ns with no ringing &mdash; confirming stable "
-                                     "baseline restoration across the module."),
-                            width_pct=100,
-                        ),
-                        PlotEntry(
-                            sumPDF("layer1_vitals.png"),
-                            caption=("Pedestal noise per capillary: all 8 channels quiet "
-                                     "(~1.3 mV), far below the 5 mV floor, fully active, "
-                                     "negligible saturation."),
-                            width_pct=50,
-                        ),
-                        PlotEntry(
-                            sumPDF("layer1_timebase.png"),
-                            caption=("DRS4 stop-cell coverage hugs the ideal uniform diagonal &mdash; "
-                                     "the stop cell rotates uniformly.  The per-cell width calibration "
-                                     "was <em>not</em> applied (nominal 0.2&thinsp;ns/cell), but that "
-                                     "uncalibrated width is common-mode and cancels in the "
-                                     "(DW&minus;UP)/2 corner estimator; the residual stop-cell pattern "
-                                     "is corrected and validated out-of-sample (A&sup2;-combo "
-                                     "121&rarr;99 ps, split-half)."),
-                            width_pct=50,
-                        ),
-                        PlotEntry(
-                            sumPDF("layer1_linearity.png"),
-                            caption=("Mean HG amplitude vs energy -- all 8 capillaries track "
-                                     "together; HG compresses near the rail above ~50 GeV "
-                                     "(energy is measured on the linear LG channels)."),
-                            width_pct=100,
-                        ),
-                    ],
+                    anchor="l1-channels",
+                    title="Are all eight channels alive — and quiet?",
+                    note=("Pedestal noise (baseline RMS) of each capillary against the 5 mV noise floor, "
+                          "with every channel's active fraction."),
+                    finding=(
+                        "<strong>Yes &mdash; all eight capillaries are live and quiet.</strong>  Pedestal "
+                        "RMS &asymp; 1.3 mV, far below the 5 mV floor; the active fraction stays high on "
+                        "every channel (&gt;94% even for the weakest); saturation is negligible.  NW-Up "
+                        "carries the weakest signal of the "
+                        "eight but is fully functional &mdash; flagged here and explained later by light "
+                        "yield, not a dead channel."
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("layer1_vitals.png"),
+                        caption=("Pedestal noise per capillary &mdash; all 8 well under the 5 mV floor, "
+                                 "fully active, negligible saturation."),
+                        width_pct=66)],
                 ),
-            ],
-            appendix_label=("Full Layer 1 diagnostics -- per-channel & per-energy detail "
-                            "(click to expand)"),
-            appendix_subsections=[
                 Subsection(
-                    anchor="l1-detector",
-                    title="Detector description",
-                    note=("Detector specifications from ChannelConfig.h and SelectionCuts.h -- "
-                          "single source of truth for all analysis macros."),
+                    anchor="l1-pulses",
+                    title="They fire — but are the pulses clean and consistent?",
+                    note=("Average pulse shape of all 16 readout channels at 150 GeV (normalised): the fast "
+                          "high-gain capillaries (timing) and the slow low-gain capillaries (energy)."),
+                    finding=(
+                        "<strong>Every channel produces a clean, consistent pulse.</strong>  The HG chain is "
+                        "fast (a sharp prompt peak in the first &asymp;18 ns &mdash; good for timing); the LG "
+                        "chain is AC-coupled, so each pulse is followed by a balancing undershoot (&asymp;35%) "
+                        "that recovers to baseline by &asymp;500 ns with no ringing &mdash; stable baseline "
+                        "restoration across the whole module."
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("layer1_pulse_shapes.png"),
+                        caption=("Average pulse shape, all 16 channels (150 GeV): 8 HG (top, fast &rarr; "
+                                 "timing) + 8 LG (bottom, slow &rarr; energy).  Clean and consistent."),
+                        width_pct=66)],
                 ),
                 Subsection(
                     anchor="l1-timebase",
-                    title="DRS4 time-base verification",
+                    title="The pulses are clean — but can we trust the clock to picoseconds?",
+                    note=("The DRS4 samples on 1024 capacitors with a rotating start (&ldquo;stop&rdquo;) "
+                          "cell.  This is the stop-cell coverage against the ideal uniform diagonal."),
+                    finding=(
+                        "<strong>Yes &mdash; the time base is sound, and its residual is corrected.</strong>  "
+                        "The stop cell rotates uniformly (every physical cell is sampled equally &rarr; a "
+                        "data-driven correction is well-posed).  The per-cell width calibration was "
+                        "<em>not</em> applied (nominal 0.2 ns/cell), but that uncalibrated width is "
+                        "<em>common-mode</em> and cancels exactly in the (DW&minus;UP)/2 corner estimator "
+                        "&mdash; so it does not limit the headline.  The residual stop-cell pattern is "
+                        f"corrected and validated out-of-sample on the MCP-referenced combination "
+                        f"(A&sup2;-combo {DRS4_BEF} &rarr; {DRS4_AFT} ps, split-half)."
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("layer1_timebase.png"),
+                        caption=("DRS4 stop-cell coverage hugs the ideal uniform diagonal &mdash; the stop "
+                                 "cell rotates uniformly, so the data-driven correction is well-posed."),
+                        width_pct=66)],
+                ),
+                Subsection(
+                    anchor="l1-linearity",
+                    title="Timing is sound — is the energy response linear?",
+                    note=("Mean signal amplitude vs beam energy for each of the eight capillaries, "
+                          "25&ndash;150 GeV."),
+                    finding=(
+                        "<strong>Yes &mdash; the response is linear and the channels track together.</strong>  "
+                        "All eight capillaries scale with energy in lock-step.  The high-gain chain compresses "
+                        "near its rail above ~50 GeV &mdash; by design, since energy is measured on the linear "
+                        "low-gain channels &mdash; confirming the HG/LG split does its job.  No channel gains "
+                        "anomalously less per GeV.  <em>The instrument is verified; on to the timing reference.</em>"
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("layer1_linearity.png"),
+                        caption=("Mean HG amplitude vs energy &mdash; all 8 capillaries track together; HG "
+                                 "compresses near the rail above ~50 GeV (energy is on the linear LG)."),
+                        width_pct=66)],
+                ),
+            ],
+            appendix_label=("Raw per-channel &amp; per-energy hardware diagnostics "
+                            "(time-base, noise/saturation, integrity, waveforms, quality reports)"),
+            appendix_subsections=[
+                Subsection(
+                    anchor="l1-timebase-deep",
+                    title="DRS4 time-base verification (detail)",
                     note=(
                         "Confirms the DT5742 was read with a <em>nominal</em> time axis "
                         "(0.200 ns/cell; per-cell width RMS 0.84 ps = float precision -- "
@@ -1423,145 +1444,6 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "(mean-all, A^2-weighted-all): split-half out-of-sample validation "
                         f"shows the A^2 combo improving {DRS4_BEF} -> {DRS4_AFT} ps after correction.  "
                         "Applied to M2/M3 in timingResolution.C; activates on reprocess."
-                    ),
-                ),
-                Subsection(
-                    anchor="l1-modulecenter",
-                    title="Shashlik module centre from the calorimeter edges",
-                    note=(
-                        "Beam-independent module centre.  The summed high-gain amplitude of the "
-                        "8 RADiCAL capillaries (&Sigma;HG) is projected onto x (tracks in a central "
-                        "y-band) and onto y (central x-band); each projection is a flat-topped "
-                        "plateau with sharp edges at the module boundary.  The half-maximum "
-                        "crossings give the two edges, and the centre is their midpoint &mdash; "
-                        "independent of the beam profile within the module.  The low-gain energy "
-                        "sum (&Sigma;LG) gives the same centre as an independent cross-check.  "
-                        "Generated by moduleCenter.C."
-                    ),
-                    plots=[PlotEntry(
-                        sumPDF("module_center.png"),
-                        caption=("Top: &Sigma;LG vs x; bottom: vs y.  Dashed = half-max edges, "
-                                 "red = centre (their midpoint).  Off-module structure at large "
-                                 "|y| (Pb-glass / leakage backsplash) is ignored by scanning "
-                                 "outward from the plateau."),
-                    )],
-                    finding=(
-                        f"<strong>Module centre = ({MOD_CX}, {MOD_CY}) mm</strong> in WC "
-                        f"coordinates (&Sigma;HG of the 8 capillaries), footprint "
-                        f"{MOD_WX}&times;{MOD_WY} mm (square, as expected).  The &Sigma;LG energy "
-                        "sum gives the same centre to &lt;0.05 mm (6.61, 4.70 mm), so the result is "
-                        "robust to the choice of signal.  The centre is <em>energy-independent</em> "
-                        "(stable to &plusmn;0.15 mm across 25&ndash;150 GeV &mdash; the module does "
-                        "not move with beam energy), confirming it as a geometric measurement rather "
-                        "than a beam centroid.  This sets the nominal <code>kCalo_x0/y0</code> "
-                        "(6.6, 4.7) and centres the transverse maps above."
-                    ),
-                ),
-                Subsection(
-                    anchor="l1-alignment",
-                    title="Transverse detector alignment (RADiCAL / MCP / beam)",
-                    note=(
-                        "Data-driven survey of where each detector sits in the wire-chamber track "
-                        "frame.  Each centre uses the method matched to its response: RADiCAL from "
-                        "the &Sigma;HG edges, the MCP from the FWHM midpoint of its acceptance blob, "
-                        "the beam from the track centroid.  The Pb-glass is shown for context only "
-                        "&mdash; it sits behind/beside the RADiCAL and responds to leakage (a low "
-                        "square at the RADiCAL footprint plus an asymmetric high lobe), so it has no "
-                        "clean geometric centre and none is claimed.  Generated by alignmentAnalysis.C."
-                    ),
-                    plots=[PlotEntry(
-                        sumPDF("alignment.png"),
-                        caption=("Response maps for RADiCAL (&Sigma;HG), MCP, and Pb-glass (context), "
-                                 "plus a schematic overlaying the RADiCAL footprint (blue square), "
-                                 "MCP FWHM (green), and beam 1&sigma; (orange) with their centres."),
-                    )],
-                    finding=(
-                        f"<strong>The MCP is co-aligned with the RADiCAL to {ALN_OFF_MCP} mm</strong> "
-                        f"(MCP centre {ALN_MCP} mm vs RADiCAL ({MOD_CX}, {MOD_CY}) mm) &mdash; "
-                        "sub-millimetre, i.e. the timing reference sits squarely on the module.  "
-                        f"The <strong>beam</strong> was steered <strong>{ALN_OFF_BEAM} mm</strong> off "
-                        f"the module centre (centroid {ALN_BEAM} mm, toward +x/&minus;y).  Both offsets "
-                        "are small compared with the ~14&ndash;16 mm module footprint, so the beam "
-                        "stayed well within the fiducial throughout."
-                    ),
-                ),
-                Subsection(
-                    anchor="l1-wirechamber",
-                    title="Wire-chamber spatial resolution &amp; track binning",
-                    note=(
-                        "Data-driven resolution of the delay-line beam chamber, measured "
-                        "<em>without</em> a second tracker.  Position is "
-                        "x = (7/36 mm/ns)&middot;(t<sub>R</sub>&minus;t<sub>L</sub>); the hit "
-                        "position lives in the <em>difference</em> of the two end-times, so the "
-                        "<em>sum</em> t<sub>R</sub>+t<sub>L</sub> is position-independent and its "
-                        "spread isolates the timing noise that limits the position "
-                        "(&sigma;<sub>x</sub> = 7/36 &middot; &sigma;(sum)).  Reads raw waveforms "
-                        "(highest-energy run); generated by wireChamberResolution.C."
-                    ),
-                    plots=[PlotEntry(
-                        sumPDF("wire_chamber_resolution.pdf"),
-                        caption=("End-time sums t<sub>R</sub>+t<sub>L</sub> (x), "
-                                 "t<sub>D</sub>+t<sub>U</sub> (y), and their difference.  Sharp "
-                                 "core + heavy tail/secondary lobe = occasional delay-line "
-                                 "mis-reconstruction on the slow (~1.3 ns/sample) digitiser."),
-                    )],
-                    finding=(
-                        f"<strong>&sigma;<sub>x</sub> &asymp; {WC_RES_X} mm, "
-                        f"&sigma;<sub>y</sub> &asymp; {WC_RES_Y} mm</strong> "
-                        "(peak-time, as <code>x_trk</code>/<code>y_trk</code> are built; "
-                        f"&asymp;{R.get_opt('wc_res_cfd_mm') and f'{R.get_opt('wc_res_cfd_mm'):.1f}' or 'n/a'} mm "
-                        "with sub-sample CFD-50%).  Energy-independent (the sum method is "
-                        f"position-blind).  Beam spot for context: &sigma;<sub>x</sub>&asymp;{WC_BEAM_X} mm, "
-                        f"&sigma;<sub>y</sub>&asymp;{WC_BEAM_Y} mm.  The ~mm resolution is set by "
-                        "peak-timing on a slow digitiser, not the wire pitch.  <strong>Track-binning "
-                        "guidance:</strong> the position quantises in ~0.25 mm steps (one sample), "
-                        "so hit-map / beam-profile plots are fine at 1&ndash;2 mm; but for "
-                        "position-<em>dependent</em> analysis use bins &ge; the resolution "
-                        "(&asymp;3.5&ndash;4 mm) &mdash; finer bins are correlated by the smearing, "
-                        "not independent measurements."
-                    ),
-                ),
-                Subsection(
-                    anchor="l1-transverse",
-                    title="Per-channel transverse maps &amp; the MCP-connector check",
-                    note=(
-                        "Mean pulse amplitude vs beam-track impact point for each of the 8 "
-                        "capillaries plus the 1×1-cm trigger, shown <em>before</em> (good track "
-                        "only) and <em>after</em> the 1×1 trigger (ch15 &gt; 60 mV).  Binned at "
-                        "0.25 mm in x and 0.5 mm in y (finest-but-no-finer: x<sub>trk</sub> is "
-                        "continuous, y<sub>trk</sub> has a peak-sample comb below ~0.5 mm), "
-                        "viridis palette.  Generated by transverseMaps.C (150 GeV shown; all "
-                        "energies in Output/Summary)."
-                    ),
-                    plots=[PlotEntry(
-                        sumPDF("transverse_maps_150GeV.pdf"),
-                        caption=("Top: all channels before the trigger.  Bottom: after.  The 1×1 "
-                                 "trigger removes the ~24% no-hit pedestal.  The MCP BNC ring "
-                                 "(~(7,5) mm) and SMA ring (~(20,3) mm) are visible in the 1×1 cell."),
-                    )],
-                    finding=(
-                        "<strong>The rings are pre-showering in the connector metal, not "
-                        "absorption &mdash; harmless to the calorimeter, so no connector veto is "
-                        "applied.</strong>  Controlling for beam intensity (same radius from the "
-                        "beam centre, connector vs no-connector), the connectors <em>enhance</em> "
-                        "the 1×1 signal ~2.4× (SMA 391 vs 160 mV control; BNC barrel 407 vs "
-                        "204 mV) &mdash; the opposite of absorption.  A connector barrel is ~one "
-                        "radiation length of brass/steel in the beam: it starts the EM shower "
-                        "early (one e<sup>&minus;</sup> &rarr; many e<sup>+</sup>e<sup>&minus;</sup> "
-                        "+ &gamma;), and that multiplied swarm sprays into the small downstream 1×1 "
-                        "trigger.  The <em>ring</em> shape is the coaxial geometry: the solid outer "
-                        "barrel (annulus) is the most material &rarr; brightest rim, while the thin "
-                        "central pin / dielectric showers less &rarr; a dip in the middle.  "
-                        "Crucially, a shower <em>conserves energy</em> &mdash; pre-starting it a few "
-                        "cm upstream does not destroy energy, so the deep calorimeter still "
-                        "integrates the full shower.  Consistent with this: the BNC region "
-                        "(~(7,5) mm, on the beam core) carries <em>normal</em> calorimeter energy "
-                        "(5402 vs 5549 mV) and a test veto there <em>worsens</em> the 150 GeV timing "
-                        "headline (27.4 → 30.5 ps) by discarding the highest-E<sub>meas</sub>, "
-                        "best-contained showers; the SMA (~(20,3) mm) lies <em>outside</em> the "
-                        "active square (⟨Σcap⟩ 1196 vs ~5500 mV) so the fiducial cut already removes "
-                        "it.  The 1×1 trigger is retained only as a clean-beam (no-pedestal) "
-                        "selection &mdash; it removes the ~24% no-hit population, not the connectors."
                     ),
                 ),
                 Subsection(
@@ -1906,6 +1788,145 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
             appendix_label=("Full Layer 3 diagnostics -- beam quality, population classification &amp; "
                             "per-energy containment (click to expand)"),
             appendix_subsections=[
+                Subsection(
+                    anchor="l1-modulecenter",
+                    title="Shashlik module centre from the calorimeter edges",
+                    note=(
+                        "Beam-independent module centre.  The summed high-gain amplitude of the "
+                        "8 RADiCAL capillaries (&Sigma;HG) is projected onto x (tracks in a central "
+                        "y-band) and onto y (central x-band); each projection is a flat-topped "
+                        "plateau with sharp edges at the module boundary.  The half-maximum "
+                        "crossings give the two edges, and the centre is their midpoint &mdash; "
+                        "independent of the beam profile within the module.  The low-gain energy "
+                        "sum (&Sigma;LG) gives the same centre as an independent cross-check.  "
+                        "Generated by moduleCenter.C."
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("module_center.png"),
+                        caption=("Top: &Sigma;LG vs x; bottom: vs y.  Dashed = half-max edges, "
+                                 "red = centre (their midpoint).  Off-module structure at large "
+                                 "|y| (Pb-glass / leakage backsplash) is ignored by scanning "
+                                 "outward from the plateau."),
+                    )],
+                    finding=(
+                        f"<strong>Module centre = ({MOD_CX}, {MOD_CY}) mm</strong> in WC "
+                        f"coordinates (&Sigma;HG of the 8 capillaries), footprint "
+                        f"{MOD_WX}&times;{MOD_WY} mm (square, as expected).  The &Sigma;LG energy "
+                        "sum gives the same centre to &lt;0.05 mm (6.61, 4.70 mm), so the result is "
+                        "robust to the choice of signal.  The centre is <em>energy-independent</em> "
+                        "(stable to &plusmn;0.15 mm across 25&ndash;150 GeV &mdash; the module does "
+                        "not move with beam energy), confirming it as a geometric measurement rather "
+                        "than a beam centroid.  This sets the nominal <code>kCalo_x0/y0</code> "
+                        "(6.6, 4.7) and centres the transverse maps above."
+                    ),
+                ),
+                Subsection(
+                    anchor="l1-alignment",
+                    title="Transverse detector alignment (RADiCAL / MCP / beam)",
+                    note=(
+                        "Data-driven survey of where each detector sits in the wire-chamber track "
+                        "frame.  Each centre uses the method matched to its response: RADiCAL from "
+                        "the &Sigma;HG edges, the MCP from the FWHM midpoint of its acceptance blob, "
+                        "the beam from the track centroid.  The Pb-glass is shown for context only "
+                        "&mdash; it sits behind/beside the RADiCAL and responds to leakage (a low "
+                        "square at the RADiCAL footprint plus an asymmetric high lobe), so it has no "
+                        "clean geometric centre and none is claimed.  Generated by alignmentAnalysis.C."
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("alignment.png"),
+                        caption=("Response maps for RADiCAL (&Sigma;HG), MCP, and Pb-glass (context), "
+                                 "plus a schematic overlaying the RADiCAL footprint (blue square), "
+                                 "MCP FWHM (green), and beam 1&sigma; (orange) with their centres."),
+                    )],
+                    finding=(
+                        f"<strong>The MCP is co-aligned with the RADiCAL to {ALN_OFF_MCP} mm</strong> "
+                        f"(MCP centre {ALN_MCP} mm vs RADiCAL ({MOD_CX}, {MOD_CY}) mm) &mdash; "
+                        "sub-millimetre, i.e. the timing reference sits squarely on the module.  "
+                        f"The <strong>beam</strong> was steered <strong>{ALN_OFF_BEAM} mm</strong> off "
+                        f"the module centre (centroid {ALN_BEAM} mm, toward +x/&minus;y).  Both offsets "
+                        "are small compared with the ~14&ndash;16 mm module footprint, so the beam "
+                        "stayed well within the fiducial throughout."
+                    ),
+                ),
+                Subsection(
+                    anchor="l1-wirechamber",
+                    title="Wire-chamber spatial resolution &amp; track binning",
+                    note=(
+                        "Data-driven resolution of the delay-line beam chamber, measured "
+                        "<em>without</em> a second tracker.  Position is "
+                        "x = (7/36 mm/ns)&middot;(t<sub>R</sub>&minus;t<sub>L</sub>); the hit "
+                        "position lives in the <em>difference</em> of the two end-times, so the "
+                        "<em>sum</em> t<sub>R</sub>+t<sub>L</sub> is position-independent and its "
+                        "spread isolates the timing noise that limits the position "
+                        "(&sigma;<sub>x</sub> = 7/36 &middot; &sigma;(sum)).  Reads raw waveforms "
+                        "(highest-energy run); generated by wireChamberResolution.C."
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("wire_chamber_resolution.pdf"),
+                        caption=("End-time sums t<sub>R</sub>+t<sub>L</sub> (x), "
+                                 "t<sub>D</sub>+t<sub>U</sub> (y), and their difference.  Sharp "
+                                 "core + heavy tail/secondary lobe = occasional delay-line "
+                                 "mis-reconstruction on the slow (~1.3 ns/sample) digitiser."),
+                    )],
+                    finding=(
+                        f"<strong>&sigma;<sub>x</sub> &asymp; {WC_RES_X} mm, "
+                        f"&sigma;<sub>y</sub> &asymp; {WC_RES_Y} mm</strong> "
+                        "(peak-time, as <code>x_trk</code>/<code>y_trk</code> are built; "
+                        f"&asymp;{R.get_opt('wc_res_cfd_mm') and f'{R.get_opt('wc_res_cfd_mm'):.1f}' or 'n/a'} mm "
+                        "with sub-sample CFD-50%).  Energy-independent (the sum method is "
+                        f"position-blind).  Beam spot for context: &sigma;<sub>x</sub>&asymp;{WC_BEAM_X} mm, "
+                        f"&sigma;<sub>y</sub>&asymp;{WC_BEAM_Y} mm.  The ~mm resolution is set by "
+                        "peak-timing on a slow digitiser, not the wire pitch.  <strong>Track-binning "
+                        "guidance:</strong> the position quantises in ~0.25 mm steps (one sample), "
+                        "so hit-map / beam-profile plots are fine at 1&ndash;2 mm; but for "
+                        "position-<em>dependent</em> analysis use bins &ge; the resolution "
+                        "(&asymp;3.5&ndash;4 mm) &mdash; finer bins are correlated by the smearing, "
+                        "not independent measurements."
+                    ),
+                ),
+                Subsection(
+                    anchor="l1-transverse",
+                    title="Per-channel transverse maps &amp; the MCP-connector check",
+                    note=(
+                        "Mean pulse amplitude vs beam-track impact point for each of the 8 "
+                        "capillaries plus the 1×1-cm trigger, shown <em>before</em> (good track "
+                        "only) and <em>after</em> the 1×1 trigger (ch15 &gt; 60 mV).  Binned at "
+                        "0.25 mm in x and 0.5 mm in y (finest-but-no-finer: x<sub>trk</sub> is "
+                        "continuous, y<sub>trk</sub> has a peak-sample comb below ~0.5 mm), "
+                        "viridis palette.  Generated by transverseMaps.C (150 GeV shown; all "
+                        "energies in Output/Summary)."
+                    ),
+                    plots=[PlotEntry(
+                        sumPDF("transverse_maps_150GeV.pdf"),
+                        caption=("Top: all channels before the trigger.  Bottom: after.  The 1×1 "
+                                 "trigger removes the ~24% no-hit pedestal.  The MCP BNC ring "
+                                 "(~(7,5) mm) and SMA ring (~(20,3) mm) are visible in the 1×1 cell."),
+                    )],
+                    finding=(
+                        "<strong>The rings are pre-showering in the connector metal, not "
+                        "absorption &mdash; harmless to the calorimeter, so no connector veto is "
+                        "applied.</strong>  Controlling for beam intensity (same radius from the "
+                        "beam centre, connector vs no-connector), the connectors <em>enhance</em> "
+                        "the 1×1 signal ~2.4× (SMA 391 vs 160 mV control; BNC barrel 407 vs "
+                        "204 mV) &mdash; the opposite of absorption.  A connector barrel is ~one "
+                        "radiation length of brass/steel in the beam: it starts the EM shower "
+                        "early (one e<sup>&minus;</sup> &rarr; many e<sup>+</sup>e<sup>&minus;</sup> "
+                        "+ &gamma;), and that multiplied swarm sprays into the small downstream 1×1 "
+                        "trigger.  The <em>ring</em> shape is the coaxial geometry: the solid outer "
+                        "barrel (annulus) is the most material &rarr; brightest rim, while the thin "
+                        "central pin / dielectric showers less &rarr; a dip in the middle.  "
+                        "Crucially, a shower <em>conserves energy</em> &mdash; pre-starting it a few "
+                        "cm upstream does not destroy energy, so the deep calorimeter still "
+                        "integrates the full shower.  Consistent with this: the BNC region "
+                        "(~(7,5) mm, on the beam core) carries <em>normal</em> calorimeter energy "
+                        "(5402 vs 5549 mV) and a test veto there <em>worsens</em> the 150 GeV timing "
+                        "headline (27.4 → 30.5 ps) by discarding the highest-E<sub>meas</sub>, "
+                        "best-contained showers; the SMA (~(20,3) mm) lies <em>outside</em> the "
+                        "active square (⟨Σcap⟩ 1196 vs ~5500 mV) so the fiducial cut already removes "
+                        "it.  The 1×1 trigger is retained only as a clean-beam (no-pedestal) "
+                        "selection &mdash; it removes the ~24% no-hit population, not the connectors."
+                    ),
+                ),
                 Subsection(
                     anchor="l3-beam-quality",
                     title="Cross-energy beam quality overview",
