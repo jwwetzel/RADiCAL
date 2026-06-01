@@ -300,6 +300,61 @@ void HeroTimebase()
     printf("[layer1Summary] wrote layer1_timebase.png\n");
 }
 
+// ── H5 — DRS4 health: noise floor vs energy (saturation/spike annotated) ─────
+// Replaces the dense 6-page drs4_diagnostics grid with one clean figure: the
+// noise floor (the real, informative metric) across all 8 channels and all six
+// energies, with the flat-at-zero saturation/spike facts stated, not plotted.
+void HeroDRS4Clean()
+{
+    TFile f(Form("%sdrs4_diagnostics.root", kSumDir));
+    if (f.IsZombie()) { printf("[layer1Summary] no drs4_diagnostics.root — skip H5\n"); return; }
+
+    TCanvas* c = NewSquareCanvas("c_l1_drs4", 660, 128);
+    c->cd();
+
+    TMultiGraph* mg = new TMultiGraph();
+    double maxSat = 0., maxSpk = 0.;
+    for (int i = 0; i < 8; ++i) {
+        TGraph* gp = dynamic_cast<TGraph*>(f.Get(Form("gPedRms_ch%d", i)));
+        if (gp) {
+            gp->SetLineColor(kRChannelCols[i]); gp->SetMarkerColor(kRChannelCols[i]);
+            gp->SetMarkerStyle(20); gp->SetMarkerSize(1.0); gp->SetLineWidth(2);
+            mg->Add(gp, "PL");
+        }
+        double s = graphMax(dynamic_cast<TGraph*>(f.Get(Form("gSatFrac_ch%d", i))));
+        if (!std::isnan(s)) maxSat = std::max(maxSat, s);
+        double k = graphMax(dynamic_cast<TGraph*>(f.Get(Form("gSpkFrac_ch%d", i))));
+        if (!std::isnan(k)) maxSpk = std::max(maxSpk, k);
+    }
+
+    mg->Draw("A");
+    mg->GetXaxis()->SetTitle("beam energy (GeV)");
+    mg->GetYaxis()->SetTitle("pedestal noise floor (mV)");
+    mg->GetXaxis()->SetLimits(0., 165.);
+    mg->GetYaxis()->SetRangeUser(0., 6.);
+    mg->GetXaxis()->SetTitleSize(0.048);
+    mg->GetYaxis()->SetTitleSize(0.048);
+    mg->GetYaxis()->SetTitleOffset(1.45);
+    mg->Draw("A");
+
+    TLine* l5 = new TLine(0., 5., 165., 5.);
+    l5->SetLineColor(kRRed); l5->SetLineStyle(2); l5->SetLineWidth(2); l5->Draw();
+    { TLatex t; t.SetNDC(); t.SetTextSize(0.030); t.SetTextColor(kRRed); t.SetTextAlign(31);
+      t.DrawLatex(0.90, 0.815, "5 mV noise floor"); }
+
+    // No legend: all 8 channels overlap at ~1.3 mV — the message is collective.
+    { TLatex v; v.SetNDC(); v.SetTextSize(0.032); v.SetTextColor(kGray + 3); v.SetTextAlign(11);
+      v.DrawLatex(0.185, 0.60, "All 8 capillaries (coloured) #minus flat noise floor ~1.3 mV");
+      v.DrawLatex(0.185, 0.545, "across 25#minus150 GeV");
+      v.DrawLatex(0.185, 0.475, Form("HG saturation < %.1f%%    #bullet    max spike rate %.2f%%",
+                                    std::max(0.1, maxSat), maxSpk));
+      v.DrawLatex(0.185, 0.420, "no degradation with beam rate or energy"); }
+
+    DrawPageTitle("DRS4 health  --  noise floor vs beam energy (all 8 channels)");
+    c->Print(Form("%slayer1_drs4clean.png", kSumDir));
+    printf("[layer1Summary] wrote layer1_drs4clean.png\n");
+}
+
 } // namespace
 
 void layer1Summary()
@@ -311,6 +366,7 @@ void layer1Summary()
     HeroVitals();
     HeroLinearity();
     HeroTimebase();
+    HeroDRS4Clean();
 
-    printf("\n[layer1Summary] Done — 4 hero figures in %s\n", kSumDir);
+    printf("\n[layer1Summary] Done — 5 hero figures in %s\n", kSumDir);
 }
