@@ -1376,15 +1376,28 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                  "(~(7,5) mm) and SMA ring (~(20,3) mm) are visible in the 1×1 cell."),
                     )],
                     finding=(
-                        "<strong>The MCP connector showers do not contaminate the calorimeter, "
-                        "so no connector veto is applied.</strong>  The SMA (~(20,3) mm) lies "
-                        "<em>outside</em> the active square, so the fiducial cut already removes it "
-                        "(⟨Σcap⟩ 1196 vs ~5500 mV in-core).  The BNC (~(7,5) mm) sits on the beam "
-                        "core and carries <em>normal</em> calorimeter energy (5402 vs 5549 mV); a "
-                        "test veto there <em>worsens</em> the 150 GeV timing headline "
-                        "(27.4 → 30.5 ps) because it discards the highest-E<sub>meas</sub>, "
-                        "best-contained showers.  The 1×1 trigger is retained only as a clean-beam "
-                        "(no-pedestal) selection."
+                        "<strong>The rings are pre-showering in the connector metal, not "
+                        "absorption &mdash; harmless to the calorimeter, so no connector veto is "
+                        "applied.</strong>  Controlling for beam intensity (same radius from the "
+                        "beam centre, connector vs no-connector), the connectors <em>enhance</em> "
+                        "the 1×1 signal ~2.4× (SMA 391 vs 160 mV control; BNC barrel 407 vs "
+                        "204 mV) &mdash; the opposite of absorption.  A connector barrel is ~one "
+                        "radiation length of brass/steel in the beam: it starts the EM shower "
+                        "early (one e<sup>&minus;</sup> &rarr; many e<sup>+</sup>e<sup>&minus;</sup> "
+                        "+ &gamma;), and that multiplied swarm sprays into the small downstream 1×1 "
+                        "trigger.  The <em>ring</em> shape is the coaxial geometry: the solid outer "
+                        "barrel (annulus) is the most material &rarr; brightest rim, while the thin "
+                        "central pin / dielectric showers less &rarr; a dip in the middle.  "
+                        "Crucially, a shower <em>conserves energy</em> &mdash; pre-starting it a few "
+                        "cm upstream does not destroy energy, so the deep calorimeter still "
+                        "integrates the full shower.  Consistent with this: the BNC region "
+                        "(~(7,5) mm, on the beam core) carries <em>normal</em> calorimeter energy "
+                        "(5402 vs 5549 mV) and a test veto there <em>worsens</em> the 150 GeV timing "
+                        "headline (27.4 → 30.5 ps) by discarding the highest-E<sub>meas</sub>, "
+                        "best-contained showers; the SMA (~(20,3) mm) lies <em>outside</em> the "
+                        "active square (⟨Σcap⟩ 1196 vs ~5500 mV) so the fiducial cut already removes "
+                        "it.  The 1×1 trigger is retained only as a clean-beam (no-pedestal) "
+                        "selection &mdash; it removes the ~24% no-hit population, not the connectors."
                     ),
                 ),
                 Subsection(
