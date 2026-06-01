@@ -113,8 +113,11 @@
 // ---------------------------------------------------------------------------
 // Calorimeter geometry  [mm]
 // ---------------------------------------------------------------------------
-static const double kCalo_x0 = 6.5;  // nominal face center x in WC coords
-static const double kCalo_y0 = 4.5;  // nominal face center y in WC coords
+static const double kCalo_x0 = 6.6;  // face center x in WC coords (data-derived
+                                     // from shashlik edges, moduleCenter.C;
+                                     // combined 6.60, energy-stable 6.4-6.7)
+static const double kCalo_y0 = 4.7;  // face center y in WC coords (moduleCenter.C
+                                     // combined 4.70, energy-stable 4.6-4.75)
 
 // ---------------------------------------------------------------------------
 // Fiducial radii  [mm]

@@ -266,6 +266,13 @@ echo ""
 $ROOT_CMD 'Analysis/transverseMaps.C+'
 
 echo ""
+echo "Step 12d: Shashlik module centre from edges (Layer 1)"
+echo "  X/Y edge profiles of mean sum_lg; centre = edge midpoint (beam-independent)"
+echo ""
+
+$ROOT_CMD 'Analysis/moduleCenter.C+'
+
+echo ""
 echo "Step 13: DRS4 hardware diagnostics (Layer 1)"
 echo "  Cell-level noise floor, saturation fractions, spike rates"
 echo ""

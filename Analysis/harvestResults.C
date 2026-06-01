@@ -222,6 +222,12 @@ void harvestResults()
     if (!std::isnan(wc_res_y_mm))   wc_res_y_mm   /= 1000.;
     if (!std::isnan(wc_res_cfd_mm)) wc_res_cfd_mm /= 1000.;
 
+    // Shashlik module centre from the calorimeter edges (moduleCenter.C; optional).
+    double mod_center_x = scalarFromFile("module_center.root", "module_center_x");
+    double mod_center_y = scalarFromFile("module_center.root", "module_center_y");
+    double mod_width_x  = scalarFromFile("module_center.root", "module_width_x");
+    double mod_width_y  = scalarFromFile("module_center.root", "module_width_y");
+
     double drs4_cellwidth_rms = scalarFromFile("drs4_timebase.root", "cellWidthRMS_D0G0_ps");
     double drs4_combo_before  = scalarFromFile("drs4_timebase.root", "sigma_combo_before_ps");
     double drs4_combo_after   = scalarFromFile("drs4_timebase.root", "sigma_combo_after_ps");
@@ -271,6 +277,10 @@ void harvestResults()
     o << "  \"wc_res_cfd_mm\":   " << num(wc_res_cfd_mm) << ",\n";
     o << "  \"wc_beam_sx_mm\":   " << num(wc_beam_sx)    << ",\n";
     o << "  \"wc_beam_sy_mm\":   " << num(wc_beam_sy)    << ",\n";
+    o << "  \"mod_center_x\":    " << num(mod_center_x) << ",\n";
+    o << "  \"mod_center_y\":    " << num(mod_center_y) << ",\n";
+    o << "  \"mod_width_x\":     " << num(mod_width_x)  << ",\n";
+    o << "  \"mod_width_y\":     " << num(mod_width_y)  << ",\n";
     o << "  \"drs4_cellwidth_rms\": " << num(drs4_cellwidth_rms) << ",\n";
     o << "  \"drs4_combo_before\":  " << num(drs4_combo_before)  << ",\n";
     o << "  \"drs4_combo_after\":   " << num(drs4_combo_after)   << ",\n";
