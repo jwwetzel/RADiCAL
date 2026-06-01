@@ -43,6 +43,7 @@
 #include "TLatex.h"
 #include "TLine.h"
 #include "TLegend.h"
+#include "TPave.h"
 #include "TSystem.h"
 #include "TObjArray.h"
 #include "TObjString.h"
@@ -271,17 +272,20 @@ void drs4TimeBase()
     TCanvas c("c_tb", "", 1100, 760);
 
     // ── Page 1: cell-width RMS per group ─────────────────────────────────────
-    c.Clear(); c.cd(); StylePad(false, true);
+    c.Clear(); c.cd(); StylePad(false);
     double yMax1 = 0.;
     for (int g = 0; g < 4; ++g) yMax1 = std::max(yMax1, hCW[g]->GetMaximum());
-    TLegend* L1 = MakeLegend(4);
+    // Data sits at 0-5 ps, so the upper-right of the 0-8 ps frame is empty:
+    // place the legend there (the sidebar variant clips the "mean" text).
+    TLegend* L1 = new TLegend(0.58, 0.60, 0.90, 0.88);
+    L1->SetBorderSize(0); L1->SetFillStyle(0); L1->SetTextSize(0.034);
     for (int g = 0; g < 4; ++g) {
         hCW[g]->SetLineColor(kRChannelCols[g]);
         hCW[g]->SetLineWidth(2);
         hCW[g]->GetYaxis()->SetRangeUser(0., 1.2 * yMax1);
         hCW[g]->GetXaxis()->SetRangeUser(0., 8.);   // data sits at 0-5 ps; was 0-60
         hCW[g]->Draw(g == 0 ? "HIST" : "HIST SAME");
-        L1->AddEntry(hCW[g], Form("%s  (mean %.2f ps)", gName[g], hCW[g]->GetMean()), "l");
+        L1->AddEntry(hCW[g], Form("%s: %.2f ps", gName[g], hCW[g]->GetMean()), "l");
     }
     L1->Draw();
     {
@@ -308,6 +312,9 @@ void drs4TimeBase()
     hStop->Draw("HIST");
     {
         const double uniformRMS = 1024. / std::sqrt(12.);
+        // White backing box so the annotation stays readable over the spiky bars.
+        TPave* bg = new TPave(0.155, 0.63, 0.74, 0.905, 0, "brNDC");
+        bg->SetFillColor(kWhite); bg->SetLineColor(kWhite); bg->Draw();
         TLatex a; a.SetNDC(); a.SetTextSize(0.038);
         a.DrawLatex(0.17, 0.85, Form("stop-cell mean = %.0f", hStop->GetMean()));
         a.DrawLatex(0.17, 0.79, Form("stop-cell RMS  = %.0f  (uniform = %.0f)",
