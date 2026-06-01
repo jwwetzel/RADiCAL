@@ -347,7 +347,19 @@ void timingEnergyBins()
         ScanRunCenters(tree, xc, yc, tOff, tRms);
         const float xcf   = (float)xc;
         const float ycf   = (float)yc;
-        const float rFid2 = (float)(kFiducial_r_timing * kFiducial_r_timing);
+        // Timing fiducial radius.  Defaults to kFiducial_r_timing; can be
+        // overridden via the RADICAL_RFID env var for the fiducial-radius
+        // optimisation scan (fiducialTimingScan.sh) without touching the default.
+        double rFidT = kFiducial_r_timing;
+        if (const char* envR = gSystem->Getenv("RADICAL_RFID")) {
+            double v = atof(envR);
+            if (v > 0.) { rFidT = v;
+                if (iRun == 0)
+                    std::cout << "[timingEnergyBins] RADICAL_RFID override: timing fiducial r < "
+                              << rFidT << " mm\n";
+            }
+        }
+        const float rFid2 = (float)(rFidT * rFidT);
 
         // -----------------------------------------------------------------------
         // Branch setup — guard for optional mcp2_* branches
@@ -798,6 +810,12 @@ void timingEnergyBins()
         vSigBestOOS[nValidRuns]    = sigBestOOS_A;
         vSigBestOOSErr[nValidRuns] = sigBestOOSErr_A;
         vBestEff[nValidRuns]   = bestEff_teb;
+        // Machine-readable line for the fiducial-radius scan (only when the
+        // RADICAL_RFID override is active, so normal runs are unaffected).
+        if (gSystem->Getenv("RADICAL_RFID"))
+            std::cout << Form("[SCAN] rFid=%.2f E=%.0f insample=%.2f oos=%.2f eff=%.1f nfid=%zu\n",
+                              rFidT, rc.energy_GeV, sigBest[0], sigBestOOS_A,
+                              bestEff_teb, events.size());
         vBestEmeas[nValidRuns] = (bestBinIdx >= 0) ? binCenter[bestBinIdx] : 0.;
         for (int m = 0; m < kNMeth_teb; ++m) {
             vSigBest[nValidRuns][m]      = sigBest[m];
