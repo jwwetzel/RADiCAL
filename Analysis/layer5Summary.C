@@ -138,7 +138,7 @@ void HeroUniformity()
     if (!h) { printf("[layer5Summary] hSigT2D_150GeV missing — skip H3\n"); return; }
     h->SetDirectory(nullptr);
 
-    gStyle->SetPalette(kFall);
+    gStyle->SetPalette(kCherry); TColor::InvertPalette();
     TCanvas* c = NewSquareCanvas("c_l5_unif", 600, 104, 92, 54, 138);
     c->cd();
     h->GetXaxis()->SetTitle("x_{track} (mm)");

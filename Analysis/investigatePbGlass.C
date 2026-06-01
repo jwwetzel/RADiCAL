@@ -452,7 +452,7 @@ void investigatePbGlass()
     // 3 columns (A, B, C), 2 rows (25 GeV, 150 GeV)
     c.Clear();
     c.Divide(3, 2, 0.003, 0.035);  // 3.5% top/bottom margin reserves space for PageTitle
-    gStyle->SetPalette(kFall);
+    gStyle->SetPalette(kCherry); TColor::InvertPalette();
     int padIdx = 1;
     for (int ih = 0; ih < 2; ++ih) {
         for (int p = 0; p < kNPop - 1; ++p) {  // A, B, C (skip D)

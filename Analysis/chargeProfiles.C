@@ -9,7 +9,7 @@
 //
 // Output per energy:
 //   Analysis/Output/<label>/hg_charge_profiles.pdf
-//       — 4×2 grid of TProfile2D maps (one per capillary, COLZ, kFall palette)
+//       — 4×2 grid of TProfile2D maps (one per capillary, COLZ, inverted-kCherry palette)
 //
 // Summary outputs:
 //   Analysis/Output/Summary/hg_amplitude_vs_energy.pdf

@@ -549,7 +549,7 @@ static void PlotGroup2_Containment()
     // ── Page 2: PbGlass scatter 6-panel (2×3 grid) ──────────────────────────
     c.Clear();
     c.Divide(3, 2, 0.003, 0.035);  // 3.5% top/bottom margin reserves space for PageTitle
-    gStyle->SetPalette(kFall);
+    gStyle->SetPalette(kCherry); TColor::InvertPalette();
     for (int r = 0; r < kNRuns; ++r) {
         c.cd(r + 1);
         gPad->SetLeftMargin(0.12); gPad->SetBottomMargin(0.12);
@@ -887,7 +887,7 @@ static void PlotGroup3_Channels()
     gPad->SetLeftMargin(0.14); gPad->SetBottomMargin(0.11);
     gPad->SetRightMargin(0.18); gPad->SetTopMargin(0.10);
     gPad->SetTickx(0); gPad->SetTicky(0);
-    gStyle->SetPalette(kFall);
+    gStyle->SetPalette(kCherry); TColor::InvertPalette();
 
     TH2F* hHeat = new TH2F("hHeat", "", kNRuns, 0, kNRuns, kNCap, 0, kNCap);
     hHeat->SetDirectory(nullptr);

@@ -15,7 +15,7 @@
 // show up as fixed rings in the ch15 map at ~(7,5) and ~(20,3) mm.
 //
 // Binning: x at 0.25 mm (x_trk is continuous), y at 0.5 mm (suppresses the
-// peak-sample comb in y) — "finest but no finer".  Palette: kViridis
+// peak-sample comb in y) — "finest but no finer".  Palette: inverted kCherry
 // (perceptually uniform, colour-blind safe).
 //
 // Reads raw waveforms (Data/ via kRuns, like drs4TimeBase.C).  No reprocessing.
@@ -75,7 +75,7 @@ void drawGrid(TCanvas& c, TProfile2D* m[9], const char* tag, const char* outPDF)
 void transverseMaps(int energyIndex = -1)
 {
     gStyle->SetOptStat(0);
-    gStyle->SetPalette(kViridis);          // colour-blind-safe, publication palette
+    gStyle->SetPalette(kCherry); TColor::InvertPalette();  // inverted cherry: signal dark on white
     TString sumDir = "Analysis/Output/Summary";
     gSystem->mkdir(sumDir, kTRUE);
 

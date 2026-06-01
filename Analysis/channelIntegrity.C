@@ -614,7 +614,7 @@ void channelIntegrity()
         h2Corr->SetMinimum(0.85);
         h2Corr->SetMaximum(1.00);
 
-        // Use kFall palette (already set by ApplyRADiCALStyle)
+        // Palette (inverted kCherry) already set by ApplyRADiCALStyle
         h2Corr->Draw("COLZ");
 
         // Print rho values as text in each cell

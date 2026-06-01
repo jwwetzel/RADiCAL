@@ -154,9 +154,14 @@ static void ApplyRADiCALStyle()
     s->SetFrameLineWidth(1);
     s->SetFrameBorderMode(0);
 
-    // 2D colour palette: kViridis — perceptually uniform, colour-blind safe,
-    // greyscale-safe, and publication standard (replaces kFall).
-    s->SetPalette(kViridis);
+    // 2D colour palette: INVERTED kCherry — a single-hue white→dark-red lightness
+    // ramp.  Chosen because empty bins draw white (no events): with this ramp the
+    // intense signal is DARK (pops against white) and low occupancy is pale (melts
+    // into the background), so the eye goes to structure, not isolated noise specks.
+    // A monotonic lightness ramp is also colour-blind- and greyscale-safe.
+    // (InvertPalette() toggles the current palette; pair it 1:1 with SetPalette.)
+    s->SetPalette(kCherry);
+    TColor::InvertPalette();
     s->SetNumberContours(99);
 
     // Font: 42 = Helvetica (clean, sans-serif)
@@ -492,7 +497,7 @@ static TLegend* MakeCornerLegend(int nEntries, const char* corner = "tr",
 }
 
 // ---------------------------------------------------------------------------
-// StyleColz — one-call COLZ styling for the current pad: kViridis palette, wide
+// StyleColz — one-call COLZ styling for the current pad: inverted-kCherry palette, wide
 // right margin for the colour bar, no grid, optional log-z.  Call before
 // Draw("COLZ").  (Set the z-axis title on the histogram: h->GetZaxis()->SetTitle("events").)
 // ---------------------------------------------------------------------------
@@ -507,7 +512,8 @@ static void StyleColz(bool logz = false)
     gPad->SetGridx(0);
     gPad->SetGridy(0);
     if (logz) gPad->SetLogz(1);
-    gStyle->SetPalette(kViridis);
+    gStyle->SetPalette(kCherry);   // inverted kCherry: white(low)->dark-red(high),
+    TColor::InvertPalette();       // so signal is dark on the white empty-bin field
 }
 
 // ---------------------------------------------------------------------------
