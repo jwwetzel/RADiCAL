@@ -40,6 +40,7 @@
 #include "TLine.h"
 #include "TBox.h"
 #include "TMarker.h"
+#include "TF1.h"
 #include "TLegend.h"
 #include "TAxis.h"
 #include "TString.h"
@@ -158,6 +159,44 @@ static double BestBinSigma_fts(const std::vector<std::pair<float,float>>& sel,  
     if (best > 1e29) return -1.;
     if (diag) { diag->selIdx = bIdx; diag->selSig = best; diag->selN = bN; diag->selEc = bEc; }
     errPs = bestErr; nBest = bN; effPct = 100.*bN/totFid;
+    return best;
+}
+
+// SMARTER BINNING: equal-OCCUPANCY (quantile) bins.  Sort events by E_meas and
+// split into K bins of EQUAL COUNT (perBin events each), so the highest-E_meas
+// bin is always well-populated -- no eligibility flicker on the falling tail.
+// Best bin = min Method-A core sigma.  Returns sigma_t (ps); sets err, N, eff.
+static double BestBinEqualOcc_fts(const std::vector<std::pair<float,float>>& sel,  // (sum_lg, tc)
+                                  int perBin, double& errPs, int& nBest, double& effPct,
+                                  int* selIdxOut = nullptr, int* kOut = nullptr,
+                                  std::vector<float>* selTc = nullptr,   // selected bin's tc values
+                                  double* selEcOut = nullptr)            // its E_meas centre (mV)
+{
+    errPs = 0.; nBest = 0; effPct = 0.;
+    if (selIdxOut) *selIdxOut = -1; if (kOut) *kOut = 0;
+    const int N = (int)sel.size();
+    if (N < 2*perBin) return -1.;
+    const int K = N / perBin;               // number of equal-occupancy bins
+    if (K < 2) return -1.;
+    std::vector<std::pair<float,float>> s = sel;
+    std::sort(s.begin(), s.end(),
+              [](const std::pair<float,float>& a, const std::pair<float,float>& b){ return a.first < b.first; });
+    double best = 1e30, bestErr = 0.; int bN = 0, bIdx = -1;
+    for (int ib = 0; ib < K; ++ib) {
+        const int lo = ib*N/K, hi = (ib+1)*N/K;     // contiguous quantile slice
+        std::vector<float> tc; tc.reserve(hi-lo);
+        for (int k = lo; k < hi; ++k) tc.push_back(s[k].second);
+        if ((int)tc.size() < 200) continue;
+        double e; double sg = RobustSigma_fts(tc, &e, 120);
+        if (sg > 0. && sg*1000. >= 15. && sg*1000. < best) {
+            best = sg*1000.; bestErr = e; bN = (int)tc.size(); bIdx = ib;
+            if (selTc) *selTc = tc;
+            if (selEcOut) { double m = 0.; for (int k=lo;k<hi;++k) m += s[k].first; *selEcOut = m/(hi-lo); }
+        }
+    }
+    if (best > 1e29) return -1.;
+    errPs = bestErr; nBest = bN; effPct = 100.*bN/N;
+    if (selIdxOut) *selIdxOut = bIdx; if (kOut) *kOut = K;
     return best;
 }
 
@@ -481,6 +520,29 @@ void fiducialTimingScan()
     }
     printf("======================================================================\n");
 
+    // -- smarter binning comparison: equal-WIDTH (current) vs equal-OCCUPANCY --
+    printf("\n  150 GeV: equal-WIDTH best-bin  vs  equal-OCCUPANCY (quantile) best-bin\n");
+    printf("  R    | eq-width  | eq-occ(perBin=1000) | eq-occ(1500) | eq-occ(2500)\n");
+    auto stdev = [](const std::vector<double>& v){ if(v.size()<2) return 0.; double m=0; for(double x:v)m+=x; m/=v.size();
+                  double s=0; for(double x:v)s+=(x-m)*(x-m); return std::sqrt(s/v.size()); };
+    std::vector<double> vW, v10, v15, v25;
+    for (double R = 1.5; R <= 3.501; R += 0.125) {
+        const float R2 = (float)(R*R);
+        std::vector<std::pair<float,float>> sel;
+        for (const auto& e : evs150) if (e.r2 < R2) sel.emplace_back(e.slg, e.tc);
+        if (sel.size() < 400) continue;
+        double e_, eff_; int n_;
+        double sw  = BestBinSigma_fts(sel, e_, n_, eff_);
+        double s10 = BestBinEqualOcc_fts(sel, 1000, e_, n_, eff_);
+        double s15 = BestBinEqualOcc_fts(sel, 1500, e_, n_, eff_);
+        double s25 = BestBinEqualOcc_fts(sel, 2500, e_, n_, eff_);
+        printf("  %4.2f |   %5.1f   |        %5.1f        |    %5.1f     |   %5.1f\n", R, sw, s10, s15, s25);
+        if (sw>0)  vW.push_back(sw); if (s10>0) v10.push_back(s10);
+        if (s15>0) v15.push_back(s15); if (s25>0) v25.push_back(s25);
+    }
+    printf("  RMS scatter over radius:  width=%.2f  occ1000=%.2f  occ1500=%.2f  occ2500=%.2f ps\n",
+           stdev(vW), stdev(v10), stdev(v15), stdev(v25));
+
     // =========================================================================
     // Figure 4 — the jitter EXPLAINED: best-bin = min(bin6 stable, bin7 noisy),
     // and bin7 flickers across the N>=500 eligibility threshold.
@@ -543,6 +605,116 @@ void fiducialTimingScan()
         c->Print("Analysis/Output/Summary/fiducial_bestbin_jitter.png");
         c->Print("Analysis/Output/Summary/fiducial_bestbin_jitter.pdf");
         printf("[fiducialTimingScan] wrote fiducial_bestbin_jitter.png (jitter diagnostic)\n");
+    }
+
+    // =========================================================================
+    // Figure 5 — the FIX: equal-occupancy binning smooths the radius curve.
+    // =========================================================================
+    {
+        TGraph gW, gO10, gO25;   // sigma vs R: equal-width, equal-occ(1000), equal-occ(2500)
+        std::vector<double> sW, sO10, sO25;
+        for (double R = 1.5; R <= 3.501; R += 0.0625) {
+            const float R2 = (float)(R*R);
+            std::vector<std::pair<float,float>> sel;
+            for (const auto& e : evs150) if (e.r2 < R2) sel.emplace_back(e.slg, e.tc);
+            if (sel.size() < 400) continue;
+            double e_ = 0., eff_ = 0.; int n_ = 0;
+            double w  = BestBinSigma_fts(sel, e_, n_, eff_);
+            double o1 = BestBinEqualOcc_fts(sel, 1000, e_, n_, eff_);
+            double o2 = BestBinEqualOcc_fts(sel, 2500, e_, n_, eff_);
+            if (w  > 0.) { gW.SetPoint(gW.GetN(),  R, w);  sW.push_back(w); }
+            if (o1 > 0.) { gO10.SetPoint(gO10.GetN(), R, o1); sO10.push_back(o1); }
+            if (o2 > 0.) { gO25.SetPoint(gO25.GetN(), R, o2); sO25.push_back(o2); }
+        }
+        auto rms = [](const std::vector<double>& v){ if(v.size()<2) return 0.; double m=0; for(double x:v)m+=x; m/=v.size();
+                    double s=0; for(double x:v)s+=(x-m)*(x-m); return std::sqrt(s/v.size()); };
+
+        TCanvas* c = new TCanvas("c_fts_fix", "", 920, 720);
+        c->SetLeftMargin(0.13); c->SetBottomMargin(0.13); c->SetRightMargin(0.05); c->SetTopMargin(0.10);
+        c->SetTickx(1); c->SetTicky(1);
+        gW.SetMarkerStyle(33); gW.SetMarkerColor(kBlack); gW.SetLineColor(kBlack); gW.SetLineWidth(2); gW.SetMarkerSize(1.4);
+        gO10.SetMarkerStyle(20); gO10.SetMarkerColor(kRGreen); gO10.SetLineColor(kRGreen); gO10.SetLineWidth(3); gO10.SetMarkerSize(1.1);
+        gO25.SetMarkerStyle(21); gO25.SetMarkerColor(kRData);  gO25.SetLineColor(kRData);  gO25.SetLineWidth(3); gO25.SetMarkerSize(1.1);
+        gW.Draw("APL");
+        gW.GetXaxis()->SetTitle("timing fiducial radius  r  (mm)");
+        gW.GetYaxis()->SetTitle("best-bin #sigma_{t}  (DW#minusUP)/2  (ps)");
+        gW.GetXaxis()->SetLimits(1.4, 3.6); gW.GetYaxis()->SetRangeUser(24, 34);
+        gW.GetXaxis()->SetTitleSize(0.046); gW.GetYaxis()->SetTitleSize(0.046);
+        gO10.Draw("PL same"); gO25.Draw("PL same");
+        TLine* l3 = new TLine(kFiducial_r_timing, 24, kFiducial_r_timing, 34);
+        l3->SetLineStyle(2); l3->SetLineColor(kGray+2); l3->SetLineWidth(2); l3->Draw();
+        TLegend* L = new TLegend(0.16, 0.74, 0.74, 0.90); L->SetBorderSize(0); L->SetFillStyle(0);
+        L->SetTextFont(42); L->SetTextSize(0.030);
+        L->AddEntry(&gW,  Form("equal-WIDTH 9 bins (current)        RMS = %.2f ps", rms(sW)),  "pl");
+        L->AddEntry(&gO10,Form("equal-OCCUPANCY, 1000/bin           RMS = %.2f ps", rms(sO10)),"pl");
+        L->AddEntry(&gO25,Form("equal-OCCUPANCY, 2500/bin           RMS = %.2f ps", rms(sO25)),"pl");
+        L->Draw();
+        { TLatex a; a.SetNDC(); a.SetTextSize(0.027); a.SetTextColor(kGray+3);
+          a.DrawLatex(0.16, 0.21, "Equal-occupancy bins hold a fixed event count, so the top bin never");
+          a.DrawLatex(0.16, 0.175, "flickers across the eligibility line -- the radius curve smooths out");
+          a.DrawLatex(0.16, 0.140, "(RMS falls ~3x) at a comparable resolution."); }
+        DrawPageTitle("Smarter binning: equal-occupancy removes the best-bin jitter (150 GeV)");
+        c->Print("Analysis/Output/Summary/fiducial_binning_fix.png");
+        c->Print("Analysis/Output/Summary/fiducial_binning_fix.pdf");
+        printf("[fiducialTimingScan] wrote fiducial_binning_fix.png  (width RMS=%.2f, occ1000 RMS=%.2f, occ2500 RMS=%.2f)\n",
+               rms(sW), rms(sO10), rms(sO25));
+    }
+
+    // =========================================================================
+    // Figure 6 — the FITS behind the equal-occupancy curve (150 GeV, 1000/bin).
+    // One panel per radius: the selected bin's (DW-UP)/2 distribution + Gaussian
+    // core fit, so the reader can judge each sigma_t directly.
+    // =========================================================================
+    {
+        const int nR = 9;
+        const double rList[nR] = { 1.75, 2.00, 2.125, 2.25, 2.375, 2.50, 2.625, 2.75, 3.00 };
+        TCanvas* c = new TCanvas("c_fts_fits", "", 1500, 1400);
+        c->Divide(3, 3, 0.004, 0.012);
+        for (int ip = 0; ip < nR; ++ip) {
+            c->cd(ip+1);
+            gPad->SetLeftMargin(0.13); gPad->SetBottomMargin(0.12); gPad->SetRightMargin(0.04); gPad->SetTopMargin(0.10);
+            const double R = rList[ip];
+            const float R2 = (float)(R*R);
+            std::vector<std::pair<float,float>> sel;
+            for (const auto& e : evs150) if (e.r2 < R2) sel.emplace_back(e.slg, e.tc);
+            std::vector<float> tc; double e_ = 0., eff_ = 0., ec_ = 0.; int n_ = 0, idx_ = 0, k_ = 0;
+            double sig = BestBinEqualOcc_fts(sel, 1000, e_, n_, eff_, &idx_, &k_, &tc, &ec_);
+            if (sig <= 0. || tc.size() < 50) continue;
+            // EXACT same hist + fit the curve uses: 120-bin core hist + FitGaussCore.
+            TH1F* h = BuildCoreHist_fts(tc, 120, Form("hfit_%d", ip));
+            const double rmsPs = h->GetRMS() * 1000.;     // full-distribution RMS
+            h->SetLineColor(kRData); h->SetLineWidth(2); h->SetFillColorAlpha(kRData, 0.25);
+            h->GetXaxis()->SetTitle("(DW#minusUP)/2  (ns)");
+            h->GetYaxis()->SetTitle("events");
+            h->GetXaxis()->SetTitleSize(0.052); h->GetYaxis()->SetTitleSize(0.052);
+            h->GetXaxis()->SetLabelSize(0.045); h->GetYaxis()->SetLabelSize(0.045);
+            h->Draw("HIST");
+            double mu = 0., muE = 0., s = 0., sE = 0.;
+            FitGaussCore(h, 2.0, mu, muE, s, sE);          // the headline's core fit
+            const double sFit = s * 1000.;                 // = the green-curve value
+            // draw the fitted core Gaussian
+            TF1* f = new TF1(Form("fg_%d", ip), "[0]*exp(-0.5*((x-[1])/[2])^2)", mu-4*s, mu+4*s);
+            f->SetParameters(h->GetBinContent(h->GetMaximumBin()), mu, s);
+            f->SetLineColor(kRRed); f->SetLineWidth(3); f->Draw("same");
+            const bool hot = (std::fabs(R - 2.125) < 1e-3);
+            { TLatex a; a.SetNDC(); a.SetTextFont(42);
+              a.SetTextSize(0.075); a.SetTextColor(hot ? kRRed : kBlack);
+              a.DrawLatex(0.15, 0.84, Form("r < %.3g mm", R));
+              a.SetTextSize(0.066); a.SetTextColor(kRRed);
+              a.DrawLatex(0.15, 0.76, Form("#sigma_{core} = %.1f ps", sFit));
+              a.SetTextColor(kGray+2); a.SetTextSize(0.050);
+              a.DrawLatex(0.15, 0.69, Form("(RMS = %.1f ps)", rmsPs));
+              a.SetTextColor(kGray+3);
+              a.DrawLatex(0.15, 0.63, Form("N = %d", (int)tc.size()));
+              a.DrawLatex(0.15, 0.575, Form("E_{meas} #approx %.0f mV", ec_));
+              if (hot) { a.SetTextColor(kRRed); a.SetTextSize(0.052);
+                         a.DrawLatex(0.15, 0.50, "(the point you flagged)"); } }
+        }
+        c->cd(0);
+        DrawPageTitle("Equal-occupancy (1000/bin) best-bin fits vs fiducial radius -- 150 GeV");
+        c->Print("Analysis/Output/Summary/fiducial_occ_fits.png");
+        c->Print("Analysis/Output/Summary/fiducial_occ_fits.pdf");
+        printf("[fiducialTimingScan] wrote fiducial_occ_fits.png (equal-occ fit array)\n");
     }
 
     // Console summary tables
