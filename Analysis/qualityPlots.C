@@ -1544,6 +1544,24 @@ void qualityPlots()
             h->GetYaxis()->SetLabelSize(0.065);
         };
 
+        // ── Helper: paint each cell value by hand.  ROOT's "COLZ TEXT" painter
+        //    renders the literal gStyle paint-format ("%.0f") instead of the
+        //    value on this build, so we overlay the numbers ourselves — white on
+        //    the dark high-value cells, black on the light low-value cells
+        //    (inverted-kRust: high = dark).  zlo/zhi = the colour-scale range.
+        auto overlayCells = [&](TH2F* h, const char* fmt, double zlo, double zhi) {
+            const double zmid = 0.5 * (zlo + zhi);
+            TLatex cell; cell.SetTextAlign(22); cell.SetTextFont(42); cell.SetTextSize(0.034);
+            for (int ix = 1; ix <= h->GetNbinsX(); ++ix)
+                for (int iy = 1; iy <= h->GetNbinsY(); ++iy) {
+                    const double v = h->GetBinContent(ix, iy);
+                    if (v <= 0.) continue;             // skip missing/failed cells
+                    cell.SetTextColor(v > zmid ? kWhite : kBlack);
+                    cell.DrawLatex(h->GetXaxis()->GetBinCenter(ix),
+                                   h->GetYaxis()->GetBinCenter(iy), Form(fmt, v));
+                }
+        };
+
         // ── Book the four metric matrices ──────────────────────────────────
         TH2F* mEff = new TH2F("mEff", ";Beam energy (GeV);",
                                nRunsDone, 0., (double)nRunsDone,
@@ -1571,64 +1589,64 @@ void qualityPlots()
         }
 
         // ── Page 1: Heat map matrices ───────────────────────────────────────
+        //  Cell values are painted by overlayCells() (ROOT's "COLZ TEXT" prints
+        //  the literal "%.0f" on this build — see the helper above).
         {
             TCanvas cS1("cQsum1", "", 2400, 1600);
             cS1.Divide(2, 2, 0.01, 0.01);
-            gStyle->SetPaintTextFormat("%.0f");
 
             // Pad 1: Hit efficiency
             cS1.cd(1);
             gPad->SetRightMargin(0.14); gPad->SetLeftMargin(0.13);
-            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.10);
+            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.15);
             mEff->SetMinimum(0.); mEff->SetMaximum(100.);
             mEff->SetTitle(Form("Hit efficiency (%%)  cut: A_{HG} > %.0f mV",
                                  (double)kHG_minPeak));
             mEff->GetZaxis()->SetLabelSize(0.040);
-            mEff->Draw("COLZ TEXT");
-            gPad->Update();   // lock cell text at "%.0f" before the next pad changes the global format
+            mEff->GetXaxis()->SetTitleOffset(1.05);
+            mEff->Draw("COLZ");
+            overlayCells(mEff, "%.0f", 0., 100.);
             { TLatex t; t.SetNDC(); t.SetTextSize(0.048); t.SetTextAlign(22);
               t.DrawLatex(0.50, 0.95, "Hit efficiency [%]  (higher = better)"); }
 
             // Pad 2: Pedestal RMS
             cS1.cd(2);
             gPad->SetRightMargin(0.14); gPad->SetLeftMargin(0.13);
-            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.10);
-            mPed->SetMinimum(0.);
-            // Flag channels above 5 mV noise floor
-            mPed->SetMaximum(6.);
-            gStyle->SetPaintTextFormat("%.1f");
+            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.15);
+            mPed->SetMinimum(0.); mPed->SetMaximum(6.);   // flag anything near the 5 mV floor
             mPed->SetTitle("HG pedestal RMS [mV]  (healthy < 3 mV)");
             mPed->GetZaxis()->SetLabelSize(0.040);
-            mPed->Draw("COLZ TEXT");
-            gPad->Update();   // lock "%.1f" so pedestal RMS keeps its decimal (1.3, not 1)
+            mPed->GetXaxis()->SetTitleOffset(1.05);
+            mPed->Draw("COLZ");
+            overlayCells(mPed, "%.1f", 0., 6.);
             { TLatex t; t.SetNDC(); t.SetTextSize(0.048); t.SetTextAlign(22);
               t.DrawLatex(0.50, 0.95, "Pedestal RMS [mV]  (lower = better)"); }
 
-            // Pad 3: Mean HG amplitude
-            gStyle->SetPaintTextFormat("%.0f");
+            // Pad 3: Mean HG amplitude (auto colour range -> threshold on its data range)
             cS1.cd(3);
             gPad->SetRightMargin(0.14); gPad->SetLeftMargin(0.13);
-            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.10);
+            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.15);
             mHG->SetTitle(Form("Mean HG amplitude [mV] for A > %.0f mV",
                                 (double)kHG_minPeak));
             mHG->GetZaxis()->SetLabelSize(0.040);
-            mHG->Draw("COLZ TEXT");
-            gPad->Update();
+            mHG->GetXaxis()->SetTitleOffset(1.05);
+            mHG->Draw("COLZ");
+            overlayCells(mHG, "%.0f", mHG->GetMinimum(), mHG->GetMaximum());
             { TLatex t; t.SetNDC(); t.SetTextSize(0.048); t.SetTextAlign(22);
               t.DrawLatex(0.50, 0.95, "Mean HG amplitude [mV]"); }
 
             // Pad 4: Timing resolution
             cS1.cd(4);
             gPad->SetRightMargin(0.14); gPad->SetLeftMargin(0.13);
-            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.10);
+            gPad->SetTopMargin(0.12);   gPad->SetBottomMargin(0.15);
             mSig->SetMinimum(0.); mSig->SetMaximum(500.);
             mSig->SetTitle(Form("CFD-20%% timing resolution [ps]  "
                                 "r < %.1f mm, A > %.0f mV",
                                 kFiducial_r_timing, (double)kHG_minPeak));
             mSig->GetZaxis()->SetLabelSize(0.040);
-            gStyle->SetPaintTextFormat("%.0f");
-            mSig->Draw("COLZ TEXT");
-            gPad->Update();
+            mSig->GetXaxis()->SetTitleOffset(1.05);
+            mSig->Draw("COLZ");
+            overlayCells(mSig, "%.0f", 0., 500.);
             { TLatex t; t.SetNDC(); t.SetTextSize(0.048); t.SetTextAlign(22);
               t.DrawLatex(0.50, 0.95, "Timing resolution [ps]  (lower = better)"); }
 
