@@ -104,11 +104,25 @@ static bool CoreMuSig_fts(const std::vector<float>& v, double& mu, double& sig)
     return (sig > 0.);
 }
 
+// Diagnostic capture of the best-bin internals (one radius).
+struct BinDiag_fts {
+    double muE = 0., sigE = 0.;     // sum_lg core fit (the binning seed)
+    int    n[9]   = {0};            // events per bin
+    double sig[9];                  // per-bin Method-A core sigma (ps), -1 if N<500 or fit-fail
+    int    selIdx = -1;            // selected (min-sigma, N>=500) bin index
+    double selSig = -1.;           // its sigma (ps)
+    double selEc  = 0.;            // its E_meas centre (mV)
+    int    selN   = 0;
+    BinDiag_fts(){ for (int i=0;i<9;++i) sig[i] = -1.; }
+};
+
 // Headline best-bin estimator: 9 equal sum_lg bins over [muE-2sigE, muE+2sigE];
 // the best bin is the min Method-A core sigma among bins with N >= 500.
 // Returns sigma_t in ps (-1 on failure); sets the fit error (ps), N, efficiency.
+// If diag != nullptr, captures the per-bin internals.
 static double BestBinSigma_fts(const std::vector<std::pair<float,float>>& sel,  // (sum_lg, tc)
-                               double& errPs, int& nBest, double& effPct)
+                               double& errPs, int& nBest, double& effPct,
+                               BinDiag_fts* diag = nullptr)
 {
     errPs = 0.; nBest = 0; effPct = 0.;
     const int kNB = 9, kMinN = 500;
@@ -121,22 +135,28 @@ static double BestBinSigma_fts(const std::vector<std::pair<float,float>>& sel,  
         muE = m; sigE = r;
     }
     if (sigE <= 0.) return -1.;
+    if (diag) { diag->muE = muE; diag->sigE = sigE; }
     const double binLo = muE - 2.*sigE, binW = 4.*sigE / kNB;
     if (binW <= 0.) return -1.;
     const int totFid = (int)sel.size();
-    double best = 1e30, bestErr = 0.; int bN = 0;
+    double best = 1e30, bestErr = 0.; int bN = 0, bIdx = -1; double bEc = 0.;
     for (int ib = 0; ib < kNB; ++ib) {
         const double lo = binLo + ib*binW, hi = binLo + (ib+1)*binW;
         std::vector<float> tc;
         for (const auto& p : sel) if (p.first >= lo && p.first < hi) tc.push_back(p.second);
+        if (diag) diag->n[ib] = (int)tc.size();
         if ((int)tc.size() < kMinN) continue;
         double e; double s = RobustSigma_fts(tc, &e, 120);
+        if (diag && s > 0.) diag->sig[ib] = s*1000.;
         // Floor at 15 ps: the corner estimator is physically >~20 ps, so a
         // smaller "sigma" is a degenerate Gaussian-core fit (a narrow spike)
         // that the min-sigma selection must not grab.
-        if (s > 0. && s*1000. >= 15. && s*1000. < best) { best = s*1000.; bestErr = e; bN = (int)tc.size(); }
+        if (s > 0. && s*1000. >= 15. && s*1000. < best) {
+            best = s*1000.; bestErr = e; bN = (int)tc.size(); bIdx = ib; bEc = 0.5*(lo+hi);
+        }
     }
     if (best > 1e29) return -1.;
+    if (diag) { diag->selIdx = bIdx; diag->selSig = best; diag->selN = bN; diag->selEc = bEc; }
     errPs = bestErr; nBest = bN; effPct = 100.*bN/totFid;
     return best;
 }
@@ -435,6 +455,94 @@ void fiducialTimingScan()
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_bestbin.png");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_bestbin.pdf");
         printf("[fiducialTimingScan] wrote fiducial_timing_scan_bestbin.png (joint view)\n");
+    }
+
+    // =========================================================================
+    // DIAGNOSTIC: dissect the 150 GeV best-bin jitter (fine radius steps).
+    // Shows the binning seed (muE, sigE), which bin is selected, its N and sigma,
+    // and the per-bin sigma[N] for the high-E_meas bins where the best one lives.
+    // =========================================================================
+    printf("\n================= 150 GeV best-bin jitter diagnostic =================\n");
+    printf("  R     Nfid   muE  sigE | sel: idx  Ec(mV)    N   sig | high bins  sigma[N]\n");
+    for (double R = 1.5; R <= 3.501; R += 0.125) {
+        const float R2 = (float)(R*R);
+        std::vector<std::pair<float,float>> sel;
+        for (const auto& e : evs150) if (e.r2 < R2) sel.emplace_back(e.slg, e.tc);
+        if (sel.size() < 400) continue;
+        BinDiag_fts d; double e_ = 0., eff_ = 0.; int n_ = 0;
+        double s = BestBinSigma_fts(sel, e_, n_, eff_, &d);
+        printf("  %4.2f %6zu %5.0f %5.0f | %4d %7.0f %5d %5.1f |",
+               R, sel.size(), d.muE, d.sigE, d.selIdx, d.selEc, d.selN, s);
+        for (int ib = 5; ib <= 8; ++ib) {
+            if (d.sig[ib] > 0.) printf("  b%d:%4.1f[%d]", ib, d.sig[ib], d.n[ib]);
+            else                printf("  b%d: -- [%d]", ib, d.n[ib]);
+        }
+        printf("\n");
+    }
+    printf("======================================================================\n");
+
+    // =========================================================================
+    // Figure 4 — the jitter EXPLAINED: best-bin = min(bin6 stable, bin7 noisy),
+    // and bin7 flickers across the N>=500 eligibility threshold.
+    // =========================================================================
+    {
+        TGraph gB6, gB7, gBst, gN7;
+        for (double R = 1.5; R <= 3.501; R += 0.0625) {
+            const float R2 = (float)(R*R);
+            std::vector<std::pair<float,float>> sel;
+            for (const auto& e : evs150) if (e.r2 < R2) sel.emplace_back(e.slg, e.tc);
+            if (sel.size() < 400) continue;
+            BinDiag_fts d; double e_ = 0., eff_ = 0.; int n_ = 0;
+            double s = BestBinSigma_fts(sel, e_, n_, eff_, &d);
+            if (d.sig[6] > 0.) gB6.SetPoint(gB6.GetN(), R, d.sig[6]);
+            if (d.sig[7] > 0.) gB7.SetPoint(gB7.GetN(), R, d.sig[7]);   // only where bin7 eligible
+            if (s > 0.)        gBst.SetPoint(gBst.GetN(), R, s);
+            gN7.SetPoint(gN7.GetN(), R, d.n[7]);
+        }
+
+        TCanvas* c = new TCanvas("c_fts_diag", "", 920, 860);
+        TPad* pT = new TPad("pT","",0,0.36,1,1);  pT->SetBottomMargin(0.02); pT->SetTopMargin(0.10);
+        pT->SetLeftMargin(0.13); pT->SetRightMargin(0.05); pT->SetTickx(1); pT->SetTicky(1); pT->Draw();
+        TPad* pB = new TPad("pB","",0,0,1,0.36);   pB->SetTopMargin(0.02); pB->SetBottomMargin(0.26);
+        pB->SetLeftMargin(0.13); pB->SetRightMargin(0.05); pB->SetTickx(1); pB->SetTicky(1); pB->Draw();
+
+        // -- top: per-bin sigma + best --
+        pT->cd();
+        gB6.SetMarkerStyle(21); gB6.SetMarkerColor(kRData); gB6.SetLineColor(kRData); gB6.SetLineWidth(3); gB6.SetMarkerSize(1.0);
+        gB7.SetMarkerStyle(20); gB7.SetMarkerColor(kRRed);  gB7.SetLineColor(kRRed);  gB7.SetLineWidth(2); gB7.SetMarkerSize(1.2);
+        gBst.SetMarkerStyle(33); gBst.SetMarkerColor(kBlack); gBst.SetLineColor(kBlack); gBst.SetLineWidth(3); gBst.SetMarkerSize(1.4);
+        gB6.Draw("APL");
+        gB6.GetYaxis()->SetTitle("#sigma_{t} of the bin (ps)");
+        gB6.GetXaxis()->SetLimits(1.4, 3.6); gB6.GetYaxis()->SetRangeUser(22, 38);
+        gB6.GetYaxis()->SetTitleSize(0.055); gB6.GetYaxis()->SetLabelSize(0.045);
+        gB6.GetXaxis()->SetLabelSize(0.0);
+        gBst.Draw("PL same"); gB7.Draw("PL same");
+        { TLegend* L = new TLegend(0.16,0.70,0.62,0.90); L->SetBorderSize(0); L->SetFillStyle(0);
+          L->SetTextFont(42); L->SetTextSize(0.046);
+          L->AddEntry(&gBst,"best bin = the min (the jumpy curve)","pl");
+          L->AddEntry(&gB6, "bin 6  (large N, stable ~31-35 ps)","pl");
+          L->AddEntry(&gB7, "bin 7  (highest E_{meas}, small N, noisy)","pl"); L->Draw(); }
+        { TLatex a; a.SetNDC(); a.SetTextSize(0.044); a.SetTextColor(kGray+3);
+          a.DrawLatex(0.40,0.13,"best bin flips bin6 #leftrightarrow bin7 as bin7 appears/vanishes"); }
+        DrawPageTitle("Why the 150 GeV best-bin is jumpy:  bin 7 flickers in and out");
+
+        // -- bottom: bin7 N with the eligibility threshold --
+        pB->cd();
+        gN7.SetMarkerStyle(20); gN7.SetMarkerColor(kRRed); gN7.SetLineColor(kRRed); gN7.SetLineWidth(2); gN7.SetMarkerSize(1.1);
+        gN7.Draw("APL");
+        gN7.GetXaxis()->SetTitle("timing fiducial radius  r  (mm)");
+        gN7.GetYaxis()->SetTitle("bin 7  N");
+        gN7.GetXaxis()->SetLimits(1.4, 3.6); gN7.GetYaxis()->SetRangeUser(0, 3000);
+        gN7.GetXaxis()->SetTitleSize(0.095); gN7.GetXaxis()->SetLabelSize(0.085);
+        gN7.GetYaxis()->SetTitleSize(0.085); gN7.GetYaxis()->SetLabelSize(0.075); gN7.GetYaxis()->SetTitleOffset(0.6);
+        TLine* thr = new TLine(1.4, 500., 3.6, 500.); thr->SetLineColor(kBlack); thr->SetLineStyle(2); thr->SetLineWidth(2); thr->Draw();
+        { TLatex a; a.SetTextSize(0.085); a.SetTextColor(kBlack);
+          a.DrawLatex(1.5, 620., "N #geq 500 eligibility threshold");
+          a.SetTextColor(kRRed); a.DrawLatex(2.0, 2400., "bin 7 crosses 500 repeatedly #Rightarrow on/off"); }
+
+        c->Print("Analysis/Output/Summary/fiducial_bestbin_jitter.png");
+        c->Print("Analysis/Output/Summary/fiducial_bestbin_jitter.pdf");
+        printf("[fiducialTimingScan] wrote fiducial_bestbin_jitter.png (jitter diagnostic)\n");
     }
 
     // Console summary tables
