@@ -1738,9 +1738,22 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                             sumPDF("layer2_per_channel.png"),
                             caption=(f"Single-channel CFD-5% timing per capillary (MCP-referenced) is "
                                      "&asymp;180&ndash;300 ps, noise- and reference-jitter-dominated.  "
-                                     "CFD-5% (the adopted fraction) already removes the broad CFD-20% "
-                                     "shoulder on the Down capillaries; channel combination + energy "
-                                     f"binning (Layers 4&ndash;5) then bring this to the {TEB_150} ps headline."),
+                                     "The four <em>Down</em> capillaries are light-limited and fall steeply "
+                                     "with energy (more light &rarr; faster edge &rarr; better timing); two "
+                                     "<em>Up</em> capillaries break the trend.  <strong>NW-U</strong> is the "
+                                     "consistently weakest channel &mdash; its compressed, low-light HG pulse "
+                                     "gains little extra slew once all channels approach the rail above "
+                                     "~50&nbsp;GeV, so it stops improving and drifts slightly <em>worse</em> at "
+                                     "high E (the channel combination drops it for ~10&nbsp;ps).  "
+                                     "<strong>SW-U</strong> is the lone capillary read out in DRS0 Group&nbsp;1 "
+                                     "and referenced to <strong>MCP2</strong> (all others use MCP1 in Group&nbsp;0), "
+                                     "with weak relative gain (&asymp;0.74), so its single-channel &sigma; sits "
+                                     "flat on the energy-independent reference floor "
+                                     "(&sigma;<sub>MCP</sub>&nbsp;&asymp;&nbsp;70&nbsp;ps, measured flat across "
+                                     "all energies).  CFD-5% already removes the broad CFD-20% shoulder on the "
+                                     "Down capillaries; the corner difference + channel combination + energy "
+                                     f"binning (Layers 4&ndash;5) &mdash; which cancel the reference and "
+                                     f"drop the weak channels &mdash; then reach the {TEB_150} ps headline."),
                             width_pct=50,
                         ),
                     ],
