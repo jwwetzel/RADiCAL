@@ -309,10 +309,11 @@ void fiducialTimingScan()
         for (int e = 0; e < nE; ++e) if (gTop2[e].GetN() >= 2) L->AddEntry(&gTop2[e], eLbl[e], "pl");
         L->Draw();
 
-        { TLatex a; a.SetNDC(); a.SetTextSize(0.027); a.SetTextColor(kGray+3);
-          a.DrawLatex(0.16, 0.895, "Shallow radius dependence at every energy");
-          a.DrawLatex(0.16, 0.860, "(higher E #rightarrow lower #sigma_{t}).");
-          a.DrawLatex(0.16, 0.825, "r = 3 mm near-optimal throughout"); }
+        { TLatex a; a.SetNDC(); a.SetTextSize(0.026); a.SetTextColor(kGray+3);
+          a.DrawLatex(0.16, 0.895, "Tightening helps the lower energies (outer-ring");
+          a.DrawLatex(0.16, 0.862, "position/walk); higher E #rightarrow lower #sigma_{t}.");
+          a.SetTextColor(kRRed);
+          a.DrawLatex(0.16, 0.825, "Adopted: 2.5 mm (E#leq100), 3.0 mm (E#geq125)"); }
 
         DrawPageTitle("Timing resolution vs fiducial radius -- all energies  (top-2% E_{meas})");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan.png");
@@ -367,7 +368,9 @@ void fiducialTimingScan()
             Form("top 2%%:  %.1f ps (r#leq2.5) #rightarrow %.1f ps (3 mm) #rightarrow %.1f ps (4 mm)",
                  plateauMax(g2,1.0,2.5), valAt(g2,3.0), valAt(g2,4.0)));
           a.DrawLatex(0.17, 0.255,
-            "#Rightarrow optimum r #approx 2#minus2.5 mm; r=3 mm is ~1#minus2 ps above it (shallow, robust)"); }
+            "average-event optimum r #approx 2#minus2.5 mm.  But at 150 GeV the high-statistics");
+          a.DrawLatex(0.17, 0.215,
+            "single-best-bin is OOS-optimal at r=3 mm, so 150 GeV keeps 3 mm (text)."); }
         DrawPageTitle("Timing resolution vs fiducial radius  (150 GeV, stable E_{meas} selection)");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_150.png");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_150.pdf");
@@ -411,10 +414,12 @@ void fiducialTimingScan()
         for (int e = 0; e < nE; ++e) if (gBest[e].GetN() >= 2) L->AddEntry(&gBest[e], eLbl[e], "pl");
         L->Draw();
 
-        { TLatex a; a.SetNDC(); a.SetTextSize(0.026); a.SetTextColor(kGray+3);
-          a.DrawLatex(0.155, 0.875, "Joint optimisation: E_{meas} bin re-picked at each radius");
-          a.DrawLatex(0.155, 0.840, "#Rightarrow jumpy by construction; read the robust trend, not points.");
-          a.DrawLatex(0.155, 0.805, "No radius robustly beats r = 3 mm at any energy."); }
+        { TLatex a; a.SetNDC(); a.SetTextSize(0.025); a.SetTextColor(kGray+3);
+          a.DrawLatex(0.155, 0.878, "Joint optimisation: E_{meas} bin re-picked at each radius (in-sample).");
+          a.DrawLatex(0.155, 0.845, "Jumpy; tighter cuts can OVERFIT, so the run-folded OOS validation");
+          a.DrawLatex(0.155, 0.812, "(see text) sets the adopted per-energy fiducial:");
+          a.SetTextColor(kRRed);
+          a.DrawLatex(0.155, 0.778, "r < 2.5 mm for E #leq 100 GeV;  r < 3.0 mm for E #geq 125 GeV."); }
 
         DrawPageTitle("Best-bin (headline) #sigma_{t} vs fiducial radius -- all energies");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_bestbin.png");
@@ -422,13 +427,25 @@ void fiducialTimingScan()
         printf("[fiducialTimingScan] wrote fiducial_timing_scan_bestbin.png (joint view)\n");
     }
 
-    // Console summary table
-    printf("\n  R(mm)");
-    for (int e = 0; e < nE; ++e) printf("  %6d", eGeV[e]);
-    printf("   [top-2%% sigma_t, ps]\n");
-    for (double R = 1.0; R <= 5.001; R += 0.5) {
-        printf("  %4.1f ", R);
-        for (int e = 0; e < nE; ++e) printf("  %6.1f", valAt(gTop2[e], R));
-        printf("\n");
+    // Console summary tables
+    auto printTable = [&](const char* tag, TGraphErrors* g) {
+        printf("\n  R(mm)");
+        for (int e = 0; e < nE; ++e) printf("  %6d", eGeV[e]);
+        printf("   [%s sigma_t, ps]\n", tag);
+        for (double R = 1.0; R <= 5.001; R += 0.25) {
+            printf("  %4.2f ", R);
+            for (int e = 0; e < nE; ++e) { double v = valAt(g[e], R); if (v>0) printf("  %6.1f", v); else printf("       -"); }
+            printf("\n");
+        }
+    };
+    printTable("BEST-BIN", gBest);
+    // Mean over energies of best-bin sigma at each radius (where defined for all 6)
+    printf("\n  best-bin sigma averaged over the 6 energies:\n");
+    for (double R = 1.5; R <= 3.501; R += 0.25) {
+        double sum = 0.; int n = 0;
+        for (int e = 0; e < nE; ++e) { double v = valAt(gBest[e], R); if (v>0){ sum+=v; ++n; } }
+        if (n == nE) printf("   r=%.2f mm : mean = %.2f ps  (over %d energies)\n", R, sum/n, n);
+        else         printf("   r=%.2f mm : (only %d/%d energies defined)\n", R, n, nE);
     }
+    printTable("top-2%", gTop2);
 }

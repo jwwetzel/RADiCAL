@@ -123,7 +123,27 @@ static const double kCalo_y0 = 4.7;  // face center y in WC coords (moduleCenter
 // Fiducial radii  [mm]
 // ---------------------------------------------------------------------------
 static const double kFiducial_r_energy = 2.0;  // tight fiducial for energy analysis
-static const double kFiducial_r_timing = 3.0;  // loose fiducial for timing analysis
+static const double kFiducial_r_timing = 3.0;  // nominal/loose timing fiducial (display + default)
+
+// Per-energy OPTIMISED timing fiducial radius [mm], set by the OUT-OF-SAMPLE-
+// validated fiducial-radius scan (fiducialTimingScan.C + the run-folded OOS in
+// timingEnergyBins.C; documented in the Layer-3 fiducial-optimisation chapter):
+//
+//   25-100 GeV  ->  2.5 mm   The outer-ring position/time-walk degradation
+//                            dominates; tightening robustly improves the OOS
+//                            best-bin sigma_t (50/75/100 GeV better by 1.7-3.6 ps;
+//                            25 GeV ~tied).
+//   125-150 GeV ->  3.0 mm   At 125 GeV the tighter cut OVERFITS (in-sample
+//                            27.1 ps but OOS 33.1 ps); at 150 GeV the 4x larger
+//                            sample lets the single-best-E_meas-bin selection
+//                            benefit from the looser pool (OOS 27.4 vs 28.1 ps).
+//                            Both are OOS-validated at 3 mm.
+//
+// Two-tier, physics-motivated, OOS-validated -- NOT a per-energy argmin (the
+// per-energy best-bin curve is too jumpy, and tighter cuts overfit in-sample).
+static inline double TimingFiducialR(double energy_GeV) {
+    return (energy_GeV > 112.) ? 3.0 : 2.5;   // 125 & 150 GeV: 3.0 mm;  25-100 GeV: 2.5 mm
+}
 
 // ---------------------------------------------------------------------------
 // MCP reference quality  [mV]

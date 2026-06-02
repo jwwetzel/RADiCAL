@@ -350,7 +350,7 @@ void timingEnergyBins()
         // Timing fiducial radius.  Defaults to kFiducial_r_timing; can be
         // overridden via the RADICAL_RFID env var for the fiducial-radius
         // optimisation scan (fiducialTimingScan.sh) without touching the default.
-        double rFidT = kFiducial_r_timing;
+        double rFidT = TimingFiducialR(rc.energy_GeV);   // per-energy optimised (SelectionCuts.h)
         if (const char* envR = gSystem->Getenv("RADICAL_RFID")) {
             double v = atof(envR);
             if (v > 0.) { rFidT = v;
@@ -359,6 +359,7 @@ void timingEnergyBins()
                               << rFidT << " mm\n";
             }
         }
+        std::cout << "  Timing fiducial: r < " << rFidT << " mm\n";
         const float rFid2 = (float)(rFidT * rFidT);
 
         // -----------------------------------------------------------------------
