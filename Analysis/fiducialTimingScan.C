@@ -32,6 +32,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TGraph.h"
+#include "TGraphErrors.h"
 #include "TH1F.h"
 #include "TH1.h"
 #include "TCanvas.h"
@@ -52,8 +53,10 @@ static const float kSentCut_fts = -1e5f;   // hg_cfd validity test (matches head
 
 // Robust core sigma [ns] of a set of corner times — mirrors VecToHist_teb +
 // FitGaussCore (2-pass 5-sigma outlier trim, then 2-sigma Gaussian core fit).
-static double RobustSigma_fts(const std::vector<float>& v)
+// If errPs != nullptr, *errPs is set to the fit's sigma uncertainty in ps.
+static double RobustSigma_fts(const std::vector<float>& v, double* errPs = nullptr)
 {
+    if (errPs) *errPs = 0.;
     if (v.size() < 150) return -1.;
     double mu1 = 0.; for (float x : v) mu1 += x; mu1 /= (double)v.size();
     double ms1 = 0.; for (float x : v) ms1 += ((double)x - mu1) * ((double)x - mu1);
@@ -75,6 +78,7 @@ static double RobustSigma_fts(const std::vector<float>& v)
     for (float x : v) h.Fill(x);
     double mu, muE, s, sE;
     FitGaussCore(&h, 2.0, mu, muE, s, sE);
+    if (errPs) *errPs = sE * 1000.;
     return (s > 0.) ? s : -1.;
 }
 
@@ -124,8 +128,9 @@ static bool CollectEvents(const char* ntuple, std::vector<EvFTS>& out)
     return true;
 }
 
-// Scan radius for one energy; fill gTop2 / gTop10 (sigma_t in ps vs radius).
-static void ScanRadii(const std::vector<EvFTS>& evs, TGraph& gTop2, TGraph& gTop10,
+// Scan radius for one energy; fill gTop2 / gTop10 (sigma_t in ps vs radius, with
+// the Gaussian-fit uncertainty as the y error bar).
+static void ScanRadii(const std::vector<EvFTS>& evs, TGraphErrors& gTop2, TGraphErrors& gTop10,
                       double& yMin, double& yMax)
 {
     for (double R = 1.0; R <= 5.001; R += 0.25) {
@@ -137,19 +142,20 @@ static void ScanRadii(const std::vector<EvFTS>& evs, TGraph& gTop2, TGraph& gTop
         std::sort(sel.begin(), sel.end(),
                   [](const std::pair<float,float>& a, const std::pair<float,float>& b)
                   { return a.first > b.first; });            // E_meas descending
-        auto topSigma = [&](double frac) -> double {
+        auto topSigma = [&](double frac, double& errPs) -> double {
             size_t nt = (size_t)(frac * (double)sel.size());
-            if (nt < 300) return -1.;        // drop low-statistics (noisy) points
+            if (nt < 300) { errPs = 0.; return -1.; }   // drop low-statistics (noisy) points
             nt = std::min(nt, sel.size());
             std::vector<float> tt; tt.reserve(nt);
             for (size_t k = 0; k < nt; ++k) tt.push_back(sel[k].second);
-            return RobustSigma_fts(tt);
+            return RobustSigma_fts(tt, &errPs);
         };
-        double s10 = topSigma(0.10);
-        double s02 = topSigma(0.02);
-        if (s02 > 0.) { gTop2.SetPoint(gTop2.GetN(), R, s02 * 1000.);
+        double e10 = 0., e02 = 0.;
+        double s10 = topSigma(0.10, e10);
+        double s02 = topSigma(0.02, e02);
+        if (s02 > 0.) { int n = gTop2.GetN(); gTop2.SetPoint(n, R, s02 * 1000.); gTop2.SetPointError(n, 0., e02);
                         yMin = std::min(yMin, s02*1000.); yMax = std::max(yMax, s02*1000.); }
-        if (s10 > 0.)   gTop10.SetPoint(gTop10.GetN(), R, s10 * 1000.);
+        if (s10 > 0.) { int n = gTop10.GetN(); gTop10.SetPoint(n, R, s10 * 1000.); gTop10.SetPointError(n, 0., e10); }
     }
 }
 
@@ -162,7 +168,7 @@ void fiducialTimingScan()
     const int    eGeV[nE]   = { 25, 50, 75, 100, 125, 150 };
     const char*  eLbl[nE]   = { "25 GeV","50 GeV","75 GeV","100 GeV","125 GeV","150 GeV" };
 
-    TGraph gTop2[nE], gTop10[nE];
+    TGraphErrors gTop2[nE], gTop10[nE];
     double yMin = 1e9, yMax = -1e9;
     std::vector<EvFTS> evs150;
     for (int e = 0; e < nE; ++e) {
@@ -242,8 +248,8 @@ void fiducialTimingScan()
     // =========================================================================
     if (gTop2[nE-1].GetN() >= 2)
     {
-        TGraph& g2  = gTop2[nE-1];
-        TGraph& g10 = gTop10[nE-1];
+        TGraphErrors& g2  = gTop2[nE-1];
+        TGraphErrors& g10 = gTop10[nE-1];
         TCanvas* c = new TCanvas("c_fts_150", "", 920, 760);
         c->SetLeftMargin(0.14); c->SetBottomMargin(0.13);
         c->SetRightMargin(0.05); c->SetTopMargin(0.10);
