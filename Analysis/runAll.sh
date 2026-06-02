@@ -206,6 +206,13 @@ echo ""
 $ROOT_CMD 'Analysis/fiducialTimingScan.C+'
 
 echo ""
+echo "Step 6c: Timing tail characterisation (non-Gaussian tails of (DW-UP)/2)"
+echo "  Tests whether tails are low-amplitude, few-channel, or single-channel mis-reco"
+echo ""
+
+$ROOT_CMD 'Analysis/timingTailAnalysis.C+'
+
+echo ""
 echo "Step 7: Cross-energy collated plots (all 6 energies side-by-side)"
 echo "  Beam quality · shower containment · channel performance · timing methods"
 echo ""
