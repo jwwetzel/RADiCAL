@@ -122,9 +122,77 @@
   td:first-child{font-family:var(--mono);color:var(--ink);white-space:nowrap}
   footer{border-top:1px solid var(--line);padding:22px 0 50px;color:var(--dim);font-size:12.5px}
   .hl{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px;transition:.2s}
+
+  /* ===== view-mode toggle ===== */
+  .modeswitch{display:inline-flex;margin:22px 0 2px;border:1px solid var(--line);border-radius:11px;
+              overflow:hidden;background:var(--bg2)}
+  .modeswitch button{background:transparent;border:0;color:var(--dim);padding:11px 20px;cursor:pointer;
+              font-size:14px;font-weight:700;font-family:var(--sans);display:flex;gap:8px;align-items:center}
+  .modeswitch button.on{background:var(--accent);color:#04201c}
+  .modeswitch button:not(.on):hover{color:var(--ink)}
+  body.mode-tutorial #cardsView{display:none}
+  body.mode-cards    #tutorialView{display:none}
+
+  /* ===== tutorial (chapter → verse) ===== */
+  .tbar{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.93);backdrop-filter:blur(8px);
+        border-bottom:1px solid var(--line);padding:9px 0}
+  .tbar .wrap{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .tbar .lab{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+             color:var(--dim);margin-right:4px}
+  .tbar a{font-size:12.5px;color:var(--dim);padding:6px 10px;border-radius:7px;border:1px solid transparent;
+          font-weight:600;cursor:pointer}
+  .tbar a:hover{color:var(--ink);border-color:var(--line)}
+  .tbar a.on{color:var(--accent);border-color:var(--accent)}
+
+  .tut{max-width:790px;padding:14px 0 90px}
+  .tut .intro{color:var(--dim);font-size:16px;margin:6px 0 8px;max-width:740px}
+  .tut .arc{font-family:var(--mono);font-size:12px;color:var(--dim);border-left:2px solid var(--accent2);
+            padding-left:12px;margin:18px 0 34px}
+  .chapter{margin:0 0 54px;scroll-margin-top:58px}
+  .chead{display:flex;align-items:baseline;gap:13px;border-bottom:1px solid var(--line);
+         padding-bottom:11px;margin-bottom:4px;flex-wrap:wrap}
+  .cnum{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;white-space:nowrap}
+  h2.ctitle{font-size:27px;font-weight:800;letter-spacing:-.6px;margin:0;color:var(--ink);
+            font-family:var(--sans);text-transform:none}
+  .clede{color:var(--dim);font-size:15.5px;margin:12px 0 20px}
+  .verse{margin:26px 0;scroll-margin-top:58px}
+  .verse h3{font-size:18.5px;margin:0 0 9px;color:var(--ink);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .tut p{margin:11px 0;color:#cdd6e6;font-size:15px}
+  .tut p b{color:var(--ink)}
+  .tut ul{margin:11px 0;padding-left:20px;color:#cdd6e6;font-size:15px}
+  .tut li{margin:5px 0}
+  .tut li b{color:var(--ink)}
+  .depthchip{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+             padding:2px 8px;border-radius:20px;font-weight:700}
+  .d1{color:var(--accent);background:rgba(39,224,200,.1)}
+  .d2{color:var(--accent2);background:rgba(255,180,84,.1)}
+  .d3{color:var(--hot);background:rgba(255,92,138,.12)}
+
+  .keyidea,.inrad{padding:11px 15px;border-radius:0 9px 9px 0;margin:15px 0}
+  .keyidea{border-left:3px solid var(--accent);background:rgba(39,224,200,.06)}
+  .inrad{border-left:3px solid var(--accent2);background:rgba(255,180,84,.06)}
+  .keyidea .k,.inrad .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+                        display:block;margin-bottom:4px}
+  .keyidea .k{color:var(--accent)} .inrad .k{color:var(--accent2)}
+  .keyidea p,.inrad p{margin:4px 0} .inrad b{color:var(--ink)}
+
+  .tfig{margin:20px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 15px 12px}
+  .tfig svg{display:block;width:100%;height:auto;overflow:visible}
+  .tfig figcaption{font-size:12.5px;color:var(--dim);margin-top:10px;line-height:1.5}
+  .tfig text{font-family:var(--mono);fill:var(--ink)}
+  .tfig .fdim{fill:var(--dim)} .tfig .facc{fill:var(--accent)} .tfig .fac2{fill:var(--accent2)} .tfig .fhot{fill:var(--hot)}
+  .tfig .sln{stroke:var(--line);stroke-width:1.5;fill:none} .tfig .sacc{stroke:var(--accent);stroke-width:2;fill:none}
+  .tfig .sac2{stroke:var(--accent2);stroke-width:2;fill:none} .tfig .shot{stroke:var(--hot);stroke-width:2;fill:none}
+  .tfig .sink{stroke:#cdd6e6;stroke-width:2;fill:none}
+  .tfig .bx{fill:#1b2336;stroke:var(--line);stroke-width:1.5}
+  .tnext{margin-top:14px;border:1px solid var(--line);background:var(--bg2);border-radius:10px;
+         padding:13px 16px;color:var(--dim);font-size:14px}
+  .tnext b{color:var(--accent)}
+  .tut .eq{font-family:var(--mono);color:#bfe9e2;background:#0c111b;border:1px solid var(--line);
+           border-radius:7px;padding:2px 7px;font-size:13.5px;white-space:nowrap}
 </style>
 </head>
-<body>
+<body class="mode-cards">
 
 <header>
  <div class="wrap">
@@ -138,8 +206,14 @@
    <div class="stat"><b>5 GS/s</b><span>waveform sampling</span></div>
    <div class="stat"><b>0.3 mm</b><span>light travel in 1 ps</span></div>
   </div>
-  <p class="how">How to use: skim the <b>beamline</b> below — click any box to jump to it.
-     Use <b>search</b> to find a term. Hit <b>Test me</b> to blur the answers and quiz yourself.</p>
+  <div class="modeswitch" id="modeswitch">
+    <button data-m="tutorial">📖 Tutorial</button>
+    <button data-m="cards" class="on">📇 Field guide</button>
+  </div>
+  <p class="how"><b>Two ways in.</b> <b>Tutorial</b> is a top-down read — start at a photomultiplier and
+     build, chapter by chapter, up to the full experiment. <b>Field guide</b> is the reference deck:
+     skim the <b>beamline</b> below (click any box), <b>search</b> any term, or hit <b>Test me</b> to quiz
+     yourself. Both cover the same physics — pick the one that fits how you learn.</p>
 
   <!-- clickable beamline -->
   <div class="chain">
@@ -171,6 +245,8 @@
   </div>
  </div>
 </header>
+
+<div id="cardsView">
 
 <div class="bar"><div class="wrap">
   <input id="search" placeholder="search: MCP, CFD, time-walk, shashlik, 50 ohm…" autocomplete="off">
@@ -634,6 +710,506 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
 <p class="none" id="noresults" style="display:none">No matches. Try a shorter term.</p>
 
 </main>
+</div><!-- /#cardsView -->
+
+<!-- ============================ TUTORIAL VIEW ============================ -->
+<div id="tutorialView">
+
+<div class="tbar"><div class="wrap" id="tnav">
+  <span class="lab">Chapters</span>
+  <a data-c="ch1">1 · Seeing a particle</a>
+  <a data-c="ch2">2 · NIM logic</a>
+  <a data-c="ch3">3 · Recording the pulse</a>
+  <a data-c="ch4">4 · Calorimetry</a>
+</div></div>
+
+<article class="wrap tut">
+
+ <p class="intro">This is the long way round — the same physics as the field guide, but told as a story that
+   builds. We start with the simplest thing that can say "a particle went by," and add one idea at a time
+   until we have the whole RADiCAL experiment in view. Each chapter is harder than the last; read top to
+   bottom.</p>
+ <p class="arc">arc:&nbsp; a single photon → a counter that lies → two counters that don't →
+   logic that decides in nanoseconds → electronics that record the pulse → a block that weighs energy in light.</p>
+
+ <!-- =================== CHAPTER 1 =================== -->
+ <section class="chapter" id="ch1">
+  <div class="chead"><span class="cnum">CHAPTER 1</span>
+    <h2 class="ctitle">Seeing a particle that you can't see</h2></div>
+  <p class="clede">A charged particle is invisible. To detect it you must trick it into leaving a mark you
+    <em>can</em> measure — a flash of light — and then amplify that flash until it's an electrical pulse big
+    enough to act on. That is the photomultiplier-and-scintillator pair, the oldest and most important
+    duet in particle physics.</p>
+
+  <div class="verse" id="ch1-scint">
+   <h3>Scintillators: turning a particle into light <span class="depthchip d1">foundational</span></h3>
+   <p>Some materials — certain crystals, plastics, and noble gases — glow faintly when a charged particle
+     passes through them. The particle dumps a little energy as it goes; the material's molecules soak it up,
+     get briefly excited, and then relax by emitting <b>photons</b>. We call this <b>scintillation</b>, and a
+     block of such material a <b>scintillator</b>.</p>
+   <p>Two properties make a scintillator good. It should be <b>bright</b> (many photons per unit of deposited
+     energy, so small signals are still visible) and <b>fast</b> (the flash should rise and fade quickly, so
+     two particles close in time don't blur together). A plastic paddle flashes in a few nanoseconds and is
+     cheap; a dense crystal like <b>LYSO</b> is brighter and still fast, which is exactly what you want when
+     you care about <em>timing</em>.</p>
+   <div class="keyidea"><span class="k">Key idea</span>
+     <p>A detector never measures the particle directly. It measures a <b>proxy</b> — here, light — that the
+       particle leaves behind. Every number you ever quote is really a measurement of that proxy.</p></div>
+  </div>
+
+  <div class="verse" id="ch1-pmt">
+   <h3>The photomultiplier tube: turning light into a pulse <span class="depthchip d1">foundational</span></h3>
+   <p>A scintillation flash is tiny — sometimes only a handful of photons. No ordinary circuit can see that.
+     The <b>photomultiplier tube (PMT)</b> solves the problem with an avalanche. Light enters through a window
+     and strikes a <b>photocathode</b>, a coating that releases an electron when a photon lands on it (the
+     photoelectric effect). That single <b>photoelectron</b> is then accelerated by a voltage onto a metal
+     plate called a <b>dynode</b>, where it knocks loose several more electrons. Those are accelerated to the
+     next dynode, which multiplies them again, and so on down a chain of ten or twelve stages.</p>
+   <p>Each stage multiplies by three or four; ten stages in series multiply by a <b>million</b>. One photon at
+     the front becomes a measurable spike of charge at the <b>anode</b> at the back — a voltage pulse on a
+     cable you can finally work with.</p>
+
+   <figure class="tfig">
+    <svg viewBox="0 0 720 220" role="img" aria-label="scintillator and photomultiplier schematic">
+      <defs><marker id="ta" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0,0 L9,4.5 L0,9 z" fill="#46527a"/></marker></defs>
+      <!-- particle -->
+      <line class="sln" x1="8" y1="70" x2="64" y2="70" marker-end="url(#ta)"/>
+      <text class="fdim" x="8" y="60" font-size="11">e⁻ / μ</text>
+      <!-- scintillator -->
+      <rect class="bx" x="68" y="44" width="66" height="52" rx="5"/>
+      <text x="101" y="74" text-anchor="middle" font-size="10">scint.</text>
+      <text class="fdim" x="101" y="112" text-anchor="middle" font-size="9">light flash</text>
+      <!-- photons -->
+      <path class="sac2" d="M138 60 q12 -6 24 0" /><path class="sac2" d="M138 72 q12 6 24 0"/>
+      <path class="sac2" d="M138 84 q12 -6 24 0"/>
+      <!-- PMT envelope -->
+      <rect x="170" y="20" width="470" height="160" rx="14" fill="#0c111b" stroke="#232c42" stroke-width="1.5"/>
+      <text class="fdim" x="405" y="34" text-anchor="middle" font-size="9">photomultiplier tube  (vacuum)</text>
+      <!-- photocathode -->
+      <line x1="184" y1="44" x2="184" y2="156" stroke="#27e0c8" stroke-width="3"/>
+      <text class="facc" x="184" y="172" text-anchor="middle" font-size="9">photo-</text>
+      <text class="facc" x="184" y="183" text-anchor="middle" font-size="9">cathode</text>
+      <!-- dynode zigzag with growing electron bursts -->
+      <polyline class="sln" points="210,150 250,70 290,150 330,70 370,150 410,70 450,150 490,70 530,150 570,70"/>
+      <circle cx="210" cy="150" r="2.5" fill="#27e0c8"/>
+      <circle cx="290" cy="150" r="3.2" fill="#27e0c8"/><circle cx="296" cy="150" r="3.2" fill="#27e0c8"/>
+      <circle cx="450" cy="150" r="3.8" fill="#ffb454"/><circle cx="458" cy="150" r="3.8" fill="#ffb454"/>
+      <circle cx="466" cy="150" r="3.8" fill="#ffb454"/><circle cx="474" cy="150" r="3.8" fill="#ffb454"/>
+      <text class="fdim" x="380" y="200" text-anchor="middle" font-size="9">dynode chain — ×3–4 per stage, ×10⁶ total</text>
+      <!-- anode + output -->
+      <line x1="600" y1="50" x2="600" y2="150" stroke="#ff5c8a" stroke-width="3"/>
+      <text class="fhot" x="600" y="44" text-anchor="middle" font-size="9">anode</text>
+      <line class="sln" x1="640" y1="100" x2="700" y2="100" marker-end="url(#ta)"/>
+      <path class="shot" d="M662 100 v0 M656 100 c6 0 6 -34 12 -34 c6 0 6 34 12 34" transform="translate(-2,-0)"/>
+      <text class="fhot" x="678" y="128" text-anchor="middle" font-size="9">pulse</text>
+    </svg>
+    <figcaption>One particle → a flash of light in the scintillator → one photoelectron at the photocathode →
+      a cascade down the dynodes that multiplies it a millionfold → a voltage pulse at the anode. The whole
+      tube lives in vacuum so the electrons fly freely.</figcaption>
+   </figure>
+
+   <div class="inrad"><span class="k">In RADiCAL</span>
+     <p>The calorimeter itself doesn't use a vacuum PMT — its light is read by compact <b>SiPMs</b>
+       (silicon photomultipliers, the same avalanche idea in solid state). But the experiment's
+       <b>timing reference</b> is an <b>MCP-PMT</b>, a photomultiplier whose dynode chain is replaced by a
+       plate drilled with millions of microscopic channels — the same multiplication, but so fast it pins a
+       time to tens of picoseconds.</p></div>
+  </div>
+
+  <div class="verse" id="ch1-hv">
+   <h3>Why it needs high voltage <span class="depthchip d1">foundational</span></h3>
+   <p>The multiplication only happens because each electron is <b>accelerated</b> before it hits the next
+     dynode — it has to arrive with enough energy to knock several electrons loose. That acceleration comes
+     from a <b>high voltage</b> (often 1–2 kV) split across the dynode chain by a <b>resistor divider</b>, so
+     each stage sits a few hundred volts above the last.</p>
+   <p>The gain depends steeply on that voltage: turn the HV up and every stage multiplies harder, so the
+     overall gain can change by a factor of two for a 10% change in voltage. That sensitivity is a knob —
+     it's how you <em>set</em> a PMT's gain — but it's also why the HV supply must be stable and why two
+     tubes at the same voltage rarely have the same gain.</p>
+   <div class="keyidea"><span class="k">Key idea</span>
+     <p>Gain is not a fixed property of a tube; it's a <b>function of the high voltage</b> you choose. Before
+       a PMT means anything quantitative, you have to find the voltage where it behaves the way you want.</p></div>
+  </div>
+
+  <div class="verse" id="ch1-counter">
+   <h3>A counter that lies: dark pulses & false triggers <span class="depthchip d2">building up</span></h3>
+   <p>Glue a scintillator to a PMT and you have a <b>scintillation counter</b>: a particle passes, light
+     flashes, the tube barks out a pulse, you count it. Simple — and not yet trustworthy.</p>
+   <p>The trouble is that the photocathode doesn't only release electrons when light hits it. At room
+     temperature, electrons occasionally boil off on their own (<b>thermionic emission</b>). Each one starts
+     the same million-fold avalanche as a real photon, so the tube emits a pulse with <em>no particle present
+     at all</em>. These are <b>dark pulses</b> (or dark counts), and a bare counter fires them continuously —
+     often thousands per second. Stray radioactivity, cosmic rays, and electronic pickup add still more
+     <b>false triggers</b>.</p>
+   <p>So a single counter that fired tells you almost nothing: maybe a particle went by, maybe an electron
+     hiccupped off the photocathode. You cannot tell which from one pulse.</p>
+  </div>
+
+  <div class="verse" id="ch1-coinc">
+   <h3>Two counters that don't: coincidence <span class="depthchip d2">building up</span></h3>
+   <p>Here is the fix, and it is beautiful in its simplicity. Put <b>two</b> counters one behind the other and
+     demand that they fire <b>at the same time</b>. A real particle flies through both within a nanosecond, so
+     both bark together. A dark pulse in one tube is a private accident — the other tube knows nothing about
+     it, so they almost never fire together by chance.</p>
+   <p>Requiring two (or more) counters to fire together is called a <b>coincidence</b>, and it is the single
+     most powerful noise-killer in the business. If counter A dark-rate is a few thousand per second and so is
+     B, the rate at which they fire <em>accidentally</em> within the same nanosecond window is their rates
+     multiplied by that tiny window — a handful per second, or less. Real particles, which fire both on
+     purpose, sail through.</p>
+
+   <figure class="tfig">
+    <svg viewBox="0 0 720 230" role="img" aria-label="coincidence rejects accidental dark pulses">
+      <!-- axes -->
+      <line class="sln" x1="60" y1="40"  x2="700" y2="40"  opacity="0"/>
+      <!-- A row -->
+      <text class="fdim" x="10" y="56" font-size="11">A</text>
+      <line class="sln" x1="40" y1="60" x2="700" y2="60"/>
+      <path class="sink" d="M150 60 v-30 M150 30 h0 M144 60 c6 0 6 -30 6 -30 c0 0 0 30 6 30"/>
+      <path class="sink" d="M470 60 c6 0 6 -30 12 -30 c6 0 6 30 12 30"/>
+      <text class="fhot" x="476" y="24" font-size="9">dark pulse</text>
+      <!-- B row -->
+      <text class="fdim" x="10" y="116" font-size="11">B</text>
+      <line class="sln" x1="40" y1="120" x2="700" y2="120"/>
+      <path class="sink" d="M156 120 c6 0 6 -30 12 -30 c6 0 6 30 12 30"/>
+      <!-- coincidence window -->
+      <rect x="138" y="20" width="48" height="170" fill="rgba(39,224,200,.10)" stroke="rgba(39,224,200,.45)" stroke-dasharray="3 3"/>
+      <text class="facc" x="162" y="208" text-anchor="middle" font-size="9">coincidence</text>
+      <text class="facc" x="162" y="219" text-anchor="middle" font-size="9">window (~ns)</text>
+      <!-- AND row -->
+      <text class="fdim" x="10" y="176" font-size="11">A·B</text>
+      <line class="sln" x1="40" y1="180" x2="700" y2="180"/>
+      <path class="sacc" d="M150 180 c8 0 8 -34 16 -34 c8 0 8 34 16 34"/>
+      <text class="facc" x="166" y="150" font-size="9">★ fire</text>
+      <text class="fdim" x="486" y="176" font-size="9">A alone → nothing</text>
+    </svg>
+    <figcaption>A real particle (left) fires A <em>and</em> B inside the coincidence window, so the AND output
+      fires. A dark pulse in A alone (right) lands with no partner in B, so the AND stays silent. Two unreliable
+      counters make one reliable trigger.</figcaption>
+   </figure>
+   <div class="inrad"><span class="k">In RADiCAL</span>
+     <p>The beam trigger is exactly this: small scintillator paddles and a 1×1&nbsp;cm "finger" counter,
+       required <b>in coincidence</b>, define a clean beam particle. Only when they all fire together does the
+       experiment agree to record an event. You'll meet that decision again in Chapter&nbsp;2.</p></div>
+  </div>
+
+  <div class="verse" id="ch1-calib">
+   <h3>Calibrating & characterizing a counter <span class="depthchip d3">the real work</span></h3>
+   <p>Before a counter is a measuring instrument rather than a curiosity, you have to <b>characterize</b> it —
+     learn its personality — and <b>calibrate</b> it — pin its arbitrary numbers to physical ones. Three
+     classic measurements do most of the job:</p>
+   <ul>
+     <li><b>The single-photoelectron spectrum.</b> Shine almost no light and histogram the pulse charges. You
+       see distinct bumps: one photoelectron, two, three. The spacing between bumps is the charge of <em>one</em>
+       photoelectron — that's your gain, measured, and it tells you how to convert "picocoulombs" into
+       "photons."</li>
+     <li><b>The high-voltage plateau.</b> Sit a counter in a steady particle source, put it in coincidence with
+       a second, and sweep the HV while counting. At low voltage the gain is too small and pulses fall under
+       threshold; the rate climbs as you raise HV, then <b>flattens</b> into a plateau where essentially every
+       real particle is counted; push higher and dark counts take over and the rate runs away. You set the
+       operating voltage in the middle of that plateau — high enough to be fully efficient, low enough to stay
+       quiet.</li>
+     <li><b>Efficiency and noise rate.</b> With a clean tagged sample (say, a tight coincidence of other
+       counters), ask how often <em>this</em> counter also fired — that fraction is its <b>efficiency</b>. With
+       the beam off, count how often it fires anyway — that's its <b>dark/noise rate</b>. A good counter is
+       efficient and quiet at the same voltage.</li>
+   </ul>
+   <div class="keyidea"><span class="k">Key idea</span>
+     <p>"Calibrate" and "characterize" are the difference between a detector and a number generator. The
+       plateau tells you <em>where</em> to operate; the single-PE spectrum tells you <em>what the numbers mean</em>;
+       the efficiency tells you <em>how much to trust them</em>. Skip these and every downstream result inherits
+       an unknown error.</p></div>
+   <div class="tnext"><b>Where we are:</b> we can now turn a single invisible particle into a trustworthy
+     electrical pulse, and we know how good that pulse is. But a pulse is still an analog squiggle. Next we
+     teach the experiment to <b>make decisions</b> from these pulses in nanoseconds — without a computer in the
+     loop. → <b>Chapter&nbsp;2: NIM logic.</b></div>
+  </div>
+ </section>
+
+ <!-- =================== CHAPTER 2 =================== -->
+ <section class="chapter" id="ch2">
+  <div class="chead"><span class="cnum">CHAPTER 2</span>
+    <h2 class="ctitle">Deciding in nanoseconds: NIM crates & logic</h2></div>
+  <p class="clede">A particle arrives, your counters fire, and you have perhaps a few hundred nanoseconds to
+    decide "is this worth recording?" — far too fast for software. The answer is a kind of analog computer
+    built from standardized modules that do one logical operation each, in hardware, at the speed of light in
+    a cable.</p>
+
+  <div class="verse" id="ch2-nim">
+   <h3>The NIM standard and its crate <span class="depthchip d1">foundational</span></h3>
+   <p><b>NIM</b> — Nuclear Instrumentation Module — is a 1960s standard that has outlived almost everything
+     else in physics because it is so simple. It fixes the <b>size</b> of a module, the <b>connector</b> that
+     feeds it power, and the <b>voltages</b> on that connector. Any NIM module from any decade slides into any
+     <b>NIM crate</b> (or "bin"), a metal frame with a power supply in the back. You build an experiment's fast
+     logic by sliding in a handful of modules and patching their fronts together with short coax cables.</p>
+   <p>NIM modules speak a shared electrical language, <b>NIM fast logic</b>: a <b>logic-0</b> is 0&nbsp;volts and
+     a <b>logic-1</b> is −0.8&nbsp;volts (a current into 50&nbsp;Ω). The levels are negative and the pulses are
+     a few nanoseconds wide on purpose — small, fast, and standardized so any module understands any other.</p>
+  </div>
+
+  <div class="verse" id="ch2-disc">
+   <h3>Discriminator: from analog squiggle to clean bit <span class="depthchip d1">foundational</span></h3>
+   <p>The first job is to convert each counter's messy analog pulse into a clean yes/no. That's a
+     <b>discriminator</b>: it watches the input and, the instant the pulse crosses a <b>threshold</b> you set,
+     it emits one standard NIM logic pulse of fixed width. Below threshold — small noise, dark pulses that
+     didn't multiply much — nothing comes out.</p>
+   <p>A discriminator does two things at once: it <b>rejects</b> small junk (anything under threshold) and it
+     <b>standardizes</b> what's left (every real pulse becomes the same crisp bit, regardless of how big it
+     was). After a discriminator, the analog world is gone and you're doing pure logic.</p>
+   <div class="keyidea"><span class="k">Key idea — the catch</span>
+     <p>A simple discriminator fires when the rising edge crosses a <em>fixed voltage</em>. A taller pulse
+       reaches that voltage <b>earlier</b> than a short one of the same shape, so the logic pulse comes out at a
+       time that depends on pulse height. This amplitude-dependent timing error is <b>time-walk</b> — harmless
+       if you only want to count, poison if you want to measure <em>time</em>. We come back to its cure
+       (constant-fraction timing) in Chapter&nbsp;3.</p></div>
+  </div>
+
+  <div class="verse" id="ch2-logic">
+   <h3>AND, OR, NOT, and the gate <span class="depthchip d2">building up</span></h3>
+   <p>With every counter reduced to a standard bit, you combine bits with more NIM modules:</p>
+   <ul>
+     <li><b>Coincidence (AND).</b> Output a pulse only if all inputs overlap in time. This is the hardware
+       version of the two-counter trick from Chapter&nbsp;1 — "A and B fired together."</li>
+     <li><b>OR.</b> Output if <em>any</em> input fires — useful to fan several counters into one line, or to ask
+       "did <em>any</em> veto paddle see something?"</li>
+     <li><b>Veto (NOT / anti-coincidence).</b> A counter you require to <b>not</b> fire. Surround your good
+       region with veto paddles and demand their silence, and you reject particles that strayed where they
+       shouldn't.</li>
+     <li><b>Delay and gate width.</b> Because logic is "do these overlap in time," <em>when</em> and <em>how
+       long</em> each pulse lasts is part of the program. A few nanoseconds of cable delay lines two signals up;
+       the discriminator's output width sets how wide the coincidence window is.</li>
+   </ul>
+   <p>String these together — discriminate each counter, AND the ones you want, veto the ones you don't — and
+     you have computed, in a few nanoseconds of cable and silicon, the single most important bit in the
+     experiment: <b>the trigger</b>.</p>
+  </div>
+
+  <div class="verse" id="ch2-trigger">
+   <h3>The trigger: "record this one" <span class="depthchip d2">building up</span></h3>
+   <p>The <b>trigger</b> is the logic signal that says <em>now</em> — capture this event. It is what defines, at
+     the most basic level, what "an event" even <em>is</em>: no trigger, no data. Everything downstream — the
+     digitizer, the file on disk, the analysis — only ever sees the events the trigger chose to let through.</p>
+   <div class="inrad"><span class="k">In RADiCAL</span>
+     <p>The trigger is a coincidence of the beam scintillators and the finger counter:
+       <span class="eq">TRIGGER = ScintA · ScintB · Finger · ¬Veto</span>. When a clean beam electron fires all
+       three and misses the veto, the logic emits one pulse — and that pulse <b>gates</b> the digitizer in
+       Chapter&nbsp;3, telling it to freeze and record the waveforms. (There's a live version of exactly this
+       logic in the field-guide Playground.)</p></div>
+   <div class="tnext"><b>Where we are:</b> the experiment can now decide, in hardware, which particles are worth
+     keeping. But a yes/no bit throws away everything <em>about</em> the pulse — its size, its shape, its precise
+     time. To measure energy and picosecond timing we have to <b>record the pulse itself</b>. →
+     <b>Chapter&nbsp;3: the DAQ.</b></div>
+  </div>
+ </section>
+
+ <!-- =================== CHAPTER 3 =================== -->
+ <section class="chapter" id="ch3">
+  <div class="chead"><span class="cnum">CHAPTER 3</span>
+    <h2 class="ctitle">Recording the pulse: ADCs, QDCs & waveform digitizers</h2></div>
+  <p class="clede">The trigger said "yes." Now the data-acquisition system — the <b>DAQ</b> — has to turn the
+    analog pulses into numbers on a disk. There are three increasingly powerful ways to do it, and which you
+    choose shapes what physics you can extract afterward.</p>
+
+  <div class="verse" id="ch3-pulse">
+   <h3>The anatomy of a pulse <span class="depthchip d1">foundational</span></h3>
+   <p>Strip a signal down and it is just <b>voltage versus time</b>: a flat <b>baseline</b> (the "pedestal"),
+     then a fast <b>edge</b>, a <b>peak</b>, and a decaying tail. Almost everything you'd want to know lives in
+     two numbers. The <b>amplitude</b> (height of the peak) tracks the peak rate of light. The <b>charge</b> —
+     the <em>area</em> under the pulse, ∫V&nbsp;dt — tracks the <em>total</em> light, which is what's
+     proportional to deposited energy. A third, subtler quantity is hidden in the edge: <em>when</em> it
+     crossed, the particle's <b>time</b>.</p>
+   <p>The three readout technologies below each grab a different subset of these: charge only, amplitude only,
+     or — the whole thing — the shape itself.</p>
+  </div>
+
+  <div class="verse" id="ch3-adc">
+   <h3>The classic readout: ADC, QDC, TDC <span class="depthchip d2">building up</span></h3>
+   <p>Before digitizers were fast, you measured exactly the one number you wanted with a dedicated module,
+     and the trigger told it <em>when</em> to look:</p>
+   <ul>
+     <li><b>Peak-sensing ADC</b> (analog-to-digital converter): catches the pulse's peak voltage and reports
+       it as a number — the <b>amplitude</b>.</li>
+     <li><b>QDC</b> (charge-to-digital converter, a "Q-ADC"): the trigger opens a <b>gate</b> — a time window of
+       fixed width — and the QDC <b>integrates</b> the current that flows during it. The result is the
+       <b>charge</b>, i.e. the area under the pulse inside the gate. This is the traditional way to measure a
+       calorimeter's energy.</li>
+     <li><b>TDC</b> (time-to-digital converter): a stopwatch. It reports the <b>time</b> between a start (often
+       the trigger) and a stop (a discriminator firing on your channel).</li>
+   </ul>
+   <p>These are cheap, fast, and give you small, tidy data — one number per channel per event. Their weakness
+     is that they are <b>committed in advance</b>: a QDC's gate position and width are set in hardware before
+     the run, and if a baseline shift or an early reflection sneaks into the gate, you can never go back and
+     undo it. You measured charge; you did not keep the pulse.</p>
+  </div>
+
+  <div class="verse" id="ch3-wfd">
+   <h3>The waveform digitizer: keep everything <span class="depthchip d3">the powerful way</span></h3>
+   <p>A <b>waveform digitizer</b> refuses to commit. Instead of one number, it records the <b>entire pulse
+     shape</b> — hundreds of voltage samples marching across the pulse — and ships that to disk. With the full
+     waveform in hand you can compute charge, amplitude, <em>and</em> time offline, any way you like, and
+     re-do it next year with a better algorithm. The data are bigger and the electronics trickier, but you
+     have thrown nothing away.</p>
+   <figure class="tfig">
+    <svg viewBox="0 0 720 210" role="img" aria-label="three ways to read the same pulse">
+      <!-- shared pulse shape function approximated by a path, drawn 3x -->
+      <!-- panel 1: QDC (charge = area in gate) -->
+      <text class="fdim" x="120" y="20" text-anchor="middle" font-size="10">QDC — charge (area in gate)</text>
+      <line class="sln" x1="20" y1="170" x2="230" y2="170"/>
+      <rect x="70" y="40" width="70" height="130" fill="rgba(39,224,200,.10)" stroke="rgba(39,224,200,.4)" stroke-dasharray="3 3"/>
+      <text class="facc" x="105" y="190" text-anchor="middle" font-size="9">gate</text>
+      <path class="sink" d="M30 170 L70 170 C92 170 92 70 105 70 C120 70 120 170 170 170 L230 170"/>
+      <!-- panel 2: ADC (amplitude = peak) -->
+      <text class="fdim" x="360" y="20" text-anchor="middle" font-size="10">ADC — amplitude (peak)</text>
+      <line class="sln" x1="260" y1="170" x2="470" y2="170"/>
+      <path class="sink" d="M270 170 L310 170 C332 170 332 70 345 70 C360 70 360 170 410 170 L470 170"/>
+      <line class="sac2" x1="260" y1="70" x2="470" y2="70" stroke-dasharray="4 3"/>
+      <circle cx="345" cy="70" r="4" fill="#ffb454"/>
+      <text class="fac2" x="430" y="64" text-anchor="middle" font-size="9">peak</text>
+      <!-- panel 3: waveform (samples) -->
+      <text class="fdim" x="600" y="20" text-anchor="middle" font-size="10">waveform — every sample</text>
+      <line class="sln" x1="500" y1="170" x2="710" y2="170"/>
+      <path class="sln" d="M510 170 L550 170 C572 170 572 70 585 70 C600 70 600 170 650 170 L710 170" opacity="0.5"/>
+      <g fill="#ff5c8a">
+        <circle cx="510" cy="170" r="2.4"/><circle cx="528" cy="170" r="2.4"/><circle cx="546" cy="169" r="2.4"/>
+        <circle cx="560" cy="150" r="2.4"/><circle cx="572" cy="108" r="2.4"/><circle cx="585" cy="72" r="2.4"/>
+        <circle cx="598" cy="104" r="2.4"/><circle cx="611" cy="140" r="2.4"/><circle cx="628" cy="162" r="2.4"/>
+        <circle cx="648" cy="169" r="2.4"/><circle cx="668" cy="170" r="2.4"/><circle cx="690" cy="170" r="2.4"/>
+      </g>
+      <text class="fhot" x="600" y="190" text-anchor="middle" font-size="9">charge + amplitude + time, offline</text>
+    </svg>
+    <figcaption>The same pulse, three ways. A <b>QDC</b> keeps the area inside a preset gate (charge). A
+      peak-sensing <b>ADC</b> keeps the height (amplitude). A <b>waveform digitizer</b> keeps every sample, so
+      charge, amplitude, and time are all recoverable later — and you can fix mistakes you didn't know you'd
+      make.</figcaption>
+   </figure>
+   <div class="inrad"><span class="k">In RADiCAL</span>
+     <p>Timing to picoseconds <em>demands</em> the waveform. The experiment uses a CAEN <b>DT5742</b> built on
+       the <b>DRS4</b> chip — a <b>switched-capacitor array</b> that parks the voltage into 1024 tiny capacitors
+       in turn at <b>5&nbsp;giga-samples per second</b> (one sample every 0.2&nbsp;ns). Keeping the full edge is
+       what lets us run a <b>constant-fraction</b> time pick in software (curing the time-walk from
+       Chapter&nbsp;2) and reach 27&nbsp;ps. The price is a quirk — the capacitors aren't perfectly evenly
+       spaced and sampling stops on a rotating "stop cell" — which has to be calibrated out, the kind of
+       detail the report's DRS4 section is devoted to.</p></div>
+   <div class="keyidea"><span class="k">Key idea</span>
+     <p>QDC/ADC ask you to know what you want <em>before</em> the run. A waveform digitizer lets you decide
+       <em>after</em> — at the cost of more data and more care. Whenever the measurement is hard (picosecond
+       timing, odd pulse shapes, pile-up), keeping the whole waveform is worth it.</p></div>
+   <div class="tnext"><b>Where we are:</b> we can detect a particle, decide to keep it, and faithfully record its
+     pulses. The last question is the biggest: how do you turn those pulses into the particle's
+     <b>energy</b>? → <b>Chapter&nbsp;4: calorimetry.</b></div>
+  </div>
+ </section>
+
+ <!-- =================== CHAPTER 4 =================== -->
+ <section class="chapter" id="ch4">
+  <div class="chead"><span class="cnum">CHAPTER 4</span>
+    <h2 class="ctitle">Weighing a particle in light: calorimetry</h2></div>
+  <p class="clede">A counter says a particle <em>was here</em>. A <b>calorimeter</b> says <em>how much energy</em>
+    it carried — by stopping it completely and measuring the light its destruction makes. This is where
+    everything so far comes together, and where RADiCAL's design choices live.</p>
+
+  <div class="verse" id="ch4-shower">
+   <h3>The electromagnetic shower <span class="depthchip d1">foundational</span></h3>
+   <p>A high-energy electron or photon doesn't deposit its energy gently. In dense matter an electron
+     <b>radiates</b> a photon (bremsstrahlung); that photon <b>converts</b> into an electron-positron pair;
+     those radiate more photons — and the whole thing <b>cascades</b>, doubling the number of particles at each
+     step until they're individually too feeble to multiply further. This avalanche of e⁺e⁻ and photons is an
+     <b>electromagnetic shower</b>.</p>
+   <p>The natural ruler for a shower is the <b>radiation length X₀</b> — the depth over which an electron loses
+     most of its energy to radiation. A shower grows for the first several X₀, peaks, then fades; to catch
+     essentially all of a high-energy shower you need roughly 20–25&nbsp;X₀ of material. Tungsten's X₀ is only
+     ~3.5&nbsp;mm, which is why a tungsten calorimeter can be remarkably short.</p>
+  </div>
+
+  <div class="verse" id="ch4-homog">
+   <h3>Homogeneous calorimeters: the whole block glows <span class="depthchip d2">building up</span></h3>
+   <p>The most accurate way to measure a shower's energy is to make the <b>entire</b> absorber out of material
+     that also makes light, so <em>every</em> bit of the shower contributes to the signal. A block of
+     <b>lead glass</b> (radiating Cherenkov light) or a large scintillating <b>crystal</b> (like the PbWO₄ of
+     CMS, or NaI) is a <b>homogeneous</b> calorimeter. Because nothing of the shower is invisible, the
+     statistical fluctuations are minimal and the energy resolution is superb.</p>
+   <p>The cost is literally that: such crystals are expensive, heavy, and bulky, slow to grow, and often not
+     <b>radiation-hard</b> — they darken under the dose of a hadron collider. A monolithic lead-glass wall is a
+     gorgeous spectrometer and a logistical nightmare.</p>
+  </div>
+
+  <div class="verse" id="ch4-sampling">
+   <h3>Sampling calorimeters: take a census <span class="depthchip d2">building up</span></h3>
+   <p>The alternative is to split the two jobs between two materials. Stack a dense, cheap, radiation-hard
+     <b>absorber</b> (lead, tungsten, iron) to <em>make</em> the shower, and interleave thin <b>active</b>
+     layers (scintillator, silicon, gas) to <em>sample</em> it. You only see the shower where it crosses an
+     active layer — a few percent of it — and scale up. This is a <b>sampling</b> calorimeter.</p>
+   <figure class="tfig">
+    <svg viewBox="0 0 720 220" role="img" aria-label="homogeneous versus sampling calorimeter">
+      <!-- homogeneous -->
+      <text class="fdim" x="170" y="22" text-anchor="middle" font-size="11">homogeneous — all active</text>
+      <rect x="60" y="40" width="220" height="120" rx="6" fill="rgba(39,224,200,.13)" stroke="var(--accent)"/>
+      <!-- shower cone -->
+      <path class="facc" d="M60 100 L150 70 L240 60 L240 140 L150 130 Z" fill="rgba(39,224,200,.30)" stroke="none"/>
+      <text class="facc" x="170" y="180" text-anchor="middle" font-size="9">every bit of shower → light</text>
+      <text class="facc" x="170" y="194" text-anchor="middle" font-size="9">best resolution · costly, bulky</text>
+      <!-- sampling -->
+      <text class="fdim" x="540" y="22" text-anchor="middle" font-size="11">sampling — absorber + active</text>
+      <g>
+        <!-- absorber slabs (gray) and active layers (warm) -->
+        <rect x="420" y="40" width="24" height="120" fill="#2a3450"/>
+        <rect x="444" y="40" width="8"  height="120" fill="rgba(255,180,84,.55)"/>
+        <rect x="452" y="40" width="24" height="120" fill="#2a3450"/>
+        <rect x="476" y="40" width="8"  height="120" fill="rgba(255,180,84,.55)"/>
+        <rect x="484" y="40" width="24" height="120" fill="#2a3450"/>
+        <rect x="508" y="40" width="8"  height="120" fill="rgba(255,180,84,.55)"/>
+        <rect x="516" y="40" width="24" height="120" fill="#2a3450"/>
+        <rect x="540" y="40" width="8"  height="120" fill="rgba(255,180,84,.55)"/>
+        <rect x="548" y="40" width="24" height="120" fill="#2a3450"/>
+        <rect x="572" y="40" width="8"  height="120" fill="rgba(255,180,84,.55)"/>
+        <rect x="580" y="40" width="24" height="120" fill="#2a3450"/>
+        <rect x="604" y="40" width="8"  height="120" fill="rgba(255,180,84,.55)"/>
+        <rect x="612" y="40" width="24" height="120" fill="#2a3450"/>
+      </g>
+      <path class="fac2" d="M420 100 L520 72 L636 62 L636 138 L520 128 Z" fill="rgba(255,92,138,.18)" stroke="none"/>
+      <text class="fac2" x="528" y="180" text-anchor="middle" font-size="9">gray = absorber · warm = active</text>
+      <text class="fac2" x="528" y="194" text-anchor="middle" font-size="9">compact, cheap, rad-hard · samples a fraction</text>
+    </svg>
+    <figcaption>Left: a homogeneous block — the whole volume makes light, so almost no shower energy is
+      invisible (best resolution, but expensive and bulky). Right: a sampling stack — dense absorber builds
+      the shower, thin active layers take a census of it. Compact and robust, but seeing only a fraction adds
+      statistical noise.</figcaption>
+   </figure>
+   <p>The trade is fundamental. You only counted a <em>sample</em> of the shower, and samples fluctuate, so a
+     sampling calorimeter pays a <b>stochastic term</b> in its resolution — the
+     <span class="eq">a/√E</span> part of <span class="eq">σ_E/E = a/√E ⊕ b</span> — that a homogeneous device
+     largely avoids. In exchange you get a detector that is compact, affordable, segmentable, and tough enough
+     to survive a collider. For most large experiments that bargain is worth it.</p>
+  </div>
+
+  <div class="verse" id="ch4-radical">
+   <h3>Why RADiCAL is a sampling calorimeter <span class="depthchip d3">putting it together</span></h3>
+   <p>RADiCAL is a <b>sampling</b> calorimeter by design, and a clever one. Its absorber is <b>tungsten</b>
+     (tiny X₀, so the module is short) and its active medium is <b>LYSO</b> — a scintillator chosen because it
+     is fast and bright enough to time, not just to weigh. The plates are stacked <b>shashlik</b>-style
+     (skewered by wavelength-shifting capillaries that pipe the light out to SiPMs), and each corner is read at
+     two gains: a <b>high-gain</b> tap at shower-maximum for <em>timing</em>, a <b>low-gain</b> tap over the full
+     length for <em>energy</em>.</p>
+   <p>The goal isn't the best possible energy resolution — a homogeneous crystal would win that. It's a
+     <b>radiation-hard, compact, fast-timing</b> calorimeter that can survive the brutal environment of a
+     future collider and still tag a shower's arrival time to tens of picoseconds. That is a deliberate trade:
+     accept the sampling term in the energy resolution to <em>buy</em> speed, robustness, and size.</p>
+   <div class="inrad"><span class="k">In RADiCAL</span>
+     <p>The prototype here is only ~14&nbsp;mm ≈ <b>4&nbsp;X₀</b> deep — it ends before the shower even peaks, so
+       a lot of energy <b>leaks</b> out the back. That's why its energy resolution shows a large
+       <b>constant term</b> (the <span class="eq">b</span> above): it's a short test module, not a full-depth
+       calorimeter. The timing, not the energy, is the headline — and the timing is <b>27&nbsp;ps</b>.</p></div>
+   <div class="tnext"><b>You've arrived.</b> You can now read the whole experiment: a particle makes light, a
+     PMT/SiPM makes a pulse, NIM logic decides to keep it, a waveform digitizer records it, and a sampling
+     calorimeter turns it into energy and time. For the tricks that get from "recorded pulses" to
+     "<b>27&nbsp;ps</b>" — the corner difference, CFD, the fiducial and out-of-sample validation — switch to the
+     <b>Field guide</b> (try <em>The measurement</em> tab and the <em>Playground</em>), or open the full
+     analysis report.</div>
+  </div>
+ </section>
+
+</article>
+</div><!-- /#tutorialView -->
 
 <footer><div class="wrap">
   <b>GOING RADiCAL</b> — a field guide to the RADiCAL CERN SPS electron test beam (May 2023).
@@ -688,6 +1264,16 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
     noRes.style.display=n?'none':'block';
   };
 
+  // ---- view-mode switch (Tutorial ⇄ Field guide) ----
+  const msBtns=[...document.querySelectorAll('#modeswitch button')];
+  function setMode(m){
+    document.body.className='mode-'+m;
+    msBtns.forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+    try{localStorage.setItem('gr-mode',m);}catch(e){}
+  }
+  msBtns.forEach(b=>b.onclick=()=>{setMode(b.dataset.m);window.scrollTo({top:0,behavior:'smooth'});});
+  try{const saved=localStorage.getItem('gr-mode');if(saved)setMode(saved);}catch(e){}
+
   // beamline + internal links: open the right tab, scroll, highlight
   document.querySelectorAll('a[href^="#"]').forEach(a=>{
     a.addEventListener('click',e=>{
@@ -695,11 +1281,28 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
       const el=document.getElementById(id);if(!el)return;
       e.preventDefault();
       const panel=el.closest('.panel');
-      if(panel){search.value='';clearFilter();show(panel.dataset.p);}
+      if(panel){setMode('cards');search.value='';clearFilter();show(panel.dataset.p);}
       setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'center'});
         el.classList.add('hl');setTimeout(()=>el.classList.remove('hl'),1600);},180);
     });
   });
+
+  // ---- tutorial chapter nav + scroll-spy ----
+  const tnav=[...document.querySelectorAll('#tnav a')];
+  tnav.forEach(a=>a.onclick=()=>{
+    const el=document.getElementById(a.dataset.c);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  const chapters=[...document.querySelectorAll('.chapter')];
+  if('IntersectionObserver' in window && chapters.length){
+    const spy=new IntersectionObserver(es=>{
+      es.forEach(en=>{ if(en.isIntersecting){
+        const id=en.target.id;
+        tnav.forEach(a=>a.classList.toggle('on',a.dataset.c===id));
+      }});
+    },{rootMargin:'-45% 0px -50% 0px'});
+    chapters.forEach(c=>spy.observe(c));
+  }
 })();
 </script>
 
