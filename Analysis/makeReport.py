@@ -1561,7 +1561,8 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "spot the particle lands?  Two views answer it &mdash; the mean HG "
                         "amplitude versus beam energy per channel (left), and the HG/LG "
                         "amplitude-ratio maps across the impact position at 150&nbsp;GeV "
-                        "(right, inverted-kRust COLZ).  Events satisfy the full timing "
+                        "(right, inverted-kRust COLZ, binned at the canonical 1&nbsp;mm WC "
+                        "resolution).  Events satisfy the full timing "
                         "selection (MCP quality, energy fiducial r&nbsp;&lt;&nbsp;2&nbsp;mm). "
                         "Produced by <code>chargeProfiles.C</code>."
                     ),
@@ -1579,10 +1580,18 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         PlotEntry(
                             sumPDF("hg_lg_ratio_maps.pdf"),
                             caption=(
-                                "HG/LG amplitude-ratio maps at 150&nbsp;GeV (tight 12&nbsp;mm "
-                                "frame around the beam spot).  A flat ratio across the spot "
-                                "means consistent HG/LG gain matching; structure would flag a "
-                                "fibre or SiPM coupling problem."
+                                "HG/LG amplitude-ratio maps at 150&nbsp;GeV, binned at the "
+                                "canonical <strong>1&nbsp;mm</strong> wire-chamber resolution "
+                                "(<code>kWC_resBin</code>) &mdash; the same bins as the beam and "
+                                "HG hit-maps.  The lit patch is only ~4&nbsp;mm wide because of "
+                                "the 2&nbsp;mm energy fiducial, and the delay-line wire chamber "
+                                "localises a track to just ~3.6&nbsp;mm "
+                                "(&sigma;<sub>x</sub>&asymp;3.7, &sigma;<sub>y</sub>&asymp;3.6&nbsp;mm), "
+                                "so these 1&nbsp;mm bins already <em>oversample</em> the tracker "
+                                "~3&times; &mdash; finer binning would alias noise, not reveal "
+                                "structure.  A flat ratio across the spot means consistent HG/LG "
+                                "gain matching; real structure would flag a fibre or SiPM "
+                                "coupling problem."
                             ),
                             width_pct=50,
                         ),
