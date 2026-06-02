@@ -1633,8 +1633,13 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                             caption=(
                                 "Headline-energy (150&nbsp;GeV) quality overview: beam hit map "
                                 "with fiducial circles, x/y impact profiles, MCP1/MCP2 amplitude "
-                                "spectra, and run statistics.  Representative of the full "
-                                "six-energy, ten-panel dossier set."
+                                "spectra, and run statistics.  The occupancy maps are binned at "
+                                "2&nbsp;mm &mdash; an integer multiple of the ~0.4&nbsp;mm "
+                                "wire-chamber delay-line TDC quantum &mdash; so the position "
+                                "quantisation averages out instead of aliasing into the moir&eacute; "
+                                "&ldquo;comb&rdquo; that 1&nbsp;mm bins produce; 2&nbsp;mm still "
+                                "oversamples the ~3.6&nbsp;mm WC resolution.  Representative of the "
+                                "full six-energy, ten-panel dossier set."
                             ),
                             width_pct=66,
                         )
