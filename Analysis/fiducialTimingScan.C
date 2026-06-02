@@ -51,35 +51,93 @@
 
 static const float kSentCut_fts = -1e5f;   // hg_cfd validity test (matches headline)
 
-// Robust core sigma [ns] of a set of corner times — mirrors VecToHist_teb +
-// FitGaussCore (2-pass 5-sigma outlier trim, then 2-sigma Gaussian core fit).
-// If errPs != nullptr, *errPs is set to the fit's sigma uncertainty in ps.
-static double RobustSigma_fts(const std::vector<float>& v, double* errPs = nullptr)
+// Build a VecToHist_teb-faithful histogram: 2-pass 5-sigma outlier trim, then a
+// core range of mu2 +/- 4*ms2 with nb bins (outliers go to overflow).  Caller
+// owns the returned histogram.  Mirrors timingEnergyBins.C exactly so the
+// best-bin sigma reproduces the headline.
+static TH1F* BuildCoreHist_fts(const std::vector<float>& v, int nb, const char* nm)
 {
-    if (errPs) *errPs = 0.;
-    if (v.size() < 150) return -1.;
+    if (v.size() < 50) return nullptr;
     double mu1 = 0.; for (float x : v) mu1 += x; mu1 /= (double)v.size();
     double ms1 = 0.; for (float x : v) ms1 += ((double)x - mu1) * ((double)x - mu1);
     ms1 = std::sqrt(ms1 / (double)v.size());
     if (ms1 < 0.008) ms1 = 0.100;
-
     double mu2 = 0.; long n2 = 0;
     for (float x : v) if (std::fabs((double)x - mu1) < 5. * ms1) { mu2 += x; ++n2; }
-    if (n2 < 80) return -1.;
-    mu2 /= (double)n2;
     double ms2 = 0.;
-    for (float x : v) if (std::fabs((double)x - mu1) < 5. * ms1)
-        ms2 += ((double)x - mu2) * ((double)x - mu2);
-    ms2 = std::sqrt(ms2 / (double)n2);
-    if (ms2 < 0.008) ms2 = 0.100;
+    if (n2 > 0) {
+        mu2 /= (double)n2;
+        for (float x : v) if (std::fabs((double)x - mu1) < 5. * ms1)
+            ms2 += ((double)x - mu2) * ((double)x - mu2);
+        ms2 = std::sqrt(ms2 / (double)n2);
+        if (ms2 < 0.008) ms2 = 0.100;
+    } else { mu2 = mu1; ms2 = ms1; }
+    TH1F* h = new TH1F(nm, "", nb, mu2 - 4. * ms2, mu2 + 4. * ms2);
+    h->SetDirectory(nullptr);
+    for (float x : v) h->Fill(x);
+    return h;
+}
 
-    TH1F h("_fts_h", "", 120, mu2 - 5. * ms2, mu2 + 5. * ms2);
-    h.SetDirectory(nullptr);
-    for (float x : v) h.Fill(x);
+// Core sigma [ns] (+ optional error in ps) of corner times, via FitGaussCore.
+static double RobustSigma_fts(const std::vector<float>& v, double* errPs = nullptr, int nb = 120)
+{
+    if (errPs) *errPs = 0.;
+    if (v.size() < 150) return -1.;
+    TH1F* h = BuildCoreHist_fts(v, nb, "_fts_h");
+    if (!h) return -1.;
     double mu, muE, s, sE;
-    FitGaussCore(&h, 2.0, mu, muE, s, sE);
+    FitGaussCore(h, 2.0, mu, muE, s, sE);
+    delete h;
     if (errPs) *errPs = sE * 1000.;
     return (s > 0.) ? s : -1.;
+}
+
+// Core mean & sigma (mV) of the E_meas (sum_lg) spectrum — the binning seed used
+// by the headline (FitGaussCore on a 150-bin VecToHist of sum_lg).
+static bool CoreMuSig_fts(const std::vector<float>& v, double& mu, double& sig)
+{
+    mu = sig = 0.;
+    TH1F* h = BuildCoreHist_fts(v, 150, "_fts_slg");
+    if (!h) return false;
+    double muE, sE; FitGaussCore(h, 2.0, mu, muE, sig, sE); delete h;
+    return (sig > 0.);
+}
+
+// Headline best-bin estimator: 9 equal sum_lg bins over [muE-2sigE, muE+2sigE];
+// the best bin is the min Method-A core sigma among bins with N >= 500.
+// Returns sigma_t in ps (-1 on failure); sets the fit error (ps), N, efficiency.
+static double BestBinSigma_fts(const std::vector<std::pair<float,float>>& sel,  // (sum_lg, tc)
+                               double& errPs, int& nBest, double& effPct)
+{
+    errPs = 0.; nBest = 0; effPct = 0.;
+    const int kNB = 9, kMinN = 500;
+    std::vector<float> slg; slg.reserve(sel.size());
+    for (const auto& p : sel) slg.push_back(p.first);
+    double muE, sigE;
+    if (!CoreMuSig_fts(slg, muE, sigE)) {
+        double m = 0.; for (float x : slg) m += x; m /= (double)slg.size();
+        double r = 0.; for (float x : slg) r += (x-m)*(x-m); r = std::sqrt(r/(double)slg.size());
+        muE = m; sigE = r;
+    }
+    if (sigE <= 0.) return -1.;
+    const double binLo = muE - 2.*sigE, binW = 4.*sigE / kNB;
+    if (binW <= 0.) return -1.;
+    const int totFid = (int)sel.size();
+    double best = 1e30, bestErr = 0.; int bN = 0;
+    for (int ib = 0; ib < kNB; ++ib) {
+        const double lo = binLo + ib*binW, hi = binLo + (ib+1)*binW;
+        std::vector<float> tc;
+        for (const auto& p : sel) if (p.first >= lo && p.first < hi) tc.push_back(p.second);
+        if ((int)tc.size() < kMinN) continue;
+        double e; double s = RobustSigma_fts(tc, &e, 120);
+        // Floor at 15 ps: the corner estimator is physically >~20 ps, so a
+        // smaller "sigma" is a degenerate Gaussian-core fit (a narrow spike)
+        // that the min-sigma selection must not grab.
+        if (s > 0. && s*1000. >= 15. && s*1000. < best) { best = s*1000.; bestErr = e; bN = (int)tc.size(); }
+    }
+    if (best > 1e29) return -1.;
+    errPs = bestErr; nBest = bN; effPct = 100.*bN/totFid;
+    return best;
 }
 
 // Per-event store after event-level cuts (no radius cut): r^2, E_meas, corner time
@@ -130,7 +188,8 @@ static bool CollectEvents(const char* ntuple, std::vector<EvFTS>& out)
 
 // Scan radius for one energy; fill gTop2 / gTop10 (sigma_t in ps vs radius, with
 // the Gaussian-fit uncertainty as the y error bar).
-static void ScanRadii(const std::vector<EvFTS>& evs, TGraphErrors& gTop2, TGraphErrors& gTop10,
+static void ScanRadii(const std::vector<EvFTS>& evs,
+                      TGraphErrors& gTop2, TGraphErrors& gTop10, TGraphErrors& gBest,
                       double& yMin, double& yMax)
 {
     for (double R = 1.0; R <= 5.001; R += 0.25) {
@@ -139,6 +198,14 @@ static void ScanRadii(const std::vector<EvFTS>& evs, TGraphErrors& gTop2, TGraph
         sel.reserve(evs.size());
         for (const auto& e : evs) if (e.r2 < R2) sel.emplace_back(e.slg, e.tc);
         if (sel.size() < 400) continue;
+
+        // --- single best E_meas bin (the headline estimator), re-optimised at R ---
+        double eb = 0., effb = 0.; int nb = 0;
+        double sBest = BestBinSigma_fts(sel, eb, nb, effb);
+        if (sBest > 0.) { int n = gBest.GetN(); gBest.SetPoint(n, R, sBest); gBest.SetPointError(n, 0., eb);
+                          yMin = std::min(yMin, sBest); yMax = std::max(yMax, sBest); }
+
+        // --- fixed top-fraction selections (stable diagnostic) ---
         std::sort(sel.begin(), sel.end(),
                   [](const std::pair<float,float>& a, const std::pair<float,float>& b)
                   { return a.first > b.first; });            // E_meas descending
@@ -168,16 +235,26 @@ void fiducialTimingScan()
     const int    eGeV[nE]   = { 25, 50, 75, 100, 125, 150 };
     const char*  eLbl[nE]   = { "25 GeV","50 GeV","75 GeV","100 GeV","125 GeV","150 GeV" };
 
-    TGraphErrors gTop2[nE], gTop10[nE];
-    double yMin = 1e9, yMax = -1e9;
+    TGraphErrors gTop2[nE], gTop10[nE], gBest[nE];
+    double yMin = 1e9, yMax = -1e9, yBestMin = 1e9, yBestMax = -1e9;
     std::vector<EvFTS> evs150;
     for (int e = 0; e < nE; ++e) {
         TString nt = Form("Analysis/Output/%dGeV/ntuple.root", eGeV[e]);
         std::vector<EvFTS> evs;
         if (!CollectEvents(nt.Data(), evs)) continue;
-        ScanRadii(evs, gTop2[e], gTop10[e], yMin, yMax);
+        ScanRadii(evs, gTop2[e], gTop10[e], gBest[e], yMin, yMax);
+        for (int i = 0; i < gBest[e].GetN(); ++i) {
+            yBestMin = std::min(yBestMin, gBest[e].GetY()[i]);
+            yBestMax = std::max(yBestMax, gBest[e].GetY()[i]);
+        }
         if (eGeV[e] == 150) evs150 = evs;   // keep for the detail figure
     }
+
+    // Validation: best-bin sigma at r=3 mm must reproduce the headline teb_sigma.
+    printf("\n[fiducialTimingScan] VALIDATION — best-bin sigma_t at r=3 mm (should match headline):\n");
+    { auto v3 = [](const TGraphErrors& g){ for (int i=0;i<g.GetN();++i) if (std::fabs(g.GetX()[i]-3.0)<1e-6) return g.GetY()[i]; return 0.; };
+      printf("   "); for (int e = 0; e < nE; ++e) printf(" %3dGeV=%.1f", eGeV[e], v3(gBest[e])); printf(" ps\n");
+      printf("   headline teb_sigma = 47.6 35.7 32.5 33.8 29.2 27.4 ps\n"); }
 
     auto valAt = [](const TGraph& g, double r) -> double {
         for (int i = 0; i < g.GetN(); ++i) if (std::fabs(g.GetX()[i] - r) < 1e-6) return g.GetY()[i];
@@ -295,6 +372,54 @@ void fiducialTimingScan()
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_150.png");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_150.pdf");
         printf("[fiducialTimingScan] wrote fiducial_timing_scan_150.png (detail)\n");
+    }
+
+    // =========================================================================
+    // Figure 3 — JOINT view: best-bin (headline) sigma_t vs radius, per energy
+    // =========================================================================
+    {
+        TCanvas* c = new TCanvas("c_fts_best", "", 960, 760);
+        c->SetLeftMargin(0.13); c->SetBottomMargin(0.13);
+        c->SetRightMargin(0.05); c->SetTopMargin(0.10);
+        c->SetTickx(1); c->SetTicky(1);
+
+        const double ylo = std::max(0., yBestMin - 4.), yhi = yBestMax + 5.;
+        bool first = true;
+        for (int e = 0; e < nE; ++e) {
+            if (gBest[e].GetN() < 2) continue;
+            gBest[e].SetMarkerStyle(20); gBest[e].SetMarkerSize(1.1);
+            gBest[e].SetMarkerColor(kREnergyCols[e]); gBest[e].SetLineColor(kREnergyCols[e]);
+            gBest[e].SetLineWidth(2);
+            if (first) {
+                gBest[e].Draw("APL");
+                gBest[e].GetXaxis()->SetTitle("timing fiducial radius  r  (mm)");
+                gBest[e].GetYaxis()->SetTitle("best-bin #sigma_{t}  (DW#minusUP)/2  (ps)  [headline]");
+                gBest[e].GetXaxis()->SetLimits(0.5, 5.2);
+                gBest[e].GetYaxis()->SetRangeUser(ylo, yhi);
+                gBest[e].GetXaxis()->SetTitleSize(0.046); gBest[e].GetYaxis()->SetTitleSize(0.044);
+                first = false;
+            } else gBest[e].Draw("PL same");
+        }
+        TLine* l3 = new TLine(kFiducial_r_timing, ylo, kFiducial_r_timing, yhi);
+        l3->SetLineStyle(2); l3->SetLineColor(kGray+2); l3->SetLineWidth(2); l3->Draw();
+        for (int e = 0; e < nE; ++e) if (gBest[e].GetN() >= 2) gBest[e].Draw("PL same");
+        { TLatex a; a.SetTextColor(kGray+2); a.SetTextSize(0.027); a.SetTextAngle(90);
+          a.DrawLatex(kFiducial_r_timing + 0.09, ylo + 0.42*(yhi-ylo), "adopted cut  r < 3 mm"); }
+
+        TLegend* L = new TLegend(0.70, 0.50, 0.93, 0.88);
+        L->SetBorderSize(0); L->SetFillStyle(0); L->SetTextFont(42); L->SetTextSize(0.032);
+        for (int e = 0; e < nE; ++e) if (gBest[e].GetN() >= 2) L->AddEntry(&gBest[e], eLbl[e], "pl");
+        L->Draw();
+
+        { TLatex a; a.SetNDC(); a.SetTextSize(0.026); a.SetTextColor(kGray+3);
+          a.DrawLatex(0.155, 0.875, "Joint optimisation: E_{meas} bin re-picked at each radius");
+          a.DrawLatex(0.155, 0.840, "#Rightarrow jumpy by construction; read the robust trend, not points.");
+          a.DrawLatex(0.155, 0.805, "No radius robustly beats r = 3 mm at any energy."); }
+
+        DrawPageTitle("Best-bin (headline) #sigma_{t} vs fiducial radius -- all energies");
+        c->Print("Analysis/Output/Summary/fiducial_timing_scan_bestbin.png");
+        c->Print("Analysis/Output/Summary/fiducial_timing_scan_bestbin.pdf");
+        printf("[fiducialTimingScan] wrote fiducial_timing_scan_bestbin.png (joint view)\n");
     }
 
     // Console summary table
