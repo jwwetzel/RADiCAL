@@ -39,6 +39,7 @@
 #include "TLatex.h"
 #include "TLine.h"
 #include "TBox.h"
+#include "TMarker.h"
 #include "TLegend.h"
 #include "TAxis.h"
 #include "TString.h"
@@ -333,13 +334,15 @@ void fiducialTimingScan()
         c->SetRightMargin(0.05); c->SetTopMargin(0.10);
         c->SetTickx(1); c->SetTicky(1);
 
-        g2.SetMarkerStyle(20); g2.SetMarkerColor(kRRed);  g2.SetLineColor(kRRed);  g2.SetLineWidth(3); g2.SetMarkerSize(1.3);
-        g10.SetMarkerStyle(21); g10.SetMarkerColor(kRData); g10.SetLineColor(kRData); g10.SetLineWidth(3); g10.SetMarkerSize(1.3);
+        TGraphErrors& gB = gBest[nE-1];   // the headline single-best-bin curve at 150 GeV
+        g2.SetMarkerStyle(20); g2.SetMarkerColor(kRRed);  g2.SetLineColor(kRRed);  g2.SetLineWidth(3); g2.SetMarkerSize(1.2);
+        g10.SetMarkerStyle(21); g10.SetMarkerColor(kRData); g10.SetLineColor(kRData); g10.SetLineWidth(3); g10.SetMarkerSize(1.2);
+        gB.SetMarkerStyle(33); gB.SetMarkerColor(kBlack); gB.SetLineColor(kBlack); gB.SetLineWidth(3); gB.SetMarkerSize(1.7);
 
         double yl = 1e9, yh = -1e9;
-        for (int i=0;i<g2.GetN();++i){ yl=std::min(yl,g2.GetY()[i]); yh=std::max(yh,g2.GetY()[i]); }
-        for (int i=0;i<g10.GetN();++i){ yl=std::min(yl,g10.GetY()[i]); yh=std::max(yh,g10.GetY()[i]); }
-        const double ylo = yl - 4., yhi = yh + 4.;
+        auto span = [&](const TGraphErrors& g){ for (int i=0;i<g.GetN();++i){ yl=std::min(yl,g.GetY()[i]); yh=std::max(yh,g.GetY()[i]); } };
+        span(g2); span(g10); span(gB);
+        const double ylo = yl - 5., yhi = yh + 5.;
 
         g2.Draw("APL");
         g2.GetXaxis()->SetTitle("timing fiducial radius  r  (mm)");
@@ -349,29 +352,36 @@ void fiducialTimingScan()
         g2.GetXaxis()->SetTitleSize(0.046); g2.GetYaxis()->SetTitleSize(0.046);
         g10.Draw("PL same");
         TBox* band = new TBox(0.5, ylo, rPlateau, yhi);
-        band->SetFillColorAlpha(kRData, 0.07); band->SetLineColor(0); band->Draw();
-        g2.Draw("PL same"); g10.Draw("PL same");
+        band->SetFillColorAlpha(kRData, 0.06); band->SetLineColor(0); band->Draw();
+        g2.Draw("PL same"); g10.Draw("PL same"); gB.Draw("PL same");
+        // mark the adopted 150 GeV point (r=3 mm; OOS-validated 27.4 ps)
+        const double kAdopt150 = 27.4;   // OOS best-bin headline at 3 mm
+        TMarker* adopt = new TMarker(kFiducial_r_timing, kAdopt150, 29);
+        adopt->SetMarkerColor(kROrange); adopt->SetMarkerSize(3.0); adopt->Draw();
         TLine* l3 = new TLine(kFiducial_r_timing, ylo, kFiducial_r_timing, yhi);
         l3->SetLineStyle(2); l3->SetLineColor(kROrange); l3->SetLineWidth(2); l3->Draw();
-        { TLatex a; a.SetTextColor(kROrange); a.SetTextSize(0.029); a.SetTextAngle(90);
-          a.DrawLatex(kFiducial_r_timing + 0.09, ylo + 0.60*(yhi-ylo), "current cut  r < 3 mm"); }
-        { TLatex a; a.SetTextColor(kRData); a.SetTextSize(0.026);
-          a.DrawLatex(0.85, yhi - 0.06*(yhi-ylo), "optimal plateau (r #leq 2.5 mm)"); }
+        { TLatex a; a.SetTextColor(kROrange); a.SetTextSize(0.028); a.SetTextAngle(90);
+          a.DrawLatex(kFiducial_r_timing + 0.10, ylo + 0.62*(yhi-ylo), "adopted: r < 3 mm"); }
+        { TLatex a; a.SetTextColor(kRData); a.SetTextSize(0.025);
+          a.DrawLatex(0.78, yhi - 0.05*(yhi-ylo), "top-X% plateau (r #leq 2.5 mm)"); }
 
-        TLegend* L = new TLegend(0.42, 0.76, 0.93, 0.88);
-        L->SetBorderSize(0); L->SetFillStyle(0); L->SetTextFont(42); L->SetTextSize(0.032);
+        TLegend* L = new TLegend(0.40, 0.73, 0.93, 0.88);
+        L->SetBorderSize(0); L->SetFillStyle(0); L->SetTextFont(42); L->SetTextSize(0.030);
+        L->AddEntry(&gB,  "single best bin  (the headline estimator)", "pl");
         L->AddEntry(&g2,  "top 2% by E_{meas} (#SigmaA_{LG})", "pl");
         L->AddEntry(&g10, "top 10% by E_{meas}", "pl");
         L->Draw();
-        { TLatex a; a.SetNDC(); a.SetTextSize(0.029); a.SetTextColor(kGray+3);
-          a.DrawLatex(0.17, 0.300,
-            Form("top 2%%:  %.1f ps (r#leq2.5) #rightarrow %.1f ps (3 mm) #rightarrow %.1f ps (4 mm)",
-                 plateauMax(g2,1.0,2.5), valAt(g2,3.0), valAt(g2,4.0)));
-          a.DrawLatex(0.17, 0.255,
-            "average-event optimum r #approx 2#minus2.5 mm.  But at 150 GeV the high-statistics");
-          a.DrawLatex(0.17, 0.215,
-            "single-best-bin is OOS-optimal at r=3 mm, so 150 GeV keeps 3 mm (text)."); }
-        DrawPageTitle("Timing resolution vs fiducial radius  (150 GeV, stable E_{meas} selection)");
+        { TPave* bg = new TPave(0.135, 0.135, 0.955, 0.275, 0, "brNDC");
+          bg->SetFillColor(kWhite); bg->SetLineColor(kWhite); bg->Draw();
+          TLatex a; a.SetNDC(); a.SetTextSize(0.0245); a.SetTextColor(kGray+3);
+          a.DrawLatex(0.150, 0.240,
+            "Top-X% (frozen selection): average-event optimum at r #approx 2 mm.");
+          a.SetTextColor(kBlack);
+          a.DrawLatex(0.150, 0.205,
+            "Headline best-bin (black) is tighter (sits below) but JUMPY: its 2.25 mm dip is a");
+          a.DrawLatex(0.150, 0.170,
+            "lucky radius (2.0 / 2.5 mm = 30.7 / 28.1 ps).  OOS #Rightarrow adopt 3 mm: 27.4 ps (#bigstar)."); }
+        DrawPageTitle("Fiducial radius at 150 GeV:  headline best-bin  vs  stable top-X% selection");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_150.png");
         c->Print("Analysis/Output/Summary/fiducial_timing_scan_150.pdf");
         printf("[fiducialTimingScan] wrote fiducial_timing_scan_150.png (detail)\n");

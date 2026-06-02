@@ -1908,12 +1908,16 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         PlotEntry(
                             sumPDF("fiducial_timing_scan_150.png"),
                             caption=(
-                                "<b>Headline-energy detail (150&nbsp;GeV)</b> &mdash; the average-event "
-                                "(top-2%/10%) resolution has a shallow optimal plateau for "
-                                "r&nbsp;&le;&nbsp;2.5&nbsp;mm.  But 150&nbsp;GeV has 4&times; the statistics, "
-                                "so its single-best-bin is OOS-optimal at the looser 3&nbsp;mm "
-                                "(27.4&nbsp;ps, vs 28.1&nbsp;ps at 2.5&nbsp;mm) &mdash; which is why "
-                                "150&nbsp;GeV keeps 3&nbsp;mm while the lower energies tighten."
+                                "<b>Headline-energy detail (150&nbsp;GeV)</b>, with the actual "
+                                "single-best-bin estimator (black) overlaid on the stable top-2%/10% "
+                                "curves.  The two selections optimise at <em>different</em> radii: the "
+                                "average-event (top-X%) bottoms at r&nbsp;&approx;&nbsp;2&nbsp;mm, but the "
+                                "headline best-bin is a tighter cut that sits below it.  The best-bin is "
+                                "jumpy in radius (a single narrow bin), so its 2.25&nbsp;mm dip is a "
+                                "<em>lucky radius</em> (its 2.0/2.5&nbsp;mm neighbours are "
+                                "30.7/28.1&nbsp;ps), not an optimum &mdash; we therefore compare sensible "
+                                "radii by OOS (2.5&nbsp;mm&nbsp;=&nbsp;28.1, 3.0&nbsp;mm&nbsp;=&nbsp;27.4&nbsp;ps) "
+                                "and adopt 3&nbsp;mm (&#9733;), which beats the top-X% optimum outright."
                             ),
                             width_pct=66,
                         ),
