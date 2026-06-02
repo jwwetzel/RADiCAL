@@ -201,7 +201,7 @@ static double BestBinEqualOcc_fts(const std::vector<std::pair<float,float>>& sel
 }
 
 // Per-event store after event-level cuts (no radius cut): r^2, E_meas, corner time
-struct EvFTS { float r2, slg, tc; };
+struct EvFTS { float r2, slg, tc; int run; };
 
 // Collect events passing the headline event-level cuts for one energy ntuple.
 // Returns false if the file/tree cannot be read.
@@ -217,6 +217,8 @@ static bool CollectEvents(const char* ntuple, std::vector<EvFTS>& out)
 
     Bool_t  wc_ok;
     Float_t x_trk, y_trk, mcp_peak, mcp_time, hg_cfd[8], sum_lg;
+    Int_t   run = 0;
+    if (t->GetBranch("run")) t->SetBranchAddress("run", &run);
     t->SetBranchAddress("wc_ok",    &wc_ok);
     t->SetBranchAddress("x_trk",    &x_trk);
     t->SetBranchAddress("y_trk",    &y_trk);
@@ -238,7 +240,7 @@ static bool CollectEvents(const char* ntuple, std::vector<EvFTS>& out)
         if (ndw < 1 || nup < 1) continue;
         float tc = (float)((dw / ndw - up / nup) * 0.5);        // Method A: (DW-UP)/2
         float dx = x_trk - (float)xc, dy = y_trk - (float)yc;
-        out.push_back({ dx * dx + dy * dy, sum_lg, tc });
+        out.push_back({ dx * dx + dy * dy, sum_lg, tc, run });
     }
     printf("[fiducialTimingScan] %-6s centroid (%.2f, %.2f) mm  %zu events\n",
            gSystem->BaseName(gSystem->DirName(ntuple)), xc, yc, out.size());
@@ -286,6 +288,46 @@ static void ScanRadii(const std::vector<EvFTS>& evs,
     }
 }
 
+// Run-folded OUT-OF-SAMPLE sigma for the equal-occupancy estimator (5 folds over
+// runs/spills).  On each training set: equal-occ bins -> pick the min-sigma bin
+// -> record its ΣLG window; measure that window on the held-out fold; pool.
+// This is the SAME OOS scheme as the headline, applied to quantile bins.
+static double EqualOccOOS_fts(const std::vector<EvFTS>& fid, int perBin, double& errPs, int& nOOS)
+{
+    errPs = 0.; nOOS = 0;
+    const int kF = 5;
+    std::vector<int> ur; ur.reserve(fid.size());
+    for (const auto& e : fid) ur.push_back(e.run);
+    std::sort(ur.begin(), ur.end()); ur.erase(std::unique(ur.begin(), ur.end()), ur.end());
+    if (ur.size() < 2) return -1.;
+    auto foldOf = [&](int r){ return (int)(std::lower_bound(ur.begin(), ur.end(), r) - ur.begin()) % kF; };
+    std::vector<float> pool;
+    for (int f = 0; f < kF; ++f) {
+        std::vector<std::pair<float,float>> tr;     // (slg, tc) training
+        for (const auto& e : fid) if (foldOf(e.run) != f) tr.emplace_back(e.slg, e.tc);
+        if ((int)tr.size() < 2*perBin) continue;
+        std::sort(tr.begin(), tr.end(), [](const std::pair<float,float>&a, const std::pair<float,float>&b){ return a.first < b.first; });
+        const int K = (int)tr.size() / perBin; if (K < 2) continue;
+        double best = 1e30; float wlo = 0.f, whi = 0.f;
+        for (int ib = 0; ib < K; ++ib) {
+            const int lo = ib*(int)tr.size()/K, hi = (ib+1)*(int)tr.size()/K;
+            std::vector<float> tc; for (int k = lo; k < hi; ++k) tc.push_back(tr[k].second);
+            if ((int)tc.size() < 200) continue;
+            double e; double s = RobustSigma_fts(tc, &e, 120);
+            if (s > 0. && s*1000. >= 15. && s*1000. < best) {
+                best = s*1000.; wlo = tr[lo].first; whi = (hi < (int)tr.size()) ? tr[hi].first : 1e9f;
+            }
+        }
+        if (best > 1e29) continue;
+        for (const auto& e : fid) if (foldOf(e.run) == f && e.slg >= wlo && e.slg < whi) pool.push_back(e.tc);
+    }
+    if (pool.size() < 100) return -1.;
+    double e; double s = RobustSigma_fts(pool, &e, 120);
+    if (s*1000. < 15.) return -1.;          // reject degenerate held-out fits
+    errPs = e; nOOS = (int)pool.size();
+    return (s > 0.) ? s*1000. : -1.;
+}
+
 void fiducialTimingScan()
 {
     TH1::AddDirectory(kFALSE);
@@ -298,6 +340,7 @@ void fiducialTimingScan()
     TGraphErrors gTop2[nE], gTop10[nE], gBest[nE];
     double yMin = 1e9, yMax = -1e9, yBestMin = 1e9, yBestMax = -1e9;
     std::vector<EvFTS> evs150;
+    std::vector<EvFTS> evsAll[nE];
     for (int e = 0; e < nE; ++e) {
         TString nt = Form("Analysis/Output/%dGeV/ntuple.root", eGeV[e]);
         std::vector<EvFTS> evs;
@@ -307,8 +350,39 @@ void fiducialTimingScan()
             yBestMin = std::min(yBestMin, gBest[e].GetY()[i]);
             yBestMax = std::max(yBestMax, gBest[e].GetY()[i]);
         }
+        evsAll[e] = evs;
         if (eGeV[e] == 150) evs150 = evs;   // keep for the detail figure
     }
+
+    // =========================================================================
+    // PER-ENERGY BEST equal-occupancy sigma_core (in-sample + run-folded OOS).
+    // For each energy, scan the fiducial radius and pick the minimum -- the best
+    // achievable timing resolution -- and OOS-validate that the minimum is real.
+    // =========================================================================
+    printf("\n====== Per-energy timing: best IN-SAMPLE config, then OOS-validate THAT config ======\n");
+    printf("  Energy | in-samp(min over r): r(mm) sigma_core | OOS at that r:  sigma   OVERFIT\n");
+    for (int e = 0; e < nE; ++e) {
+        if (evsAll[e].empty()) continue;
+        // 1) find the in-sample-optimal radius (the 'best possible' a naive search reports)
+        double bisR = 0., bisS = 1e9;
+        for (double R = 1.5; R <= 3.501; R += 0.0625) {
+            const float R2 = (float)(R*R);
+            std::vector<std::pair<float,float>> sel;
+            for (const auto& ev : evsAll[e]) if (ev.r2 < R2) sel.emplace_back(ev.slg, ev.tc);
+            if (sel.size() < 2500) continue;
+            double e_=0., eff_=0.; int n_=0;
+            double sIn = BestBinEqualOcc_fts(sel, 1000, e_, n_, eff_);
+            if (sIn > 0. && sIn < bisS) { bisS = sIn; bisR = R; }
+        }
+        // 2) OOS-validate THAT EXACT config (same radius)
+        std::vector<EvFTS> fid;
+        for (const auto& ev : evsAll[e]) if (ev.r2 < (float)(bisR*bisR)) fid.push_back(ev);
+        double eo=0.; int no=0;
+        double sOOS = EqualOccOOS_fts(fid, 1000, eo, no);
+        printf("  %3d GeV |  %5.2f   %5.1f ps           |  %5.1f ps      %+5.1f ps\n",
+               eGeV[e], bisR, bisS, sOOS, (sOOS>0? sOOS-bisS : 0.));
+    }
+    printf("=====================================================================================\n");
 
     // Validation: best-bin sigma at r=3 mm must reproduce the headline teb_sigma.
     printf("\n[fiducialTimingScan] VALIDATION — best-bin sigma_t at r=3 mm (should match headline):\n");
