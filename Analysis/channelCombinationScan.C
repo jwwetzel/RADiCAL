@@ -208,7 +208,7 @@ void channelCombinationScan()
             if (mcp_peak < kMCP1_minPeak || mcp_peak > kMCP1_maxPeak) continue;
             float dx = x_trk - static_cast<float>(xc);
             float dy = y_trk - static_cast<float>(yc);
-            if (std::sqrt(dx*dx + dy*dy) >= static_cast<float>(kFiducial_r_timing))
+            if (std::sqrt(dx*dx + dy*dy) >= static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV)))
                 continue;
             if (sum_lg > kSumLG_centroid &&
                 sum_pb >= kPb_maxRatio * sum_lg) continue;

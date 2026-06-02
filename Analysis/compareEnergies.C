@@ -223,7 +223,7 @@ static void PlotGroup1_BeamQuality()
                 scanPts[r].push_back(bp);
 
                 // Energy distribution: timing-fiducial events only
-                if (r_beam < static_cast<float>(kFiducial_r_timing))
+                if (r_beam < static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV)))
                     hSumLG[r]->Fill(sum_lg);
             }
         }
@@ -258,7 +258,7 @@ static void PlotGroup1_BeamQuality()
 
         // Timing fiducial circle (orange)
         TEllipse* e3 = new TEllipse(xCen[r], yCen[r],
-                                    kFiducial_r_timing, kFiducial_r_timing);
+                                    TimingFiducialR(kRuns[r].energy_GeV), TimingFiducialR(kRuns[r].energy_GeV));
         e3->SetLineColor(kOrange+1); e3->SetLineWidth(2);
         e3->SetFillStyle(0); e3->Draw("SAME");
 
@@ -474,7 +474,7 @@ static void PlotGroup2_Containment()
             float r_beam = std::sqrt(dx*dx + dy*dy);
 
             // Scatter: all events near fiducial (for population visibility)
-            if (r_beam < static_cast<float>(kFiducial_r_timing))
+            if (r_beam < static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV)))
                 hScatter[r]->Fill(sum_lg, sum_pb);
 
             // Ratio + r-bin analysis: need a genuine LG signal
@@ -482,7 +482,7 @@ static void PlotGroup2_Containment()
             if (!has_signal) continue;
 
             // Containment ratio plot (timing fiducial events)
-            if (r_beam < static_cast<float>(kFiducial_r_timing))
+            if (r_beam < static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV)))
                 hRatio[r]->Fill(sum_pb / sum_lg);
 
             // r-bin scan: which radial shell are we in?
@@ -493,7 +493,7 @@ static void PlotGroup2_Containment()
             }
 
             // Timing-fiducial total for page 4
-            if (r_beam < static_cast<float>(kFiducial_r_timing)) {
+            if (r_beam < static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV))) {
                 ++nFidTot[r];
                 if (sum_pb < kPb_maxRatio * sum_lg) ++nFidCont[r];
             }
@@ -740,7 +740,7 @@ static void PlotGroup3_Channels()
             float dx     = x_trk - static_cast<float>(xc);
             float dy     = y_trk - static_cast<float>(yc);
             float r_beam = std::sqrt(dx*dx + dy*dy);
-            if (r_beam >= static_cast<float>(kFiducial_r_timing)) continue;
+            if (r_beam >= static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV))) continue;
 
             ++nFidEvt[r];
             for (int ic = 0; ic < kNCap; ++ic) {

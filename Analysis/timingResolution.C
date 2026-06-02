@@ -291,7 +291,7 @@ void timingResolution()
                 if (!wc_ok || mcp_peak < kMCP1_minPeak || mcp_peak > kMCP1_maxPeak) continue;
                 float dxt = x_trk - (float)x_center;
                 float dyt = y_trk - (float)y_center;
-                if (std::sqrt(dxt*dxt + dyt*dyt) >= (float)kFiducial_r_timing) continue;
+                if (std::sqrt(dxt*dxt + dyt*dyt) >= (float)TimingFiducialR(rc.energy_GeV)) continue;
 
                 bool vtrain[8];
                 TR_ComputeValid(hg_peak, hg_cfd, hasMCP2_tr, mcp2_peak, vtrain);
@@ -328,7 +328,7 @@ void timingResolution()
             if (!wc_ok || mcp_peak < kMCP1_minPeak || mcp_peak > kMCP1_maxPeak) continue;
             float dx = x_trk - (float)x_center;
             float dy = y_trk - (float)y_center;
-            if (std::sqrt(dx*dx + dy*dy) >= (float)kFiducial_r_timing) continue;
+            if (std::sqrt(dx*dx + dy*dy) >= (float)TimingFiducialR(rc.energy_GeV)) continue;
             ++nFid;
 
             // Per-channel validity.

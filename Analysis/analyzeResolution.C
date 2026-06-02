@@ -350,7 +350,7 @@ void analyzeResolution()
             fidE->SetLineColor(kRed); fidE->SetLineWidth(2);
             fidE->SetLineStyle(1);   fidE->SetFillStyle(0);
             fidE->Draw("SAME");
-            TArc* fidT = new TArc(x_center, y_center, kFiducial_r_timing);
+            TArc* fidT = new TArc(x_center, y_center, TimingFiducialR(rc.energy_GeV));
             fidT->SetLineColor(kRed); fidT->SetLineWidth(1);
             fidT->SetLineStyle(2);   fidT->SetFillStyle(0);
             fidT->Draw("SAME");

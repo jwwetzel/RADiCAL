@@ -82,7 +82,7 @@ void channelCalibration()
             t->GetEntry(e);
             if (!wc_ok || mcp_peak < kMCP1_minPeak || mcp_peak > kMCP1_maxPeak) continue;
             float dx = x_trk - (float)xc, dy = y_trk - (float)yc;
-            if (std::sqrt(dx*dx + dy*dy) >= (float)kFiducial_r_timing) continue;
+            if (std::sqrt(dx*dx + dy*dy) >= (float)TimingFiducialR(rc.energy_GeV)) continue;
             if (sum_lg <= kSumLG_centroid) continue;                       // need a real shower
             if (sum_pb >= kPb_maxRatio * sum_lg) continue;                 // contained
 

@@ -269,7 +269,7 @@ void timingMethods()
         const float xcf = static_cast<float>(xc);
         const float ycf = static_cast<float>(yc);
         const float rFid2 = static_cast<float>(
-            kFiducial_r_timing * kFiducial_r_timing);
+            TimingFiducialR(rc.energy_GeV) * TimingFiducialR(rc.energy_GeV));
 
         // Branch addresses
         Float_t hg_peak[8], hg_cfd[8], hg_cfd10[8], hg_cfd30[8], hg_cfd50[8];

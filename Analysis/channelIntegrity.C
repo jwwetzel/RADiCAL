@@ -169,7 +169,7 @@ void channelIntegrity()
 
             float dx = x_trk - xcf, dy = y_trk - ycf;
             float r  = std::sqrt(dx*dx + dy*dy);
-            if (r >= static_cast<float>(kFiducial_r_timing)) continue;
+            if (r >= static_cast<float>(TimingFiducialR(rc.energy_GeV))) continue;
 
             ++nDenom;
 

@@ -192,7 +192,7 @@ void mcpJitter()
             // Timing fiducial
             float dx = x_trk - static_cast<float>(xc);
             float dy = y_trk - static_cast<float>(yc);
-            if (std::sqrt(dx*dx + dy*dy) >= static_cast<float>(kFiducial_r_timing))
+            if (std::sqrt(dx*dx + dy*dy) >= static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV)))
                 continue;
 
             // Sentinel check: both times must be valid
@@ -724,7 +724,7 @@ void mcpJitter()
                 if (mp2 < kMCP2_minPeak || mp2 > kMCP2_maxPeak) continue;
                 float dx = xt - static_cast<float>(xc2);
                 float dy = yt - static_cast<float>(yc2);
-                if (std::sqrt(dx*dx + dy*dy) >= static_cast<float>(kFiducial_r_timing)) continue;
+                if (std::sqrt(dx*dx + dy*dy) >= static_cast<float>(TimingFiducialR(kRuns[r].energy_GeV))) continue;
                 if (mt < -1e5f || mt2 < -1e5f) continue;
                 ampSum += static_cast<double>(mp); ++nA;
             }
