@@ -343,6 +343,13 @@ echo ""
 $ROOT_CMD 'Analysis/layer2Summary.C+'
 
 echo ""
+echo "Step 14e2: Ideal-uniform detector-potential projection (off-trend capillaries)"
+echo "  ideal_uniform_projection — measured headline vs all-channels-uniform projection"
+echo ""
+
+$ROOT_CMD 'Analysis/idealUniform.C+'
+
+echo ""
 echo "Step 14f: Layer 3 hero figures (Ledovskoy-clean summary)"
 echo "  layer3_beam_map / containment / quality"
 echo ""

@@ -1793,6 +1793,51 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         )
                     ],
                 ),
+                Subsection(
+                    anchor="l2-ideal",
+                    title="If every capillary followed the trend &mdash; the detector-potential projection",
+                    note=(
+                        "Two Up capillaries buck the single-channel trend (NW-U drifts "
+                        "<em>up</em> with energy, SW-U stays flat), and both are averaged into the "
+                        "headline (DW&minus;UP)/2.  A fair question: how much do they cost, and what "
+                        "would an all-uniform calorimeter time?  We answer it two ways &mdash; an "
+                        "honest empirical test, and a clearly-labelled projection.  Produced by "
+                        "<code>idealUniform.C</code>."
+                    ),
+                    finding=(
+                        "<strong>They are a modest handicap, not a liability &mdash; and the method is "
+                        "robust to them.</strong>  First the counter-intuitive empirical fact: "
+                        "<em>dropping</em> the weak channels makes the headline <em>worse</em>, not "
+                        "better.  Reconstructing (DW&minus;UP)/2 from the raw waveforms at 150&nbsp;GeV, "
+                        "the all-fiducial &sigma;<sub>t</sub> goes <strong>67&nbsp;ps with all four Up "
+                        "channels &rarr; 76&nbsp;ps dropping NW-U &rarr; 101&nbsp;ps dropping both</strong> "
+                        "&mdash; the 8-channel corner average benefits from every channel, even a mediocre "
+                        "one.  So the weak channels should be kept.  Second, the projection: if NW-U and "
+                        "SW-U instead followed the well-behaved Up trend, the headline would improve from "
+                        f"<strong>{TEB_150}&nbsp;ps to &asymp;25&nbsp;ps at 150&nbsp;GeV</strong> "
+                        "(&minus;2&nbsp;ps), with the largest gain ~3.5&nbsp;ps at 125&nbsp;GeV; the "
+                        "effect vanishes below ~75&nbsp;GeV, where the two are no worse than the "
+                        "light-starved Down channels.  This is an intrinsic-potential <em>projection</em> "
+                        "(the combination model is validated at high E: 69 vs 67&nbsp;ps reconstructed at "
+                        f"150) &mdash; the <strong>measured {TEB_150}&nbsp;ps headline stands as the result</strong>."
+                    ),
+                    plots=[
+                        PlotEntry(
+                            sumPDF("ideal_uniform_projection.png"),
+                            caption=(
+                                "<strong>Left:</strong> the single-channel &sigma;<sub>t</sub>(E) per "
+                                "capillary &mdash; NW-U (filled) drifts up, SW-U (filled) stays flat, the "
+                                "other six (open) fall with energy; the green dashed line is the "
+                                "well-behaved Up trend the projection puts them on.  <strong>Right:</strong> "
+                                "the measured headline (all 8 channels) versus the ideal-uniform projection "
+                                "&mdash; they coincide at low energy and separate above ~75&nbsp;GeV, where "
+                                f"the two laggards cost ~2&ndash;3.5&nbsp;ps.  Projection only; the measured "
+                                f"{TEB_150}&nbsp;ps stands."
+                            ),
+                            width_pct=100,
+                        )
+                    ],
+                ),
             ],
             appendix_label=("Full Layer 2 diagnostics -- MCP decomposition, per-channel & "
                             "per-energy detail (click to expand)"),
@@ -2664,7 +2709,12 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                      f"full &sigma;<sub>t</sub>-vs-E<sub>meas</sub> trend across all "
                                      f"bins is in the appendix below.  "
                                      "MCP-free by construction (it cancels each channel's per-group "
-                                     "reference in the corner difference)."),
+                                     "reference in the corner difference).  Two under-performing Up "
+                                     "capillaries (NW-U, SW-U) cap this slightly: an all-uniform detector "
+                                     "would project to &asymp;25&nbsp;ps here &mdash; see the "
+                                     "<a href=\"#l2-ideal\">detector-potential projection</a> in Layer&nbsp;2 "
+                                     "(they are kept, not dropped: dropping them <em>worsens</em> the "
+                                     "headline)."),
                             width_pct=50,
                         ),
                         PlotEntry(
