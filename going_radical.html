@@ -190,6 +190,22 @@
   .tnext b{color:var(--accent)}
   .tut .eq{font-family:var(--mono);color:#bfe9e2;background:#0c111b;border:1px solid var(--line);
            border-radius:7px;padding:2px 7px;font-size:13.5px;white-space:nowrap}
+
+  /* check-your-understanding */
+  .cyu{border:1px solid var(--line);background:var(--bg2);border-radius:10px;padding:12px 15px 11px;margin:18px 0}
+  .cyu .qh{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--hot);
+           display:block;margin-bottom:6px}
+  .cyu .qq{font-size:14.5px;color:var(--ink);margin:0}
+  .cyu details{margin-top:9px;border-top:1px dashed var(--line);padding-top:8px}
+  .cyu .body{margin-top:8px;font-size:13.5px;color:#cdd6e6;line-height:1.55}
+  .cyu .body b{color:var(--ink)}
+
+  /* part divider */
+  .partbreak{margin:6px 0 32px;text-align:center}
+  .partbreak .pl{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--accent2)}
+  .partbreak .pt{font-size:21px;font-weight:800;letter-spacing:-.3px;color:var(--ink);margin-top:5px}
+  .partbreak .pd{font-size:13.5px;color:var(--dim);max-width:640px;margin:7px auto 0}
+  .partbreak .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:16px 0 0}
 </style>
 </head>
 <body class="mode-cards">
@@ -716,11 +732,16 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
 <div id="tutorialView">
 
 <div class="tbar"><div class="wrap" id="tnav">
-  <span class="lab">Chapters</span>
-  <a data-c="ch1">1 · Seeing a particle</a>
-  <a data-c="ch2">2 · NIM logic</a>
-  <a data-c="ch3">3 · Recording the pulse</a>
-  <a data-c="ch4">4 · Calorimetry</a>
+  <span class="lab">I · Apparatus</span>
+  <a data-c="ch1">1 Detecting</a>
+  <a data-c="ch2">2 NIM logic</a>
+  <a data-c="ch3">3 DAQ</a>
+  <a data-c="ch4">4 Calorimetry</a>
+  <span class="lab">II · Analysis</span>
+  <a data-c="ch5">5 Reconstruct</a>
+  <a data-c="ch6">6 Corner timing</a>
+  <a data-c="ch7">7 Selection</a>
+  <a data-c="ch8">8 Results</a>
 </div></div>
 
 <article class="wrap tut">
@@ -730,7 +751,16 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
    until we have the whole RADiCAL experiment in view. Each chapter is harder than the last; read top to
    bottom.</p>
  <p class="arc">arc:&nbsp; a single photon → a counter that lies → two counters that don't →
-   logic that decides in nanoseconds → electronics that record the pulse → a block that weighs energy in light.</p>
+   logic that decides in nanoseconds → electronics that record the pulse → a block that weighs energy in light
+   → and then the analysis that turns eight waveforms into 27 picoseconds.</p>
+
+ <div class="partbreak">
+   <div class="pl">Part I</div>
+   <div class="pt">The apparatus</div>
+   <div class="pd">How a particle becomes a number — detectors, fast logic, electronics, and the calorimeter.
+     Each chapter ends with a question; answer it before moving on.</div>
+   <div class="rule"></div>
+ </div>
 
  <!-- =================== CHAPTER 1 =================== -->
  <section class="chapter" id="ch1">
@@ -891,6 +921,14 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
      <p>The beam trigger is exactly this: small scintillator paddles and a 1×1&nbsp;cm "finger" counter,
        required <b>in coincidence</b>, define a clean beam particle. Only when they all fire together does the
        experiment agree to record an event. You'll meet that decision again in Chapter&nbsp;2.</p></div>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">A bare scintillation counter clicks ~3000 times a second with the beam turned off. What
+       are those clicks — and what single change makes almost all of them vanish?</p>
+     <details><summary>Show answer</summary><div class="body">They're <b>dark pulses</b>: electrons that boiled
+       off the photocathode on their own (thermionic emission) and set off the same million-fold avalanche as
+       real light. Put a <b>second counter in coincidence</b> and require both to fire within a nanosecond — a
+       dark pulse in one tube has no partner in the other, so the accidental rate collapses to a handful per
+       second while real particles (which fire both) pass straight through.</div></details></div>
   </div>
 
   <div class="verse" id="ch1-calib">
@@ -919,6 +957,14 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
        plateau tells you <em>where</em> to operate; the single-PE spectrum tells you <em>what the numbers mean</em>;
        the efficiency tells you <em>how much to trust them</em>. Skip these and every downstream result inherits
        an unknown error.</p></div>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">You raise a PMT's high voltage by 10% and its pulses roughly double in size. Why is the
+       gain so sensitive — and what does that force on the HV supply?</p>
+     <details><summary>Show answer</summary><div class="body">Gain <b>compounds</b>: each of ~10 dynodes
+       multiplies by 3–4, so the total is that per-stage factor raised to the tenth power. Nudging the voltage
+       lifts <em>every</em> stage at once, so a small change in HV moves the gain steeply. That's the knob you
+       use to <em>set</em> the gain on the plateau — but it also means the supply must be <b>very stable</b>, or
+       the gain (and every charge you measure) drifts under you.</div></details></div>
    <div class="tnext"><b>Where we are:</b> we can now turn a single invisible particle into a trustworthy
      electrical pulse, and we know how good that pulse is. But a pulse is still an analog squiggle. Next we
      teach the experiment to <b>make decisions</b> from these pulses in nanoseconds — without a computer in the
@@ -962,6 +1008,15 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
        time that depends on pulse height. This amplitude-dependent timing error is <b>time-walk</b> — harmless
        if you only want to count, poison if you want to measure <em>time</em>. We come back to its cure
        (constant-fraction timing) in Chapter&nbsp;3.</p></div>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">A discriminator turns both a 50&nbsp;mV and a 500&nbsp;mV pulse into the same standard logic
+       bit — but the two bits come out at slightly different <em>times</em>. Name the effect, and say when it's
+       harmless and when it's fatal.</p>
+     <details><summary>Show answer</summary><div class="body"><b>Time-walk.</b> A taller pulse crosses the
+       fixed threshold earlier than a short one of the same shape, so the firing time depends on amplitude.
+       <b>Harmless</b> if you only want to <em>count</em> particles — a bit is a bit. <b>Fatal</b> if you want
+       to <em>time</em> them to picoseconds. The fix is to time at a constant <em>fraction</em> of each pulse's
+       own peak (CFD), not a fixed voltage.</div></details></div>
   </div>
 
   <div class="verse" id="ch2-logic">
@@ -995,6 +1050,14 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
        three and misses the veto, the logic emits one pulse — and that pulse <b>gates</b> the digitizer in
        Chapter&nbsp;3, telling it to freeze and record the waveforms. (There's a live version of exactly this
        logic in the field-guide Playground.)</p></div>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">Why does the trigger <span class="eq">ScintA · ScintB · Finger · ¬Veto</span> keep far cleaner
+       events than just requiring <span class="eq">ScintA</span> alone?</p>
+     <details><summary>Show answer</summary><div class="body">Each AND'd coincidence multiplies the random
+       rates by the tiny overlap window, so demanding three counters fire <em>together</em> drives accidental
+       and dark coincidences to almost nothing — while a real beam particle fires all three on purpose. The
+       <b>veto</b> then discards particles that strayed into the wrong region. One counter can't tell a particle
+       from a hiccup; four wired in the right logic can.</div></details></div>
    <div class="tnext"><b>Where we are:</b> the experiment can now decide, in hardware, which particles are worth
      keeping. But a yes/no bit throws away everything <em>about</em> the pulse — its size, its shape, its precise
      time. To measure energy and picosecond timing we have to <b>record the pulse itself</b>. →
@@ -1040,6 +1103,14 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
      is that they are <b>committed in advance</b>: a QDC's gate position and width are set in hardware before
      the run, and if a baseline shift or an early reflection sneaks into the gate, you can never go back and
      undo it. You measured charge; you did not keep the pulse.</p>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">You measured a calorimeter's energy with a QDC, then realize the integration gate opened
+       5&nbsp;ns too late and clipped the pulse's rise. With a QDC, can you recover the right charge? With a
+       waveform digitizer?</p>
+     <details><summary>Show answer</summary><div class="body">With a <b>QDC, no</b> — it integrated a fixed
+       window in hardware and saved only that one number; the rest of the pulse is gone. With a <b>waveform
+       digitizer, yes</b> — the whole shape is on disk, so you simply re-integrate with the correct window
+       offline. That "decide afterward" freedom is exactly what the extra data buys you.</div></details></div>
   </div>
 
   <div class="verse" id="ch3-wfd">
@@ -1097,6 +1168,14 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
    <div class="tnext"><b>Where we are:</b> we can detect a particle, decide to keep it, and faithfully record its
      pulses. The last question is the biggest: how do you turn those pulses into the particle's
      <b>energy</b>? → <b>Chapter&nbsp;4: calorimetry.</b></div>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">Why does picosecond timing essentially force you to keep the full waveform, rather than just
+       reading a single time off a TDC?</p>
+     <details><summary>Show answer</summary><div class="body">A TDC gives you <em>one</em> time from a hardware
+       discriminator — which carries time-walk and is locked to a single algorithm. Picosecond timing needs the
+       <b>shape of the edge</b>: you run a constant-fraction pick in software and <b>interpolate between</b> the
+       0.2&nbsp;ns samples for sub-sample precision — and you can improve the algorithm next year. Only the full
+       waveform lets you do any of that.</div></details></div>
   </div>
  </section>
 
@@ -1180,6 +1259,14 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
      <span class="eq">a/√E</span> part of <span class="eq">σ_E/E = a/√E ⊕ b</span> — that a homogeneous device
      largely avoids. In exchange you get a detector that is compact, affordable, segmentable, and tough enough
      to survive a collider. For most large experiments that bargain is worth it.</p>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">Lead glass and a tungsten/scintillator sandwich both measure a shower's energy. Which has
+       the larger <em>stochastic</em> (<span class="eq">a/√E</span>) term, and why?</p>
+     <details><summary>Show answer</summary><div class="body">The <b>sampling</b> sandwich. A homogeneous block
+       turns essentially the whole shower into signal, so its energy estimate barely fluctuates. A sampling
+       calorimeter only sees the shower where it crosses an active layer — a few percent of it — and those
+       <b>sampling fluctuations</b> add statistical noise that scales as <span class="eq">a/√E</span>. You trade
+       resolution for compactness, cost, and radiation hardness.</div></details></div>
   </div>
 
   <div class="verse" id="ch4-radical">
@@ -1199,12 +1286,355 @@ rad-&gt;Draw("(hg_cfd05[0]-hg_cfd05[4])&gt;&gt;h2(200,-1,1)",
        a lot of energy <b>leaks</b> out the back. That's why its energy resolution shows a large
        <b>constant term</b> (the <span class="eq">b</span> above): it's a short test module, not a full-depth
        calorimeter. The timing, not the energy, is the headline — and the timing is <b>27&nbsp;ps</b>.</p></div>
-   <div class="tnext"><b>You've arrived.</b> You can now read the whole experiment: a particle makes light, a
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">RADiCAL's prototype is ~4&nbsp;X₀ deep, but a 150&nbsp;GeV shower peaks around 6–7&nbsp;X₀.
+       Predict the dominant feature of its <em>energy</em> resolution, and why.</p>
+     <details><summary>Show answer</summary><div class="body">A large <b>constant term</b> (the
+       <span class="eq">b</span> in <span class="eq">σ_E/E = a/√E ⊕ b</span>). The module ends before the shower
+       even maxes out, so a big — and event-to-event variable — fraction of the energy <b>leaks</b> out the
+       back. That leakage doesn't shrink with energy, so it shows up as an energy-independent floor. It's why
+       this prototype's headline is its <em>timing</em>, not its energy.</div></details></div>
+   <div class="tnext"><b>End of Part I.</b> You can now read the apparatus end to end: a particle makes light, a
      PMT/SiPM makes a pulse, NIM logic decides to keep it, a waveform digitizer records it, and a sampling
-     calorimeter turns it into energy and time. For the tricks that get from "recorded pulses" to
-     "<b>27&nbsp;ps</b>" — the corner difference, CFD, the fiducial and out-of-sample validation — switch to the
-     <b>Field guide</b> (try <em>The measurement</em> tab and the <em>Playground</em>), or open the full
-     analysis report.</div>
+     calorimeter turns it into energy and time. <b>Part II</b> picks up exactly there — how RADiCAL turns those
+     recorded waveforms into a 27-picosecond number, and what traps it has to dodge to do it honestly. →
+     <b>Chapter&nbsp;5: reconstruction.</b></div>
+  </div>
+ </section>
+
+ <div class="partbreak">
+   <div class="pl">Part II</div>
+   <div class="pt">The RADiCAL analysis</div>
+   <div class="pd">From recorded waveforms to a 27-picosecond result: the techniques this experiment applies,
+     the traps it sidesteps, and the numbers it gets. This is where the lessons of the real analysis live.</div>
+   <div class="rule"></div>
+ </div>
+
+ <!-- =================== CHAPTER 5 =================== -->
+ <section class="chapter" id="ch5">
+  <div class="chead"><span class="cnum">CHAPTER 5</span>
+    <h2 class="ctitle">From a waveform to a row of numbers</h2></div>
+  <p class="clede">Every triggered event is eight calorimeter waveforms plus the reference channels. Before any
+    physics, each waveform has to become a few honest numbers — a baseline, an amplitude, a charge, a time.
+    Get this bottom layer wrong and nothing built on top of it can be right.</p>
+
+  <div class="verse" id="ch5-ped">
+   <h3>Pedestal first <span class="depthchip d1">foundational</span></h3>
+   <p>A digitizer's "zero" isn't zero. Each channel sits at some small, slowly drifting <b>baseline</b> voltage —
+     the <b>pedestal</b> — set by the electronics, not the particle. So the very first step on every waveform is
+     to measure that baseline from the quiet samples <em>before</em> the pulse (here, the first ~50 samples) and
+     subtract it. Every amplitude and charge you quote afterwards is a difference <em>from</em> the pedestal, not
+     an absolute voltage.</p>
+  </div>
+
+  <div class="verse" id="ch5-aq">
+   <h3>Amplitude, charge, and the two gains <span class="depthchip d1">foundational</span></h3>
+   <p>With the baseline gone, two numbers fall out of each pulse. The <b>amplitude</b> (peak height; our SiPM and
+     MCP pulses dip negative, so amplitude = baseline − minimum) tracks the peak rate of light and drives the
+     <em>timing</em>. The <b>charge</b> — the area under the pulse — tracks the <em>total</em> light, which is
+     what's proportional to deposited <em>energy</em>.</p>
+   <p>RADiCAL reads each corner at <b>two gains</b> so it never has to choose: a <b>high-gain (HG)</b> tap, tuned
+     to be big and fast at shower-maximum, does the timing; a <b>low-gain (LG)</b> tap, which stays unsaturated
+     over the full energy range, does the energy. The sum of the low-gain charges, <span class="eq">ΣLG</span>,
+     is the experiment's energy and shower-containment proxy.</p>
+
+   <figure class="tfig">
+    <svg viewBox="0 0 720 220" role="img" aria-label="extracting numbers from one waveform">
+      <!-- baseline / pedestal -->
+      <line class="sac2" x1="40" y1="70" x2="700" y2="70" stroke-dasharray="5 4"/>
+      <text class="fac2" x="44" y="62" font-size="9">pedestal (baseline) — measured on the first ~50 samples</text>
+      <!-- axis -->
+      <line class="sln" x1="40" y1="178" x2="700" y2="178"/>
+      <text class="fdim" x="650" y="196" font-size="9">time →</text>
+      <!-- charge fill under bump -->
+      <path d="M210 70 C250 70 250 150 290 150 C330 150 330 70 380 70 Z" fill="rgba(39,224,200,.14)"/>
+      <!-- pulse (drawn dipping down from baseline, as the real pulses do) -->
+      <path class="sink" d="M40 70 L210 70 C250 70 250 150 290 150 C330 150 330 70 380 70 L700 70"/>
+      <text class="facc" x="296" y="120" text-anchor="middle" font-size="9">charge = ∫V dt → energy (ΣLG)</text>
+      <!-- amplitude arrow -->
+      <line x1="290" y1="70" x2="290" y2="150" stroke="#ffb454" stroke-width="1.4"/>
+      <path d="M287 74 L290 70 L293 74 M287 146 L290 150 L293 146" class="sac2"/>
+      <text class="fac2" x="300" y="112" font-size="9">amplitude → timing</text>
+      <!-- CFD point at 5% down the leading edge -->
+      <circle cx="232" cy="78" r="4" fill="#ff5c8a"/>
+      <line x1="232" y1="78" x2="232" y2="178" class="shot" stroke-dasharray="3 3"/>
+      <text class="fhot" x="236" y="200" font-size="9">CFD-5% time pick</text>
+    </svg>
+    <figcaption>One waveform → four numbers. Subtract the <span style="color:#ffb454">pedestal</span>; the
+      <span style="color:#27e0c8">area</span> is charge (energy), the height is
+      <span style="color:#ffb454">amplitude</span> (timing), and the
+      <span style="color:#ff5c8a">constant-fraction crossing</span> low on the edge is the time. (Drawn dipping
+      down, as the real SiPM/MCP pulses do.)</figcaption>
+   </figure>
+  </div>
+
+  <div class="verse" id="ch5-cfd">
+   <h3>The time pick: constant fraction, in software <span class="depthchip d2">building up</span></h3>
+   <p>Because the whole waveform was saved (Chapter&nbsp;3), the time is picked <em>offline</em>. RADiCAL uses
+     <b>CFD-5%</b>: find where the pulse first crosses 5% of its own peak on the rising edge, interpolating
+     between the 0.2&nbsp;ns samples for sub-sample precision. Timing at a constant <em>fraction</em> rather than
+     a fixed voltage is what defeats the time-walk from Chapter&nbsp;2 — the crossing lands at the same spot on
+     the edge no matter how big the pulse is. Each channel's time is recorded relative to the MCP reference.</p>
+   <div class="inrad"><span class="k">In RADiCAL</span>
+     <p>The product of all this is the <b>ntuple</b> — one tidy row per event:
+       <span class="eq">x_trk, y_trk</span> (where the wire chamber says it hit), <span class="eq">sum_lg</span>
+       and <span class="eq">sum_pb</span> (calorimeter and Pb-glass energy), <span class="eq">hg_peak[8]</span>
+       and <span class="eq">lg_peak[8]</span> (per-channel amplitudes), <span class="eq">hg_cfd05[8]</span>
+       (per-channel CFD times vs the MCP), plus <span class="eq">mcp_peak</span> and a
+       <span class="eq">wc_ok</span> quality flag. <em>Everything</em> in the rest of the analysis is cuts and
+       fits on that one table.</p></div>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">Why bother measuring a pedestal from the first ~50 samples instead of just assuming the
+       baseline is 0&nbsp;V? And which number — amplitude or charge — would you histogram to estimate a shower's
+       energy?</p>
+     <details><summary>Show answer</summary><div class="body">The baseline is a small, drifting electronic
+       offset, not zero; since amplitude and charge are both measured <em>relative</em> to it, an unsubtracted or
+       wrong pedestal biases every one of them. For <b>energy</b> you use the <b>charge</b> (the area, which is
+       proportional to total light) — specifically the low-gain sum <span class="eq">ΣLG</span>. Amplitude is for
+       timing.</div></details></div>
+   <div class="tnext"><b>Where we are:</b> every event is now a row of clean numbers, including a CFD time for
+     each channel measured against the MCP. But the MCP has jitter of its own — so how do we time to 27&nbsp;ps
+     <em>through</em> an imperfect reference clock? → <b>Chapter&nbsp;6: the corner difference.</b></div>
+  </div>
+ </section>
+
+ <!-- =================== CHAPTER 6 =================== -->
+ <section class="chapter" id="ch6">
+  <div class="chead"><span class="cnum">CHAPTER 6</span>
+    <h2 class="ctitle">Timing without a perfect clock: the corner difference</h2></div>
+  <p class="clede">This is RADiCAL's signature move, and the single idea most worth understanding. The hardest
+    truth in picosecond timing is that you can only ever measure a time <em>difference</em> — and the reference
+    you measure against has jitter of its own. The corner difference turns that liability into nothing at all.</p>
+
+  <div class="verse" id="ch6-ref">
+   <h3>You can only measure a difference <span class="depthchip d1">foundational</span></h3>
+   <p>There is no absolute "when." A time only means something relative to another clock. So every channel's CFD
+     time is really <span class="eq">t_i = T_i − T_MCP</span> — the channel's true time minus the reference
+     time the MCP provides. That's unavoidable, and it has a sting: whatever <b>jitter</b> the MCP reference
+     carries gets stamped onto every single channel. Time one channel against the MCP and its width is dominated
+     by the reference, not by the calorimeter you actually care about.</p>
+  </div>
+
+  <div class="verse" id="ch6-corner">
+   <h3>The (DW−UP)/2 corner difference <span class="depthchip d3">the key technique</span></h3>
+   <p>Now the trick. Take two readouts that share the <em>same</em> reference and the <em>same</em> digitizer
+     group — a down-corner and an up-corner of the module — and <b>subtract</b> them:</p>
+   <p style="text-align:center"><span class="eq">(t_DW − t_UP) = (T_DW − T_MCP) − (T_UP − T_MCP) = T_DW − T_UP</span></p>
+   <p>The MCP term — and <em>all</em> of its jitter — cancels exactly, because it was common to both. What's
+     left depends only on the two calorimeter channels. The same cancellation quietly kills two other gremlins:
+     the <b>DRS4 timebase error</b> (both channels are digitized in the same group, on the same cells) and the
+     <b>beam-arrival jitter</b> (common to the whole event). One subtraction, three noise sources gone. This is
+     a <b>reference-free</b> time estimator.</p>
+   <div class="inrad"><span class="k">In RADiCAL</span>
+     <p>This is precisely why the headline is <b>MCP-free</b> and reaches <b>27&nbsp;ps</b>. The DRS4
+       per-cell-width error is real — about 68&nbsp;ps — yet it never touches the result because it cancels in
+       the corner difference, a claim the report's time-base section verifies directly. There's a live version
+       in the field-guide <em>Playground</em>: crank up the "MCP jitter" slider and watch the single-channel
+       width balloon while the <span class="eq">(DW−UP)/2</span> width doesn't move.</p></div>
+  </div>
+
+  <div class="verse" id="ch6-root2">
+   <h3>The √2 penalty that becomes a √2 prize <span class="depthchip d2">building up</span></h3>
+   <p>Subtracting isn't free: if each channel has timing jitter <span class="eq">σ</span>, their difference has
+     jitter <span class="eq">√2·σ</span> (independent errors add in quadrature). But the estimator is
+     <span class="eq">(t_DW − t_UP)/<b>2</b></span>, and dividing by two scales the spread by a half:
+     <span class="eq">√2·σ / 2 = σ/√2</span>. So the same operation that cancels the reference also
+     <em>averages</em> two independent channels — you end up <b>better</b> than a single channel by
+     <span class="eq">√2</span>, not worse. Cancel the clock and average the detector, in one stroke.</p>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">Two channels each time against the MCP. Show the MCP drops out of
+       <span class="eq">(t_DW − t_UP)</span> — and name one other error the same subtraction removes. Then: if
+       each channel has jitter σ, what is the jitter of <span class="eq">(t_DW − t_UP)/2</span>?</p>
+     <details><summary>Show answer</summary><div class="body"><span class="eq">(T_DW−T_MCP) − (T_UP−T_MCP) =
+       T_DW − T_UP</span> — the common MCP term cancels exactly, taking all its jitter with it. The <em>same</em>
+       cancellation also removes the <b>DRS4 timebase error</b> and the <b>beam-arrival jitter</b> (both common
+       to the pair). The difference of two independent σ's is <span class="eq">√2·σ</span>; dividing by 2 gives
+       <b><span class="eq">σ/√2</span></b> — a √2 improvement over one channel.</div></details></div>
+   <div class="tnext"><b>Where we are:</b> we have a reference-free, noise-cancelling time estimator. But a good
+     estimator on the <em>wrong events</em> still lies. The last technical hurdle is choosing which events to
+     keep — without fooling ourselves. → <b>Chapter&nbsp;7: honest selection.</b></div>
+  </div>
+ </section>
+
+ <!-- =================== CHAPTER 7 =================== -->
+ <section class="chapter" id="ch7">
+  <div class="chead"><span class="cnum">CHAPTER 7</span>
+    <h2 class="ctitle">Choosing a cut without fooling yourself</h2></div>
+  <p class="clede">Every resolution number is really "resolution, <em>given these cuts</em>." The danger is that
+    the data has so many knobs — which region, which energy slice, which fraction — that you can always find a
+    combination that looks brilliant by pure luck. This chapter is the discipline that keeps 27&nbsp;ps honest,
+    and it's the hardest-won lesson in the whole project.</p>
+
+  <div class="verse" id="ch7-fid">
+   <h3>The fiducial: trust the middle <span class="depthchip d1">foundational</span></h3>
+   <p>Showers near the edge of a small module leak sideways and time poorly, so the first cut keeps only events
+     whose track landed in a clean central region — the <b>fiducial</b>. Crucially, that region is centred on the
+     <em>module</em>, found from its physical <b>edges</b> (where the energy plateau falls off), not on wherever
+     the beam happened to sit — the beam was actually steered a couple of mm off-centre. Center on the detector,
+     not on the beam.</p>
+  </div>
+
+  <div class="verse" id="ch7-bin">
+   <h3>Energy binning and the best-contained bin <span class="depthchip d2">building up</span></h3>
+   <p>Not every event in the fiducial is equal: the best-<em>contained</em> showers — the ones that dumped the
+     most of their energy in the module — also time the best. So we sort events by <span class="eq">ΣLG</span>
+     into energy bins and report the resolution of the best bin, <em>disclosed with the fraction of events it
+     keeps</em>. This is standard practice in calorimeter timing; the honesty is in stating the efficiency, not
+     in pretending you used every event.</p>
+  </div>
+
+  <div class="verse" id="ch7-oos">
+   <h3>The overfitting trap, and out-of-sample <span class="depthchip d3">the hard lesson</span></h3>
+   <p>Here is where it gets dangerous. Scan the fiducial radius <em>and</em> the energy bins together and you can
+     find a combination that reads as low as ~25.6&nbsp;ps. It's tempting to quote it. But with that many knobs,
+     some of that "improvement" is just the selection latching onto a lucky downward <b>fluctuation</b> — you've
+     <b>overfit</b> the noise, and the number won't reproduce.</p>
+   <p>The cure is <b>out-of-sample validation</b>: <em>choose</em> the cut on one half of the data (the training
+     half), then <em>measure</em> it on the other half it never saw (the test half). Luck doesn't survive the
+     hand-off; only real structure does. When we do this here, the flashy in-sample minima degrade by anywhere
+     from +2 to +26&nbsp;ps out-of-sample — proof they were partly mirages. The selection that <em>is</em> stable
+     out-of-sample lands at <b>27&nbsp;ps</b>, with a measured bias of essentially zero.</p>
+
+   <figure class="tfig">
+    <svg viewBox="0 0 720 230" role="img" aria-label="in-sample minimum overfits; out-of-sample is honest">
+      <line class="sln" x1="55" y1="200" x2="700" y2="200"/>
+      <line class="sln" x1="55" y1="45"  x2="55"  y2="200"/>
+      <text class="fdim" x="60" y="40" font-size="9">σ_t (ps) — lower is better ↓</text>
+      <text class="fdim" x="560" y="220" font-size="9">fiducial radius / bin choice →</text>
+      <!-- honest line at ~27 ps -->
+      <line class="sacc" x1="55" y1="150" x2="700" y2="150" stroke-dasharray="4 4" opacity="0.6"/>
+      <text class="facc" x="610" y="144" font-size="9">honest ≈ 27 ps</text>
+      <!-- in-sample (red) dips BELOW the honest line (looks better) -->
+      <polyline class="shot" points="80,118 150,138 220,166 290,184 360,164 430,134 500,150 560,126 620,140 680,120"/>
+      <circle cx="290" cy="184" r="4.5" fill="#ff5c8a"/>
+      <text class="fhot" x="300" y="182" font-size="9">in-sample 'best' ~25 ps</text>
+      <!-- out-of-sample (ink) hugs the honest line -->
+      <polyline class="sink" points="80,140 150,146 220,150 290,152 360,150 430,146 500,148 560,142 620,146 680,138"/>
+      <!-- legend -->
+      <circle cx="82" cy="64" r="4" fill="#ff5c8a"/>
+      <text class="fdim" x="94" y="68" font-size="9">optimize &amp; measure on the SAME data (in-sample)</text>
+      <circle cx="82" cy="82" r="4" fill="#cdd6e6"/>
+      <text class="fdim" x="94" y="86" font-size="9">measure on a HELD-OUT half (out-of-sample)</text>
+    </svg>
+    <figcaption>Optimize and measure on the <span style="color:#ff5c8a">same</span> data and the deepest dip
+      sinks to ~25&nbsp;ps — but it's partly luck. Decide the cut on a training half and measure on a held-out
+      half (<span style="color:#cdd6e6">light curve</span>) and that dip flattens up to the real ≈27&nbsp;ps. Never
+      quote a number from the data you tuned on.</figcaption>
+   </figure>
+  </div>
+
+  <div class="verse" id="ch7-sigma">
+   <h3>Quote σ_core — and own the tails <span class="depthchip d2">building up</span></h3>
+   <p>One more honesty knob: <em>which</em> width do you call "the resolution"? A timing distribution is a sharp
+     Gaussian <b>core</b> plus a small non-Gaussian <b>tail</b>. The field-standard fast-timing metric is the
+     width of the fitted <b>Gaussian core</b> (<span class="eq">σ_core</span>) — it's robust and it's what other
+     experiments quote, so it's the fair number to headline. But you don't get to hide the tail: you report it
+     <em>separately</em> — here, ~2.6% of events sit beyond 2.5σ, a benign shoulder that's the intrinsic shape of
+     the per-channel CFD times, not a broken channel or time-walk. Headline the core; disclose the tail.</p>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">Your radius-×-bins scan turns up a combination reading 25.6&nbsp;ps. Why might that be a lie,
+       and what single test settles it? And why quote <span class="eq">σ_core</span> plus a tail fraction rather
+       than one raw RMS?</p>
+     <details><summary>Show answer</summary><div class="body">With many knobs, the scan can latch onto a lucky
+       downward fluctuation — <b>overfitting</b>. The test: <b>out-of-sample validation</b> — pick the cut on a
+       training half, measure on a held-out half; if the number holds, it's real (here the in-sample minima
+       inflate by up to +26&nbsp;ps, so they weren't). You quote <b>σ_core</b> because it's the robust,
+       field-standard metric a single tail event can't yank around, and you report the <b>tail fraction</b>
+       separately so the headline isn't quietly hiding a shoulder. A single raw RMS blends the two and is neither
+       comparable nor honest.</div></details></div>
+   <div class="tnext"><b>Where we are:</b> reconstruction, a reference-free estimator, and a selection that
+     survives its own scrutiny. Put them together and the experiment yields a small, specific set of numbers. →
+     <b>Chapter&nbsp;8: what to expect.</b></div>
+  </div>
+ </section>
+
+ <!-- =================== CHAPTER 8 =================== -->
+ <section class="chapter" id="ch8">
+  <div class="chead"><span class="cnum">CHAPTER 8</span>
+    <h2 class="ctitle">What the numbers say</h2></div>
+  <p class="clede">Stack the apparatus, the corner trick, and the honest selection and the experiment delivers a
+    handful of numbers. Here's what they are, how to read them, and — just as important — what <em>not</em> to
+    over-claim about them.</p>
+
+  <div class="verse" id="ch8-headline">
+   <h3>The timing headline <span class="depthchip d1">foundational</span></h3>
+   <p>The result is <b>σ_t ≈ 27&nbsp;ps at 150&nbsp;GeV</b>: the Gaussian-core width of the
+     <span class="eq">(DW−UP)/2</span> corner estimator, on CFD-5% times, in the best-contained energy bin of the
+     central fiducial — and validated out-of-sample, so it's a number a real operator could reproduce, not a
+     lucky slice. For scale, light travels only ~8&nbsp;mm in 27&nbsp;ps; the detector pins a particle's arrival
+     time better than the time it takes light to cross the module.</p>
+  </div>
+
+  <div class="verse" id="ch8-curve">
+   <h3>The resolution curve and its floor <span class="depthchip d2">building up</span></h3>
+   <p>Timing improves with energy, because a bigger shower makes more light and a faster edge. The trend fits the
+     standard form <span class="eq">σ_t = a/√E ⊕ b</span> — a <b>stochastic</b> term <span class="eq">a/√E</span>
+     that shrinks as the light grows, in quadrature with a constant <b>floor</b> <span class="eq">b</span>. For
+     RADiCAL it's about <span class="eq">200/√E ⊕ 22&nbsp;ps</span>: ~47&nbsp;ps at 25&nbsp;GeV falling to
+     ~27&nbsp;ps at 150&nbsp;GeV.</p>
+
+   <figure class="tfig">
+    <svg viewBox="0 0 720 230" role="img" aria-label="time resolution versus energy approaching a floor">
+      <line class="sln" x1="60" y1="185" x2="700" y2="185"/>
+      <line class="sln" x1="60" y1="30"  x2="60"  y2="185"/>
+      <text class="fdim" x="64" y="26" font-size="9">σ_t (ps)</text>
+      <text class="fdim" x="600" y="205" font-size="9">beam energy E (GeV) →</text>
+      <!-- floor -->
+      <line class="sac2" x1="60" y1="152" x2="700" y2="152" stroke-dasharray="5 4"/>
+      <text class="fac2" x="430" y="146" font-size="9">floor b ≈ 22 ps  (extrapolation — no beam past 150)</text>
+      <!-- fit curve through points -->
+      <path class="sacc" d="M167 52 C230 95 300 112 361 120 C470 132 560 128 651 132"/>
+      <!-- data points (E,σ): 25/47 50/33 75/31 100/30 125/29 150/27 -->
+      <g fill="#cdd6e6">
+        <circle cx="167" cy="52"  r="4"/><circle cx="264" cy="108" r="4"/><circle cx="361" cy="116" r="4"/>
+        <circle cx="458" cy="120" r="4"/><circle cx="555" cy="124" r="4"/>
+      </g>
+      <!-- headline point -->
+      <circle cx="651" cy="132" r="5.5" fill="#ff5c8a"/>
+      <text class="fhot" x="651" y="122" text-anchor="middle" font-size="9">27 ps @ 150 GeV</text>
+      <text class="fdim" x="167" y="44" text-anchor="middle" font-size="9">47 ps @ 25</text>
+    </svg>
+    <figcaption>σ_t falls with energy as more light sharpens the edge, flattening toward a constant floor. The
+      points are the measured energies; the <span style="color:#ffb454">floor</span> is where the fit
+      <em>extrapolates</em> — a region no beam here ever reached.</figcaption>
+   </figure>
+  </div>
+
+  <div class="verse" id="ch8-floor">
+   <h3>The floor is an extrapolation, not a verdict <span class="depthchip d3">read it carefully</span></h3>
+   <p>It's tempting to treat the floor <span class="eq">b</span> as "the detector's ultimate timing." It isn't —
+     it's <span class="eq">σ_t</span> as <span class="eq">E → ∞</span>, a number <em>beyond the highest energy
+     anyone measured</em> (150&nbsp;GeV). And in this fit form <span class="eq">a</span> and <span class="eq">b</span>
+     are strongly anti-correlated (<span class="eq">ρ ≈ −0.8</span>): a steeper stochastic term buys a lower
+     floor for the <em>same</em> measured curve. So when a prior RADiCAL paper quotes a 17.5&nbsp;ps floor and we
+     fit 22&nbsp;ps from the same 25–150&nbsp;GeV data, that's a <b>fit-decomposition difference, not a
+     performance gap</b> — both pass through ~27&nbsp;ps at 150&nbsp;GeV, and where data actually exist this
+     analysis is equal or better. Quote the floor; just don't mistake an extrapolation for a measurement.</p>
+  </div>
+
+  <div class="verse" id="ch8-energy">
+   <h3>Energy resolution: the expected "disappointment" <span class="depthchip d2">building up</span></h3>
+   <p>The energy resolution, by contrast, looks poor — a large constant term in
+     <span class="eq">σ_E/E = a/√E ⊕ b</span>. That is not a flaw; it's the 4&nbsp;X₀ leakage from Chapter&nbsp;4
+     showing up exactly where the physics says it should. This prototype was built to <em>time</em>, not to weigh.
+     Reading the energy resolution as "bad calorimeter" misses the point; reading it as "short, leakage-dominated
+     timing demonstrator" is correct.</p>
+   <div class="cyu"><span class="qh">✓ Check yourself</span>
+     <p class="qq">Our fit gives a floor of 22&nbsp;ps; a prior paper on the same detector and energy range
+       quotes 17.5&nbsp;ps. Does that mean their detector times better? And, using
+       <span class="eq">σ_t = 200/√E ⊕ 22&nbsp;ps</span>, roughly what do you expect at 150&nbsp;GeV?</p>
+     <details><summary>Show answer</summary><div class="body"><b>No.</b> The floor is an <em>extrapolation</em>
+       past the data, and in this fit form <span class="eq">a</span> and <span class="eq">b</span> trade off
+       (<span class="eq">ρ ≈ −0.8</span>), so a different split of the <em>same</em> curve gives a different floor
+       without anyone timing better — both curves meet near 27&nbsp;ps at 150&nbsp;GeV. The estimate:
+       <span class="eq">200/√150 ≈ 16.3&nbsp;ps</span>, then <span class="eq">√(16.3² + 22²) ≈ √(266+484) ≈
+       27&nbsp;ps</span>. The floor and the stochastic term are comparable at 150&nbsp;GeV — which is why going to
+       higher energy would help less than you'd hope.</div></details></div>
+   <div class="tnext"><b>You've arrived — for real this time.</b> You can now read the entire experiment, from a
+     single photoelectron to a defensible 27&nbsp;picoseconds, and you know which of its numbers are measurements
+     and which are extrapolations. For the live simulators and the term-by-term reference, use the
+     <b>Field guide</b>; for every fit, systematic, and cross-check behind these numbers, open the full analysis
+     report.</div>
   </div>
  </section>
 
