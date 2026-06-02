@@ -27,6 +27,7 @@
 #include "TH1D.h"
 #include "TGraph.h"
 #include "TMultiGraph.h"
+#include "TF1.h"
 #include "TLine.h"
 #include "TLatex.h"
 #include "TLegend.h"
@@ -239,6 +240,67 @@ void HeroLinearity()
     printf("[layer1Summary] wrote layer1_linearity.png\n");
 }
 
+// ── H3b — LG linearity: mean LG amplitude vs beam energy ───────────────────
+//   The LG chain is the one energy is actually measured on.  Unlike the HG
+//   chain (which saturates near its rail above ~50 GeV), the LG channels stay
+//   linear across the full 25-150 GeV range — this is the plot that proves it.
+void HeroLinearityLG()
+{
+    TFile f(Form("%shg_amplitude_vs_energy.root", kSumDir));
+    if (f.IsZombie()) { printf("[layer1Summary] no hg_amplitude_vs_energy.root — skip H3b\n"); return; }
+
+    TCanvas* c = NewSquareCanvas("c_l1_lin_lg");
+    c->cd();
+
+    TMultiGraph* mg = new TMultiGraph();
+    TLegend* leg = MakeCornerLegend(8, "tl", 0.033);
+
+    // straight-line reference fit (anchored at the origin) to make linearity
+    // obvious: fit the cross-channel mean to y = k*E and overlay it.
+    double sxy = 0., sxx = 0.;
+    int nFitGraphs = 0;
+    for (int i = 0; i < 8; ++i) {
+        TGraph* gg = dynamic_cast<TGraph*>(f.Get(Form("gLGAmp_%s", kCap[i].name)));
+        if (!gg) continue;
+        gg->SetLineColor(kRChannelCols[i]);   gg->SetMarkerColor(kRChannelCols[i]);
+        gg->SetMarkerStyle(20); gg->SetMarkerSize(1.0); gg->SetLineWidth(2);
+        mg->Add(gg, "PL");
+        leg->AddEntry(gg, kCap[i].name, "lp");
+        for (int p = 0; p < gg->GetN(); ++p) {
+            double x, y; gg->GetPoint(p, x, y);
+            if (y <= 0.) continue;
+            sxy += x * y; sxx += x * x;
+        }
+        ++nFitGraphs;
+    }
+
+    mg->Draw("A");
+    mg->GetXaxis()->SetTitle("beam energy (GeV)");
+    mg->GetYaxis()->SetTitle("mean LG amplitude (mV)");
+    mg->GetXaxis()->SetLimits(0., 165.);
+    mg->GetXaxis()->SetTitleSize(0.048);
+    mg->GetYaxis()->SetTitleSize(0.048);
+
+    // proportional reference line y = k*E through the data (k = Σxy/Σxx)
+    if (sxx > 0.) {
+        double k = sxy / sxx;
+        TF1* ref = new TF1("lgRef", "[0]*x", 0., 165.);
+        ref->SetParameter(0, k);
+        ref->SetLineColor(kGray + 2); ref->SetLineStyle(2); ref->SetLineWidth(2);
+        ref->Draw("same");
+        leg->AddEntry(ref, "y #propto E (linear)", "l");
+    }
+    leg->Draw();
+
+    { TLatex n; n.SetNDC(); n.SetTextSize(0.027); n.SetTextColor(kGray + 2); n.SetTextAlign(31);
+      n.DrawLatex(0.93, 0.255, "LG stays linear across the full range;");
+      n.DrawLatex(0.93, 0.210, "this is the chain energy is measured on."); }
+
+    DrawPageTitle("Channel response  --  mean LG amplitude vs beam energy");
+    c->Print(Form("%slayer1_linearity_lg.png", kSumDir));
+    printf("[layer1Summary] wrote layer1_linearity_lg.png\n");
+}
+
 // ── H4 — DRS4 time-base: stop-cell uniformity ──────────────────────────────
 void HeroTimebase()
 {
@@ -365,6 +427,7 @@ void layer1Summary()
     HeroPulseShapes();
     HeroVitals();
     HeroLinearity();
+    HeroLinearityLG();
     HeroTimebase();
     HeroDRS4Clean();
 

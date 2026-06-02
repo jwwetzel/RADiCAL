@@ -59,6 +59,7 @@ void chargeProfiles()
     // -------------------------------------------------------------------------
     std::vector<double> vE;                     // beam energies [GeV]
     std::vector<double> vMeanHG[8];             // mean HG amplitude per cap [mV]
+    std::vector<double> vMeanLG[8];             // mean LG amplitude per cap [mV]
 
     // Index of the 150 GeV run (for HG/LG ratio maps) — set during loop
     int iRun150 = -1;
@@ -146,6 +147,8 @@ void chargeProfiles()
         long nInFid = 0;
         double hgSum[8] = {};
         long   hgN  [8] = {};
+        double lgSum[8] = {};
+        long   lgN  [8] = {};
 
         for (Long64_t ev = 0; ev < nEntries; ++ev) {
             t->GetEntry(ev);
@@ -172,9 +175,12 @@ void chargeProfiles()
                 ++hgN[i];
 
                 // HG/LG ratio: require valid LG signal
-                if (lg_peak[i] > kLG_minPeak)
+                if (lg_peak[i] > kLG_minPeak) {
                     hRatioMap[i]->Fill(x_trk, y_trk,
                                        hg_peak[i] / lg_peak[i]);
+                    lgSum[i] += lg_peak[i];   // mean LG amplitude (linearity)
+                    ++lgN[i];
+                }
             }
         }
 
@@ -191,8 +197,10 @@ void chargeProfiles()
 
         // Store per-cap mean HG amplitude for summary graph
         vE.push_back(rc.energy_GeV);
-        for (int i = 0; i < kNCap; ++i)
+        for (int i = 0; i < kNCap; ++i) {
             vMeanHG[i].push_back(hgN[i] > 0 ? hgSum[i] / hgN[i] : 0.);
+            vMeanLG[i].push_back(lgN[i] > 0 ? lgSum[i] / lgN[i] : 0.);
+        }
 
         // Track which run index is closest to 150 GeV (for ratio maps)
         if (std::fabs(rc.energy_GeV - 150.) < 1.)
@@ -304,13 +312,19 @@ void chargeProfiles()
         cAmp.Print(ampPdf);   // single page — "(" + ")" emitted two identical pages
         std::cout << "  -> " << ampPdf << "\n";
 
-        // ── Persist mean-HG-amplitude-vs-energy graphs for the Layer-1 hero plot ─
-        //   gHGAmp_<chan> : mean HG amplitude [mV] vs beam energy [GeV].
+        // ── Persist mean-amplitude-vs-energy graphs for the Layer-1 hero plots ──
+        //   gHGAmp_<chan> : mean HG amplitude [mV] vs beam energy [GeV] (saturating).
+        //   gLGAmp_<chan> : mean LG amplitude [mV] vs beam energy [GeV] (linear, the
+        //                   chain energy is actually measured on).
         TFile fAmp("Analysis/Output/Summary/hg_amplitude_vs_energy.root", "RECREATE");
         for (int i = 0; i < kNCap; ++i) {
             TGraph g(N);
             for (int p = 0; p < N; ++p) g.SetPoint(p, vE[p], vMeanHG[i][p]);
             g.Write(Form("gHGAmp_%s", kCap[i].name));
+
+            TGraph gl(N);
+            for (int p = 0; p < N; ++p) gl.SetPoint(p, vE[p], vMeanLG[i][p]);
+            gl.Write(Form("gLGAmp_%s", kCap[i].name));
         }
         fAmp.Close();
         std::cout << "  -> Analysis/Output/Summary/hg_amplitude_vs_energy.root\n";

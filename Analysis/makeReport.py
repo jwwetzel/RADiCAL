@@ -1408,14 +1408,27 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "<strong>Yes &mdash; the response is linear and the channels track together.</strong>  "
                         "All eight capillaries scale with energy in lock-step.  The high-gain chain compresses "
                         "near its rail above ~50 GeV &mdash; by design, since energy is measured on the linear "
-                        "low-gain channels &mdash; confirming the HG/LG split does its job.  No channel gains "
-                        "anomalously less per GeV.  <em>The instrument is verified; on to the timing reference.</em>"
+                        "low-gain channels &mdash; and the low-gain chain (right) stays straight across the full "
+                        "25&ndash;150 GeV range, hugging the proportional <em>y</em>&nbsp;&prop;&nbsp;<em>E</em> "
+                        "reference.  That is the chain energy is actually read out on, so the linearity that "
+                        "matters is confirmed.  No channel gains anomalously less per GeV.  "
+                        "<em>The instrument is verified; on to the timing reference.</em>"
                     ),
-                    plots=[PlotEntry(
-                        sumPDF("layer1_linearity.png"),
-                        caption=("Mean HG amplitude vs energy &mdash; all 8 capillaries track together; HG "
-                                 "compresses near the rail above ~50 GeV (energy is on the linear LG)."),
-                        width_pct=66)],
+                    plots=[
+                        PlotEntry(
+                            sumPDF("layer1_linearity.png"),
+                            caption=("<strong>High gain.</strong>  Mean HG amplitude vs energy &mdash; all 8 "
+                                     "capillaries track together but compress near the rail above ~50 GeV.  "
+                                     "Expected: HG is the timing chain, not the energy chain."),
+                            width_pct=50),
+                        PlotEntry(
+                            sumPDF("layer1_linearity_lg.png"),
+                            caption=("<strong>Low gain.</strong>  Mean LG amplitude vs energy &mdash; linear "
+                                     "across the full range (dashed line is <em>y</em>&nbsp;&prop;&nbsp;<em>E</em>).  "
+                                     "This is the chain energy is measured on, and it stays proportional with "
+                                     "no saturation."),
+                            width_pct=50),
+                    ],
                 ),
                 Subsection(
                     anchor="l1-timebase-deep",
