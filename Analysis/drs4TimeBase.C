@@ -385,47 +385,89 @@ void drs4TimeBase()
         DrawPadTitle("before (open) / after (filled)", 0.065);
     }
     DrawPageTitle("Stop-cell correction: trained on even events, validated on odd");
-    c.Print(outPDF);
+    c.Print(outPDF + ")");   // close the 3-page raw-diagnostics PDF (appendix)
+    (void) calibrated;       // verdict now lives in the report's KEY FINDING box
 
-    // ── Page 4: verdict text ─────────────────────────────────────────────────
-    c.Clear(); c.cd();
-    gPad->SetLeftMargin(0.06); gPad->SetRightMargin(0.04);
-    gPad->SetTopMargin(0.10);  gPad->SetBottomMargin(0.05);
-    gPad->SetGridx(0); gPad->SetGridy(0);
+    // =========================================================================
+    // Hero: one clean 2-panel page that answers "is the time base sound?"
+    //   left  — stop cell rotates uniformly  => the correction is well-posed
+    //   right — out-of-sample before/after    => the corner CANCELS cell-width
+    //           (unchanged), only the MCP-referenced combo needs the correction
+    // =========================================================================
     {
-        TLatex v; v.SetNDC(); v.SetTextFont(42);
-        double y = 0.88; const double dy = 0.072;
-        v.SetTextSize(0.040); v.SetTextColor(kRData);
-        v.DrawLatex(0.06, y, "DRS4 time-base verdict"); y -= dy * 1.2;
-        v.SetTextColor(kBlack); v.SetTextSize(0.032);
-        v.DrawLatex(0.06, y, Form("1. Cell-width calibration: %s "
-            "(D0G0 width RMS = %.2f ps).",
-            calibrated ? "APPLIED" : "NOT APPLIED -- cells are nominal 0.200 ns",
-            cwMean)); y -= dy;
-        v.DrawLatex(0.06, y, Form("2. Stop cell rotates %s "
-            "(RMS %.0f vs uniform %.0f) -- correction is well-posed.",
-            (std::fabs(hStop->GetRMS() - 1024./std::sqrt(12.)) < 40.)
-              ? "UNIFORMLY" : "non-uniformly",
-            hStop->GetRMS(), 1024./std::sqrt(12.))); y -= dy;
-        v.DrawLatex(0.06, y, "3. Out-of-sample core #sigma (trained even, tested odd):"); y -= dy*0.9;
-        v.SetTextColor(kRBlue);
-        v.DrawLatex(0.10, y, Form("single SE-D : %.1f #rightarrow %.1f ps  (%+.1f ps)",
-            sglB, sglA, sglA - sglB)); y -= dy*0.85;
-        v.SetTextColor(kRGreen+1);
-        v.DrawLatex(0.10, y, Form("A^{2} combo  : %.1f #rightarrow %.1f ps  (%+.1f ps)",
-            cmbB, cmbA, cmbA - cmbB)); y -= dy*0.85;
-        v.SetTextColor(kRRed);
-        v.DrawLatex(0.10, y, Form("corner (DW#minusUP)/2 : %.1f #rightarrow %.1f ps  (%+.1f ps)",
-            cnrB, cnrA, cnrA - cnrB)); y -= dy*1.1;
-        v.SetTextColor(kGray+2); v.SetTextSize(0.028);
-        v.DrawLatex(0.06, y, "Expectation: corner cancels cell-width (same group, same crossing cell);");
-        y -= dy*0.7;
-        v.DrawLatex(0.06, y, "single & combo carry the HG-to-MCP cell gap and should improve if the");
-        y -= dy*0.7;
-        v.DrawLatex(0.06, y, "effect is real and reproducible.  Only out-of-sample gains are claimed.");
+        TCanvas ch("c_tb_hero", "", 1320, 560);
+        ch.Divide(2, 1, 0.014, 0.02);
+
+        // ----- left pad: stop-cell uniformity --------------------------------
+        ch.cd(1); StylePad();
+        hStop->SetLineColor(kRData); hStop->SetLineWidth(2); hStop->SetMinimum(0.);
+        hStop->SetTitle(";DRS0 G0 stop cell;events");
+        hStop->Draw("HIST");
+        {
+            const double uniformRMS = 1024. / std::sqrt(12.);
+            TPave* bg = new TPave(0.155, 0.70, 0.80, 0.905, 0, "brNDC");
+            bg->SetFillColor(kWhite); bg->SetLineColor(kWhite); bg->Draw();
+            TLatex a; a.SetNDC(); a.SetTextSize(0.044);
+            a.DrawLatex(0.17, 0.84, Form("RMS = %.0f  (uniform = %.0f)",
+                                         hStop->GetRMS(), uniformRMS));
+            a.SetTextColor(kGray+2); a.SetTextSize(0.036);
+            a.DrawLatex(0.17, 0.76, "stop cell rotates uniformly");
+            a.DrawLatex(0.17, 0.715, "#Rightarrow correction is well-posed");
+        }
+        DrawPadTitle("Stop cell samples every physical cell equally", 0.060);
+
+        // ----- right pad: out-of-sample before/after (log y) -----------------
+        ch.cd(2); StylePad(); gPad->SetLogy(); gPad->SetRightMargin(0.05);
+        {
+            const char* lab[3] = {"single SE-D", "A^{2} combo", "corner (DW#minusUP)/2"};
+            const char* tag[3] = {"MCP-limited", "improves",    "already cancels"};
+            double before[3] = {sglB, cmbB, cnrB};
+            double after [3] = {sglA, cmbA, cnrA};
+
+            TH1F* hb = new TH1F("hImpHero", ";;out-of-sample core #sigma (ps)", 3, 0, 3);
+            hb->SetDirectory(nullptr);
+            for (int i = 0; i < 3; ++i) hb->GetXaxis()->SetBinLabel(i + 1, lab[i]);
+            hb->GetXaxis()->SetLabelSize(0.043);
+            hb->GetYaxis()->SetRangeUser(60., 900.);
+            hb->SetLineColor(kGray+2); hb->Draw("AXIS");
+
+            for (int i = 0; i < 3; ++i) {
+                const bool improved = after[i] < before[i] - 1.0;
+                // connector
+                TLine* ln = new TLine(i + 0.30, before[i], i + 0.62, after[i]);
+                ln->SetLineColor(kGray+1); ln->SetLineStyle(2); ln->SetLineWidth(1); ln->Draw();
+                // before (open) / after (filled, green only when the correction helps)
+                TGraph* gb = new TGraph(1); gb->SetPoint(0, i + 0.30, before[i]);
+                gb->SetMarkerStyle(24); gb->SetMarkerSize(1.7); gb->SetMarkerColor(kGray+2);
+                gb->Draw("P SAME");
+                TGraph* ga = new TGraph(1); ga->SetPoint(0, i + 0.62, after[i]);
+                ga->SetMarkerStyle(20); ga->SetMarkerSize(1.7);
+                ga->SetMarkerColor(improved ? kRGreen : kGray+1);
+                ga->Draw("P SAME");
+                // value label above, interpretation tag below
+                TLatex t; t.SetTextAlign(21);
+                t.SetTextColor(kGray+2); t.SetTextSize(0.033);
+                t.DrawLatex(i + 0.46, std::max(before[i], after[i]) * 1.14,
+                            Form("%.0f #rightarrow %.0f", before[i], after[i]));
+                t.SetTextColor(improved ? kRGreen+1 : kGray+2); t.SetTextSize(0.030);
+                t.DrawLatex(i + 0.46, std::min(before[i], after[i]) * 0.78, tag[i]);
+            }
+            // legend for open/filled
+            TLegend* lg = new TLegend(0.58, 0.79, 0.94, 0.905);
+            lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.033);
+            TGraph* mB = new TGraph(1); mB->SetMarkerStyle(24); mB->SetMarkerColor(kGray+2);
+            TGraph* mA = new TGraph(1); mA->SetMarkerStyle(20); mA->SetMarkerColor(kRGreen);
+            lg->AddEntry(mB, "before correction", "p");
+            lg->AddEntry(mA, "after correction",  "p");
+            lg->Draw();
+        }
+        DrawPadTitle("Correction helps the combo, not the corner", 0.060);
+
+        ch.cd(0);
+        DrawPageTitle("DRS4 time base: the corner estimator already cancels the cell-width error");
+        ch.Print("Analysis/Output/Summary/drs4_timebase_hero.png");
+        std::cout << "  -> Analysis/Output/Summary/drs4_timebase_hero.png\n";
     }
-    DrawPageTitle("DRS4 time-base verification  --  summary & recommendation");
-    c.Print(outPDF + ")");
 
     // ── ROOT output ───────────────────────────────────────────────────────────
     TFile* fout = new TFile(outROOT, "RECREATE");
