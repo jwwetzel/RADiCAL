@@ -1921,6 +1921,35 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                             ),
                             width_pct=66,
                         ),
+                        PlotEntry(
+                            sumPDF("fiducial_bestbin_jitter.png"),
+                            caption=(
+                                "<b>Why the best-bin curve is jumpy</b> (150&nbsp;GeV).  The selected bin "
+                                "is <code>min(bin&nbsp;6, bin&nbsp;7)</code>: bin&nbsp;6 is large-N and stable "
+                                "(~31&ndash;35&nbsp;ps), but bin&nbsp;7 &mdash; the highest-E<sub>meas</sub> "
+                                "bin &mdash; has only ~100&ndash;2600 events on the steeply-falling "
+                                "&Sigma;A<sub>LG</sub> tail, so (bottom) its count crosses the "
+                                "N&nbsp;&ge;&nbsp;500 eligibility line repeatedly as the fiducial shifts "
+                                "the bin edges.  Each crossing flips the best bin, producing 3&ndash;6&nbsp;ps "
+                                "jumps.  The jitter is a selection artifact, not physics."
+                            ),
+                            width_pct=66,
+                        ),
+                        PlotEntry(
+                            sumPDF("fiducial_overfit.png"),
+                            caption=(
+                                "<b>Why the headline is the OOS value, not the in-sample minimum.</b>  "
+                                "Searching radius&times;bins for the lowest &sigma;<sub>t</sub> (red) looks "
+                                "spectacular &mdash; down to 15&nbsp;ps at 100&nbsp;GeV &mdash; but "
+                                "re-measuring each <em>exact</em> config on held-out data (black, 5-fold "
+                                "run-folded OOS) exposes +2 to +26&nbsp;ps of overfitting: those minima are "
+                                "the luckiest ~1000 events, not the resolution.  At 150&nbsp;GeV the "
+                                "in-sample 25.6&nbsp;ps generalises to 27.5&nbsp;ps &mdash; i.e. the "
+                                "27.4&nbsp;ps headline.  The fixed-radius headline survives OOS (bias "
+                                "0.0&nbsp;ps); the argmin does not."
+                            ),
+                            width_pct=66,
+                        ),
                     ],
                     finding=(
                         "<strong>The timing fiducial is optimised per energy: r&nbsp;&lt;&nbsp;2.5&nbsp;mm "
@@ -1938,8 +1967,14 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         f"&sigma;<sub>t</sub>&nbsp;=&nbsp;{TEB_A}/&radic;E&nbsp;&oplus;&nbsp;{TEB_FLOOR}&nbsp;ps "
                         f"(floor was ~23&nbsp;ps at a flat 3&nbsp;mm), while the <strong>{PAPER_150}&nbsp;ps "
                         "headline at 150&nbsp;GeV is unchanged</strong>.  This is a genuine, "
-                        "OOS-guarded optimisation &mdash; not a per-energy argmin (the best-bin curve is "
-                        "too jumpy for that, and the in-sample minima overfit)."
+                        "OOS-guarded optimisation &mdash; not a per-energy argmin.  The last two figures "
+                        "make that explicit: the best-bin curve is jumpy because the top E<sub>meas</sub> "
+                        "bin flickers across the N&nbsp;&ge;&nbsp;500 line (a selection artifact, not "
+                        "physics), and a naive radius&times;bin minimisation reaches "
+                        "&ldquo;15&nbsp;ps&rdquo; in-sample that the held-out data exposes as +2 to "
+                        "+26&nbsp;ps of overfitting.  The fixed-radius, OOS-validated headline is the value "
+                        "that survives data it was not tuned on &mdash; which is the only kind a referee, "
+                        "or a real experiment, should believe."
                     ),
                 ),
                 Subsection(

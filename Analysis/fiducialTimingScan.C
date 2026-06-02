@@ -40,6 +40,7 @@
 #include "TLine.h"
 #include "TBox.h"
 #include "TMarker.h"
+#include "TArrow.h"
 #include "TF1.h"
 #include "TLegend.h"
 #include "TAxis.h"
@@ -361,6 +362,8 @@ void fiducialTimingScan()
     // =========================================================================
     printf("\n====== Per-energy timing: best IN-SAMPLE config, then OOS-validate THAT config ======\n");
     printf("  Energy | in-samp(min over r): r(mm) sigma_core | OOS at that r:  sigma   OVERFIT\n");
+    double insMin[nE], insR[nE], oosAt[nE];
+    for (int e=0;e<nE;++e){ insMin[e]=-1.; insR[e]=0.; oosAt[e]=-1.; }
     for (int e = 0; e < nE; ++e) {
         if (evsAll[e].empty()) continue;
         // 1) find the in-sample-optimal radius (the 'best possible' a naive search reports)
@@ -379,8 +382,51 @@ void fiducialTimingScan()
         for (const auto& ev : evsAll[e]) if (ev.r2 < (float)(bisR*bisR)) fid.push_back(ev);
         double eo=0.; int no=0;
         double sOOS = EqualOccOOS_fts(fid, 1000, eo, no);
+        insMin[e] = bisS; insR[e] = bisR; oosAt[e] = sOOS;
         printf("  %3d GeV |  %5.2f   %5.1f ps           |  %5.1f ps      %+5.1f ps\n",
                eGeV[e], bisR, bisS, sOOS, (sOOS>0? sOOS-bisS : 0.));
+    }
+
+    // =========================================================================
+    // Figure 7 — the OVERFIT picture: in-sample minima (optimistic) vs their OOS
+    // values (honest), per energy.  The cleanest defence of the 27.4 ps headline.
+    // =========================================================================
+    {
+        TGraph gIn, gOOS;
+        for (int e = 0; e < nE; ++e) {
+            if (insMin[e] > 0.)            gIn.SetPoint(gIn.GetN(),  eGeV[e], insMin[e]);
+            if (oosAt[e]  > 0.)            gOOS.SetPoint(gOOS.GetN(), eGeV[e], oosAt[e]);
+        }
+        TCanvas* c = new TCanvas("c_fts_ovf", "", 920, 720);
+        c->SetLeftMargin(0.12); c->SetBottomMargin(0.13); c->SetRightMargin(0.05); c->SetTopMargin(0.10);
+        c->SetTickx(1); c->SetTicky(1);
+        gIn.SetMarkerStyle(24); gIn.SetMarkerColor(kRRed);  gIn.SetLineColor(kRRed);  gIn.SetLineWidth(2); gIn.SetMarkerSize(1.6); gIn.SetLineStyle(2);
+        gOOS.SetMarkerStyle(20); gOOS.SetMarkerColor(kBlack); gOOS.SetLineColor(kBlack); gOOS.SetLineWidth(3); gOOS.SetMarkerSize(1.6);
+        gIn.Draw("APL");
+        gIn.GetXaxis()->SetTitle("beam energy  (GeV)");
+        gIn.GetYaxis()->SetTitle("#sigma_{t}  (DW#minusUP)/2,  core  (ps)");
+        gIn.GetXaxis()->SetLimits(10, 165); gIn.GetYaxis()->SetRangeUser(10, 52);
+        gIn.GetXaxis()->SetTitleSize(0.046); gIn.GetYaxis()->SetTitleSize(0.046);
+        gOOS.Draw("PL same");
+        // arrows from in-sample (optimistic) up to OOS (honest)
+        for (int e = 0; e < nE; ++e) if (insMin[e] > 0. && oosAt[e] > 0.) {
+            TArrow* ar = new TArrow(eGeV[e], insMin[e]+0.6, eGeV[e], oosAt[e]-0.6, 0.012, "|>");
+            ar->SetLineColor(kGray+2); ar->SetLineWidth(2); ar->SetFillColor(kGray+2); ar->Draw();
+        }
+        TLegend* L = new TLegend(0.40, 0.75, 0.93, 0.89); L->SetBorderSize(0); L->SetFillStyle(0);
+        L->SetTextFont(42); L->SetTextSize(0.033);
+        L->AddEntry(&gIn,  "in-sample minimum (optimised radius+bin)", "pl");
+        L->AddEntry(&gOOS, "out-of-sample (same config) = the truth", "pl");
+        L->Draw();
+        { TLatex a; a.SetNDC(); a.SetTextSize(0.030); a.SetTextColor(kGray+3);
+          a.DrawLatex(0.15, 0.27, "Optimising for the minimum (red) is too good to be true:");
+          a.DrawLatex(0.15, 0.225, "held-out data (black) exposes +2 to +26 ps of overfitting.");
+          a.SetTextColor(kRRed);
+          a.DrawLatex(0.15, 0.17, "150 GeV: 25.6 #rightarrow 27.5 ps OOS = the 27.4 ps headline (robust)."); }
+        DrawPageTitle("Why the headline is 27.4 ps:  in-sample optimisation vs out-of-sample truth");
+        c->Print("Analysis/Output/Summary/fiducial_overfit.png");
+        c->Print("Analysis/Output/Summary/fiducial_overfit.pdf");
+        printf("[fiducialTimingScan] wrote fiducial_overfit.png (in-sample vs OOS)\n");
     }
     printf("=====================================================================================\n");
 
