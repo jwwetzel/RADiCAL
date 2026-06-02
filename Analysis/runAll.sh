@@ -213,6 +213,13 @@ echo ""
 $ROOT_CMD 'Analysis/timingTailAnalysis.C+'
 
 echo ""
+echo "Step 6d: Floor comparison vs arXiv:2401.01747 (22 vs 17.5 ps)"
+echo "  Overlays both sigma(E) fits on our data, shades the E>150 GeV extrapolation"
+echo ""
+
+$ROOT_CMD 'Analysis/timingFloorComparison.C+'
+
+echo ""
 echo "Step 7: Cross-energy collated plots (all 6 energies side-by-side)"
 echo "  Beam quality · shower containment · channel performance · timing methods"
 echo ""

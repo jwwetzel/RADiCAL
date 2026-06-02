@@ -2595,6 +2595,45 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     ],
                 ),
                 Subsection(
+                    anchor="l5-floor",
+                    title="The 22 vs 17.5 ps floor &mdash; is it a real gap?",
+                    note=(
+                        "Our &sigma;<sub>t</sub>(E) fit lands a constant term of "
+                        f"&asymp;{TEB_FLOOR}&nbsp;ps, while arXiv:2401.01747 quotes 17.5&nbsp;ps "
+                        "on the <em>same</em> detector, beam, and 25&ndash;150&nbsp;GeV range.  "
+                        "That 4&ndash;5&nbsp;ps looks like a discrepancy until you remember the "
+                        "floor <em>b</em> is &sigma;<sub>t</sub> as E&nbsp;&rarr;&nbsp;&infin; "
+                        "&mdash; an <em>extrapolation</em> beyond the highest measured point "
+                        "(150&nbsp;GeV), and strongly anti-correlated with the stochastic term "
+                        "<em>a</em> (&rho;<sub>ab</sub>&nbsp;&asymp;&nbsp;&minus;0.8).  Generated "
+                        "by <code>timingFloorComparison.C</code>."
+                    ),
+                    plots=[
+                        PlotEntry(
+                            sumPDF("timing_floor_comparison.png"),
+                            caption=(
+                                "Both fits overlaid on our data, with the E&nbsp;&gt;&nbsp;150&nbsp;GeV "
+                                "region shaded as extrapolation (no beam reached it).  The two curves "
+                                "<em>cross at &asymp;27&nbsp;ps at 150&nbsp;GeV</em>; only beyond the data "
+                                "do they peel apart toward their respective floors (22 vs 17.5&nbsp;ps).  "
+                                "Where data actually exist, this analysis sits on or below the arXiv "
+                                "curve &mdash; up to ~7&nbsp;ps lower at 25&ndash;50&nbsp;GeV."
+                            ),
+                            width_pct=66,
+                        )
+                    ],
+                    finding=(
+                        "<strong>The floor difference is a fit-decomposition artifact, not a "
+                        "performance gap.</strong>  A steeper stochastic term (256 vs 200) buys a "
+                        "lower extrapolated floor (17.5 vs 22) for the <em>same</em> measured curve, "
+                        "because <em>a</em> and <em>b</em> trade off (&rho;&nbsp;&asymp;&nbsp;&minus;0.8). "
+                        "Both analyses meet at &asymp;27&nbsp;ps at 150&nbsp;GeV, and at every "
+                        "<em>measured</em> energy this analysis is equal or better.  Neither beam "
+                        "exceeded 150&nbsp;GeV, so the asymptotic floor is a projection both papers "
+                        "share &mdash; honest to quote, but not a number either experiment measured."
+                    ),
+                ),
+                Subsection(
                     anchor="l5-tails",
                     title="Is the quoted &sigma; clean &mdash; what's in the tails?",
                     note=(
