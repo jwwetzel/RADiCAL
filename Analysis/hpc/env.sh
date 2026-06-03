@@ -26,10 +26,13 @@ export REC_DIR="${REC_DIR:-/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/r
 export RAD_WORK="${RAD_WORK:-/nfsscratch/$USER/RADiCAL_CERN_May2023/analysis_work}"
 
 # Manifest (committed in repo) and the resolved per-run task list (made on Argon).
-# Derived directly so re-sourcing self-heals stale exported values.  Override the
-# task list for a subset run by exporting RAD_TASKLIST (env.sh never sets that,
-# so it can't self-poison): e.g.  RAD_TASKLIST=$RAD_WORK/tasks_smoke.txt bash submit_all.sh
-export MANIFEST="$RAD_REPO/Analysis/hpc/manifest_dsb1.csv"
+# BOTH respect an explicit override so the multi-config flow can point at another
+# config without env.sh clobbering it on re-source (env.sh never sets RAD_MANIFEST
+# / RAD_TASKLIST themselves, so they can't self-poison):
+#   RAD_MANIFEST -> MANIFEST   (e.g. the per-config manifest_LUAG.csv)
+#   RAD_TASKLIST -> TASKLIST   (e.g. tasks_LUAG.txt)
+# Default (neither set) = the validated DSB1 single-bias electron run.
+export MANIFEST="${RAD_MANIFEST:-$RAD_REPO/Analysis/hpc/manifest_dsb1.csv}"
 export TASKLIST="${RAD_TASKLIST:-$RAD_WORK/tasks.txt}"
 
 # SGE queue / resources (adjust to Argon + your group's allocation).

@@ -52,25 +52,32 @@ python3 Analysis/hpc/build_manifest.py "$LB" --capillary "3xDSB1,1xEnergy" -o An
 Each prints a per-energy run-count summary to stderr — sanity-check it.
 (Add `--all-bias` to include the 41.25 V scan; default keeps the single 42.25 V gain.)
 
-## 2.  Per config: resolve files → reduce (array) → merge
+## 2.  Per config: reduce → merge (one command)
 
-Do this block once per config (shown for LuAG):
+`submit_reduce.sh` does the whole per-config chain (resolve files → reduce array
+→ merge per energy) with the correct qsub flags. Pass the config name and its
+manifest via `RAD_CONFIG` / `RAD_MANIFEST` (NOT `MANIFEST` — see note):
 
 ```bash
-export RAD_CONFIG=LUAG
-export MANIFEST=$RAD_REPO/Analysis/hpc/manifest_LUAG.csv
-export RAD_TASKLIST=$RAD_WORK/tasks_LUAG.txt
-
-bash Analysis/hpc/discover_tasklist.sh                 # manifest runs -> raw file paths
-N=$(wc -l < "$RAD_TASKLIST")
-qsub -hold_jid rad_compile -t 1-$N Analysis/hpc/sge_reduce.sh   # embarrassingly parallel
-
-# ...after the array finishes (qstat shows no rad_reduce):
-bash Analysis/hpc/merge_reduced.sh                     # -> reduced/LUAG/<E>GeV.root
+RAD_CONFIG=LUAG RAD_MANIFEST=$PWD/Analysis/hpc/manifest_LUAG.csv \
+    bash Analysis/hpc/submit_reduce.sh
 ```
-Repeat with `RAD_CONFIG`/`MANIFEST`/`RAD_TASKLIST` set to `DSB1`, `MIXED`,
-`TENERGY`. (DSB1 here is the cross-check: its reduced file must reproduce the
-known result.)
+Repeat for the other configs:
+```bash
+RAD_CONFIG=DSB1    RAD_MANIFEST=$PWD/Analysis/hpc/manifest_DSB1.csv    bash Analysis/hpc/submit_reduce.sh
+RAD_CONFIG=MIXED   RAD_MANIFEST=$PWD/Analysis/hpc/manifest_MIXED.csv   bash Analysis/hpc/submit_reduce.sh
+RAD_CONFIG=TENERGY RAD_MANIFEST=$PWD/Analysis/hpc/manifest_TENERGY.csv bash Analysis/hpc/submit_reduce.sh
+```
+(DSB1 is the cross-check — its reduced result must reproduce the validated one.)
+Monitor with `qstat -u $USER`; merged files land in `reduced/<CONFIG>/<E>GeV.root`.
+
+> **Why `RAD_MANIFEST`, not `MANIFEST`:** every job re-sources `env.sh`, which
+> sets `MANIFEST` from `RAD_MANIFEST` (falling back to the DSB1 default). Exporting
+> `MANIFEST` directly would be overwritten on re-source; `RAD_MANIFEST` is the
+> override that survives. Same idea as `RAD_TASKLIST` → `TASKLIST`.
+
+If you'd rather run the steps by hand, `submit_reduce.sh` is short — read it; the
+key flag is `qsub -V` (passes `RAD_CONFIG`/`RAD_TASKLIST` into the array job).
 
 ## 3.  (optional but recommended) confirm each config's slot layout
 
