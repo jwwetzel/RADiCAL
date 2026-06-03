@@ -170,13 +170,28 @@ HG — because LG is **slow** (low slew). Slew (a fast edge), not pulse cleanlin
 timing: the fast HG edge wins decisively even when its peak is clipped.
 
 **LG→HG de-saturation idea** (reconstruct the true, unsaturated HG peak from the linear LG to
-restore the CFD reference): tested for viability via the per-event `hg_peak` vs `lg_peak`
-correlation in the unsaturated regime — r=0.957 with **~11 % scatter** at 25 GeV, degrading to
-r=0.77 at 50 GeV. HG (shower-max) and LG (full-length) are *different optical samples*, not the
-same signal at two gains, so LG is too loose a per-event proxy: the ~11 % reconstruction
-uncertainty would inject threshold jitter comparable to the (already tiny, at CFD-5% + best-bin)
-clipped-peak walk it removes → **marginal net benefit**. It would work well only with a *true
-dual-gain readout of the same SiPM* (a design lever for a future build).
+restore the CFD reference) — **now tested directly on the raw DSB1 waveforms**
+(`desaturateCFD.C`). Per channel we fit the dual-gain slope `HG_true = b·LG` on unsaturated
+events (b≈3–6), then on the saturated 150 GeV set we recompute the CFD crossing at *frac × the
+reconstructed true peak* and compare (DW−UP)/2 σ_t (best-bin) head-to-head against standard
+*frac × clipped peak*, in identical events:
+
+| CFD point | standard (frac of clip) | de-saturated (frac of true) |
+|---|---|---|
+| **5 %**  | 32.4 ps | 32.6 ps |
+| **20 %** | 35.3 ps | **31.1 ps** |
+
+**At CFD-5% de-saturation buys nothing** (32.4→32.6): the 5 % threshold already sits on the sharp
+*low* edge, far below the ~820 mV clip, so there is essentially no clipped-peak time-walk to
+remove — reconstructing the true peak only adds its own LG-reconstruction jitter. **At CFD-20% it
+works exactly as predicted** (35.3→31.1, a 4.2 ps best-bin gain): 20 %-of-clip lands high on the
+edge near the saturation knee (a near-fixed voltage → real time-walk), and referencing 20 % of the
+*true* peak removes that walk, pulling 20 % timing nearly back to 5 % performance. **Conclusion:**
+the idea is sound and demonstrably effective *where saturation actually bites* (high CFD fraction),
+but the detector's **CFD-5% operating point already sidesteps the clip by timing on the intact low
+edge**, so de-saturation is moot for the headline — best achievable stays ~32 ps, set by light/slew,
+not by the clipped peak. (The earlier correlation-only estimate of "marginal benefit" is superseded
+by this direct measurement.)
 
 ## 7. Caveats & next steps
 
@@ -190,5 +205,6 @@ dual-gain readout of the same SiPM* (a design lever for a future build).
 
 `reduceRaw.C` · `discoverReduced.C` · `configResolution.C` · `configBestBin.C` ·
 `configResolutionDSB1.C` · `configBestBinDSB1.C` · `mixedHeadToHead.C` · `cfdFractionDSB1.C` ·
-`compareConfigsPlot.C` · `slewTest.C` (exploratory, confounded — kept for provenance).
+`compareConfigsPlot.C` · `slewTest.C` (exploratory, confounded — kept for provenance) ·
+`desaturateCFD.C` (LG-referenced de-saturation test on raw waveforms, §6b).
 HPC: `Analysis/hpc/{PRESCRIPTION.md, reduceRaw via sge_reduce.sh, submit_reduce.sh, merge_reduced.sh}`.
