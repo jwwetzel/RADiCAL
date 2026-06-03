@@ -27,3 +27,6 @@ legacy/*.pdf
 
 # Local Claude Code agent state (machine-specific)
 .claude/
+
+# reduced ntuples copied from Argon (per-config, multi-GB) — data, not source
+reduced/

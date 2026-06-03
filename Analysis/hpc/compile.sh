@@ -25,5 +25,8 @@ ln -sfn "$RAD_WORK/Output" Analysis/Output
 setup_data_links
 
 root -l -b -q -e '.L Analysis/processRun.C+' || true
-ls -l Analysis/processRun_C*.so
+# config-agnostic reducer (all capillary configs) + channel-discovery tool
+root -l -b -q -e '.L Analysis/reduceRaw.C+'        || true
+root -l -b -q -e '.L Analysis/discoverChannels.C+' || true
+ls -l Analysis/processRun_C*.so Analysis/reduceRaw_C*.so
 echo "compile.sh done."
