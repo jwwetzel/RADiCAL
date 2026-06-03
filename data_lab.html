@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RADiCAL Data Lab — open the data, write a loop, make the plots</title>
+<style>
+  :root{
+    --bg:#0b0e14; --bg2:#121723; --card:#161c2b; --line:#232c42;
+    --ink:#e6edf6; --dim:#9aa7bd; --accent:#27e0c8; --accent2:#ffb454; --hot:#ff5c8a;
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:15px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px}
+
+  /* hero */
+  header{background:radial-gradient(1200px 400px at 70% -10%,rgba(39,224,200,.14),transparent),
+                   radial-gradient(900px 380px at 10% -20%,rgba(255,92,138,.12),transparent),var(--bg2);
+         border-bottom:1px solid var(--line);padding:42px 0 30px}
+  .kick{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--accent);text-transform:uppercase}
+  h1{margin:.18em 0 .12em;font-size:48px;letter-spacing:-1.5px;font-weight:800;line-height:1.02}
+  h1 .r{color:var(--accent)}
+  .tag{color:var(--dim);font-size:17.5px;max-width:680px}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px}
+  .stat{font-family:var(--mono)}
+  .stat b{display:block;font-size:22px;color:var(--accent2)}
+  .stat span{font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+  .crumb{margin-top:18px;font-size:13px;color:var(--dim);border-left:2px solid var(--accent);padding-left:12px}
+  .crumb a{font-weight:600}
+
+  /* sticky step nav */
+  .nav{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.93);backdrop-filter:blur(8px);
+       border-bottom:1px solid var(--line);padding:9px 0}
+  .nav .wrap{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+  .nav .lab{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+            color:var(--dim);margin-right:4px}
+  .nav a{font-size:12.5px;color:var(--dim);padding:6px 9px;border-radius:7px;border:1px solid transparent;
+         font-weight:600;cursor:pointer}
+  .nav a:hover{color:var(--ink);border-color:var(--line);text-decoration:none}
+  .nav a.on{color:var(--accent);border-color:var(--accent)}
+
+  main{padding:26px 0 80px}
+  .intro{color:var(--dim);font-size:16px;margin:4px 0 10px;max-width:760px}
+
+  .step{margin:0 0 60px;scroll-margin-top:60px}
+  .shead{display:flex;align-items:baseline;gap:13px;border-bottom:1px solid var(--line);
+         padding-bottom:11px;margin-bottom:14px;flex-wrap:wrap}
+  .snum{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;white-space:nowrap}
+  h2{font-size:26px;font-weight:800;letter-spacing:-.5px;margin:0;color:var(--ink)}
+  .step p{margin:11px 0;color:#cdd6e6}
+  .step p b{color:var(--ink)}
+  .step ul,.step ol{margin:11px 0;padding-left:22px;color:#cdd6e6}
+  .step li{margin:6px 0}
+  .step li b{color:var(--ink)}
+
+  .code{display:block;white-space:pre;font-family:var(--mono);font-size:12.5px;
+        background:#0c111b;border:1px solid var(--line);border-radius:8px;padding:12px 13px;
+        color:#bfe9e2;margin:11px 0;overflow-x:auto;line-height:1.6}
+  .code .c{color:#6b7689}
+  .code .k{color:var(--accent2)}
+  code{font-family:var(--mono);font-size:.92em;background:#0c111b;border:1px solid var(--line);
+       border-radius:5px;padding:1px 6px;color:#bfe9e2}
+  .pill{font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(39,224,200,.1);
+        border-radius:20px;padding:2px 9px}
+
+  .keyidea,.inrad,.warn{padding:12px 16px;border-radius:0 9px 9px 0;margin:16px 0}
+  .keyidea{border-left:3px solid var(--accent);background:rgba(39,224,200,.06)}
+  .inrad{border-left:3px solid var(--accent2);background:rgba(255,180,84,.06)}
+  .warn{border-left:3px solid var(--hot);background:rgba(255,92,138,.07)}
+  .keyidea .h,.inrad .h,.warn .h{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+        text-transform:uppercase;display:block;margin-bottom:5px}
+  .keyidea .h{color:var(--accent)} .inrad .h{color:var(--accent2)} .warn .h{color:var(--hot)}
+  .keyidea p,.inrad p,.warn p{margin:5px 0} .keyidea b,.inrad b,.warn b{color:var(--ink)}
+
+  figure{margin:18px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px}
+  figure img{display:block;width:100%;height:auto;border-radius:7px;background:#fff}
+  figcaption{font-size:12.5px;color:var(--dim);margin-top:10px;line-height:1.5}
+  figcaption b{color:var(--ink)}
+
+  /* see / check-yourself */
+  .see{border:1px solid var(--line);background:var(--bg2);border-radius:10px;padding:12px 15px;margin:14px 0}
+  .see .h{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+          display:block;margin-bottom:5px}
+  details.cyu{border:1px solid var(--line);background:var(--bg2);border-radius:10px;padding:11px 15px;margin:14px 0}
+  details.cyu summary{cursor:pointer;color:var(--hot);font-size:12.5px;font-weight:700;font-family:var(--mono);
+        letter-spacing:.06em;text-transform:uppercase;list-style:none;outline:none}
+  details.cyu summary::-webkit-details-marker{display:none}
+  details.cyu summary::before{content:"\25B8  "}
+  details.cyu[open] summary::before{content:"\25BE  "}
+  details.cyu .body{margin-top:9px;font-size:13.5px;color:#cdd6e6;line-height:1.6}
+  details.cyu .body b{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:13px 0}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--accent);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  td:first-child,td.m{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+
+  footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--dim);font-size:12.5px}
+  footer a{font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <div class="kick">RADiCAL · CERN SPS test beam · hands-on data lab</div>
+  <h1>RADiCAL <span class="r">Data Lab</span></h1>
+  <p class="tag">You've read the field guide. Now open the real test-beam data, write a loop over
+     the events, and make the plots that let you <b>see the calorimeter sitting in the beam</b> —
+     its shadow, its edges, and the two connector rings.</p>
+  <div class="stats">
+   <div class="stat"><b>5 GS/s</b><span>waveform sampling</span></div>
+   <div class="stat"><b>1024</b><span>samples per pulse</span></div>
+   <div class="stat"><b>36</b><span>channels per event</span></div>
+   <div class="stat"><b>~2 GB</b><span>per run file</span></div>
+  </div>
+  <p class="crumb">New here? Start with <a href="going_radical.html">GOING RADiCAL</a> (the primer on the
+     detector and electronics) → you're here → then the <a href="report/">full analysis report</a>.
+     Everything below assumes a <b>Mac</b> and about <b>45 minutes</b>. No prior ROOT experience needed.</p>
+ </div>
+</header>
+
+<div class="nav"><div class="wrap">
+  <span class="lab">Steps</span>
+  <a href="#s1">1 · Install ROOT</a>
+  <a href="#s2">2 · Get the data</a>
+  <a href="#s3">3 · Look inside</a>
+  <a href="#s4">4 · One waveform</a>
+  <a href="#s5">5 · First loop</a>
+  <a href="#s6">6 · Find the beam</a>
+  <a href="#s7">7 · The shadow plot</a>
+  <a href="#s8">8 · Next</a>
+</div></div>
+
+<main class="wrap">
+
+<p class="intro">By the end you will have made <b>this</b> with your own code — a map of the beam coloured by
+how much signal each detector saw. On the left, the 1×1&nbsp;cm scintillator reveals two bright
+<b>connector rings</b>; on the right, an NE-D timing capillary shows the <b>calorimeter</b> lit up as a
+sharp square, edges and all. Each step below builds toward it.</p>
+
+<figure>
+  <img src="student/figs/expected_shadow_map.png" alt="calorimeter shadow and connector rings">
+  <figcaption><b>The goal (Step 7).</b> Mean pulse amplitude versus beam position, 150&nbsp;GeV electrons.
+  <b>Left:</b> the 1×1&nbsp;cm scintillator — the two glowing rings at ≈(7,5) and ≈(20,3)&nbsp;mm are showers
+  off the MCP cable connectors. <b>Right:</b> the NE-D capillary — the bright square is the calorimeter face
+  in the beam, and you can read its edges straight off the plot.</figcaption>
+</figure>
+
+<!-- ===================== STEP 1 ===================== -->
+<section class="step" id="s1">
+  <div class="shead"><span class="snum">STEP 1</span><h2>Install ROOT on your Mac</h2></div>
+  <p><b>ROOT</b> is the analysis toolkit physicists use to open these files, loop over events, and
+     make plots. The painless way to get it on a Mac is <b>Homebrew</b>, the Mac package manager.</p>
+
+  <p><b>1a.</b> Open the <b>Terminal</b> app (press <code>⌘&nbsp;Space</code>, type "Terminal", hit Return).
+     If you've never used Homebrew, install it by pasting this one line and pressing Return:</p>
+  <div class="code">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</div>
+  <p>It will ask for your Mac password and may ask you to install Apple's "command line tools" — say yes.
+     When it finishes it prints two lines starting with <code>eval</code> — copy-paste and run them so your
+     shell can find <code>brew</code>.</p>
+
+  <p><b>1b.</b> Now install ROOT (this downloads a few hundred MB and takes a few minutes):</p>
+  <div class="code">brew install root</div>
+
+  <p><b>1c.</b> Check it worked:</p>
+  <div class="code">root --version</div>
+  <p>You should see something like <code>ROOT Version: 6.xx/xx</code>. Start ROOT with <code>root -l</code>
+     (the <code>-l</code> just skips the splash screen), and <b>quit any time by typing</b> <code>.q</code>
+     and Return. That dot-q is your escape hatch — remember it.</p>
+
+  <div class="inrad"><span class="h">If brew install is slow or fails</span>
+    <p>The alternative is <b>conda</b>: install Miniforge, then
+       <code>conda create -n root -c conda-forge root</code> and <code>conda activate root</code>.
+       Either route gives you the exact same <code>root</code> command used below.</p></div>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">You type <code>root --version</code> and the Terminal says
+       <code>command not found</code>. What happened, and what's the fix?
+       <br><br><b>Answer:</b> Your shell can't find the ROOT program — almost always because the
+       Homebrew <code>eval</code> lines (which add brew's tools to your <code>PATH</code>) weren't run, or
+       you opened a fresh Terminal that didn't pick them up. Re-run the two <code>eval</code> lines brew
+       printed, or just close and reopen Terminal, then try again.</div></details>
+</section>
+
+<!-- ===================== STEP 2 ===================== -->
+<section class="step" id="s2">
+  <div class="shead"><span class="snum">STEP 2</span><h2>Get the code and the data</h2></div>
+  <p><b>2a. The code.</b> Grab the project (it has the helper file and the four little macros you'll run).
+     In Terminal, go somewhere sensible and clone it:</p>
+  <div class="code">cd ~/Desktop
+git clone https://github.com/jwwetzel/RADiCAL.git
+cd RADiCAL</div>
+  <p>The files for this lab live in the <code>student/</code> folder. Everything below is run from the
+     <b>top of the <code>RADiCAL</code> folder</b> (the one you just <code>cd</code>'d into).</p>
+
+  <p><b>2b. The data.</b> The raw waveform files are large (~2&nbsp;GB each), so they aren't in the
+     repository — they're on <b>CERNBox</b>. Download <b>one</b> run to start with. A good first file is
+     a 150&nbsp;GeV run, <code>RUN1258_150_GeV.root</code>.</p>
+
+  <div class="warn"><span class="h">Instructor — paste your CERNBox share link here</span>
+    <p>Replace this box with the share link, e.g.
+       <a href="PASTE_CERNBOX_SHARE_LINK_HERE">RADiCAL test-beam data on CERNBox →</a>.
+       Students: click that link, download <code>RUN1258_150_GeV.root</code>, and move it into a
+       <code>Data/</code> folder inside the <code>RADiCAL</code> project.</p></div>
+
+  <p>From a browser: download the file, then make a <code>Data</code> folder and move it in. Or do it all
+     in Terminal — if your instructor gives you a direct download URL, CERNBox public shares download by
+     adding <code>/download</code> to the share link:</p>
+  <div class="code">mkdir -p Data
+curl -L -o Data/RUN1258_150_GeV.root "PASTE_DIRECT_DOWNLOAD_URL_HERE"</div>
+
+  <p><b>2c. Sanity-check the download</b> — a truncated 2&nbsp;GB file is the #1 cause of "it crashed":</p>
+  <div class="code">ls -lh Data/RUN1258_150_GeV.root</div>
+  <p>It should report roughly <b>2.0G</b>. If it's a few KB or MB, the download failed — get it again.</p>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">Why isn't the data just stored in the GitHub repository alongside the code?
+       <br><br><b>Answer:</b> Each run is ~2&nbsp;GB and there are hundreds of runs — that's far past what
+       git or GitHub is built to hold, and you rarely need all of it at once. Code (kilobytes, changes
+       often, benefits from version history) lives in git; bulk data (gigabytes, never edited) lives on a
+       data store like CERNBox. Keeping them separate is standard practice.</div></details>
+</section>
+
+<!-- ===================== STEP 3 ===================== -->
+<section class="step" id="s3">
+  <div class="shead"><span class="snum">STEP 3</span><h2>Open the file and look inside</h2></div>
+  <p>A ROOT file is a little filesystem of its own. Inside ours is one <b>TTree</b> named
+     <code>pulse</code> — think of a TTree as a spreadsheet where each <b>row is one beam event</b> and each
+     <b>column is a "branch."</b> Let's open the file and poke around interactively:</p>
+  <div class="code">root -l Data/RUN1258_150_GeV.root</div>
+  <p>Now at the <code>root [0]</code> prompt, type these one at a time:</p>
+  <div class="code"><span class="c">// what objects are in the file?</span>
+.ls
+<span class="c">// list the branches (columns) of the tree and their types</span>
+pulse-&gt;Print()
+<span class="c">// how many events (rows) are there?</span>
+pulse-&gt;GetEntries()
+<span class="c">// dump every value for event number 0</span>
+pulse-&gt;Show(0)
+<span class="c">// or browse it all with the mouse, in a window:</span>
+new TBrowser
+<span class="c">// when you're done:</span>
+.q</div>
+
+  <p>The two branches that matter are big arrays of numbers:</p>
+  <table>
+    <tr><th>Branch</th><th>What it is</th></tr>
+    <tr><td>amplitude</td><td>36×1024 = <b>36864</b> floats: the voltage (mV) of every sample of all 36 channels</td></tr>
+    <tr><td>timevalue</td><td>4×1024 = <b>4096</b> floats: the time (ns) axis for the four digitiser groups</td></tr>
+    <tr><td>run, event0</td><td>which run, and which event number within it</td></tr>
+  </table>
+
+  <div class="keyidea"><span class="h">The mental model</span>
+    <p>Every event is <b>36 little oscilloscope traces</b>, each 1024 samples long, recorded at 5 billion
+      samples per second (one sample every 0.2&nbsp;ns). Your whole job in analysis is turning each trace
+      into a number — "how big?" or "when?" — and then histogramming those numbers.</p></div>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body"><code>pulse-&gt;GetEntries()</code> returns about 30000. The <code>amplitude</code> branch has
+       36864 numbers. How many individual voltage samples did the digitiser record in this one run?
+       <br><br><b>Answer:</b> ≈ 30000 × 36864 ≈ <b>1.1 billion</b> samples. That's why the file is 2&nbsp;GB —
+       and why we reduce each 1024-sample trace down to a couple of numbers before doing physics.</div></details>
+</section>
+
+<!-- ===================== STEP 4 ===================== -->
+<section class="step" id="s4">
+  <div class="shead"><span class="snum">STEP 4</span><h2>Draw one waveform — meet the data</h2></div>
+  <p>Before looping over everything, let's <b>look at a single trace</b> with your own eyes. First, the one
+     idea you need to navigate the <code>amplitude</code> array: the 36 channels ("slots") are laid end to
+     end, so <b>slot <code>s</code> starts at index <code>s×1024</code></b>. The helper file
+     <code>student/radlab.h</code> wraps that up:</p>
+  <div class="code"><span class="c">// where slot s lives inside the two flat arrays</span>
+inline int ampOffset (int s){ return s * 1024; }
+inline int timeOffset(int s){ int drs = s/18, grp = (s/9)%2;
+                              return (drs*2 + grp) * 1024; }</div>
+
+  <p>The macro <code>student/drawWaveform.C</code> uses those to pull out one slot's 1024 samples and plot
+     them. Its heart is just:</p>
+  <div class="code">TTreeReader r(pulse);
+TTreeReaderArray&lt;float&gt; amp(r,"amplitude"), tim(r,"timevalue");
+
+long i = 0; while (r.Next()){ if (i == event) break; ++i; }   <span class="c">// jump to the event</span>
+
+const float* a = &amp;amp[0] + ampOffset(slot);    <span class="c">// this slot's 1024 voltages</span>
+const float* t = &amp;tim[0] + timeOffset(slot);   <span class="c">// its 1024 time values (ns)</span>
+
+TGraph* g = new TGraph(1024);
+for (int s = 0; s &lt; 1024; ++s) g-&gt;SetPoint(s, t[s], a[s]);
+g-&gt;Draw("AL");</div>
+
+  <p>Run it on slot&nbsp;2 (the <b>NE-D</b> timing capillary), event&nbsp;344:</p>
+  <div class="code">root -l 'student/drawWaveform.C(2, 344)'</div>
+
+  <figure>
+    <img src="student/figs/expected_waveform.png" alt="a single raw waveform">
+    <figcaption><b>What you should see.</b> A flat <b>pedestal</b> (baseline) near 325&nbsp;mV, then a sharp
+    <b>downward</b> spike — the physics pulses point <em>down</em>. We measure the <b>peak height</b> as
+    <code>pedestal − (lowest sample)</code> ≈ 779&nbsp;mV here. The wiggle afterward is normal electronics
+    ringing. Try other slots: <code>7</code> is an MCP clock, <code>15</code> is the 1×1 trigger.</figcaption>
+  </figure>
+
+  <div class="warn"><span class="h">Why "pedestal minus the minimum"?</span>
+    <p>The signal cables carry <b>negative-going</b> pulses, so a bigger signal means a <em>lower</em> voltage.
+       We first measure the quiet baseline (the <b>pedestal</b>, averaged over early samples before the pulse),
+       then the peak height is how far <em>below</em> that baseline the trace dips. That flips the dip into a
+       tidy positive number in millivolts.</p></div>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">You draw event 0 of slot 2 and get only a tiny 25&nbsp;mV blip instead of a big pulse.
+       Is the code broken? <br><br><b>Answer:</b> No — not every particle deposits signal in every capillary.
+       Event 0 simply didn't light up NE-D much. That's real physics, and it's exactly why we loop over
+       <em>many</em> events and look at distributions rather than trusting any single one.</div></details>
+</section>
+
+<!-- ===================== STEP 5 ===================== -->
+<section class="step" id="s5">
+  <div class="shead"><span class="snum">STEP 5</span><h2>Your first loop — a peak-height spectrum</h2></div>
+  <p>One waveform is an anecdote; the distribution over all events is the physics. The peak-finder from
+     <code>radlab.h</code> is exactly the rule from Step&nbsp;4, written once:</p>
+  <div class="code"><span class="c">// peak HEIGHT (mV) of the negative-going pulse in this slot's 1024 samples</span>
+inline float findPeak(const float* a){
+    double ped = 0;
+    for (int i = 3; i &lt; 53; ++i) ped += a[i];      <span class="c">// baseline, before the pulse</span>
+    ped /= 50.0;
+    float vmin = a[3];
+    for (int i = 4; i &lt; 1024; ++i) if (a[i] &lt; vmin) vmin = a[i];   <span class="c">// lowest sample</span>
+    return (float)ped - vmin;                          <span class="c">// dip -&gt; positive height</span>
+}</div>
+
+  <p>Now loop over every event, measure NE-D's peak, and fill a histogram
+     (<code>student/peakSpectrum.C</code>):</p>
+  <div class="code">TH1F* h = new TH1F("h","capillary peak;peak amplitude (mV);events", 100, 0, 1000);
+
+while (r.Next()){                                  <span class="c">// one pass per event</span>
+    const float* a = &amp;amp[0] + ampOffset(slot);
+    h-&gt;Fill( findPeak(a) );                        <span class="c">// one number per event</span>
+}
+h-&gt;Draw();</div>
+
+  <p>Run it (the <code>+</code> tells ROOT to compile it, which is much faster on a 2&nbsp;GB file):</p>
+  <div class="code">root -l 'student/peakSpectrum.C+(2)'</div>
+
+  <figure>
+    <img src="student/figs/expected_peak_spectrum.png" alt="peak amplitude spectrum">
+    <figcaption><b>What you should see.</b> A big spike near zero (events where NE-D barely lit up) and a
+    broad bump out toward ~800&nbsp;mV (events where the shower core landed in this capillary). The pile-up
+    right at the top edge is <b>saturation</b> — the high-gain channel is deliberately run so hot that big
+    pulses clip the rail. (That's a whole story in the report.)</figcaption>
+  </figure>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">Why does the loop average samples <b>3 to 52</b> for the pedestal instead of starting at
+       sample 0, and instead of using the whole trace? <br><br><b>Answer:</b> The very first DRS4 samples can
+       be noisy, so we skip them — and samples 3–52 are early enough to be safely <em>before</em> the pulse
+       arrives, so they measure the true quiet baseline. Averaging the whole trace would fold the pulse itself
+       into the "baseline" and bias it.</div></details>
+</section>
+
+<!-- ===================== STEP 6 ===================== -->
+<section class="step" id="s6">
+  <div class="shead"><span class="snum">STEP 6</span><h2>Find the beam — wire-chamber position</h2></div>
+  <p>To make a <em>map</em>, we need to know <b>where</b> each particle went. That's the job of the
+     <b>wire chamber</b>: four planes (Right, Left, Down, Up). A hit drifts to each plane, and the particle's
+     position is encoded in the <b>difference of arrival times</b> between opposite planes — so we need the
+     <b>time</b> of each pulse, not its height:</p>
+  <div class="code"><span class="c">// TIME (ns) of the peak sample</span>
+inline float findPeakTime(const float* a, const float* t){
+    float vmin = a[3]; int imin = 3;
+    for (int i = 4; i &lt; 1024; ++i) if (a[i] &lt; vmin){ vmin = a[i]; imin = i; }
+    return t[imin];
+}</div>
+
+  <p>The four planes and the mm-per-ns scale are named in <code>radlab.h</code>
+     (<code>WC_R, WC_L, WC_D, WC_U, WC_SCALE</code>). The loop in <code>student/beamProfile.C</code>:</p>
+  <div class="code">const float* A = &amp;amp[0];
+const float* T = &amp;tim[0];
+const float* tw = T + timeOffset(WC_R);            <span class="c">// the planes share one time axis</span>
+
+<span class="c">// require a real signal (&gt; 20 mV) in all four planes = a clean track</span>
+if (findPeak(A+ampOffset(WC_R)) &lt; 20 || findPeak(A+ampOffset(WC_L)) &lt; 20 ||
+    findPeak(A+ampOffset(WC_D)) &lt; 20 || findPeak(A+ampOffset(WC_U)) &lt; 20) continue;
+
+float x = WC_SCALE * (findPeakTime(A+ampOffset(WC_R),tw) - findPeakTime(A+ampOffset(WC_L),tw));
+float y = WC_SCALE * (findPeakTime(A+ampOffset(WC_D),tw) - findPeakTime(A+ampOffset(WC_U),tw));
+h-&gt;Fill(x, y);                                     <span class="c">// a 2-D histogram of beam positions</span></div>
+  <div class="code">root -l 'student/beamProfile.C+'</div>
+
+  <figure>
+    <img src="student/figs/expected_beam_profile.png" alt="beam profile from the wire chamber">
+    <figcaption><b>What you should see.</b> A fuzzy blob — the <b>beam spot</b>. This is simply <em>where</em>
+    the ~30,000 particles crossed the wire chamber. It's a 2-D histogram (a <code>TH2F</code>): each bin counts
+    how many tracks landed there. Next we'll colour it by signal instead of counts, and the detector hardware
+    appears.</figcaption>
+  </figure>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">For the beam <em>position</em> we use <code>findPeakTime</code>, but in Step&nbsp;5 we used
+       <code>findPeak</code> (height). Why the different quantity? <br><br><b>Answer:</b> Position in a drift
+       chamber is encoded in <em>timing</em> — how long the signal took to reach each plane — so the relevant
+       number is <em>when</em> the pulse peaked, not how tall it was. Different physics question → different
+       feature extracted from the same waveform.</div></details>
+</section>
+
+<!-- ===================== STEP 7 ===================== -->
+<section class="step" id="s7">
+  <div class="shead"><span class="snum">STEP 7</span><h2>The money plot — the calorimeter's shadow &amp; the connector rings</h2></div>
+  <p>Here's the trick that makes the detector appear. Instead of <em>counting</em> tracks in each position bin,
+     we store the <b>mean pulse amplitude</b> there. ROOT has a histogram built for exactly this — a
+     <b>TProfile2D</b>: you <code>Fill(x, y, value)</code> and each bin shows the <em>average</em>
+     <code>value</code> of everything that landed in it. The beam becomes an X-ray.</p>
+
+  <p>Only one line changes from Step&nbsp;6 — we add a third argument to <code>Fill</code>
+     (<code>student/shadowMap.C</code>):</p>
+  <div class="code">TProfile2D* m = new TProfile2D("m","1x1 scintillator;x (mm);y (mm)",
+                              160, CALO_X0-20, CALO_X0+20, 80, CALO_Y0-20, CALO_Y0+20);
+<span class="c">// ... same good-track cut and x,y as Step 6 ...</span>
+m-&gt;Fill(x, y, findPeak(A + ampOffset(SLOT_1x1)));   <span class="c">// colour = MEAN amplitude here</span></div>
+  <p>The macro makes two of these side by side — the <b>1×1 scintillator</b> (slot 15) and the <b>NE-D
+     capillary</b> (slot 2) — centred on the calorimeter face:</p>
+  <div class="code">root -l 'student/shadowMap.C+'</div>
+
+  <figure>
+    <img src="student/figs/expected_shadow_map.png" alt="calorimeter shadow and connector rings">
+    <figcaption><b>The payoff.</b> <b>Left (1×1 scintillator):</b> two bright <b>connector rings</b> at
+    ≈(7,5) and ≈(20,3)&nbsp;mm — particles passing through the dense MCP cable connectors shower and dump extra
+    light. <b>Right (NE-D capillary):</b> the <b>calorimeter</b> blazes as a sharp square wherever the beam hits
+    the active module; outside it the signal drops away. You are literally reading the detector's <b>edges</b>
+    and position off the beam — the calorimeter's "shadow," in reverse.</figcaption>
+  </figure>
+
+  <div class="keyidea"><span class="h">Why this matters</span>
+    <p>This one plot is how we <b>align</b> the analysis: it tells us exactly where the calorimeter sits in
+       wire-chamber coordinates (near (6.6,&nbsp;4.7)&nbsp;mm), so we can later demand that a particle hit the
+       <b>centre</b> of the module — the "fiducial" cut behind the 27&nbsp;ps timing headline. A map you can make
+       in twenty lines is the foundation of the precision result.</p></div>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">A plain <code>TH2F</code> beam profile (Step 6) and this <code>TProfile2D</code> use the
+       same x, y. Why does only the profile reveal the calorimeter and the rings?
+       <br><br><b>Answer:</b> The <code>TH2F</code> only counts <em>how many</em> tracks hit each bin — and the
+       beam illuminates everything roughly evenly, so you just see the beam blob. The <code>TProfile2D</code>
+       shows the <em>average signal</em> at each position, which depends on what hardware is there: lots of light
+       on the calorimeter, extra showering at the connectors, little elsewhere. Same positions, but now the
+       z-axis carries detector information.</div></details>
+</section>
+
+<!-- ===================== STEP 8 ===================== -->
+<section class="step" id="s8">
+  <div class="shead"><span class="snum">STEP 8</span><h2>Where to go next</h2></div>
+  <p>You've gone from a 2&nbsp;GB file to a physics plot. A few natural next moves:</p>
+  <ul>
+    <li><b>Try other detectors.</b> Change the slot number in any macro. The channel map is in
+        <code>radlab.h</code>: the 8 timing capillaries <code>HG_SLOT[]</code>, the 8 energy capillaries
+        <code>LG_SLOT[]</code>, the MCPs, the wire chamber.</li>
+    <li><b>Make an energy plot.</b> Sum the 8 low-gain (<code>LG_SLOT</code>) peaks per event and histogram it —
+        that's the calorimeter's energy estimate. Compare 25, 75 and 150&nbsp;GeV runs.</li>
+    <li><b>Do real timing.</b> Our <code>findPeak</code>/<code>findPeakTime</code> are teaching versions. The
+        production code in <code>Analysis/WaveformUtils.h</code> (<code>ExtractPulse</code>) adds a proper
+        constant-fraction crossing time — the basis of the 27&nbsp;ps result.</li>
+    <li><b>Read the real macros.</b> <code>Analysis/transverseMaps.C</code> is the grown-up version of the plot
+        you just made (all 8 capillaries, before/after the trigger cut).</li>
+    <li><b>See the whole story.</b> The <a href="report/">full analysis report</a> walks through every fit and
+        cross-check; the <a href="going_radical.html">field guide</a> explains the hardware.</li>
+  </ul>
+  <div class="inrad"><span class="h">A habit worth keeping</span>
+    <p>Notice the pattern you used every time: <b>open → loop over events → turn each waveform into a number →
+       histogram.</b> That is essentially all of experimental data analysis. Everything fancier is a better way
+       to do one of those four steps.</p></div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  RADiCAL Data Lab · CERN SPS electron test beam, May 2023 · companion to
+  <a href="going_radical.html">GOING RADiCAL</a> and the <a href="report/">analysis report</a>.
+  Lab files live in <code>student/</code> in the project repository.
+</div></footer>
+
+<script>
+// highlight the current step in the sticky nav as you scroll
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){ a.classList.remove('on'); });
+        if(map[e.target.id]) map[e.target.id].classList.add('on');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('section.step').forEach(function(s){ obs.observe(s); });
+})();
+</script>
+</body>
+</html>
