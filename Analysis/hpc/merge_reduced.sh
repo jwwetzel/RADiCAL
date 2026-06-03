@@ -10,8 +10,11 @@
 # Output:  reduced/<RAD_CONFIG>/<label>.root   (e.g. reduced/LUAG/150GeV.root)
 # ============================================================================
 set -euo pipefail
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$HERE/env.sh"
+# Source env relative to the working dir (qsub runs a SPOOLED copy of this script,
+# so deriving the path from BASH_SOURCE points at the spool dir, not the repo).
+# Both `qsub -cwd` and a direct `bash Analysis/hpc/merge_reduced.sh` from the repo
+# root set cwd = repo root, so this resolves correctly in both cases.
+source Analysis/hpc/env.sh
 setup_root
 : "${RAD_CONFIG:?set RAD_CONFIG to the capillary config name (e.g. DSB1, LUAG)}"
 
