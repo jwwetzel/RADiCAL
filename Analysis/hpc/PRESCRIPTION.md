@@ -8,10 +8,16 @@ The four configs in the logbook (electron runs):
 
 | config label (logbook col)   | ~runs | what it is                         |
 |------------------------------|-------|------------------------------------|
-| `DSB1`                       | ~330  | the already-validated config       |
-| `LUAG`                       | ~485  | LuAG capillaries                   |
-| `2xDSB1,2xLuAG`              | ~252  | mixed DSB1/LuAG                    |
-| `3xDSB1,1xEnergy`            | ~210  | timing capillaries + 1 energy      |
+| logbook label (`Capillary Type`) | total | analyzed* | energies     | what it is                |
+|----------------------------------|-------|-----------|--------------|---------------------------|
+| `DSB1`                           | 330   | 252       | 25-150 GeV   | the validated config      |
+| `LUAG`                           | 485   | 212       | 50-150 GeV   | LuAG capillaries          |
+| `2xDSB1, 2xLuAG`                 | 252   | 190       | 50-150 GeV   | mixed DSB1/LuAG           |
+| `3xDSB1, 1xEnergy`               | 210   | 162       | 50-150 GeV   | timing caps + 1 energy    |
+
+*analyzed = after the DONE + nominal-42.25 V + electron cuts. **Only DSB1 has
+25 GeV data**; the other three configs are 50-150 GeV. Labels are the exact
+`Capillary Type` strings in the logbook (note the space after the comma).
 
 **Key design choice — the reduction is config-AGNOSTIC.** `reduceRaw.C` does not
 need a channel map: for every one of the 36 DRS slots it stores the pulse
@@ -37,17 +43,24 @@ source Analysis/hpc/env.sh         # sets REC_DIR (raw), RAD_WORK (scratch), que
 qsub Analysis/hpc/compile.sh       # prebuilds processRun + reduceRaw + discoverChannels .so
 ```
 
-## 1.  Build a manifest per config (from the logbook)
+## 1.  Manifests — already built (logbook is committed)
 
-`build_manifest.py` filters the logbook to electron runs of one capillary config.
-Run it once per config (quote labels with commas):
+The CERN run logbook is committed at **`Analysis/hpc/logbook.csv`**, and a
+manifest per config is **already generated and committed**:
+
+```
+manifest_dsb1.csv (252)  manifest_LUAG.csv (212)  manifest_MIXED.csv (190)  manifest_TENERGY.csv (162)
+```
+
+Nothing to do here unless you want to change the selection. To regenerate (e.g.
+`--all-bias` to add the 41.25 V scan, or pions) — use the EXACT labels, including
+the space after the comma:
 
 ```bash
-LB=/path/to/logbook.csv
-python3 Analysis/hpc/build_manifest.py "$LB" --capillary "DSB1"            -o Analysis/hpc/manifest_DSB1.csv
-python3 Analysis/hpc/build_manifest.py "$LB" --capillary "LUAG"            -o Analysis/hpc/manifest_LUAG.csv
-python3 Analysis/hpc/build_manifest.py "$LB" --capillary "2xDSB1,2xLuAG"   -o Analysis/hpc/manifest_MIXED.csv
-python3 Analysis/hpc/build_manifest.py "$LB" --capillary "3xDSB1,1xEnergy" -o Analysis/hpc/manifest_TENERGY.csv
+LB=Analysis/hpc/logbook.csv
+python3 Analysis/hpc/build_manifest.py "$LB" --capillary "LUAG"             -o Analysis/hpc/manifest_LUAG.csv
+python3 Analysis/hpc/build_manifest.py "$LB" --capillary "2xDSB1, 2xLuAG"   -o Analysis/hpc/manifest_MIXED.csv
+python3 Analysis/hpc/build_manifest.py "$LB" --capillary "3xDSB1, 1xEnergy" -o Analysis/hpc/manifest_TENERGY.csv
 ```
 Each prints a per-energy run-count summary to stderr — sanity-check it.
 (Add `--all-bias` to include the 41.25 V scan; default keeps the single 42.25 V gain.)
