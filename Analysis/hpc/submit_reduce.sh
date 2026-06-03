@@ -39,8 +39,11 @@ RES=(); [ -n "${RAD_MEM:-}" ] && RES+=(-l "mem_free=$RAD_MEM")
         [ -n "${RAD_HRT:-}" ] && RES+=(-l "h_rt=$RAD_HRT")
 strip(){ echo "$1" | cut -d. -f1; }
 
-jid_r=$(qsub -terse "${COMMON[@]}" -N "rad_reduce_${RAD_CONFIG}" -t 1-"$N" "${RES[@]}" \
-             Analysis/hpc/sge_reduce.sh)
+# -hold_jid rad_compile: waits if compile.sh is still queued/running; if it has
+# already finished (no such job) SGE proceeds immediately — so you can fire
+# `qsub compile.sh` and this back-to-back without timing them by hand.
+jid_r=$(qsub -terse "${COMMON[@]}" -N "rad_reduce_${RAD_CONFIG}" -hold_jid rad_compile \
+             -t 1-"$N" "${RES[@]}" Analysis/hpc/sge_reduce.sh)
 echo "reduce : $jid_r   ($N tasks)"
 jid_m=$(qsub -terse "${COMMON[@]}" -N "rad_merge_${RAD_CONFIG}" \
              -hold_jid "$(strip "$jid_r")" Analysis/hpc/merge_reduced.sh)
