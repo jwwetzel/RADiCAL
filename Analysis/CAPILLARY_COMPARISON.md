@@ -148,6 +148,36 @@ the timing benefit of extra light there — consistent with DSB1's σ_t stalling
 ~100 GeV while unsaturated LuAG keeps improving), and the HG carries no usable energy
 information (energy must come from the LG chain).
 
+## 6b. Apples-to-apples OOS headlines & the HG-vs-LG and de-saturation tests
+
+**OOS best-bin (DW−UP)/2 σ_t @150 GeV, identical method across all four** (run-folded,
+`configBestBinHGLG.C` for reduced configs, `dsb1OOSandCorr.C` for DSB1):
+
+| config | σ_t (OOS best-bin) |
+|---|---|
+| **DSB1** | **29.4 ps** (official Gaussian-core pipeline: 27.4) |
+| TENERGY | 35.7 |
+| LuAG | 36.6 |
+| MIXED | 36.7 |
+
+DSB1 (uniformly brightest capillaries) wins by ~7 ps; configs containing dim LuAG caps
+cluster at ~36 — the corner estimator is limited by its dimmest capillaries. OOS ≈ in-sample
+throughout (defensible, not overfit).
+
+**HG vs LG chain** (your proposed control), OOS best-bin σ_t @150 GeV: **HG ~36 ps vs LG
+~64–88 ps.** The clean, unsaturated LG "perfect pulses" time ~2× *worse* than the saturated
+HG — because LG is **slow** (low slew). Slew (a fast edge), not pulse cleanliness, sets
+timing: the fast HG edge wins decisively even when its peak is clipped.
+
+**LG→HG de-saturation idea** (reconstruct the true, unsaturated HG peak from the linear LG to
+restore the CFD reference): tested for viability via the per-event `hg_peak` vs `lg_peak`
+correlation in the unsaturated regime — r=0.957 with **~11 % scatter** at 25 GeV, degrading to
+r=0.77 at 50 GeV. HG (shower-max) and LG (full-length) are *different optical samples*, not the
+same signal at two gains, so LG is too loose a per-event proxy: the ~11 % reconstruction
+uncertainty would inject threshold jitter comparable to the (already tiny, at CFD-5% + best-bin)
+clipped-peak walk it removes → **marginal net benefit**. It would work well only with a *true
+dual-gain readout of the same SiPM* (a design lever for a future build).
+
 ## 7. Caveats & next steps
 
 - **First-look only.** OOS-validated, best-bin per-config headlines + a/√E ⊕ b fits are TODO.
