@@ -184,9 +184,9 @@ matter &mdash; one layer at a time, and ends by producing a waveform in exactly 
   <code>X₀ &asymp; 3.5 mm</code>; in LYSO <code>&asymp; 11 mm</code>. Two rules of thumb follow:</p>
   <ul>
     <li><b>Longitudinal:</b> the shower peaks at depth <code>t<sub>max</sub> &asymp; ln(E/Ec)</code> radiation
-       lengths and needs <code>~25 X₀</code> to contain fully. <b>RADiCAL's prototype is only ~4 X₀</b> &mdash;
-       deliberately short, so it <em>leaks</em>, which is why its energy resolution has a large constant term
-       (you saw this in the <a href="paper.html#energy">paper</a>).</li>
+       lengths and needs <code>~25 X₀</code> to contain fully. <b>RADiCAL's module is 25 X₀ deep</b> (135 mm) &mdash;
+       so it contains the shower <em>longitudinally</em>. Its timing capillaries deliberately sample only the thin
+       region around shower max.</li>
     <li><b>Transverse:</b> the shower's width is set by the <b>Molière radius</b> <code>R<sub>M</sub></code> &mdash;
        ~90% of the energy lands within one <code>R<sub>M</sub></code> of the axis. This is why the capillaries sit
        where they do.</li>
@@ -473,7 +473,7 @@ new G4LogicalSkinSurface("capSkin", capLV, surf);</div>
   its own <code>z</code> (GEANT4's <code>G4PVReplica</code> can do a periodic stack in one call, but an explicit
   loop is easier to read and to vary):</p>
   <div class="codecap">stack the shashlik layers</div>
-  <div class="code">const int      nLayers = 28;                  // ~4 X0 of W in this short prototype
+  <div class="code">const int      nLayers = 28;                  // 28 W/LYSO layers ~ 25 X0 (the real module)
 const G4double pitch   = 3.5*mm + 1.5*mm;     // one absorber + one scintillator
 const G4double z0      = -0.5 * nLayers * pitch;
 
