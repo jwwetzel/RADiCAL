@@ -359,6 +359,30 @@ details.appendix > summary:hover { color: var(--accent); }
 .appendix-body h3 { font-size: 1.02rem; }
 .appendix-body .subsection { margin-top: 1.4rem; }
 
+/* ── Verifiable code snippets (trust-but-verify) ─────────────────────── */
+details.codeblock { margin: 1.1rem 0 1.6rem; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow);
+  overflow: hidden; max-width: 980px; }
+details.codeblock > summary { cursor: pointer; list-style: none; padding: .6rem .95rem;
+  font-size: .82rem; font-weight: 600; color: var(--blue); background: var(--blue-lt);
+  display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; }
+details.codeblock > summary::-webkit-details-marker { display: none; }
+details.codeblock > summary::before { content: "\25B8"; color: var(--accent);
+  font-size: .85rem; transition: transform .15s; }
+details.codeblock[open] > summary::before { transform: rotate(90deg); }
+details.codeblock > summary:hover { filter: brightness(0.98); }
+details.codeblock > summary .src { margin-left: auto; font-family: monospace;
+  font-weight: 500; color: var(--blue-mid); font-size: .71rem; }
+.codeblock-body { padding: .7rem .95rem 1rem; border-top: 1px solid var(--border); }
+.codeblock-body .why { font-size: .82rem; color: var(--muted); line-height: 1.55; margin: 0 0 .55rem; }
+.codeblock-body .why b { color: var(--text); }
+.codeblock-body .srcpath { font-family: monospace; font-size: .71rem; color: var(--accent);
+  margin: .75rem 0 .15rem; font-weight: 600; }
+.codeblock-body pre { margin: 0 0 .2rem; background: #F4F6FB; color: #1c2433;
+  border: 1px solid var(--border); border-radius: 8px; padding: .7rem .9rem; overflow-x: auto;
+  font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px; line-height: 1.5; white-space: pre; }
+
 /* embedded interactive simulators (mirrors the field guide) */
 .simrow { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:.5rem 0 1rem; }
 @media (max-width:760px){ .simrow { grid-template-columns:1fr; } }
@@ -485,6 +509,46 @@ figure img { cursor: zoom-in; }
 <div class="callout finding-box"><span class="callout-label">★ Key Finding</span><strong>Every channel produces a clean, consistent pulse.</strong>  The HG chain is fast (a sharp prompt peak in the first &asymp;18 ns &mdash; good for timing); the LG chain is AC-coupled, so each pulse is followed by a balancing undershoot (&asymp;35%) that recovers to baseline by &asymp;500 ns with no ringing &mdash; stable baseline restoration across the whole module.</div>
 <div class="plot-row"><figure class="w66"><img src="Summary/layer1_pulse_shapes.png" alt="Average pulse shape, all 16 channels (150 GeV): 8 HG (top, fast &rarr; timing) + 8 LG (bottom, slow &rarr; energy).  Clean and consistent." loading="lazy"><figcaption>Average pulse shape, all 16 channels (150 GeV): 8 HG (top, fast &rarr; timing) + 8 LG (bottom, slow &rarr; energy).  Clean and consistent.</figcaption></figure></div>
 </div>
+<details class="codeblock"><summary>Verify the code &mdash; turning a waveform into pedestal, peak &amp; CFD time <span class="src">WaveformUtils.h</span></summary>
+<div class="codeblock-body">
+<p class="why">Every number in this layer &mdash; pedestal RMS, peak amplitude, saturation flag &mdash; and the CFD time used by every later layer comes from one function. Pulses are <b>negative-going</b>, so the peak is <code>pedestal &minus; min(sample)</code>; the time is a fraction-of-peak crossing on the rising edge, linearly interpolated for sub-sample precision. Excerpted verbatim.</p>
+<div class="srcpath">Analysis/WaveformUtils.h : 37&ndash;94 &mdash; ExtractPulse()</div>
+<pre>inline Pulse ExtractPulse(const float* time, const float* amp,
+                          float fraction = 0.20f, float minPeak = 5.0f)
+{
+    Pulse p; /* fields pre-set to kNoTime / invalid */
+
+    // Pedestal: mean of samples 3..52 (skip noisy first cells; stops before the pulse)
+    double ped = 0.0;
+    for (int i = 3; i &lt; 53; ++i) ped += amp[i];
+    p.pedestal = static_cast&lt;float&gt;(ped / 50.0);
+
+    // Peak = the most-negative sample (pulse points down), flipped to a positive height
+    float vmin = amp[3]; int imin = 3;
+    for (int i = 4; i &lt; 1024; ++i)
+        if (amp[i] &lt; vmin) { vmin = amp[i]; imin = i; }
+    p.peak     = p.pedestal - vmin;
+    p.peakTime = time[imin];
+    p.valid    = (p.peak &gt;= minPeak);
+    if (!p.valid) return p;
+
+    // CFD: first rising-edge crossing of (fraction * peak) above pedestal,
+    // linearly interpolated between adjacent samples.
+    float target = fraction * p.peak;
+    for (int i = 3; i &lt; imin; ++i) {
+        float sig_i   = p.pedestal - amp[i];
+        float sig_ip1 = p.pedestal - amp[i+1];
+        if (sig_i &lt; target &amp;&amp; sig_ip1 &gt;= target) {
+            float slope = (sig_ip1 - sig_i) / (time[i+1] - time[i]);
+            if (slope &gt; 0.f)
+                p.crossingTime = time[i] + (target - sig_i) / slope;
+            break;
+        }
+    }
+    /* ... charge integral over the pulse window (energy proxy) ... */
+    return p;
+}</pre>
+</div></details>
 <div class="subsection" id="l1-timebase">
 <h3>The pulses are clean — but can we trust the clock to picoseconds?</h3>
 <p class="note">The DRS4 samples on 1024 capacitors with a rotating start (&ldquo;stop&rdquo;) cell.  This is the stop-cell coverage against the ideal uniform diagonal.</p>
@@ -503,6 +567,30 @@ figure img { cursor: zoom-in; }
 <div class="callout finding-box"><span class="callout-label">★ Key Finding</span>The DRS4 cell-width error is real (~68 ps, common-mode across DRS0-G0 channels) but CANCELS in the (DW-UP)/2 corner estimator (same group, same crossing cell) and in MCP1-MCP2 -- so it does NOT explain the 27->27 ps headline gap, and the 73 ps inter-group reference jitter is genuine.  It DOES limit the MCP-referenced combination methods (mean-all, A^2-weighted-all): split-half out-of-sample validation shows the A^2 combo improving 120.7 -> 99.5 ps after correction.  Applied to M2/M3 in timingResolution.C; activates on reprocess.</div>
 <div class="plot-row"><figure class="w100"><img src="Summary/drs4_timebase_hero.png" alt="<strong>Left:</strong> the DRS0 G0 stop cell samples every physical cell equally (RMS 295 vs 296 for a perfectly uniform rotation), so the stop-cell correction is well-posed.  <strong>Right:</strong> out-of-sample core &sigma; before/after the correction &mdash; the A&sup2; combo improves (120.7&rarr;99.5 ps) because it carries the HG-to-MCP cell gap, while the corner (DW&minus;UP)/2 estimator already cancels the cell-width error (correction adds nothing) and the single channel is MCP-jitter-limited." loading="lazy"><figcaption><strong>Left:</strong> the DRS0 G0 stop cell samples every physical cell equally (RMS 295 vs 296 for a perfectly uniform rotation), so the stop-cell correction is well-posed.  <strong>Right:</strong> out-of-sample core &sigma; before/after the correction &mdash; the A&sup2; combo improves (120.7&rarr;99.5 ps) because it carries the HG-to-MCP cell gap, while the corner (DW&minus;UP)/2 estimator already cancels the cell-width error (correction adds nothing) and the single channel is MCP-jitter-limited.</figcaption></figure></div>
 </div>
+<details class="codeblock"><summary>Verify the code &mdash; the data-driven stop-cell correction (and why the corner is immune) <span class="src">DRS4Calibration.h</span></summary>
+<div class="codeblock-body">
+<p class="why">The DRS4 cell-width residual is removed by a data-driven <b>stop-cell correction</b>: bin events by their trigger (&ldquo;stop&rdquo;) cell, learn the mean time offset per bin on <em>training</em> events, and subtract it. The claim that the <b>(DW&minus;UP)/2 corner already cancels this</b> is tested by a split-half out-of-sample check (train on even events, measure on odd): the correction improves the MCP-referenced combination (120.7&rarr;99.5 ps) but leaves the corner estimator unchanged. Excerpted verbatim.</p>
+<div class="srcpath">Analysis/DRS4Calibration.h : 129&ndash;169 &mdash; StopCellCorrection (train &rarr; finalize &rarr; apply)</div>
+<pre>// Add one training sample. residual is the raw timing quantity (e.g. hg_cfd).
+inline void Accumulate(int stopCell, double residual) {
+    const int b = Bin(stopCell);
+    if (b &lt; 0) return;
+    sum_[b] += residual;  cnt_[b] += 1;
+}
+// Per-bin offsets = (bin mean) &minus; (global mean). Sparse bins -&gt; 0 (no correction).
+inline void Finalize(long minCount = 30) {
+    double gSum = 0.; long gCnt = 0;
+    for (int b = 0; b &lt; nBins_; ++b) { gSum += sum_[b]; gCnt += cnt_[b]; }
+    globalMean_ = (gCnt &gt; 0) ? gSum / gCnt : 0.;
+    for (int b = 0; b &lt; nBins_; ++b)
+        offset_[b] = (cnt_[b] &gt;= minCount) ? sum_[b] / cnt_[b] - globalMean_ : 0.;
+    ready_ = true;
+}
+// The correction to SUBTRACT from a raw time for this stop cell.
+inline double Apply(int stopCell, double rawTime) const {
+    return rawTime - Offset(stopCell);   // Offset = offset_[Bin(stopCell)]
+}</pre>
+</div></details>
 <div class="subsection" id="l1-drs4">
 <h3>Does the digitiser stay clean across all six energies?</h3>
 <p class="note">The DRS4 noise floor (pedestal RMS) for all eight channels across the full 25&ndash;150 GeV scan, against the 5 mV threshold; saturation and spike rates (both flat at zero) are stated.  Distilled by layer1Summary.C from drs4Diagnostics.C.</p>
@@ -548,6 +636,20 @@ figure img { cursor: zoom-in; }
 <div class="plot-row"><figure class="w50"><img src="Summary/layer2_mcp_jitter.png" alt="&sigma;(MCP1&minus;MCP2)/&radic;2 &asymp; 73 ps, flat with energy.  Because MCP1 and MCP2 are the same signal split into the two groups, the MCP's <em>own</em> jitter cancels in the difference &mdash; what remains is the <strong>inter-group (mezzanine-to-mezzanine) DRS4 timing jitter</strong>, i.e. the penalty for referencing a channel across groups.  Per-group referencing avoids it for same-group channels." loading="lazy"><figcaption>&sigma;(MCP1&minus;MCP2)/&radic;2 &asymp; 73 ps, flat with energy.  Because MCP1 and MCP2 are the same signal split into the two groups, the MCP's <em>own</em> jitter cancels in the difference &mdash; what remains is the <strong>inter-group (mezzanine-to-mezzanine) DRS4 timing jitter</strong>, i.e. the penalty for referencing a channel across groups.  Per-group referencing avoids it for same-group channels.</figcaption></figure><figure class="w50"><img src="Summary/layer2_sub_mcp.png" alt="The (DW&minus;UP)/2 headline (27&ndash;47 ps) sits <em>below</em> the &asymp;73 ps per-group floor.  Each channel is referenced to its own group's MCP copy, and the corner difference cancels that reference algebraically &mdash; removing both the MCP jitter <em>and</em> the inter-group jitter.  The three corners kept within group 0 (NW, NE, SE) are exactly reference-free; only SW-U sits in group 1, so the SW corner carries a sub-dominant inter-group residual.  That is <em>why</em> the headline beats the floor." loading="lazy"><figcaption>The (DW&minus;UP)/2 headline (27&ndash;47 ps) sits <em>below</em> the &asymp;73 ps per-group floor.  Each channel is referenced to its own group's MCP copy, and the corner difference cancels that reference algebraically &mdash; removing both the MCP jitter <em>and</em> the inter-group jitter.  The three corners kept within group 0 (NW, NE, SE) are exactly reference-free; only SW-U sits in group 1, so the SW corner carries a sub-dominant inter-group residual.  That is <em>why</em> the headline beats the floor.</figcaption></figure></div>
 <div class="plot-row"><figure class="w50"><img src="Summary/layer2_per_channel.png" alt="Single-channel CFD-5% timing per capillary (MCP-referenced) is &asymp;180&ndash;300 ps, noise- and reference-jitter-dominated.  The four <em>Down</em> capillaries are light-limited and fall steeply with energy (more light &rarr; faster edge &rarr; better timing); two <em>Up</em> capillaries break the trend.  <strong>NW-U</strong> is the consistently weakest channel &mdash; its compressed, low-light HG pulse gains little extra slew once all channels approach the rail above ~50&nbsp;GeV, so it stops improving and drifts slightly <em>worse</em> at high E (the channel combination drops it for ~10&nbsp;ps).  <strong>SW-U</strong> is the lone capillary read out in DRS0 Group&nbsp;1 and referenced to <strong>MCP2</strong> (all others use MCP1 in Group&nbsp;0), with weak relative gain (&asymp;0.74), so its single-channel &sigma; sits flat on the energy-independent reference floor (&sigma;<sub>MCP</sub>&nbsp;&asymp;&nbsp;70&nbsp;ps, measured flat across all energies).  CFD-5% already removes the broad CFD-20% shoulder on the Down capillaries; the corner difference + channel combination + energy binning (Layers 4&ndash;5) &mdash; which cancel the reference and drop the weak channels &mdash; then reach the 27 ps headline." loading="lazy"><figcaption>Single-channel CFD-5% timing per capillary (MCP-referenced) is &asymp;180&ndash;300 ps, noise- and reference-jitter-dominated.  The four <em>Down</em> capillaries are light-limited and fall steeply with energy (more light &rarr; faster edge &rarr; better timing); two <em>Up</em> capillaries break the trend.  <strong>NW-U</strong> is the consistently weakest channel &mdash; its compressed, low-light HG pulse gains little extra slew once all channels approach the rail above ~50&nbsp;GeV, so it stops improving and drifts slightly <em>worse</em> at high E (the channel combination drops it for ~10&nbsp;ps).  <strong>SW-U</strong> is the lone capillary read out in DRS0 Group&nbsp;1 and referenced to <strong>MCP2</strong> (all others use MCP1 in Group&nbsp;0), with weak relative gain (&asymp;0.74), so its single-channel &sigma; sits flat on the energy-independent reference floor (&sigma;<sub>MCP</sub>&nbsp;&asymp;&nbsp;70&nbsp;ps, measured flat across all energies).  CFD-5% already removes the broad CFD-20% shoulder on the Down capillaries; the corner difference + channel combination + energy binning (Layers 4&ndash;5) &mdash; which cancel the reference and drop the weak channels &mdash; then reach the 27 ps headline.</figcaption></figure></div>
 </div>
+<details class="codeblock"><summary>Verify the code &mdash; the &asymp;73 ps reference jitter the corner beats <span class="src">mcpJitter.C</span></summary>
+<div class="codeblock-body">
+<p class="why">The per-group reference floor is measured directly: histogram the time difference of the two MCP copies (one physical MCP passively split across the two DRS groups), fit its Gaussian core, and divide by &radic;2. The corner estimator (Layer&nbsp;5) sits <em>below</em> this number precisely because the difference cancels the shared reference. Excerpted verbatim.</p>
+<div class="srcpath">Analysis/mcpJitter.C : 232&ndash;245 &mdash; &sigma;(MCP1&minus;MCP2)/&radic;2</div>
+<pre>// Per energy: histogram (t_MCP1 - t_MCP2), then fit its Gaussian core.
+FitGaussCore(hDiff[r], 2.0, fitMu, fitMuErr, fitSig, fitSigErr);
+
+if (fitSig &gt; 0.) {
+    // sigma(MCP1 - MCP2) = fitSig [ns]; one MCP split into two groups, so the
+    // per-group reference jitter is that spread divided by sqrt(2).
+    sigMCP[r]    = fitSig    * 1000. / std::sqrt(2.0);   // ps
+    sigMCPErr[r] = fitSigErr * 1000. / std::sqrt(2.0);
+}</pre>
+</div></details>
 <div class="subsection" id="l2-outlier">
 <h3>Which capillary limits the timing &mdash; and is it the same one at every energy?</h3>
 <p class="note">The per-channel jitter above is a single number; this map breaks it open.  Every cell is the single-channel CFD-5% &sigma;<sub>t</sub> (ps) for one capillary at one energy &mdash; eight rows &times; six energies, the whole reference-limited landscape on one page (inverted-kRust: <em>bright = worse</em>).  Produced by <code>compareEnergies.C</code>.</p>
@@ -590,6 +692,34 @@ figure img { cursor: zoom-in; }
 <div class="plot-row"><figure class="w50"><img src="Summary/layer3_beam_map.png" alt="Wire-chamber beam illumination at 150 GeV.  The electron beam is well-centred inside the timing (r&lt;3&thinsp;mm at 150 GeV) and energy (r&lt;2&thinsp;mm) fiducial circles (horizontal bands are the wire-chamber granularity).  The timing radius is optimised per energy &mdash; see the fiducial-optimisation chapter below." loading="lazy"><figcaption>Wire-chamber beam illumination at 150 GeV.  The electron beam is well-centred inside the timing (r&lt;3&thinsp;mm at 150 GeV) and energy (r&lt;2&thinsp;mm) fiducial circles (horizontal bands are the wire-chamber granularity).  The timing radius is optimised per energy &mdash; see the fiducial-optimisation chapter below.</figcaption></figure><figure class="w50"><img src="Summary/layer3_containment.png" alt="&Sigma;<sub>PbGlass</sub> vs &Sigma;<sub>LG</sub> (150 GeV, in-fiducial).  Contained EM showers form the dense band below the 30% containment cut; hadronic punch-through scatters above it and is removed by the cut." loading="lazy"><figcaption>&Sigma;<sub>PbGlass</sub> vs &Sigma;<sub>LG</sub> (150 GeV, in-fiducial).  Contained EM showers form the dense band below the 30% containment cut; hadronic punch-through scatters above it and is removed by the cut.</figcaption></figure></div>
 <div class="plot-row"><figure class="w50"><img src="Summary/layer3_quality.png" alt="Sample quality vs energy: showers are 95&ndash;97% contained, and hadronic punch-through is only a few % (5.3% at 25 GeV) rising to 6.2% at 150 GeV from the SPS beam's pion fraction." loading="lazy"><figcaption>Sample quality vs energy: showers are 95&ndash;97% contained, and hadronic punch-through is only a few % (5.3% at 25 GeV) rising to 6.2% at 150 GeV from the SPS beam's pion fraction.</figcaption></figure></div>
 </div>
+<details class="codeblock"><summary>Verify the code &mdash; beam-position reconstruction &amp; the event-selection cuts <span class="src">processRun.C &middot; SelectionCuts.h</span></summary>
+<div class="codeblock-body">
+<p class="why">Beam position is the CFD-50% peak-time difference of the four wire-chamber planes, scaled by the delay-line constant (7/36 mm&middot;ns&#8315;&sup1;). Every threshold that defines a &ldquo;clean timing event&rdquo; &mdash; the per-energy fiducial radius (itself OOS-validated), the MCP amplitude window, and the containment cut &mdash; is a named constant in one header, so the selection is auditable in one place. Excerpted verbatim.</p>
+<div class="srcpath">Analysis/ChannelConfig.h + processRun.C : 205&ndash;222 &mdash; wire-chamber x, y</div>
+<pre>static const double kWC_Scale = 7.0/36.0;          // delay-line sensitivity, mm/ns
+
+Pulse wcR = ExtractPulse(T + kWC_t, A + kWC_R, 0.50f, kWC_minPeak);   // 4 planes,
+Pulse wcL = ExtractPulse(T + kWC_t, A + kWC_L, 0.50f, kWC_minPeak);   // CFD-50%
+Pulse wcD = ExtractPulse(T + kWC_t, A + kWC_D, 0.50f, kWC_minPeak);   // peak times
+Pulse wcU = ExtractPulse(T + kWC_t, A + kWC_U, 0.50f, kWC_minPeak);
+
+br_wc_ok = (wcR.valid &amp;&amp; wcL.valid &amp;&amp; wcD.valid &amp;&amp; wcU.valid &amp;&amp;
+            wcR.peakTime &gt; 0.f &amp;&amp; /* ...all four peakTimes &gt; 0... */);
+if (br_wc_ok) {
+    br_x_trk = kWC_Scale * (wcR.peakTime - wcL.peakTime);   // Right - Left
+    br_y_trk = kWC_Scale * (wcD.peakTime - wcU.peakTime);   // Down  - Up
+}</pre>
+<div class="srcpath">Analysis/SelectionCuts.h : 124&ndash;187 &mdash; fiducial radius, MCP window, containment</div>
+<pre>// Per-energy timing fiducial radius [mm], set by the OOS-validated scan:
+static inline double TimingFiducialR(double energy_GeV) {
+    return (energy_GeV &gt; 112.) ? 3.0 : 2.5;   // 125/150 GeV: 3.0;  25-100 GeV: 2.5
+}
+// MCP reference quality window [mV]:
+static const float kMCP1_minPeak = 200.0f;    // reject noise / no-reference
+static const float kMCP1_maxPeak = 750.0f;    // reject DRS4-saturated references
+// Shower containment: drop punch-through / leakage events:
+static const float kPb_maxRatio  = 0.30f;     // require sum_pb &lt; 0.30 * sum_lg</pre>
+</div></details>
 <div class="subsection" id="l3-fiducial-opt">
 <h3>Optimising the timing fiducial &mdash; a per-energy, OOS-validated cut</h3>
 <p class="note">The hero above draws the energy fiducial at r&nbsp;&lt;&nbsp;2&nbsp;mm (tight, for shower containment).  The <em>timing</em> fiducial we set by explicit optimisation rather than assumption.  Reusing the headline&rsquo;s exact Method-A formula, event cuts, data-derived centroid and Gaussian-core fit, we scan the corner &sigma;<sub>t</sub> versus fiducial radius at <em>all six energies</em>, two complementary ways: <strong>(1) the joint optimisation</strong> &mdash; the actual single-best-E<sub>meas</sub>-bin estimator re-selected at each radius (literally what sets the headline; our replica reproduces the per-energy &sigma;<sub>t</sub> to &lt;0.5&nbsp;ps), and <strong>(2) a stable selection</strong> &mdash; a fixed top-2% / top-10% by &Sigma;A<sub>LG</sub> that freezes the E<sub>meas</sub> cut so the pure radius/position effect reads off a smooth curve.  Crucially, every candidate is checked with the run-folded out-of-sample (OOS) validation &mdash; because a tighter circle shrinks the selection pool, the single best bin can <em>overfit</em>, and only the OOS exposes it.  Generated by <code>fiducialTimingScan.C</code>.</p>
@@ -654,6 +784,30 @@ figure img { cursor: zoom-in; }
 <div class="callout finding-box"><span class="callout-label">★ Key Finding</span>The Down-capillary timing &ldquo;shoulder&rdquo; is a CFD-fraction / leading-edge effect, not a DRS4 satellite, not a selection artefact, and not correctable by an amplitude walk fit (verified in elbowInvestigation.C / walkCorrTest.C). CFD-5% &mdash; the common near-minimum across energies and the adopted headline fraction &mdash; removes it with no loss of events.</div>
 <div class="plot-row"><figure class="w50"><img src="Summary/layer4_cfd_fraction_down.png" alt="<b>Down capillaries.</b> For E &ge; 50 GeV &sigma;<sub>t</sub> rises monotonically with CFD fraction: the Down-capillary leading-edge <em>shape</em> jitters more pulse-to-pulse the higher the threshold (next figure) &mdash; the &ldquo;shoulder&rdquo; seen per-channel in the appendix. Timing low on the edge removes it &mdash; CFD-5% (dashed) is at or near the minimum. The 25 GeV curve inverts because at the lowest amplitude the 3% level dips toward noise." loading="lazy"><figcaption><b>Down capillaries.</b> For E &ge; 50 GeV &sigma;<sub>t</sub> rises monotonically with CFD fraction: the Down-capillary leading-edge <em>shape</em> jitters more pulse-to-pulse the higher the threshold (next figure) &mdash; the &ldquo;shoulder&rdquo; seen per-channel in the appendix. Timing low on the edge removes it &mdash; CFD-5% (dashed) is at or near the minimum. The 25 GeV curve inverts because at the lowest amplitude the 3% level dips toward noise.</figcaption></figure><figure class="w50"><img src="Summary/layer4_cfd_fraction_up.png" alt="<b>Up capillaries.</b> A much weaker fraction dependence and a lower &sigma;<sub>t</sub> overall &mdash; the cleaner pulse shape has no comparable slow region at 20%. The common near-minimum around 5&ndash;10% across both groups, together with the 25 GeV low-fraction noise penalty, is why <b>CFD-5%</b> (not 3%, not 20%) is adopted. The headline (DW&minus;UP)/2 uses CFD-5% and is insensitive to this choice in any case." loading="lazy"><figcaption><b>Up capillaries.</b> A much weaker fraction dependence and a lower &sigma;<sub>t</sub> overall &mdash; the cleaner pulse shape has no comparable slow region at 20%. The common near-minimum around 5&ndash;10% across both groups, together with the 25 GeV low-fraction noise penalty, is why <b>CFD-5%</b> (not 3%, not 20%) is adopted. The headline (DW&minus;UP)/2 uses CFD-5% and is insensitive to this choice in any case.</figcaption></figure></div>
 </div>
+<details class="codeblock"><summary>Verify the code &mdash; the multi-fraction CFD scan &amp; the A&sup2;-weighted combination <span class="src">WaveformUtils.h &middot; timingResolution.C</span></summary>
+<div class="codeblock-body">
+<p class="why">Two calibration choices are made here. The CFD-fraction scan is apples-to-apples because <b>one</b> forward pass over the rising edge records the crossing at <em>every</em> fraction (3/5/10/20/30/50%). The eight channels are then merged by an <b>A&sup2;-weighted</b> mean &mdash; each channel's time weighted by its peak amplitude squared, so brighter (sharper-edged) pulses count more. Excerpted verbatim.</p>
+<div class="srcpath">Analysis/WaveformUtils.h : 174&ndash;193 &mdash; ExtractPulseMulti (single-pass, all fractions)</div>
+<pre>for (int i = 3; i &lt; imin; ++i) {
+    float si  = p.pedestal - amp[i];
+    float si1 = p.pedestal - amp[i+1];
+    float dt  = time[i+1] - time[i];
+    if (dt &lt;= 0.f) continue;
+    float slope = (si1 - si) / dt;         // t_cross = time[i] + (target - si)/slope
+    if (!f05 &amp;&amp; si &lt; tgt05 &amp;&amp; si1 &gt;= tgt05) { if (slope&gt;0.f) p.cfd05 = time[i]+(tgt05-si)/slope; f05=true; }
+    if (!f20 &amp;&amp; si &lt; tgt20 &amp;&amp; si1 &gt;= tgt20) { if (slope&gt;0.f) p.cfd20 = time[i]+(tgt20-si)/slope; f20=true; }
+    /* ... identical lines for cfd03, cfd10, cfd30, cfd50, and the LED threshold ... */
+}</pre>
+<div class="srcpath">Analysis/timingResolution.C : 149&ndash;160 &mdash; A&sup2;-weighted channel combination</div>
+<pre>// A^2-weighted mean of all valid channel times (weight = peak^2).
+double wsum = 0., wt = 0.;
+for (int i = 0; i &lt; 8; ++i) if (valid[i]) {
+    const double w2 = static_cast&lt;double&gt;(hg_peak[i]) * hg_peak[i];
+    wsum += w2 * hg_cfd[i];  wt += w2;
+}
+if (wt &lt;= 0.) return false;
+out = wsum / wt;</pre>
+</div></details>
 <div class="subsection" id="l4-edge-mechanism">
 <h3>The mechanism: leading-edge shape jitter</h3>
 <p class="note"><em>Why</em> the fraction matters &mdash; the cause, not just the consequence. The naive explanation (&ldquo;20% sits on a slow part of the edge&rdquo;) is <b>wrong</b>: the mean rising edge is actually <em>steeper</em> at 20% than at 5% (left), so electronic noise (&sigma;<sub>t</sub> &asymp; &sigma;<sub>V</sub>/(dV/dt)) would make 20% <em>better</em>. The real cause is pulse-to-pulse <b>shape</b> variation (right).</p>
@@ -699,6 +853,89 @@ figure img { cursor: zoom-in; }
 <div class="plot-row"><figure class="w50"><img src="Summary/layer5_timing.png" alt="<strong>Headline:</strong> the energy-binned (DW&minus;UP)/2 estimator reaches <strong>27 ps at 150 GeV</strong> (47 ps at 25), fit &sigma;<sub>t</sub> = a/&radic;E &oplus; 22 ps, vs 27 ps in arXiv:2401.01747.  These are the single best E<sub>meas</sub> bin at each energy (0.7&ndash;7.2% of fiducial events); the full &sigma;<sub>t</sub>-vs-E<sub>meas</sub> trend across all bins is in the appendix below.  MCP-free by construction (it cancels each channel's per-group reference in the corner difference).  Two under-performing Up capillaries (NW-U, SW-U) cap this slightly: an all-uniform detector would project to &asymp;25&nbsp;ps here &mdash; see the <a href="#l2-ideal">detector-potential projection</a> in Layer&nbsp;2 (they are kept, not dropped: dropping them <em>worsens</em> the headline)." loading="lazy"><figcaption><strong>Headline:</strong> the energy-binned (DW&minus;UP)/2 estimator reaches <strong>27 ps at 150 GeV</strong> (47 ps at 25), fit &sigma;<sub>t</sub> = a/&radic;E &oplus; 22 ps, vs 27 ps in arXiv:2401.01747.  These are the single best E<sub>meas</sub> bin at each energy (0.7&ndash;7.2% of fiducial events); the full &sigma;<sub>t</sub>-vs-E<sub>meas</sub> trend across all bins is in the appendix below.  MCP-free by construction (it cancels each channel's per-group reference in the corner difference).  Two under-performing Up capillaries (NW-U, SW-U) cap this slightly: an all-uniform detector would project to &asymp;25&nbsp;ps here &mdash; see the <a href="#l2-ideal">detector-potential projection</a> in Layer&nbsp;2 (they are kept, not dropped: dropping them <em>worsens</em> the headline).</figcaption></figure><figure class="w50"><img src="Summary/layer5_energy.png" alt="Energy resolution &sigma;<sub>E</sub>/E = 13.9% at 150 GeV.  The large constant term is expected: the 14&thinsp;mm prototype is a short, leakage-dominated test module, not a full-depth calorimeter." loading="lazy"><figcaption>Energy resolution &sigma;<sub>E</sub>/E = 13.9% at 150 GeV.  The large constant term is expected: the 14&thinsp;mm prototype is a short, leakage-dominated test module, not a full-depth calorimeter.</figcaption></figure></div>
 <div class="plot-row"><figure class="w50"><img src="Summary/layer5_uniformity.png" alt="A&sup2;-weighted combination &sigma;<sub>t</sub> mapped across the beam spot at 150 GeV: stable (&asymp;90 ps) across the core fiducial, with mild degradation toward the edges from residual position-dependent walk &mdash; the timing result is robust to beam position." loading="lazy"><figcaption>A&sup2;-weighted combination &sigma;<sub>t</sub> mapped across the beam spot at 150 GeV: stable (&asymp;90 ps) across the core fiducial, with mild degradation toward the edges from residual position-dependent walk &mdash; the timing result is robust to beam position.</figcaption></figure></div>
 </div>
+<details class="codeblock"><summary>Verify the code &mdash; the headline estimator, the out-of-sample selection &amp; the &sigma; fit <span class="src">timingEnergyBins.C &middot; PlotUtils.h</span></summary>
+<div class="codeblock-body">
+<p class="why">The headline number is produced by three pieces of code: (1) the <b>(DW&minus;UP)/2 corner estimator</b> that forms one time per event; (2) the <b>run-folded out-of-sample cross-validation</b> that selects the best energy bin on training runs and measures &sigma; on held-out runs (so the tight bin cannot tune on its own fluctuation); and (3) the <b>Gaussian-core fit</b> that reads &sigma; from each bin. All three are reproduced below (excerpted verbatim; elisions marked <code>/* &hellip; */</code>). Open the cited files for full context.</p>
+
+<div class="srcpath">Analysis/timingEnergyBins.C : ComputeMethods_teb() &mdash; the (DW&minus;UP)/2 corner estimator</div>
+<pre>// DW channels: 0..3 (shower-max)   UP channels: 4..7 (upstream)
+double dw_sum = 0.;   int dw_n   = 0;
+double up_sum_A = 0.; int up_n_A = 0;
+
+// DW channels (ch 0-3): all use mcp_time
+for (int i = 0; i &lt; 4; ++i) {
+    if (dt[i] &gt; kSentinelCut_teb) { dw_sum += dt[i]; ++dw_n; /* ...M7 sum... */ }
+}
+// UP channels (ch 4-7): dt[i] = mcp2_time for ch7, mcp_time for ch4-6
+for (int i = 4; i &lt; 8; ++i) {
+    if (dt[i] &gt; kSentinelCut_teb) { up_sum_A += dt[i]; ++up_n_A; /* ...M7 sum... */ }
+}
+if (dw_n &lt; 1 || up_n_A &lt; 1) return false;
+
+double dw_avg   = dw_sum   / dw_n;
+double up_avg_A = up_sum_A / up_n_A;
+
+// Method A (HEADLINE): (DW &minus; UP) / 2  -- MCP-independent; mcp_time/mcp2_time cancel
+out[0] = (float)((dw_avg - up_avg_A) * 0.5);</pre>
+
+<div class="srcpath">Analysis/timingEnergyBins.C : 744&ndash;807 &mdash; run-folded out-of-sample best-bin selection</div>
+<pre>const int kF = 5;
+std::vector&lt;int&gt; uruns;                    // unique run numbers
+for (auto&amp; ev : events) uruns.push_back(ev.run);
+std::sort(uruns.begin(), uruns.end());
+uruns.erase(std::unique(uruns.begin(), uruns.end()), uruns.end());
+auto foldOf = [&amp;](int r)-&gt;int{            // assign each run to one of 5 folds
+    int idx = (int)(std::lower_bound(uruns.begin(), uruns.end(), r) - uruns.begin());
+    return idx % kF;
+};
+const int kTrainMinN = (kMinBinN_teb * (kF - 1)) / kF;
+std::vector&lt;float&gt; poolOOS;
+for (int f = 0; f &lt; kF; ++f) {
+    // (1) per-bin Method-A &sigma; on the TRAINING runs (all folds but f)
+    std::vector&lt;std::vector&lt;float&gt;&gt; trainBin(kNBins_teb);
+    for (auto&amp; ev : events) {
+        if (foldOf(ev.run) == f) continue;            // hold out fold f
+        int ib = -1;
+        for (int b = 0; b &lt; kNBins_teb; ++b)
+            if (ev.sum_lg &gt;= binEdge[b] &amp;&amp; ev.sum_lg &lt; binEdge[b+1]) { ib = b; break; }
+        if (ib &lt; 0) continue;
+        float out[kNMeth_teb];
+        if (ComputeMethods_teb(ev.dt, ev.dt7_mcp1, ev.hg, ev.lg, k7, meanR7, out))
+            trainBin[ib].push_back(out[0]);           // Method A
+    }
+    // (2) SELECT the min-&sigma; bin on the training data
+    int selBin = -1; double selSig = 1e30;
+    for (int b = 0; b &lt; kNBins_teb; ++b) {
+        if ((int)trainBin[b].size() &lt; kTrainMinN) continue;
+        TH1F* h = VecToHist_teb(Form("_oosTr_%s_f%d_b%d", rc.label.Data(), f, b), trainBin[b]);
+        double mu, muE, s, sE; FitGaussCore(h, 2.0, mu, muE, s, sE); delete h;
+        if (s &gt; 0. &amp;&amp; s*1000. &lt; selSig) { selSig = s*1000.; selBin = b; }
+    }
+    if (selBin &lt; 0) continue;
+    // (3) MEASURE on the held-out fold, in the bin selected on the training data
+    for (auto&amp; ev : events) {
+        if (foldOf(ev.run) != f) continue;
+        if (ev.sum_lg &lt; binEdge[selBin] || ev.sum_lg &gt;= binEdge[selBin+1]) continue;
+        float out[kNMeth_teb];
+        if (ComputeMethods_teb(ev.dt, ev.dt7_mcp1, ev.hg, ev.lg, k7, meanR7, out))
+            poolOOS.push_back(out[0]);                // pooled held-out events
+    }
+}
+// sigBestOOS_A = Gaussian-core &sigma; of poolOOS  (the quoted out-of-sample headline)</pre>
+
+<div class="srcpath">Analysis/PlotUtils.h : 45&ndash;84 &mdash; FitGaussCore (the per-bin &sigma; estimator)</div>
+<pre>double mu0  = h-&gt;GetMean();          // robust seed (not the max bin)
+double sig0 = h-&gt;GetRMS();
+TF1 f("_pu_fg", "gaus", mu0 - nsig*sig0, mu0 + nsig*sig0);
+f.SetParameters(h-&gt;GetMaximum(), mu0, sig0);
+h-&gt;Fit(&amp;f, "RQN");                   // pass 1: fit the core
+mu0  = f.GetParameter(1);
+sig0 = std::fabs(f.GetParameter(2));
+f.SetRange(mu0 - nsig*sig0, mu0 + nsig*sig0);
+h-&gt;Fit(&amp;f, "RQN");                   // pass 2: re-fit on the updated +/- nsig window
+sigma    = std::fabs(f.GetParameter(2));   // &lt;-- the quoted resolution (x1000 -&gt; ps)
+sigmaErr = f.GetParError(2);</pre>
+</div></details>
 <div class="subsection" id="l5-floor">
 <h3>The 22 vs 17.5 ps floor &mdash; is it a real gap?</h3>
 <p class="note">Our &sigma;<sub>t</sub>(E) fit lands a constant term of &asymp;21.8&nbsp;ps, while arXiv:2401.01747 quotes 17.5&nbsp;ps on the <em>same</em> detector, beam, and 25&ndash;150&nbsp;GeV range.  That 4&ndash;5&nbsp;ps looks like a discrepancy until you remember the floor <em>b</em> is &sigma;<sub>t</sub> as E&nbsp;&rarr;&nbsp;&infin; &mdash; an <em>extrapolation</em> beyond the highest measured point (150&nbsp;GeV), and strongly anti-correlated with the stochastic term <em>a</em> (&rho;<sub>ab</sub>&nbsp;&asymp;&nbsp;&minus;0.8).  Generated by <code>timingFloorComparison.C</code>.</p>
@@ -777,6 +1014,48 @@ figure img { cursor: zoom-in; }
 <p class="note">The systematic budget is evaluated on the A&sup2;-weighted combination &mdash; the estimator most sensitive to the selection cuts.  Expand the panel below for the full per-energy budget and the cross-energy quality summary.</p>
 <div class="plot-row"><figure class="w50"><img src="Summary/layer6_budget.png" alt="Systematic budget at 150 GeV (on the A&sup2;-weighted combo): total <strong>2.7 ps</strong> &mdash; every cut variation (fiducial radius, MCP window, containment, HG threshold) contributes only a few ps.  Crucially, the MCP-window term does <em>not</em> apply to the MCP-free (DW&minus;UP)/2 headline &mdash; so the headline systematic is smaller still." loading="lazy"><figcaption>Systematic budget at 150 GeV (on the A&sup2;-weighted combo): total <strong>2.7 ps</strong> &mdash; every cut variation (fiducial radius, MCP window, containment, HG threshold) contributes only a few ps.  Crucially, the MCP-window term does <em>not</em> apply to the MCP-free (DW&minus;UP)/2 headline &mdash; so the headline systematic is smaller still.</figcaption></figure><figure class="w50"><img src="Summary/layer6_band.png" alt="A&sup2;-combo &sigma;<sub>t</sub> vs energy with its stat &oplus; systematic band: a few ps at <em>every</em> energy. The core &sigma; is a robust truncated-RMS (truncation-bias corrected), which is stable at low statistics &mdash; the former Gaussian-fit instability that produced spurious &asymp;40 ps bands at 25/125 GeV (three cut variations shifting in lock-step) is gone. The headline (DW&minus;UP)/2 is on CFD-5% and cross-validation-stable (out-of-sample shift &lt; 1 ps, Layer 5)." loading="lazy"><figcaption>A&sup2;-combo &sigma;<sub>t</sub> vs energy with its stat &oplus; systematic band: a few ps at <em>every</em> energy. The core &sigma; is a robust truncated-RMS (truncation-bias corrected), which is stable at low statistics &mdash; the former Gaussian-fit instability that produced spurious &asymp;40 ps bands at 25/125 GeV (three cut variations shifting in lock-step) is gone. The headline (DW&minus;UP)/2 is on CFD-5% and cross-validation-stable (out-of-sample shift &lt; 1 ps, Layer 5).</figcaption></figure></div>
 </div>
+<details class="codeblock"><summary>Verify the code &mdash; the cut variations, the robust &sigma;, and the quadrature sum <span class="src">systematicUncertainties.C</span></summary>
+<div class="codeblock-body">
+<p class="why">The 2.7 ps total is not a guess: eight selections (nominal + seven one-at-a-time cut variations) are each re-run end to end; the resolution of each is measured with a <b>truncated-RMS</b> estimator (truncation-bias corrected so it equals a Gaussian-core &sigma; but does not latch on a bad fit at low statistics); the total systematic is the quadrature sum of the shifts from nominal. All three pieces are below, verbatim.</p>
+<div class="srcpath">Analysis/systematicUncertainties.C : 77&ndash;87 &mdash; the cut variations (one at a time)</div>
+<pre>//                  fid_r  pb_ratio  mcp_lo  mcp_hi  hg_min
+static const SystVar kVars[] = {
+    {"Nominal",        3.0,  0.30f,   200.f,  750.f,  20.f},
+    {"Fid +0.5mm",     3.5,  0.30f,   200.f,  750.f,  20.f},
+    {"Fid -0.5mm",     2.5,  0.30f,   200.f,  750.f,  20.f},
+    {"Contain +0.05",  3.0,  0.35f,   200.f,  750.f,  20.f},
+    {"Contain -0.05",  3.0,  0.25f,   200.f,  750.f,  20.f},
+    {"MCP lo +50mV",   3.0,  0.30f,   250.f,  750.f,  20.f},
+    {"MCP hi -50mV",   3.0,  0.30f,   200.f,  700.f,  20.f},
+    {"HG thresh +5mV", 3.0,  0.30f,   200.f,  750.f,  25.f},
+};</pre>
+<div class="srcpath">Analysis/systematicUncertainties.C : 179&ndash;200 &mdash; RobustCoreSigma (truncated, bias-corrected)</div>
+<pre>double c = med, sg = scale;             // seed: median + MAD-scaled sigma
+for (int it = 0; it &lt; 5; ++it) {        // truncate to +/- k*sigma, refit (2-3 iters)
+    const double lo = c - k*sg, hi = c + k*sg;
+    double sum = 0., sum2 = 0.; kIn = 0;
+    for (float x : v) if (x &gt;= lo &amp;&amp; x &lt;= hi) { sum += x; sum2 += x*x; ++kIn; }
+    if (kIn &lt; 5) return;
+    const double m = sum/kIn, var = sum2/kIn - m*m;
+    c = m; sg = (var &gt; 0.) ? std::sqrt(var) : sg;
+}
+// Divide out the Gaussian truncation bias so it matches a Gaussian-core sigma:
+const double phi = std::exp(-0.5*k*k) / std::sqrt(TWO_PI);
+const double Phi = 0.5*(1.0 + std::erf(k/std::sqrt(2.0)));
+sigma = sg / std::sqrt(1.0 - 2.0*k*phi/(2.0*Phi - 1.0));</pre>
+<div class="srcpath">Analysis/systematicUncertainties.C : 326&ndash;338 &mdash; quadrature sum of the shifts</div>
+<pre>// total syst[r] = sqrt( sum over variations of (sigma_v - sigma_nominal)^2 )
+for (int r = 0; r &lt; kNRuns; ++r) {
+    if (sigT[0][r] &lt;= 0.) continue;
+    double sumSq = 0.;
+    for (int v = 1; v &lt; kNVars; ++v) {
+        if (sigT[v][r] &lt;= 0.) continue;
+        delta[v][r] = sigT[v][r] - sigT[0][r];      // shift vs nominal
+        sumSq += delta[v][r] * delta[v][r];
+    }
+    systTotal[r] = std::sqrt(sumSq);
+}</pre>
+</div></details>
 <details class="appendix"><summary>Full Layer 6 detail -- per-energy systematic budget &amp; cross-energy quality summary (click to expand)</summary><div class="appendix-body"><div class="subsection" id="l6-systematics">
 <h3>Systematic uncertainty budget</h3>
 <p class="note">Cut variations and total uncertainty budget produced by systematicUncertainties.C (evaluated on the A^2-weighted combination).</p>
