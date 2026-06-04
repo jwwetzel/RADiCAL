@@ -500,6 +500,26 @@ hr.s{border:0;border-top:1px solid var(--border);margin:30px 0}
   3×DSB1 + 1×"Energy" build — all sharing one readout geometry, so a single analysis serves them all. The
   question is whether the scintillator <em>species</em> drives timing. It does not.</p>
 
+  <h3>8.1 Dataset and the config-agnostic reduction</h3>
+  <p>The four builds were taken as separate run groups but share one 8+8 readout, so a single analysis geometry
+  serves all of them. A <b>config-agnostic reduction</b> (<code>reduceRaw.C</code>) stores, for all 36 digitiser
+  slots, the (peak, CFD-5% time, charge) plus the wire-chamber track and both MCP references — no per-build
+  channel map is needed — shrinking each ~2 GB raw run to ≈12 MB (a <b>160× reduction</b>) for the cross-build
+  study.</p>
+
+  <div class="tbl"><table>
+    <caption><b>Table 3.</b> The four capillary builds (electron runs, nominal bias). &ldquo;Analyzed&rdquo; counts
+      the completed runs entering this comparison.</caption>
+    <thead><tr><th>Build</th><th class="m">Total runs</th><th class="m">Analyzed</th><th>Energies</th></tr></thead>
+    <tbody>
+      <tr><td>DSB1</td><td class="m">330</td><td class="m">252</td><td>25–150 GeV</td></tr>
+      <tr><td>LuAG</td><td class="m">485</td><td class="m">212</td><td>50–150 GeV</td></tr>
+      <tr><td>2×DSB1 + 2×LuAG (mixed)</td><td class="m">252</td><td class="m">190</td><td>50–150 GeV</td></tr>
+      <tr><td>3×DSB1 + 1×Energy (TENERGY)</td><td class="m">210</td><td class="m">162</td><td>50–150 GeV</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>8.2 The in-event crystal test</h3>
   <p>The cleanest test reads <b>both</b> crystals in the <b>same showers</b>: in the mixed module, the pairwise
   difference of any two same-group capillary times cancels the event time, the reference, and the shared shower
   time, leaving each capillary's intrinsic jitter. By this confound-free comparison, DSB1 and LuAG capillaries
@@ -523,10 +543,63 @@ hr.s{border:0;border-top:1px solid var(--border);margin:30px 0}
     bright <em>enough</em>. The reason to test materials is radiation tolerance; the data say a rad-hard crystal
     that is bright enough will time just as well.</p></div>
 
+  <h3>8.3 Same-method resolution across all four builds</h3>
+  <p>For a like-for-like comparison we apply one simple method to every build — the <b>all-fiducial</b>
+  (r &lt; 3 mm) (DW&minus;UP)/2 corner estimator at CFD-5%, with a truncated-core σ. These are deliberately
+  <em>not</em> the energy-binned headline numbers: each build is read across at a fixed selection, rather than
+  down to its best-contained bin (Fig. 12b gives the out-of-sample best-bin values, where DSB1 reaches 29.4 ps
+  and reproduces the 27.4 ps headline).</p>
+
+  <div class="tbl"><table>
+    <caption><b>Table 4.</b> All-fiducial (DW&minus;UP)/2 σ<sub>t</sub> (ps), CFD-5%, identical method across the
+      four builds. Only DSB1 was taken at 25 GeV. Selection-fixed comparison — not the energy-binned headline.</caption>
+    <thead><tr><th>E (GeV)</th><th class="m">DSB1</th><th class="m">LuAG</th><th class="m">mixed</th><th class="m">TENERGY</th></tr></thead>
+    <tbody>
+      <tr><td>25</td><td class="m">70.2</td><td class="m">—</td><td class="m">—</td><td class="m">—</td></tr>
+      <tr><td>50</td><td class="m">60.6</td><td class="m">72.4</td><td class="m">66.0</td><td class="m">66.6</td></tr>
+      <tr><td>75</td><td class="m">59.1</td><td class="m">63.4</td><td class="m">60.8</td><td class="m">62.3</td></tr>
+      <tr><td>100</td><td class="m">55.4</td><td class="m">61.8</td><td class="m">58.8</td><td class="m">63.8</td></tr>
+      <tr><td>125</td><td class="m">56.2</td><td class="m">55.5</td><td class="m">56.6</td><td class="m">59.4</td></tr>
+      <tr><td>150</td><td class="m">58.4</td><td class="m">49.8</td><td class="m">54.5</td><td class="m">57.9</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>All-fiducial, the timing is comparable across builds and even <em>favours</em> LuAG at the top energy
+  (49.8 ps at 150 GeV) — but that ordering is selection-dependent and <b>flips</b> under the best-bin selection
+  that sets the headline, where the uniformly-bright DSB1 build wins (Fig. 12b). The energy resolution, measured
+  on the summed low-gain response, is flat and essentially build-independent:</p>
+
+  <div class="tbl"><table>
+    <caption><b>Table 5.</b> Energy resolution σ<sub>E</sub>/E (%), same all-fiducial method across the four builds.</caption>
+    <thead><tr><th>E (GeV)</th><th class="m">DSB1</th><th class="m">LuAG</th><th class="m">mixed</th><th class="m">TENERGY</th></tr></thead>
+    <tbody>
+      <tr><td>25</td><td class="m">19.5</td><td class="m">—</td><td class="m">—</td><td class="m">—</td></tr>
+      <tr><td>50</td><td class="m">17.5</td><td class="m">14.0</td><td class="m">15.2</td><td class="m">14.9</td></tr>
+      <tr><td>75</td><td class="m">16.6</td><td class="m">13.5</td><td class="m">14.6</td><td class="m">14.3</td></tr>
+      <tr><td>100</td><td class="m">16.7</td><td class="m">13.6</td><td class="m">14.7</td><td class="m">14.4</td></tr>
+      <tr><td>125</td><td class="m">16.8</td><td class="m">14.0</td><td class="m">14.7</td><td class="m">14.2</td></tr>
+      <tr><td>150</td><td class="m">16.2</td><td class="m">14.5</td><td class="m">14.8</td><td class="m">13.5</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Across all four builds σ<sub>E</sub>/E sits in the <b>~14–17% band</b> with no real trend — the short,
+  leakage-dominated prototype's constant term dominates regardless of crystal (§6). DSB1 reads a little higher
+  here (~16–17%) only because this is the simple all-fiducial estimate; its polished pipeline gives 13.9% at
+  150 GeV (§6, Table 2).</p>
+
+  <h3>8.4 What this picture rests on — and its present scope</h3>
   <p>The same picture explains the high-gain/low-gain timing comparison: the clean, unsaturated low-gain "perfect
   pulses" actually time roughly twice <em>worse</em> than the saturated high-gain ones, because the low-gain
   shape is slow. Slew — a fast edge — beats pulse cleanliness. Light yield delivers slew; that is the whole
   design in one sentence.</p>
+
+  <div class="callout caveat"><span class="lab">Scope</span>
+    <p>The cross-build numbers above (Tables 4–5, Fig. 12) cover all four configurations. The <b>dual-gain
+    linearity, deliberate-saturation, and LG-referenced de-saturation studies of §7</b>, and the HG-vs-LG timing
+    control, were carried out on <b>DSB1 only</b> — DSB1 is the build with raw waveforms reduced locally for the
+    custom CFD-threshold recomputation. Extending them per-build is straightforward (the reduced ntuples already
+    carry per-slot peak, CFD-5% and charge) but is not yet done; we expect the conclusions to carry over, since
+    the timing physics is set by light yield and slew, not by crystal species.</p></div>
 </section>
 
 <!-- ============== 9 SYSTEMATICS ============== -->

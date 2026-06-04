@@ -68,8 +68,20 @@ events** (not the best-bin headline selection):
 | 125 | 56.2 | 55.5 | 56.6 | 59.4 |
 | 150 | 58.4 | 49.8 | 54.5 | 57.9 |
 
+**σ_E/E [%]** (summed LG response, same all-fiducial method):
+
+| E (GeV) | DSB1 | LuAG | MIXED | TENERGY |
+|---|---|---|---|---|
+| 25  | 19.5 | —    | —    | —    |
+| 50  | 17.5 | 14.0 | 15.2 | 14.9 |
+| 75  | 16.6 | 13.5 | 14.6 | 14.3 |
+| 100 | 16.7 | 13.6 | 14.7 | 14.4 |
+| 125 | 16.8 | 14.0 | 14.7 | 14.2 |
+| 150 | 16.2 | 14.5 | 14.8 | 13.5 |
+
 **σ_E/E ≈ 14–17 % for all configs, flat** — the short 4 X₀ prototype's leakage constant
-term dominates regardless of crystal.
+term dominates regardless of crystal. (DSB1 reads ~1–2 % higher here than the others only
+because this is the simple all-fiducial estimate; its polished pipeline gives 13.9 % at 150 GeV.)
 
 > **Selection-dependence (important).** All-fiducial favours LuAG at high E (49.8 < 58.4),
 > but the **best-bin** selection (the one that sets the headline) flips it: DSB1 28 ps vs
