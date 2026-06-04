@@ -412,6 +412,23 @@ capCore-&gt;SetMaterialPropertiesTable(wls);</div>
     <br><br><b>Answer:</b> Yes, but only a handful of <em>Cherenkov</em> photons (RINDEX alone enables Cherenkov),
     not the ~millions of scintillation photons you expected. A nearly-dark detector with a few prompt photons is
     the classic symptom of a missing <code>SCINTILLATIONYIELD</code>.</div></details>
+
+  <div class="warn"><span class="h">Placeholder values — replace before you trust a number</span>
+    <p>The optical and SiPM constants throughout this lab are <b>illustrative</b> — right ballpark, chosen so the
+    code runs and teaches. Before quoting a physics result, pin each to a measured or datasheet value:</p>
+    <ul>
+      <li><b>LYSO (Ch 5–6):</b> exact elemental composition &amp; density, refractive index n(λ), bulk absorption
+         length, scintillation yield (photons/MeV), the fast/slow decay time constants and their weights, the
+         emission spectrum, and the Birks constant.</li>
+      <li><b>Capillary scintillator / WLS (Ch 6–7):</b> the actual material (DSB1, LuAG, …) — its light yield,
+         decay time, emission and absorption spectra, WLS time constant, the fibre-core index, and the wall
+         reflectivity / surface finish.</li>
+      <li><b>SiPM (Ch 9):</b> PDE(λ), gain, dark-count rate, optical-crosstalk and afterpulse probabilities, the
+         number of microcells (which sets saturation), and the single-cell pulse rise/fall times.</li>
+    </ul>
+    <p>Three inputs are <b>already pinned from the test-beam data</b> and need not be guessed: the DRS4 sampling
+    (5 GS/s, 1024 samples), the electronic-noise baseline RMS (~1.3 mV), and the high-gain saturation rail
+    (~820 mV).</p></div>
 </section>
 
 <!-- ===================== 7 ===================== -->
