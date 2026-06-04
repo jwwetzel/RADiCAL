@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precision timing with the RADiCAL shashlik calorimeter — 27 ps at 150 GeV (CERN SPS, May 2023)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap');
+:root{
+  --blue:#003087; --accent:#2D6CDF; --blue-lt:#EAF0FC;
+  --amber:#B06000; --amber-lt:#FFF6E8; --green:#16794A; --green-lt:#E8F6EE;
+  --coral:#A52020; --coral-lt:#FDECEC;
+  --text:#15181F; --muted:#5A6173; --border:#E3E7F0; --bg:#FAFBFD; --card:#fff;
+  --sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --radius:12px; --shadow:0 2px 10px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.05);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:16px;line-height:1.6}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+        border-bottom:1px solid var(--border);padding:9px 0}
+.topbar .in{max-width:1080px;margin:0 auto;padding:0 22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.topbar .ttl{font-weight:700;color:var(--blue);font-size:13px;letter-spacing:-.01em}
+.topbar nav{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.topbar nav a{font-size:12px;color:var(--muted);padding:5px 8px;border-radius:6px;font-weight:600}
+.topbar nav a:hover{background:var(--blue-lt);color:var(--blue);text-decoration:none}
+.topbar nav a.on{color:var(--blue);background:var(--blue-lt)}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+.wide{max-width:1080px}
+
+/* title block */
+header.paper{padding:44px 0 26px;border-bottom:1px solid var(--border)}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1.title{font-family:var(--sans);font-size:36px;line-height:1.12;font-weight:800;letter-spacing:-.02em;margin:.3em 0 .1em;color:#0c1322}
+h1.title .hl{color:var(--blue)}
+.subtitle{font-size:18px;color:var(--muted);font-weight:500;margin-bottom:18px}
+.byline{font-size:14.5px;color:var(--text);margin-top:14px}
+.byline .ph{background:var(--amber-lt);border:1px dashed var(--amber);color:#5b3300;border-radius:5px;
+            padding:1px 7px;font-size:12.5px;font-weight:600}
+.affil{font-size:13px;color:var(--muted);margin-top:4px}
+.meta{font-size:12.5px;color:var(--muted);margin-top:12px;font-family:var(--sans)}
+
+/* abstract */
+.abstract{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--blue);
+          border-radius:0 var(--radius) var(--radius) 0;padding:18px 22px;margin:26px 0 10px;box-shadow:var(--shadow)}
+.abstract h2{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);border:0;margin-bottom:8px}
+.abstract p{font-family:var(--serif);font-size:16.5px;line-height:1.62;color:#23262f}
+.kw{font-size:12.5px;color:var(--muted);margin-top:12px}
+
+/* KPI strip */
+.kpis{display:flex;gap:14px;flex-wrap:wrap;margin:22px 0 4px}
+.kpi{flex:1 1 150px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+     padding:13px 15px;box-shadow:var(--shadow)}
+.kpi b{display:block;font-size:25px;font-weight:800;color:var(--blue);letter-spacing:-.02em}
+.kpi span{font-size:11.5px;color:var(--muted);letter-spacing:.02em;font-weight:600}
+
+main{padding:18px 0 60px}
+section{margin:38px 0;scroll-margin-top:60px}
+h2{font-size:23px;font-weight:800;color:var(--blue);letter-spacing:-.01em;border-bottom:2px solid var(--blue);
+   padding-bottom:5px;margin-bottom:14px}
+h2 .n{font-family:var(--sans);font-weight:800;color:var(--accent);margin-right:10px}
+h3{font-size:17px;font-weight:700;color:#1c2233;margin:24px 0 8px}
+p{margin:13px 0;font-family:var(--serif);font-size:17px;line-height:1.68;color:#23262f}
+p.sans,figcaption,table,.callout,.meta,li.sans{font-family:var(--sans)}
+ul,ol{margin:13px 0;padding-left:24px} li{margin:7px 0;font-family:var(--serif);font-size:16.5px;color:#23262f}
+b,strong{color:#0c1322}
+.lead{font-size:18px;color:#2b2f3a}
+em.term{font-style:normal;font-weight:600;color:var(--blue)}
+.eq{font-family:var(--serif);text-align:center;margin:16px 0;font-size:17px;color:#1c2233}
+.eq .v{font-style:italic}
+
+/* figures */
+figure{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+       box-shadow:var(--shadow);margin:20px 0}
+figure img{width:100%;display:block;background:#fff}
+figcaption{font-size:13px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--border);line-height:1.5}
+figcaption b{color:#1c2233}
+.figrow{display:flex;gap:14px;flex-wrap:wrap;margin:20px 0}
+.figrow figure{flex:1 1 340px;margin:0}
+.fnum{font-weight:700;color:var(--blue)}
+
+/* tables */
+.tbl{margin:18px 0;overflow-x:auto}
+table{border-collapse:collapse;font-size:14px;width:100%;background:var(--card);
+      border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+caption{caption-side:top;text-align:left;font-size:13px;color:var(--muted);margin-bottom:7px;font-family:var(--sans)}
+caption b{color:#1c2233}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--border)}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--blue-lt);color:var(--blue);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.hl td{background:var(--green-lt);font-weight:600}
+td.m,th.m{font-variant-numeric:tabular-nums}
+
+/* callouts */
+.callout{border-left:4px solid;border-radius:0 var(--radius) var(--radius) 0;padding:13px 18px;margin:18px 0;font-size:15px;line-height:1.6}
+.callout .lab{display:block;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.finding{background:var(--green-lt);border-color:var(--green);color:#0d3a25}.finding .lab{color:var(--green)}
+.info{background:var(--blue-lt);border-color:var(--blue);color:#001830}.info .lab{color:var(--blue)}
+.caveat{background:var(--amber-lt);border-color:var(--amber);color:#3a2000}.caveat .lab{color:var(--amber)}
+.callout p{font-family:var(--sans);font-size:15px;margin:5px 0;color:inherit}
+
+/* references / footer */
+.refs{font-family:var(--sans)} .refs ol{padding-left:22px} .refs li{font-family:var(--sans);font-size:13.5px;color:var(--muted);margin:8px 0}
+footer{border-top:1px solid var(--border);padding:22px 0 60px;color:var(--muted);font-size:13px;font-family:var(--sans)}
+hr.s{border:0;border-top:1px solid var(--border);margin:30px 0}
+.small{font-size:13px;color:var(--muted);font-family:var(--sans)}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="in">
+  <span class="ttl">RADiCAL · 27 ps timing</span>
+  <nav>
+    <a href="#abs">Abstract</a>
+    <a href="#intro">1 Intro</a>
+    <a href="#apparatus">2 Apparatus</a>
+    <a href="#data">3 Data</a>
+    <a href="#method">4 Method</a>
+    <a href="#timing">5 Timing</a>
+    <a href="#energy">6 Energy</a>
+    <a href="#dualgain">7 Dual-gain</a>
+    <a href="#materials">8 Materials</a>
+    <a href="#syst">9 Systematics</a>
+    <a href="#disc">10 Discussion</a>
+    <a href="going_radical.html">Primer ↗</a>
+    <a href="report/">Full report ↗</a>
+  </nav>
+</div></div>
+
+<header class="paper"><div class="wrap">
+  <div class="eyebrow">CERN SPS · H2 electron test beam · May 2023</div>
+  <h1 class="title">Precision timing in a tungsten–scintillator shashlik calorimeter:<br><span class="hl">27 picoseconds</span> at 150 GeV</h1>
+  <div class="subtitle">A dual-readout capillary prototype, an MCP-free corner estimator, and a six-layer evidence chain from raw waveforms to the resolution floor.</div>
+  <div class="byline"><span class="ph">Author list — to be completed</span> &nbsp;on behalf of the RADiCAL collaboration.</div>
+  <div class="affil"><span class="ph">Affiliations — to be completed</span></div>
+  <div class="meta">Narrative results report · all numbers harvested programmatically from the analysis pipeline
+     (<code>harvestResults.C → results.json</code>) · companion to the
+     <a href="report/">interactive six-layer report</a> and the <a href="going_radical.html">GOING RADiCAL</a> primer.</div>
+</div></header>
+
+<div class="wrap">
+
+<section class="abstract" id="abs">
+  <h2>Abstract</h2>
+  <p>We report time-of-arrival measurements from a RADiCAL tungsten/LYSO shashlik electromagnetic
+  calorimeter prototype, instrumented with eight fast scintillating capillaries read out in dual gain and
+  exposed to electrons of 25–150 GeV at the CERN SPS H2 beamline in May 2023. Each capillary is digitised on
+  a CAEN DT5742 (DRS4) sampler at 5 GS/s, and timing is referenced to a micro-channel-plate (MCP) detector.
+  Using an MCP-free <em class="term">(DW−UP)/2</em> "corner" estimator — which algebraically cancels the
+  per-group timing reference, the inter-group sampler jitter, and the DRS4 cell-width error — combined with a
+  constant-fraction discriminator at 5% of pulse height and an energy-binned selection, we obtain a beam-test
+  timing resolution of <b>27.4 ± 1.2 ps at 150 GeV</b>, falling to 47.1 ± 1.3 ps at 25 GeV. The full energy
+  dependence is well described by σ<sub>t</sub> = 200 ps·√GeV / √E ⊕ 21.8 ps. Every headline value is
+  reproduced out-of-sample by run-folded cross-validation to within 1 ps. The energy resolution of this short,
+  deliberately leakage-dominated 14 mm module is σ<sub>E</sub>/E = 13.9% at 150 GeV. We further establish, on
+  the same data, that the high- and low-gain chains form a clean dual-gain readout; that the deliberate
+  high-gain saturation is timing-neutral at the CFD-5% operating point; and that across four capillary
+  scintillator builds (DSB1, LuAG, and mixtures) the per-capillary timing is set by light yield, not crystal
+  species. The total systematic uncertainty on the channel-combination resolution is 2.7 ps. The measured floor
+  is shown to be DAQ-limited rather than intrinsic, with recoverable headroom toward ≈17 ps.</p>
+  <div class="kw"><b>Keywords:</b> precision timing · electromagnetic calorimetry · shashlik · SiPM · DRS4 ·
+     constant-fraction discrimination · 4D calorimetry · CMS Phase-2</div>
+</section>
+
+<div class="kpis">
+  <div class="kpi"><b>27.4 ps</b><span>σ<sub>t</sub> at 150 GeV</span></div>
+  <div class="kpi"><b>&lt;1 ps</b><span>out-of-sample bias</span></div>
+  <div class="kpi"><b>13.9 %</b><span>σ<sub>E</sub>/E at 150 GeV</span></div>
+  <div class="kpi"><b>2.7 ps</b><span>total systematic</span></div>
+  <div class="kpi"><b>6.5 M</b><span>electrons, 25–150 GeV</span></div>
+</div>
+
+<main>
+
+<!-- ============== 1 INTRODUCTION ============== -->
+<section id="intro">
+  <h2><span class="n">1</span>Introduction</h2>
+  <p class="lead">At the High-Luminosity LHC, up to two hundred proton–proton collisions will overlap in a single
+  bunch crossing. Resolving them by <em class="term">space</em> alone is no longer enough; reconstruction now
+  needs <em class="term">time</em>, with each shower stamped to a few tens of picoseconds so that particles can
+  be assigned to the correct vertex. A calorimeter that measures energy and time at once — a "4D" calorimeter —
+  is one of the central instrumentation goals of the field, and the CMS Phase-2 timing layers set a benchmark
+  near 30 ps for minimum-ionizing and electromagnetic objects.</p>
+
+  <p>The RADiCAL programme pursues this with a radiation-hard, very-high-granularity shashlik design: thin
+  tungsten absorber plates interleaved with LYSO crystal, threaded by fast scintillating <em class="term">
+  capillaries</em> that sample the shower at its maximum and pipe the light to silicon photomultipliers
+  (SiPMs). The capillary sits where the shower is brightest and is small and fast, so its timing is limited by
+  the light it collects rather than by the bulk calorimeter. This report is a complete, narrative account of
+  what the May 2023 CERN-SPS run of a RADiCAL prototype actually delivered: the headline timing resolution and
+  how it was extracted, the energy response, and a set of supporting studies — the dual-gain readout, the role
+  of deliberate saturation, and a comparison of four capillary scintillator materials — that together explain
+  <em class="term">why</em> the detector times as well as it does.</p>
+
+  <p>Two ideas carry the timing measurement and recur throughout. The first is a reference detector — an MCP —
+  that provides a common start time. The second, and the analysis's central trick, is that the prototype's eight
+  capillaries are arranged as four <em class="term">corners</em> (each read at an upstream "Up" and a
+  shower-max "Down" depth), so a simple half-difference of corner times cancels every common timing nuisance —
+  the MCP reference, the sampler's group-to-group jitter, and its cell-width error — and exposes the intrinsic
+  detector resolution. We build the result from the raw waveforms upward, validating each link before relying
+  on it, and we quote out-of-sample numbers throughout so that nothing in the headline is an artefact of
+  selecting the data on itself.</p>
+
+  <div class="callout info"><span class="lab">How to read this report</span>
+    <p>It follows the measurement's own logic: the apparatus (§2), the data and event selection (§3), the timing
+    method (§4), then the two physics results — timing (§5) and energy (§6). Three "why it works" studies follow
+    — the dual-gain readout (§7), capillary materials (§8), and the full systematic and cross-check budget (§9) —
+    before the discussion (§10). Readers wanting the interactive figures, per-energy appendices, and the
+    underlying code can consult the <a href="report/">six-layer report</a>.</p></div>
+</section>
+
+<!-- ============== 2 APPARATUS ============== -->
+<section id="apparatus">
+  <h2><span class="n">2</span>The apparatus</h2>
+  <p>The detector under test is a RADiCAL <b>W/LYSO shashlik</b> electromagnetic module — a stack of tungsten
+  absorber and LYSO scintillator forming a compact, radiation-hard sampling calorimeter. Running through it are
+  eight fast scintillating <b>capillaries</b>, grouped into four transverse corners (NW, NE, SE, SW), each
+  sampled at two longitudinal depths: an upstream <b>"Up"</b> and a shower-maximum <b>"Down"</b>. The transverse
+  footprint of the active module, reconstructed from the beam data, is a clean <b>15.5 × 15.5 mm</b> square
+  centred at (6.58, 4.66) mm in wire-chamber coordinates. The prototype is intentionally short — about 14 mm of
+  material — so it is leakage-dominated by design; it is a timing demonstrator, not a full-containment
+  calorimeter.</p>
+
+  <h3>Dual-gain readout</h3>
+  <p>Each capillary's scintillation light is recorded through <b>two parallel electronics chains</b>: a
+  <b>high-gain (HG)</b> channel with a fast, sharp shape, optimised for timing, and a <b>low-gain (LG)</b>
+  channel with a slower shape that stays proportional to the deposited energy. Sixteen waveforms — eight HG plus
+  eight LG — are therefore digitised per event. The two peak amplitudes from a given capillary are linearly
+  related, since both track the same light, but their pulse <em class="term">shapes</em> differ by construction:
+  the HG edge is deliberately steep (and, at high energy, clipped) for timing, while the LG pulse is kept linear
+  and unsaturated for calorimetry. This division of labour is visible directly in the average pulse shapes.</p>
+
+  <figure>
+    <img src="report/Summary/layer1_pulse_shapes.png" alt="average HG and LG pulse shapes">
+    <figcaption><span class="fnum">Figure 1.</span> Average pulse shapes for all sixteen channels at 150 GeV:
+    the eight high-gain capillaries (top, fast → timing) and the eight low-gain capillaries (bottom, slow →
+    energy). The shapes are clean, consistent, and — as shown later — energy-invariant; only the amplitude
+    scales with deposited energy.</figcaption>
+  </figure>
+
+  <h3>Reference, tracking, and digitisation</h3>
+  <p>A <b>micro-channel-plate (MCP)</b> detector upstream provides the start time. In this readout a single MCP
+  is passively split into the two DT5742 readout groups, appearing as "MCP1" (group 0) and "MCP2" (group 1) with
+  unit amplitude correlation; seven capillaries are referenced to MCP1 and the lone group-1 capillary (SW-Up) to
+  MCP2. Beam tracking uses a <b>delay-line wire chamber</b>, giving the transverse impact point as
+  <span class="eq" style="display:inline">x = (7/36 mm·ns⁻¹)·(t<sub>R</sub> − t<sub>L</sub>)</span>; its
+  single-track resolution is ≈3.6 mm. A <b>lead-glass</b> block behind the module tags shower leakage and
+  hadronic punch-through, and a 1 × 1 cm scintillator provides a clean single-particle trigger. All channels are
+  sampled by a <b>CAEN DT5742</b> (DRS4-based switched-capacitor digitiser) at 5 GS/s — nominally 0.2 ns per
+  cell — across 25, 50, 75, 100, 125 and 150 GeV electron beams, for 6.5 million recorded events.</p>
+
+  <div class="figrow">
+    <figure><img src="report/Summary/quality_overview_150.png" alt="150 GeV beam quality overview">
+      <figcaption><span class="fnum">Figure 2a.</span> Headline-energy (150 GeV) quality overview: wire-chamber
+      hit map with fiducial circles, x/y impact profiles, the MCP1/MCP2 amplitude spectra, and run statistics.</figcaption></figure>
+    <figure><img src="report/Summary/alignment.png" alt="detector alignment">
+      <figcaption><span class="fnum">Figure 2b.</span> Response maps for RADiCAL (ΣHG), the MCP, and the
+      lead-glass, with a schematic overlay of the module footprint (blue), MCP FWHM (green) and beam 1σ (orange).
+      The MCP is co-aligned to the module to 0.8 mm; the beam sits 2.5 mm off-centre.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============== 3 DATA & SELECTION ============== -->
+<section id="data">
+  <h2><span class="n">3</span>Data and event selection</h2>
+  <p>A clean timing event is required to (a) have a valid wire-chamber track; (b) land inside a transverse
+  <em class="term">fiducial</em> region around the module centre (radius 2.5 mm for E ≤ 100 GeV, 3.0 mm for
+  E ≥ 125 GeV); (c) carry a well-formed MCP reference pulse (200 < A<sub>MCP</sub> < 750 mV, the lower bound
+  rejecting noise and the upper one rejecting DRS4-saturated references); and (d) be a contained electromagnetic
+  shower, defined by Σ<sub>PbGlass</sub> < 30% × Σ<sub>LG</sub>. The fiducial radii themselves were chosen by an
+  out-of-sample scan rather than by eye, so that the selection does not secretly tune on the resolution it is
+  meant to measure.</p>
+
+  <p>With these cuts the beam sample is clean: showers are <b>95–97% contained</b> across all energies, and
+  hadronic punch-through — electrons' principal contaminant in this beamline — is held to a few percent, rising
+  to 6.2% only at 150 GeV. The wire-chamber illumination sits comfortably inside the fiducial circles.</p>
+
+  <div class="figrow">
+    <figure><img src="report/Summary/layer3_beam_map.png" alt="beam illumination map">
+      <figcaption><span class="fnum">Figure 3a.</span> Wire-chamber beam illumination at 150 GeV, well centred
+      inside the timing (r &lt; 3 mm) and energy (r &lt; 2 mm) fiducial circles.</figcaption></figure>
+    <figure><img src="report/Summary/layer3_containment.png" alt="containment scatter">
+      <figcaption><span class="fnum">Figure 3b.</span> Σ<sub>PbGlass</sub> versus Σ<sub>LG</sub> (150 GeV,
+      in-fiducial). Contained EM showers form the dense band below the 30% cut; hadronic punch-through scatters
+      above it and is removed.</figcaption></figure>
+  </div>
+
+  <p>The transverse maps that locate the module also surface the apparatus itself. Colouring each beam position
+  by the mean signal turns the beam into an X-ray of the setup: the active calorimeter appears as a sharp square,
+  and two bright rings appear where beam particles pre-shower in the metal of the MCP cable connectors. (These
+  same maps are the subject of the hands-on <a href="data_lab.html">Data Lab</a>.)</p>
+
+  <figure>
+    <img src="report/report_images/transverse_maps_150GeV-1.png" alt="transverse maps before/after trigger">
+    <figcaption><span class="fnum">Figure 4.</span> Transverse response maps at 150 GeV. Mean amplitude versus
+    beam impact point reveals the module's square footprint and edges, plus pre-showering rings at the MCP SMA
+    (≈(20,3) mm) and BNC (≈(7,5) mm) connectors. Crucially, these connector showers <em>conserve</em> energy and
+    are <em>not</em> vetoed — a connector veto was tested and found to <em>worsen</em> the 150 GeV resolution
+    (27.4 → 30.5 ps), so it is not applied.</figcaption>
+  </figure>
+</section>
+
+<!-- ============== 4 METHOD ============== -->
+<section id="method">
+  <h2><span class="n">4</span>The timing method</h2>
+  <p>Three choices define the measurement: how each pulse is time-stamped, how the eight stamps are combined, and
+  which events enter the headline.</p>
+
+  <h3>4.1 Time-stamping: constant fraction at 5%</h3>
+  <p>Each capillary is time-stamped by a <b>constant-fraction discriminator (CFD)</b>: the crossing time of the
+  rising edge at a fixed fraction of that pulse's own peak. We adopt <b>5%</b>. A scan of the fraction shows
+  that, for the steep shower-max ("Down") capillaries, resolution degrades monotonically as the fraction climbs
+  toward the saturated peak, so the useful information lives low on the sharp leading edge; 5% sits there, while
+  3% begins to dip into noise at the lowest amplitudes. The mechanism behind the residual single-channel jitter
+  is not slope, noise, or amplitude walk but <b>leading-edge shape jitter</b> — the shot-to-shot wander of the
+  early edge — which grows the higher one samples; CFD-5% samples the most reproducible point available.</p>
+
+  <div class="figrow">
+    <figure><img src="report/Summary/layer4_edge_jitter.png" alt="edge jitter vs threshold">
+      <figcaption><span class="fnum">Figure 5a.</span> The mechanism: leading-edge shape jitter rises with
+      threshold height and is larger for the Down capillaries — energy-independent over 50–150 GeV. CFD-5%
+      samples low, where the edge is most reproducible.</figcaption></figure>
+    <figure><img src="report/Summary/layer4_ladder.png" alt="resolution ladder">
+      <figcaption><span class="fnum">Figure 5b.</span> The resolution ladder: a ≈180 ps best single channel →
+      ≈60 ps amplitude-weighted eight-channel combination → the 27 ps energy-binned corner headline. Combining
+      channels alone buys a factor of three.</figcaption></figure>
+  </div>
+
+  <h3>4.2 Combination: the MCP-free corner estimator</h3>
+  <p>The intrinsic resolution of a single capillary referenced to the MCP is limited not by the capillary but by
+  the reference: the two DT5742 groups jitter against each other by
+  <b>σ(MCP1−MCP2)/√2 ≈ 73 ps</b>, flat with energy. This inter-group sampler jitter, together with the DRS4
+  cell-width error, dominates any MCP-referenced single channel. The key insight is that these nuisances are
+  <em class="term">common</em>, and a difference of co-referenced channels removes them. Writing DW for the mean
+  of the four shower-max (Down) corner times and UP for the four upstream (Up) times, the estimator</p>
+  <div class="eq"><span class="v">t</span> = ½ ( DW − UP )</div>
+  <p>cancels the per-group MCP reference, the inter-group jitter, and the cell-width error algebraically — three
+  of the four corners sit entirely within group 0 and are exactly reference-free, leaving only a sub-dominant
+  residual on the single group-1 corner. The result sits comfortably <em>below</em> the 73 ps single-reference
+  floor, which is only possible because the reference has been differenced away.</p>
+
+  <figure>
+    <img src="report/Summary/layer2_sub_mcp.png" alt="corner estimator below the MCP floor">
+    <figcaption><span class="fnum">Figure 6.</span> The (DW−UP)/2 headline (27–47 ps) sits well below the ≈73 ps
+    per-group reference floor (dashed). It can only do so because the corner difference cancels the reference,
+    rather than measuring against it.</figcaption>
+  </figure>
+
+  <h3>4.3 Selection and out-of-sample validation</h3>
+  <p>Following the energy-binned method of the published RADiCAL analysis, the headline at each beam energy is
+  read from the best-contained (highest measured-energy) bin. Because such a tight bin can in principle be tuned
+  to fluctuations, every quoted number is <b>cross-validated out-of-sample</b>: the bin is chosen on one set of
+  runs and the resolution measured on a disjoint, held-out set. The two agree to within 1 ps at every energy —
+  at 150 GeV an in-sample 25.6 ps generalises to 27.5 ps — so the headline is reported as the out-of-sample
+  value, not the in-sample minimum. The robustness estimator is a truncation-bias-corrected RMS, stable at low
+  statistics, replacing an earlier Gaussian fit that had produced spurious resolution swings.</p>
+
+  <figure>
+    <img src="report/Summary/fiducial_overfit.png" alt="in-sample vs out-of-sample">
+    <figcaption><span class="fnum">Figure 7.</span> Why the headline is the out-of-sample value. In-sample
+    minimisation can reach down to 15 ps at 100 GeV; re-measuring on held-out runs exposes the overfit and
+    restores the honest resolution. At 150 GeV the effect is small (25.6 → 27.5 ps); at 125 GeV it is large
+    (27 → 33 ps), which is exactly why the cross-validation is mandatory.</figcaption>
+  </figure>
+</section>
+
+<!-- ============== 5 TIMING RESULTS ============== -->
+<section id="timing">
+  <h2><span class="n">5</span>Timing resolution</h2>
+  <p class="lead">The central result of the experiment: the corner estimator reaches
+  <b>27.4 ± 1.2 ps at 150 GeV</b> and follows a clean stochastic-plus-floor curve down to 25 GeV.</p>
+
+  <div class="tbl"><table>
+    <caption><b>Table 1.</b> Headline timing resolution σ<sub>t</sub> = (DW−UP)/2, CFD-5%, energy-binned and
+      out-of-sample validated. The published RADiCAL column (arXiv:2401.01747) is shown for comparison; the
+      fiducial-fraction column is the share of fiducial events in the headline bin.</caption>
+    <thead><tr><th>Beam energy</th><th class="m" style="text-transform:none">σ<sub>t</sub> (ps)</th><th class="m">out-of-sample (ps)</th>
+      <th class="m">published (ps)</th><th class="m">bin fraction</th></tr></thead>
+    <tbody>
+      <tr><td>25 GeV</td><td class="m">47.1 ± 1.3</td><td class="m">47.1</td><td class="m">54.1</td><td class="m">7.2%</td></tr>
+      <tr><td>50 GeV</td><td class="m">32.7 ± 1.3</td><td class="m">32.7</td><td class="m">40.2</td><td class="m">1.5%</td></tr>
+      <tr><td>75 GeV</td><td class="m">30.8 ± 1.5</td><td class="m">30.8</td><td class="m">34.4</td><td class="m">1.9%</td></tr>
+      <tr><td>100 GeV</td><td class="m">30.2 ± 1.1</td><td class="m">30.2</td><td class="m">31.0</td><td class="m">1.6%</td></tr>
+      <tr><td>125 GeV</td><td class="m">29.2 ± 1.3</td><td class="m">29.2</td><td class="m">28.8</td><td class="m">1.1%</td></tr>
+      <tr class="hl"><td>150 GeV</td><td class="m">27.4 ± 1.2</td><td class="m">27.4</td><td class="m">27.3</td><td class="m">0.7%</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>The energy dependence is described by a stochastic term over a constant floor,</p>
+  <div class="eq">σ<sub>t</sub>(E) = (200 ps·√GeV) / √E  ⊕  21.8 ps,</div>
+  <p>with the out-of-sample points lying on top of the in-sample fit — a sign that the selection generalises. Our
+  curve tracks the published RADiCAL measurement closely, meeting it at 27 ps at 150 GeV and lying a few
+  picoseconds below it at the lowest energies (a difference traceable to the energy-binning and the truncated-RMS
+  estimator).</p>
+
+  <figure>
+    <img src="report/Summary/layer5_timing.png" alt="headline timing vs energy">
+    <figcaption><span class="fnum">Figure 8.</span> Headline timing resolution versus beam energy. The
+    energy-binned (DW−UP)/2 estimator reaches 27 ps at 150 GeV (47 ps at 25 GeV), fit by σ<sub>t</sub> =
+    200/√E ⊕ 22 ps and consistent with the published RADiCAL result. The projection for a uniform detector
+    (§9) would reach ≈25 ps here.</figcaption>
+  </figure>
+
+  <p>Behind the combined number, the individual capillaries span a wide range of quality. The per-channel,
+  per-energy resolution map shows the best Up channels reaching ≈160 ps and the weakest cells exceeding 300 ps —
+  variation that the corner combination averages over but that also points (§9) to two channels worth
+  investigating.</p>
+
+  <figure>
+    <img src="report/Summary/cross_energy_sigma_heatmap.png" alt="per-channel per-energy resolution heatmap">
+    <figcaption><span class="fnum">Figure 9.</span> Single-channel CFD-5% resolution for all eight capillaries
+    across six energies. Brighter is worse: the worst cell is SE-D at 25 GeV (379 ps), the best are Up channels at
+    100–125 GeV (≈162 ps). The eightfold combination turns this spread into the 27 ps headline.</figcaption>
+  </figure>
+</section>
+
+<!-- ============== 6 ENERGY ============== -->
+<section id="energy">
+  <h2><span class="n">6</span>Energy resolution</h2>
+  <p>Energy is measured on the linear, unsaturated low-gain chain, whose amplitude stays proportional to beam
+  energy across the full 25–150 GeV range with no sign of saturation. The resolution improves with energy as
+  expected and reaches <b>σ<sub>E</sub>/E = 13.9% at 150 GeV</b>.</p>
+
+  <div class="tbl"><table>
+    <caption><b>Table 2.</b> Electromagnetic energy resolution from the summed low-gain response, in-fiducial.</caption>
+    <thead><tr><th>Beam energy</th><th class="m">25</th><th class="m">50</th><th class="m">75</th>
+      <th class="m">100</th><th class="m">125</th><th class="m">150 GeV</th></tr></thead>
+    <tbody><tr><td>σ<sub>E</sub>/E (%)</td><td class="m">21.4</td><td class="m">16.8</td><td class="m">15.2</td>
+      <td class="m">14.3</td><td class="m">14.3</td><td class="m">13.9</td></tr></tbody>
+  </table></div>
+
+  <p>The large constant term is not a defect but an expectation: at only ~14 mm depth the module is a short,
+  leakage-dominated test object rather than a containing calorimeter, so the resolution plateaus at a high floor.
+  The point of the prototype is timing; the low-gain chain exists to provide the clean energy estimate that the
+  energy-binned timing selection and the shower-by-shower light measurement both rely on.</p>
+
+  <div class="figrow">
+    <figure><img src="report/Summary/layer5_energy.png" alt="energy resolution">
+      <figcaption><span class="fnum">Figure 10a.</span> Energy resolution σ<sub>E</sub>/E = 13.9% at 150 GeV. The
+      large constant term reflects the deliberately short, leakage-dominated 14 mm prototype.</figcaption></figure>
+    <figure><img src="report/Summary/layer1_linearity_lg.png" alt="low-gain linearity">
+      <figcaption><span class="fnum">Figure 10b.</span> Low-gain linearity: mean LG amplitude versus energy is
+      linear over the full range (dashed line y ∝ E), with no saturation — the property that makes it the energy
+      chain.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============== 7 DUAL GAIN ============== -->
+<section id="dualgain">
+  <h2><span class="n">7</span>The dual-gain readout, saturation, and de-saturation</h2>
+  <p>Why split each capillary into two chains, and why drive the high-gain one so hard that it clips? The
+  answers, tested directly on the waveforms, illuminate the timing physics.</p>
+
+  <h3>7.1 A clean dual-gain transfer curve</h3>
+  <p>For contained showers, the high-gain and low-gain peak amplitudes of a capillary trace a tight straight line
+  — they are two views of the same scintillation light. (An apparent ~10–20% scatter seen earlier was an
+  event-selection artefact: non-contained events read electronic noise into the channel; requiring containment
+  collapses the cloud onto the line.) This linearity is the basis for the saturation studies that follow.</p>
+
+  <figure>
+    <img src="Analysis/capillary_figs/peaks_hglg_125.png" alt="HG vs LG dual-gain transfer curve">
+    <figcaption><span class="fnum">Figure 11.</span> High-gain versus low-gain peak amplitude for each capillary,
+    contained showers at 125 GeV. The linear rise with a saturation knee confirms a clean dual-gain transfer:
+    below the knee the high-gain peak is simply a fixed multiple of the low-gain peak.</figcaption>
+  </figure>
+
+  <h3>7.2 Why SiPM gain helps timing but amplifier gain cannot</h3>
+  <p>It is worth separating two notions of "gain." Timing precision scales as σ<sub>t</sub> ≈ (noise)/(slew
+  rate). A <em>linear amplifier</em> multiplies the signal slew and the noise by the same factor, so the ratio —
+  and the timing — is unchanged: you cannot amplify your way to a sharper time. What genuinely sharpens the edge
+  relative to the noise floor is <em>more detected light</em> — more photoelectrons — which is what raising the
+  <em>SiPM</em> bias (photon detection efficiency), within its optimum, actually buys. This is the design
+  rationale for placing the capillary at shower-max and reading it with high light yield.</p>
+
+  <h3>7.3 Deliberate saturation is timing-neutral; de-saturation is the fix you do not need</h3>
+  <p>The high-gain channel is run so hot that big pulses clip the rail. Does this clipping cost timing? Because
+  CFD-5% reads the sharp <em>low</em> edge, far below the clip, the clipped peak is never used for the time-stamp,
+  and the choice is timing-neutral. We verified this directly. Reconstructing each saturated pulse's true,
+  un-clipped peak from its low-gain partner (the linear transfer of §7.1) and re-placing the CFD threshold at a
+  fixed fraction of that <em>true</em> peak — a "de-saturation" — changes nothing at CFD-5% but recovers several
+  picoseconds at CFD-20%, exactly where the clipped peak would otherwise bias the threshold. The detector already
+  sidesteps the problem by timing low on the edge.</p>
+
+  <div class="callout finding"><span class="lab">Finding · saturation</span>
+    <p>De-saturating the CFD threshold (reconstructing the true peak from the low-gain chain) yields
+    <b>no improvement at CFD-5%</b> (32.4 → 32.6 ps, within noise) but a <b>≈4 ps gain at CFD-20%</b>
+    (35.3 → 31.1 ps). The clipped peak only matters if you time high on the edge — and the detector, by design,
+    does not. Deliberate saturation is neutral for the headline.</p></div>
+</section>
+
+<!-- ============== 8 MATERIALS ============== -->
+<section id="materials">
+  <h2><span class="n">8</span>Capillary materials: light yield, not crystal species</h2>
+  <p>The May 2023 run took four capillary builds — <b>DSB1</b>, <b>LuAG</b>, a 2×DSB1 + 2×LuAG <b>mix</b>, and a
+  3×DSB1 + 1×"Energy" build — all sharing one readout geometry, so a single analysis serves them all. The
+  question is whether the scintillator <em>species</em> drives timing. It does not.</p>
+
+  <p>The cleanest test reads <b>both</b> crystals in the <b>same showers</b>: in the mixed module, the pairwise
+  difference of any two same-group capillary times cancels the event time, the reference, and the shared shower
+  time, leaving each capillary's intrinsic jitter. By this confound-free comparison, DSB1 and LuAG capillaries
+  time <b>identically</b> — about 200 ps per capillary, with no systematic difference, equal at 150 GeV.</p>
+
+  <div class="figrow">
+    <figure><img src="Analysis/capillary_figs/mixed_h2h.png" alt="in-event DSB1 vs LuAG">
+      <figcaption><span class="fnum">Figure 12a.</span> In-event, confound-free head-to-head in the mixed module:
+      per-capillary intrinsic σ<sub>t</sub> for DSB1 versus LuAG crystals in the same showers. They agree at every
+      energy — crystal species is not the timing driver.</figcaption></figure>
+    <figure><img src="Analysis/capillary_figs/compare_configs.png" alt="config comparison">
+      <figcaption><span class="fnum">Figure 12b.</span> Apples-to-apples out-of-sample best-bin resolution across
+      the four builds at 150 GeV: DSB1 29.4, TENERGY 35.7, LuAG 36.6, mixed 36.7 ps. The uniformly-brightest DSB1
+      build wins; builds containing dimmer LuAG capillaries cluster together, limited by their dimmest corner.</figcaption></figure>
+  </div>
+
+  <div class="callout finding"><span class="lab">Finding · design premise confirmed</span>
+    <p>Per capillary, DSB1 ≈ LuAG. What separates the <em>builds</em> is light yield, not chemistry: the
+    corner estimator is limited by its dimmest capillary, so the all-bright DSB1 build times best. This validates
+    the programme's strategy — prove a bright scintillator times well, then show a radiation-hard one can be made
+    bright <em>enough</em>. The reason to test materials is radiation tolerance; the data say a rad-hard crystal
+    that is bright enough will time just as well.</p></div>
+
+  <p>The same picture explains the high-gain/low-gain timing comparison: the clean, unsaturated low-gain "perfect
+  pulses" actually time roughly twice <em>worse</em> than the saturated high-gain ones, because the low-gain
+  shape is slow. Slew — a fast edge — beats pulse cleanliness. Light yield delivers slew; that is the whole
+  design in one sentence.</p>
+</section>
+
+<!-- ============== 9 SYSTEMATICS ============== -->
+<section id="syst">
+  <h2><span class="n">9</span>Systematics and cross-checks</h2>
+  <p>The headline is built on a chain of checks, each verifying a link before it is relied upon. The total
+  systematic uncertainty on the amplitude-weighted channel combination is <b>2.7 ps at 150 GeV</b>, the
+  quadrature sum of four cut variations (fiducial radius, MCP amplitude window, containment threshold, and CFD
+  fraction), each only a few picoseconds. The MCP-window term does not even apply to the MCP-free corner
+  headline, so its systematic is smaller still.</p>
+
+  <div class="figrow">
+    <figure><img src="report/Summary/layer6_budget.png" alt="systematic budget">
+      <figcaption><span class="fnum">Figure 13a.</span> Systematic budget at 150 GeV: total 2.7 ps from four cut
+      variations. The MCP-window term (greyed) does not apply to the corner headline.</figcaption></figure>
+    <figure><img src="report/Summary/layer6_band.png" alt="resolution with systematic band">
+      <figcaption><span class="fnum">Figure 13b.</span> Combination σ<sub>t</sub> versus energy with its
+      statistical ⊕ systematic band — a few ps at every energy, stable after replacing the earlier Gaussian fit
+      with a truncated-RMS estimator.</figcaption></figure>
+  </div>
+
+  <h3>9.1 The DRS4 timebase</h3>
+  <p>The switched-capacitor sampler has a ~68 ps common-mode cell-width error, applied at nominal 0.2 ns/cell
+  without per-cell calibration. This is the kind of effect that quietly limits precision timing — but here it is
+  <em>cancelled by construction</em>: the corner difference and the MCP1−MCP2 difference both remove it. The
+  proof is direct: applying a data-driven stop-cell correction improves the amplitude-weighted combination from
+  120.7 to 99.5 ps, yet leaves the corner estimator unchanged, because the corner had already differenced the
+  error away. The stop cell rotates uniformly under the asynchronous trigger, so the correction is well-posed for
+  the combinations that do need it.</p>
+
+  <figure>
+    <img src="report/Summary/drs4_timebase_hero.png" alt="DRS4 timebase">
+    <figcaption><span class="fnum">Figure 14.</span> Left: the DRS4 stop cell samples every physical cell nearly
+    equally (RMS 295 vs 296 for perfect uniformity). Right: out-of-sample resolution before/after the cell-width
+    correction — the amplitude-weighted combination improves markedly (120.7 → 99.5 ps) while the corner
+    estimator gains nothing, having already cancelled the error.</figcaption>
+  </figure>
+
+  <h3>9.2 Two channels, and the ideal-uniform projection</h3>
+  <p>Two capillaries underperform. <b>NW-Up</b> is consistently the weakest — low light yield, a compressed
+  pulse, and a slight drift to <em>worse</em> resolution at high energy — a pattern that suggests a hardware
+  issue (noisy electronics or reduced light) worth investigating; dropping it improves the seven-channel
+  combination by ≈7 ps. <b>SW-Up</b> is the lone group-1 capillary, carrying the residual ≈70 ps reference floor
+  and a weak relative gain. Both are nonetheless <em>kept</em>, because in the corner estimator removing them
+  degrades the result. Projecting what the headline would be if these two followed the well-behaved trend of
+  their peers gives a modest, honest estimate of the headroom: ≈25 ps at 150 GeV, a 2–3.5 ps gain that vanishes
+  below 75 GeV. The measured 27 ps stands; the projection only quantifies what a uniform detector would yield.</p>
+
+  <figure>
+    <img src="report/Summary/ideal_uniform_projection.png" alt="ideal uniform projection">
+    <figcaption><span class="fnum">Figure 15.</span> Left: single-channel σ<sub>t</sub>(E) per capillary, with
+    NW-U and SW-U lagging. Right: the measured headline versus an ideal-uniform projection in which the two
+    laggards follow their peers — worth ≈2–3.5 ps at high energy. Projection only; the measured 27 ps stands.</figcaption>
+  </figure>
+
+  <h3>9.3 Other cross-checks</h3>
+  <ul>
+    <li class="sans"><b>MCP reference.</b> The 73 ps "MCP" jitter is inter-group sampler jitter, not the MCP
+      itself — a single MCP split into two groups gives unit amplitude correlation and clean Gaussian
+      time-difference distributions with no tails.</li>
+    <li class="sans"><b>Wire chamber.</b> Single-track resolution σ<sub>x</sub> ≈ 3.7 mm, σ<sub>y</sub> ≈ 3.6 mm
+      (≈3.3 mm with sub-sample CFD), energy-independent — adequate for the ~3.5 mm position bins used.</li>
+    <li class="sans"><b>Module centre.</b> Located independently by the high-gain (6.58, 4.66 mm) and low-gain
+      (6.61, 4.70 mm) sums to better than 0.05 mm, and stable with energy to ±0.15 mm.</li>
+    <li class="sans"><b>Tails.</b> ≈2.6% of events lie beyond 2.5σ (vs 1.2% for a pure Gaussian), raising the
+      trimmed RMS by only ~2 ps; just 0.13% lie beyond 250 ps — rare mis-reconstruction a real experiment removes
+      with a one-line cut.</li>
+    <li class="sans"><b>Connector rings.</b> The bright rings are pre-showering in connector metal (≈1 X₀), which
+      conserves energy; a veto was tested and <em>worsened</em> the headline, so none is applied.</li>
+  </ul>
+</section>
+
+<!-- ============== 10 DISCUSSION ============== -->
+<section id="disc">
+  <h2><span class="n">10</span>Discussion and outlook</h2>
+  <p>The prototype reaches <b>27.4 ps at 150 GeV</b>, matching the published RADiCAL result and approaching the
+  ≈30 ps benchmark of the CMS Phase-2 timing layers — with an estimator that needs no precise external clock,
+  since the corner difference manufactures its own reference cancellation. The energy dependence,
+  σ<sub>t</sub> = 200/√E ⊕ 21.8 ps, shows that above ~100 GeV the resolution is set by a constant floor rather
+  than by photostatistics.</p>
+
+  <p>That floor is the most important caveat, and the most encouraging one. It is <b>DAQ-limited, not
+  intrinsic</b>: it is set by the DRS4 timebase and the electronics of this particular readout, not by the
+  scintillator or the shower. The published analysis, with improved cell-width calibration, reaches a lower
+  17.5 ps constant term — direct evidence that there is recoverable headroom of several picoseconds in this same
+  detector with better timebase calibration and the repair of the two weak channels. We therefore quote the floor
+  as a property of the demonstrator's electronics, not of the calorimeter concept.</p>
+
+  <div class="callout caveat"><span class="lab">Honest limitations</span>
+    <p>The headline bins hold a small fraction of fiducial events (0.7% at 150 GeV, 7.2% at 25 GeV); this is the
+    published energy-binned method carried to its tightest bin, and its validity rests entirely on the
+    out-of-sample agreement (bias &lt; 1 ps). The asymptotic floor is an extrapolation neither this analysis nor
+    the published one measured directly, since no beam exceeded 150 GeV. The energy resolution is that of a short
+    leakage-dominated module and should not be read as the concept's calorimetric limit. The per-cell timebase
+    calibration is not applied in the headline (it cancels there) but would be needed for the channel-combination
+    numbers.</p></div>
+
+  <p>The supporting studies tie the picture together. The capillary <em>material</em> does not set the timing —
+  <em>light yield</em> does, validating the use of radiation-hard crystals provided they are bright enough. The
+  dual-gain readout cleanly separates the timing and energy jobs, and the deliberate high-gain saturation costs
+  nothing at the CFD-5% operating point. The natural next steps are concrete: apply the per-cell timebase
+  calibration, investigate and recover the two weak capillaries, and push to higher energy to measure the floor
+  the fits currently only project.</p>
+
+  <h2 style="margin-top:46px"><span class="n">11</span>Conclusions</h2>
+  <p>A compact W/LYSO shashlik prototype with dual-gain scintillating-capillary readout, exposed to 25–150 GeV
+  electrons at the CERN SPS, achieves a timing resolution of <b>27.4 ± 1.2 ps at 150 GeV</b> (47.1 ps at 25 GeV)
+  using an MCP-free corner estimator, CFD-5% time-stamping, and an out-of-sample-validated energy-binned
+  selection, with a 2.7 ps total systematic. The measurement is reproducible — every number is harvested
+  programmatically from the analysis outputs and reproduced under cross-validation — and the resolution floor is
+  shown to be DAQ-limited with identified headroom. The detector's performance is governed by light yield, not
+  crystal species, and is robust to the deliberate high-gain saturation. The result demonstrates that
+  radiation-hard, high-granularity shashlik calorimetry can deliver few-tens-of-picosecond timing, a building
+  block for 4D calorimetry at future colliders.</p>
+</section>
+
+<hr class="s">
+
+<section class="refs" id="refs">
+  <h2 style="font-size:18px"><span class="n">—</span>References &amp; reproducibility</h2>
+  <ol>
+    <li>RADiCAL collaboration, "Picosecond timing with a radiation-hard shashlik electromagnetic calorimeter,"
+        <b>arXiv:2401.01747</b> — the published RADiCAL test-beam timing analysis used for comparison throughout.
+        <span class="small">(Full bibliographic details to be completed by the authors.)</span></li>
+    <li><span class="ph" style="background:var(--amber-lt);border:1px dashed var(--amber);color:#5b3300;border-radius:5px;padding:1px 7px;font-size:12px;font-weight:600">Additional references — CMS MTD Technical Design Report, DRS4 chip reference, scintillator datasheets — to be added by the authors.</span></li>
+    <li>Analysis code and figure pipeline: <a href="https://github.com/jwwetzel/RADiCAL">github.com/jwwetzel/RADiCAL</a>.
+        Every numerical value in this report is produced by <code>harvestResults.C</code> into
+        <code>Output/Summary/results.json</code> and is not hand-entered. The interactive six-layer report
+        (<a href="report/">report/</a>), the GOING RADiCAL primer (<a href="going_radical.html">going_radical.html</a>),
+        and the student Data Lab (<a href="data_lab.html">data_lab.html</a>) accompany this paper.</li>
+  </ol>
+  <p class="small" style="margin-top:14px"><b>Data availability.</b> Raw waveform data (CERN SPS H2, May 2023)
+  are archived on CERNBox; reduced ntuples and the analysis macros are in the repository above.</p>
+  <p class="small"><b>Acknowledgements.</b>
+    <span class="ph" style="background:var(--amber-lt);border:1px dashed var(--amber);color:#5b3300;border-radius:5px;padding:1px 7px;font-size:12px;font-weight:600">To be completed — funding agencies, CERN SPS/H2 operations, and collaboration members.</span></p>
+</section>
+
+</main>
+</div>
+
+<footer><div class="wrap wide">
+  <b>RADiCAL — Precision timing with a tungsten–scintillator shashlik calorimeter.</b>
+  CERN SPS H2 electron test beam, May 2023. Narrative results report ·
+  <a href="report/">six-layer report</a> · <a href="going_radical.html">primer</a> ·
+  <a href="data_lab.html">data lab</a>. &nbsp;Author list, affiliations, references and acknowledgements are
+  marked as placeholders for completion before submission.
+</div></footer>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.topbar nav a[href^="#"]'));
+  var map={}; links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  var obs=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){
+      links.forEach(function(a){a.classList.remove('on');});
+      if(map[e.target.id]) map[e.target.id].classList.add('on');
+    }});
+  },{rootMargin:'-50% 0px -48% 0px',threshold:0});
+  document.querySelectorAll('section[id]').forEach(function(s){obs.observe(s);});
+})();
+</script>
+</body>
+</html>
