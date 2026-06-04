@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulating RADiCAL with GEANT4 — from shower to digitized waveform</title>
+<style>
+  :root{
+    --bg:#0b0e14; --bg2:#121723; --card:#161c2b; --line:#232c42;
+    --ink:#e6edf6; --dim:#9aa7bd; --accent:#27e0c8; --accent2:#ffb454; --hot:#ff5c8a;
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:15px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:900px;margin:0 auto;padding:0 18px}
+
+  header{background:radial-gradient(1200px 400px at 70% -10%,rgba(39,224,200,.14),transparent),
+                   radial-gradient(900px 380px at 10% -20%,rgba(255,92,138,.12),transparent),var(--bg2);
+         border-bottom:1px solid var(--line);padding:42px 0 30px}
+  .kick{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--accent);text-transform:uppercase}
+  h1{margin:.18em 0 .12em;font-size:46px;letter-spacing:-1.5px;font-weight:800;line-height:1.04}
+  h1 .r{color:var(--accent)}
+  .tag{color:var(--dim);font-size:17.5px;max-width:700px}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px}
+  .stat{font-family:var(--mono)}
+  .stat b{display:block;font-size:21px;color:var(--accent2)}
+  .stat span{font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+  .crumb{margin-top:18px;font-size:13px;color:var(--dim);border-left:2px solid var(--accent);padding-left:12px}
+  .crumb a{font-weight:600}
+
+  .nav{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.93);backdrop-filter:blur(8px);
+       border-bottom:1px solid var(--line);padding:9px 0}
+  .nav .wrap{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+  .nav .lab{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+            color:var(--dim);margin-right:4px}
+  .nav a{font-size:12px;color:var(--dim);padding:5px 8px;border-radius:7px;border:1px solid transparent;
+         font-weight:600;cursor:pointer}
+  .nav a:hover{color:var(--ink);border-color:var(--line);text-decoration:none}
+  .nav a.on{color:var(--accent);border-color:var(--accent)}
+
+  main{padding:26px 0 80px}
+  .intro{color:var(--dim);font-size:16px;margin:4px 0 10px;max-width:780px}
+
+  .step{margin:0 0 58px;scroll-margin-top:58px}
+  .shead{display:flex;align-items:baseline;gap:13px;border-bottom:1px solid var(--line);
+         padding-bottom:11px;margin-bottom:14px;flex-wrap:wrap}
+  .snum{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;white-space:nowrap}
+  h2{font-size:25px;font-weight:800;letter-spacing:-.5px;margin:0;color:var(--ink)}
+  h3{font-size:17px;font-weight:700;color:var(--ink);margin:22px 0 6px}
+  .step p{margin:11px 0;color:#cdd6e6}
+  .step p b{color:var(--ink)}
+  .step ul,.step ol{margin:11px 0;padding-left:22px;color:#cdd6e6}
+  .step li{margin:6px 0}
+  .step li b{color:var(--ink)}
+  em.t{font-style:normal;font-weight:600;color:var(--accent)}
+
+  .code{display:block;white-space:pre;font-family:var(--mono);font-size:12.5px;
+        background:#0c111b;border:1px solid var(--line);border-radius:8px;padding:12px 13px;
+        color:#bfe9e2;margin:11px 0;overflow-x:auto;line-height:1.6}
+  .codecap{font-family:var(--mono);font-size:11px;color:var(--accent);margin:14px 0 -4px;font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;background:#0c111b;border:1px solid var(--line);
+       border-radius:5px;padding:1px 6px;color:#bfe9e2}
+
+  .keyidea,.inrad,.warn{padding:12px 16px;border-radius:0 9px 9px 0;margin:16px 0}
+  .keyidea{border-left:3px solid var(--accent);background:rgba(39,224,200,.06)}
+  .inrad{border-left:3px solid var(--accent2);background:rgba(255,180,84,.06)}
+  .warn{border-left:3px solid var(--hot);background:rgba(255,92,138,.07)}
+  .keyidea .h,.inrad .h,.warn .h{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+        text-transform:uppercase;display:block;margin-bottom:5px}
+  .keyidea .h{color:var(--accent)} .inrad .h{color:var(--accent2)} .warn .h{color:var(--hot)}
+  .keyidea p,.inrad p,.warn p{margin:5px 0} .keyidea b,.inrad b,.warn b{color:var(--ink)}
+
+  .diagram{margin:20px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 15px 12px}
+  .diagram svg{display:block;width:100%;height:auto;overflow:visible}
+  .diagram text{font-family:var(--mono);fill:var(--ink)}
+  .diagram .d{fill:var(--dim)} .diagram .a{fill:var(--accent)} .diagram .a2{fill:var(--accent2)}
+  .diagram figcaption{font-size:12.5px;color:var(--dim);margin-top:12px;line-height:1.5}
+
+  details.cyu{border:1px solid var(--line);background:var(--bg2);border-radius:10px;padding:11px 15px;margin:14px 0}
+  details.cyu summary{cursor:pointer;color:var(--hot);font-size:12.5px;font-weight:700;font-family:var(--mono);
+        letter-spacing:.06em;text-transform:uppercase;list-style:none;outline:none}
+  details.cyu summary::-webkit-details-marker{display:none}
+  details.cyu summary::before{content:"\25B8  "}
+  details.cyu[open] summary::before{content:"\25BE  "}
+  details.cyu .body{margin-top:9px;font-size:13.5px;color:#cdd6e6;line-height:1.6}
+  details.cyu .body b{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:13px 0}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--accent);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  td:first-child{font-family:var(--mono);color:var(--ink)}
+
+  footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--dim);font-size:12.5px}
+  footer a{font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <div class="kick">RADiCAL · simulation lab · GEANT4</div>
+  <h1>Simulating <span class="r">RADiCAL</span> with GEANT4</h1>
+  <p class="tag">Build the detector inside the computer: from an electron shower, to scintillation and
+     wavelength-shifting light, to a single photon detected in a SiPM, to a digitized waveform you can analyse
+     with the very same code you used on the real test-beam data.</p>
+  <div class="stats">
+   <div class="stat"><b>3.5 mm</b><span>X₀ in tungsten</span></div>
+   <div class="stat"><b>~30k γ/MeV</b><span>LYSO light yield</span></div>
+   <div class="stat"><b>10 chapters</b><span>shower → waveform</span></div>
+   <div class="stat"><b>γ → ps</b><span>what we're after</span></div>
+  </div>
+  <p class="crumb">Companion to the <a href="going_radical.html">GOING RADiCAL</a> primer (the physics),
+     the <a href="data_lab.html">Data Lab</a> (analyse real data), and the <a href="paper.html">findings paper</a>
+     (what the detector achieved). Here we build the <b>model</b>. Assumes some C++ and a Linux/Mac terminal;
+     no prior GEANT4 needed.</p>
+ </div>
+</header>
+
+<div class="nav"><div class="wrap">
+  <span class="lab">Chapters</span>
+  <a href="#c1">1 · Calorimetry</a>
+  <a href="#c2">2 · Observables</a>
+  <a href="#c3">3 · Monte Carlo</a>
+  <a href="#c4">4 · GEANT4 setup</a>
+  <a href="#c5">5 · Geometry</a>
+  <a href="#c6">6 · Light</a>
+  <a href="#c7">7 · A tile</a>
+  <a href="#c8">8 · The module</a>
+  <a href="#c9">9 · SiPM &amp; noise</a>
+  <a href="#c10">10 · Run it</a>
+</div></div>
+
+<main class="wrap">
+
+<p class="intro">A simulation is a hypothesis you can run. Before (and after) a beam test you want to predict how
+much light a shower makes, where it makes it, when the photons arrive, and what the readout chain does to that
+signal. This lab builds that chain in <b>GEANT4</b> &mdash; the toolkit CERN uses to push particles through
+matter &mdash; one layer at a time, and ends by producing a waveform in exactly the format the
+<a href="data_lab.html">Data Lab</a> taught you to read.</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 900 150" role="img" aria-label="simulation chain">
+    <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#46527a"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="8"   y="48" width="120" height="54" rx="8" fill="#1b2336" stroke="#232c42"/>
+      <text x="68" y="70">e⁻ shower</text><text class="d" x="68" y="88" font-size="10">GEANT4 EM physics</text>
+      <rect x="170" y="48" width="135" height="54" rx="8" fill="#1b2336" stroke="#232c42"/>
+      <text x="237" y="70">scintillation</text><text class="d" x="237" y="88" font-size="10">+ Cherenkov</text>
+      <rect x="347" y="48" width="120" height="54" rx="8" fill="#1b2336" stroke="#232c42"/>
+      <text class="a" x="407" y="70">WLS capillary</text><text class="d" x="407" y="88" font-size="10">trap &amp; pipe</text>
+      <rect x="509" y="48" width="110" height="54" rx="8" fill="#1b2336" stroke="#232c42"/>
+      <text x="564" y="70">SiPM</text><text class="d" x="564" y="88" font-size="10">photon → charge</text>
+      <rect x="661" y="48" width="120" height="54" rx="8" fill="#1b2336" stroke="#232c42"/>
+      <text x="721" y="70">circuit + noise</text><text class="d" x="721" y="88" font-size="10">HG / LG shaping</text>
+      <rect x="823" y="48" width="70" height="54" rx="8" fill="#102a26" stroke="#27e0c8"/>
+      <text class="a" x="858" y="70" font-size="11">DRS4</text><text class="a2" x="858" y="88" font-size="10">waveform</text>
+      <path d="M128 75 H170" stroke="#46527a" stroke-width="2" marker-end="url(#ar)"/>
+      <path d="M305 75 H347" stroke="#46527a" stroke-width="2" marker-end="url(#ar)"/>
+      <path d="M467 75 H509" stroke="#46527a" stroke-width="2" marker-end="url(#ar)"/>
+      <path d="M619 75 H661" stroke="#46527a" stroke-width="2" marker-end="url(#ar)"/>
+      <path d="M781 75 H823" stroke="#46527a" stroke-width="2" marker-end="url(#ar)"/>
+    </g>
+  </svg>
+  <figcaption>The chain this lab builds. GEANT4 owns the first three boxes (particle transport + optical photons);
+  the last three (SiPM, electronics, digitizer) are a light model you bolt on to turn the photon list into a
+  waveform. Each chapter fills in one box.</figcaption>
+</div>
+
+<!-- ===================== 1 ===================== -->
+<section class="step" id="c1">
+  <div class="shead"><span class="snum">CH 1</span><h2>Calorimetry, from the top</h2></div>
+  <p>A calorimeter measures a particle's energy by <em class="t">destroying</em> it: the particle dumps all its
+  energy into the detector as a cascade of secondaries, and we count the result. An electron or photon develops
+  an <b>electromagnetic shower</b> &mdash; high-energy electrons radiate photons (bremsstrahlung), high-energy
+  photons convert to e⁺e⁻ pairs, and the two feed each other until the particles drop below a <b>critical
+  energy</b> <code>Ec</code> and the shower dies.</p>
+
+  <p>One length scale governs all of it: the <b>radiation length</b> <code>X₀</code> &mdash; the depth over which
+  an electron loses all but 1/e of its energy, and roughly the distance between shower generations. In tungsten
+  <code>X₀ &asymp; 3.5 mm</code>; in LYSO <code>&asymp; 11 mm</code>. Two rules of thumb follow:</p>
+  <ul>
+    <li><b>Longitudinal:</b> the shower peaks at depth <code>t<sub>max</sub> &asymp; ln(E/Ec)</code> radiation
+       lengths and needs <code>~25 X₀</code> to contain fully. <b>RADiCAL's prototype is only ~4 X₀</b> &mdash;
+       deliberately short, so it <em>leaks</em>, which is why its energy resolution has a large constant term
+       (you saw this in the <a href="paper.html#energy">paper</a>).</li>
+    <li><b>Transverse:</b> the shower's width is set by the <b>Molière radius</b> <code>R<sub>M</sub></code> &mdash;
+       ~90% of the energy lands within one <code>R<sub>M</sub></code> of the axis. This is why the capillaries sit
+       where they do.</li>
+  </ul>
+
+  <p>RADiCAL is a <b>sampling</b> calorimeter: it alternates a dense <b>absorber</b> (tungsten, to make the shower
+  develop in a short space) with thin <b>active</b> layers (LYSO scintillator) that actually produce light. Only a
+  small <b>sampling fraction</b> of the shower energy is deposited in the active material, and the shot-to-shot
+  fluctuation in <em>how much</em> lands there is the dominant <b>stochastic term</b> in the resolution:</p>
+  <div class="code">  σ_E / E  =  a / √E   ⊕   b / E   ⊕   c
+            (stochastic)   (noise)   (constant: leakage, non-uniformity)</div>
+
+  <div class="keyidea"><span class="h">Why we simulate</span>
+    <p>Every quantity above &mdash; sampling fraction, shower max, leakage, light yield, and the <em>arrival
+    times</em> of the photons that set the 27 ps timing &mdash; is a prediction. A simulation lets you compute it
+    for a geometry you haven't built yet, and check the one you did build against the data.</p></div>
+</section>
+
+<!-- ===================== 2 ===================== -->
+<section class="step" id="c2">
+  <div class="shead"><span class="snum">CH 2</span><h2>What we want out of the simulation</h2></div>
+  <p>Decide the observables first &mdash; they drive every later choice (which physics to enable, how finely to
+  model the optics, how many events to run). For RADiCAL the list maps one-to-one onto the test-beam measurements:</p>
+  <table>
+    <tr><th>Simulation output</th><th>Real-detector observable it predicts</th></tr>
+    <tr><td>Energy deposited in active LYSO</td><td>Sampling fraction &amp; the energy-resolution stochastic term</td></tr>
+    <tr><td>Longitudinal &amp; transverse profiles</td><td>Where shower-max is → where to place the timing capillaries</td></tr>
+    <tr><td>Optical photons created per event</td><td>Light yield &amp; photo-statistics (the floor on timing)</td></tr>
+    <tr><td>Photon <b>arrival-time</b> distribution at the SiPM</td><td>Pulse rise time → timing resolution σ<sub>t</sub></td></tr>
+    <tr><td>Detected charge &amp; waveform</td><td>The DRS4 trace, dual-gain HG/LG, saturation</td></tr>
+  </table>
+  <p>The headline RADiCAL number &mdash; <b>~27 ps</b> &mdash; comes from the last two rows. Timing precision
+  scales as <code>σ<sub>t</sub> &asymp; (rise time) / √N<sub>pe</sub></code>: a fast edge and many detected
+  photoelectrons. A simulation that gets the photon <em>count</em> and photon <em>arrival times</em> right can
+  predict that number; one that only tracks deposited energy cannot. That is why a chunk of this lab is about
+  <b>optical photons</b>, not just energy.</p>
+
+  <div class="inrad"><span class="h">Scope your physics to your question</span>
+    <p>Studying energy resolution? You can skip optical photons entirely and score energy deposits &mdash; fast.
+    Studying <em>timing</em>? You must generate and track every optical photon to the SiPM &mdash; slow, but it is
+    the only way to get arrival times. Know which one you're doing before you press run.</p></div>
+</section>
+
+<!-- ===================== 3 ===================== -->
+<section class="step" id="c3">
+  <div class="shead"><span class="snum">CH 3</span><h2>Monte Carlo &amp; statistics</h2></div>
+  <p>A shower is a branching random process: at each step a particle <em>might</em> radiate, convert, or scatter,
+  with probabilities set by physics cross-sections. There is no closed-form answer for "what does one 100 GeV
+  electron do" &mdash; so we don't compute it, we <b>sample</b> it. That is the <b>Monte Carlo</b> method: draw
+  random numbers, follow the cross-sections, and let one simulated particle be one possible history. Run many, and
+  the distribution of histories <em>is</em> the answer.</p>
+
+  <p>Two consequences you must keep in mind:</p>
+  <ul>
+    <li><b>Statistical error falls as 1/√N.</b> The uncertainty on a mean (mean energy, mean σ<sub>t</sub>) shrinks
+       like <code>1/√N<sub>events</sub></code>. To resolve a 2 ps effect you need enough events that your
+       statistical error is well under 2 ps &mdash; quadrupling the events only halves the error.</li>
+    <li><b>Optical photons are expensive.</b> LYSO makes ~30,000 photons per MeV. A shower depositing a GeV in the
+       active layers is tens of millions of optical photons, each individually tracked through reflections and
+       absorption. Optical timing runs are the slowest thing you will do &mdash; budget for it, and use
+       <em>variance reduction</em> (e.g. simulate a representative fraction of photons and scale) when you can.</li>
+  </ul>
+
+  <div class="keyidea"><span class="h">Always fix the seed</span>
+    <p>Monte Carlo is random, but it must be <em>reproducible</em>. Set the random-number seed explicitly
+    (<code>G4Random::setTheSeed(12345)</code>) so a run can be repeated bit-for-bit &mdash; essential for
+    debugging and for comparing two geometries fairly. Change the seed (not the geometry) to get an independent
+    statistical sample.</p></div>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">Your timing run gives σ<sub>t</sub> = 31 ± 4 ps from 500 events; a colleague's different
+    geometry gives 27 ± 4 ps. Have you shown the second geometry is better?
+    <br><br><b>Answer:</b> No. The two differ by 4 ps with ~6 ps combined error &mdash; consistent within
+    statistics. Either run far more events (error ∝ 1/√N, so ~16× more events to reach ±1 ps), or you cannot claim
+    a difference. This is the same 1/√N logic that forced the out-of-sample treatment in the real analysis.</div></details>
+</section>
+
+<!-- ===================== 4 ===================== -->
+<section class="step" id="c4">
+  <div class="shead"><span class="snum">CH 4</span><h2>GEANT4 setup &amp; anatomy</h2></div>
+  <p><b>Install.</b> The least painful routes on a Mac/Linux box are conda
+  (<code>conda install -c conda-forge geant4</code>) or a source build following the GEANT4 install guide; either
+  way, also install the physics <b>data files</b> and source the environment script so GEANT4 can find them.</p>
+
+  <p><b>The run hierarchy.</b> Everything is organised as <em class="t">Run &rarr; Event &rarr; Track &rarr;
+  Step</em>: a run is many events (beam particles), each event is the tree of tracks (the primary plus every
+  secondary), and each track advances in steps. You hook into this tree to collect data.</p>
+
+  <p><b>The three mandatory pieces.</b> You must supply: a <b>detector construction</b> (geometry + materials), a
+  <b>physics list</b> (which processes are active), and a <b>primary generator</b> (the beam). The skeleton:</p>
+  <div class="codecap">main.cc</div>
+  <div class="code">#include "G4RunManagerFactory.hh"
+#include "FTFP_BERT.hh"            // a standard EM + hadronic physics list
+#include "G4OpticalPhysics.hh"
+#include "DetectorConstruction.hh"
+#include "PrimaryGenerator.hh"
+
+int main(int argc, char** argv) {
+    auto* run = G4RunManagerFactory::CreateRunManager();
+
+    run-&gt;SetUserInitialization(new DetectorConstruction());   // geometry + materials (Ch 5,7,8)
+
+    auto* physics = new FTFP_BERT();                          // showers: brem, pair, ionisation...
+    physics-&gt;RegisterPhysics(new G4OpticalPhysics());         // scintillation, Cherenkov, WLS (Ch 6)
+    run-&gt;SetUserInitialization(physics);
+
+    run-&gt;SetUserAction(new PrimaryGenerator());              // the electron beam
+
+    run-&gt;Initialize();
+    run-&gt;BeamOn(1000);                                       // fire 1000 showers
+    delete run;
+    return 0;
+}</div>
+  <p>The geometry lives in <code>DetectorConstruction::Construct()</code> (next three chapters); the beam lives in
+  a <code>G4VUserPrimaryGeneratorAction</code> that fires, say, 150 GeV electrons with a
+  <code>G4ParticleGun</code>; and you collect results in optional <em>user action</em> classes
+  (Run/Event/Stepping), which we use for the readout in Chapter 9.</p>
+</section>
+
+<!-- ===================== 5 ===================== -->
+<section class="step" id="c5">
+  <div class="shead"><span class="snum">CH 5</span><h2>Geometry &amp; materials</h2></div>
+  <p>GEANT4 geometry is three nested objects: a <b>solid</b> (the shape), a <b>logical volume</b> (shape + material
+  + readout), and a <b>physical volume</b> (a logical volume <em>placed</em> inside a mother volume). Everything
+  lives inside one big <b>world</b> volume. Materials come from the NIST database, or you build them from elements
+  &mdash; LYSO isn't in NIST, so we mix it ourselves.</p>
+  <div class="codecap">DetectorConstruction::Construct() — materials and the world</div>
+  <div class="code">auto* nist = G4NistManager::Instance();
+G4Material* tungsten = nist-&gt;FindOrBuildMaterial("G4_W");          // absorber, X0 ~ 3.5 mm
+G4Material* vacuum   = nist-&gt;FindOrBuildMaterial("G4_Galactic");   // the world
+
+// LYSO is not a NIST material — build it from elements (illustrative fractions):
+G4Material* lyso = new G4Material("LYSO", 7.1*g/cm3, 4);
+lyso-&gt;AddElement(nist-&gt;FindOrBuildElement("Lu"), 71.4*perCent);
+lyso-&gt;AddElement(nist-&gt;FindOrBuildElement("Si"),  6.4*perCent);
+lyso-&gt;AddElement(nist-&gt;FindOrBuildElement("O"),  18.2*perCent);
+lyso-&gt;AddElement(nist-&gt;FindOrBuildElement("Y"),   4.0*perCent);
+
+// World: a box of vacuum (half-lengths in each dimension)
+auto* worldSolid = new G4Box("World", 10*cm, 10*cm, 30*cm);
+auto* worldLV    = new G4LogicalVolume(worldSolid, vacuum, "World");
+auto* worldPV    = new G4PVPlacement(nullptr, {}, worldLV, "World", nullptr, false, 0);</div>
+
+  <p>Now one absorber plate and one scintillator tile, placed back to back &mdash; the unit cell we repeat later:</p>
+  <div class="code">// 3.5 mm tungsten = one radiation length
+auto* absSolid = new G4Box("Abs", 7*mm, 7*mm, 1.75*mm);            // half-lengths
+auto* absLV    = new G4LogicalVolume(absSolid, tungsten, "Abs");
+new G4PVPlacement(nullptr, {0,0,-2.0*mm}, absLV, "Abs", worldLV, false, 0);
+
+// 1.5 mm LYSO tile, just downstream of the absorber
+auto* sciSolid = new G4Box("Sci", 7*mm, 7*mm, 0.75*mm);
+auto* sciLV    = new G4LogicalVolume(sciSolid, lyso, "Sci");
+new G4PVPlacement(nullptr, {0,0,+0.5*mm}, sciLV, "Sci", worldLV, false, 0);</div>
+
+  <div class="warn"><span class="h">Two beginner traps</span>
+    <p><b>Half-lengths:</b> <code>G4Box</code> takes <em>half</em> the size in each dimension &mdash; a "7 mm" box
+    is 14 mm wide. <b>Overlaps:</b> placed volumes must not intersect their siblings or poke outside their mother;
+    run with <code>/run/initialize</code> then <code>/geometry/test/run</code> (or pass <code>checkOverlaps =
+    true</code> to <code>G4PVPlacement</code>) to catch overlaps before they corrupt your physics.</p></div>
+</section>
+
+<!-- ===================== 6 ===================== -->
+<section class="step" id="c6">
+  <div class="shead"><span class="snum">CH 6</span><h2>Light: scintillation vs Cherenkov vs WLS</h2></div>
+  <p>So far we deposit <em>energy</em>. To get <em>light</em> we must turn on optical photons and tell each
+  material how it makes and moves them. Three distinct processes matter, and RADiCAL uses all of them:</p>
+
+  <h3>The three processes</h3>
+  <ul>
+    <li><b>Scintillation.</b> Ionisation energy excites the crystal, which relaxes by emitting photons &mdash;
+       <em>isotropic</em>, with a yield proportional to deposited energy and a characteristic <b>decay time</b>
+       (LYSO ~40 ns). This is the bulk of the light. The number of photons is Poisson-distributed, which sets the
+       photo-statistics floor on timing.</li>
+    <li><b>Cherenkov.</b> A charged particle moving faster than light-in-the-medium
+       (<code>β &gt; 1/n</code>) emits a faint, <em>directional</em>, and essentially <em>instantaneous</em> cone
+       of photons. Few photons, but their prompt timing makes them valuable for the sharpest edges.</li>
+    <li><b>Wavelength shifting (WLS).</b> A dopant in the capillary <em>absorbs</em> the blue/UV scintillation
+       light and <em>re-emits</em> it isotropically at a longer (green) wavelength after a short delay. Re-emitted
+       green light is trapped by total internal reflection and piped down the fibre to the SiPM. This is how the
+       light gets <em>out</em> of the stack and to the sensor.</li>
+  </ul>
+
+  <p>You enable all three by registering <code>G4OpticalPhysics</code> (Chapter 4); GEANT4 then activates
+  <code>G4Scintillation</code>, <code>G4Cerenkov</code>, and <code>G4OpWLS</code> wherever a material's properties
+  support them. Those properties live in a <b>G4MaterialPropertiesTable</b> attached to each material:</p>
+  <div class="codecap">optical properties — LYSO as a scintillator</div>
+  <div class="code">// Photon energies that bracket the emission band (~2.0–3.5 eV ≈ 350–620 nm)
+std::vector&lt;G4double&gt; E   = { 2.0*eV, 2.5*eV, 3.0*eV, 3.5*eV };
+std::vector&lt;G4double&gt; rIdx = { 1.81,   1.81,   1.82,   1.82  };
+std::vector&lt;G4double&gt; absL = { 40*cm,  40*cm,  40*cm,  40*cm };
+std::vector&lt;G4double&gt; emit = { 0.1,    1.0,    0.6,    0.1   };   // emission spectrum shape
+
+auto* mpt = new G4MaterialPropertiesTable();
+mpt-&gt;AddProperty("RINDEX",    E, rIdx);                 // required for ANY optics (and Cherenkov)
+mpt-&gt;AddProperty("ABSLENGTH", E, absL);                 // bulk absorption length
+mpt-&gt;AddProperty("SCINTILLATIONCOMPONENT1", E, emit);   // shape of the emitted spectrum
+mpt-&gt;AddConstProperty("SCINTILLATIONYIELD",        30000./MeV);  // ~30k photons / MeV
+mpt-&gt;AddConstProperty("SCINTILLATIONTIMECONSTANT1", 40.*ns);     // LYSO decay time
+mpt-&gt;AddConstProperty("RESOLUTIONSCALE",           1.0);         // 1.0 = pure Poisson stats
+lyso-&gt;SetMaterialPropertiesTable(mpt);
+lyso-&gt;GetIonisation()-&gt;SetBirksConstant(0.126*mm/MeV);  // light saturates at high dE/dx</div>
+
+  <p>The capillary core gets WLS properties instead &mdash; an absorption length for the blue it eats, an emission
+  spectrum for the green it makes, and a re-emission time constant:</p>
+  <div class="codecap">optical properties — a wavelength-shifting capillary core</div>
+  <div class="code">auto* wls = new G4MaterialPropertiesTable();
+wls-&gt;AddProperty("RINDEX",       E, { 1.59, 1.59, 1.59, 1.59 });   // fibre core index
+wls-&gt;AddProperty("WLSABSLENGTH", E, { 5*mm, 2*mm, 0.4*mm, 0.1*mm });// absorbs blue strongly
+wls-&gt;AddProperty("WLSCOMPONENT", E, { 1.0,  0.6,  0.1,  0.0  });    // re-emits green
+wls-&gt;AddConstProperty("WLSTIMECONSTANT", 8.*ns);                    // re-emission delay
+capCore-&gt;SetMaterialPropertiesTable(wls);</div>
+
+  <div class="keyidea"><span class="h">RINDEX is the master switch</span>
+    <p>No <code>RINDEX</code> → no optical photons, full stop. Scintillation needs <code>RINDEX</code> +
+    <code>SCINTILLATIONYIELD</code>; Cherenkov needs only <code>RINDEX</code> (it fires for any fast charged
+    track); WLS needs <code>WLSABSLENGTH</code> + <code>WLSCOMPONENT</code>. Define the property only on materials
+    that should glow &mdash; giving the tungsten a RINDEX would (wrongly) make it scintillate and tank your
+    runtime.</p></div>
+
+  <details class="cyu"><summary>Check yourself</summary>
+    <div class="body">You add <code>RINDEX</code> to LYSO but forget <code>SCINTILLATIONYIELD</code>. Run a
+    150 GeV electron &mdash; do you get photons?
+    <br><br><b>Answer:</b> Yes, but only a handful of <em>Cherenkov</em> photons (RINDEX alone enables Cherenkov),
+    not the ~millions of scintillation photons you expected. A nearly-dark detector with a few prompt photons is
+    the classic symptom of a missing <code>SCINTILLATIONYIELD</code>.</div></details>
+</section>
+
+<!-- ===================== 7 ===================== -->
+<section class="step" id="c7">
+  <div class="shead"><span class="snum">CH 7</span><h2>Constructing a single tile</h2></div>
+  <p>Now assemble the unit cell: the absorber + LYSO pair from Chapter 5, plus a <b>capillary</b> &mdash; a thin
+  cylinder of WLS core threaded through the tile &mdash; and a reflective wall so light is piped along it rather
+  than lost. A cylinder is a <code>G4Tubs</code> (inner radius, outer radius, half-length, start/sweep angle):</p>
+  <div class="codecap">a scintillating/WLS capillary through the tile</div>
+  <div class="code">// A 0.5 mm-radius capillary running along z, in the NE corner of the tile
+auto* capSolid = new G4Tubs("Cap", 0, 0.5*mm, 0.75*mm, 0*deg, 360*deg);
+auto* capLV    = new G4LogicalVolume(capSolid, capCore, "Cap");
+new G4PVPlacement(nullptr, {3*mm, 3*mm, 0}, capLV, "Cap", sciLV, false, 0);
+
+// Make the capillary wall reflective so green light is trapped and piped to the SiPM end
+auto* surf = new G4OpticalSurface("capWall");
+surf-&gt;SetType(dielectric_metal);     // mirror-like boundary
+surf-&gt;SetFinish(polished);
+surf-&gt;SetModel(unified);
+auto* surfMPT = new G4MaterialPropertiesTable();
+surfMPT-&gt;AddProperty("REFLECTIVITY", E, { 0.95, 0.95, 0.95, 0.95 });
+surf-&gt;SetMaterialPropertiesTable(surfMPT);
+new G4LogicalSkinSurface("capSkin", capLV, surf);</div>
+
+  <p>That is a complete, glowing unit cell: a shower particle crossing the LYSO makes blue scintillation light;
+  some of it enters the capillary, gets wavelength-shifted to green, reflects off the polished wall, and travels to
+  the end face where (Chapter 9) a SiPM waits. Optical <b>surfaces</b> are as important as bulk materials here
+  &mdash; the difference between a polished and a rough wall, or 95% vs 98% reflectivity, changes your light yield
+  and your timing.</p>
+
+  <div class="inrad"><span class="h">A modelling choice to make explicit</span>
+    <p>Here the capillary segment sits inside one tile. In the real detector a single capillary runs the
+    <em>full length</em> of the module, sampling every layer &mdash; we build that in the next chapter. Decide
+    early whether your capillary is per-tile (simple, good for light-yield studies) or continuous (needed for
+    realistic timing, since photon transit time down the fibre matters).</p></div>
+</section>
+
+<!-- ===================== 8 ===================== -->
+<section class="step" id="c8">
+  <div class="shead"><span class="snum">CH 8</span><h2>Constructing the module</h2></div>
+  <p>A module is the unit cell repeated. The clean way is a loop that places each absorber + scintillator pair at
+  its own <code>z</code> (GEANT4's <code>G4PVReplica</code> can do a periodic stack in one call, but an explicit
+  loop is easier to read and to vary):</p>
+  <div class="codecap">stack the shashlik layers</div>
+  <div class="code">const int      nLayers = 28;                  // ~4 X0 of W in this short prototype
+const G4double pitch   = 3.5*mm + 1.5*mm;     // one absorber + one scintillator
+const G4double z0      = -0.5 * nLayers * pitch;
+
+for (int i = 0; i &lt; nLayers; ++i) {
+    G4double z = z0 + i * pitch;
+    new G4PVPlacement(nullptr, {0,0, z          }, absLV, "Abs", moduleLV, false, i);
+    new G4PVPlacement(nullptr, {0,0, z + 2.5*mm }, sciLV, "Sci", moduleLV, false, i);
+}</div>
+
+  <p>Then thread the <b>eight timing capillaries</b> through the whole stack, in the four-corner pattern of the
+  real readout &mdash; each corner sampled at an upstream depth (&ldquo;Up&rdquo;) and at shower-max
+  (&ldquo;Down&rdquo;). The copy number is how the readout (Chapter 9) tells the eight capillaries apart:</p>
+  <div class="code">auto* longCap = new G4Tubs("LongCap", 0, 0.5*mm, 0.5*nLayers*pitch, 0*deg, 360*deg);
+auto* longCapLV = new G4LogicalVolume(longCap, capCore, "LongCap");
+
+const G4double r = 3*mm;                                   // corner offset from the axis
+const G4double corner[4][2] = { {+r,+r}, {+r,-r}, {-r,-r}, {-r,+r} };   // NE, SE, SW, NW
+for (int c = 0; c &lt; 4; ++c) {
+    new G4PVPlacement(nullptr, {corner[c][0], corner[c][1], 0},
+                      longCapLV, "Cap", moduleLV, false, c);            // copyNo 0..3
+}
+// (In RADiCAL each corner is read at two depths; here one continuous capillary
+//  per corner keeps the example short — split it into Up/Down segments to mirror
+//  the (DW−UP)/2 corner estimator from the analysis.)</div>
+
+  <div class="keyidea"><span class="h">Geometry is a knob, not a constant</span>
+    <p>Because the module is built from a few parameters &mdash; <code>nLayers</code>, <code>pitch</code>, absorber
+    thickness, capillary radius and position &mdash; you can scan them. &ldquo;What does 6 X₀ instead of 4 buy in
+    energy resolution?&rdquo; or &ldquo;does moving the capillary 1 mm toward the axis improve timing?&rdquo; are
+    one-line changes plus a re-run. That is the whole point of having a model.</p></div>
+</section>
+
+<!-- ===================== 9 ===================== -->
+<section class="step" id="c9">
+  <div class="shead"><span class="snum">CH 9</span><h2>Simulating the SiPM, the circuit, and noise</h2></div>
+  <p>GEANT4 will deliver optical photons to the end of each capillary. Turning those into a realistic
+  <b>waveform</b> takes two stages: a <b>sensitive detector</b> that catches the photons inside GEANT4, and a
+  <b>SiPM + electronics model</b> that you apply afterward.</p>
+
+  <h3>9.1 Catch the photons — a sensitive detector</h3>
+  <p>Attach a <code>G4VSensitiveDetector</code> to the capillary end face. Its <code>ProcessHits</code> runs for
+  every step inside that volume; we keep only optical photons and record <em>which</em> capillary and <em>when</em>
+  the photon arrived &mdash; the arrival-time list is the raw material for timing.</p>
+  <div class="codecap">SiPMSD::ProcessHits — record photon arrival time &amp; capillary id</div>
+  <div class="code">G4bool SiPMSD::ProcessHits(G4Step* step, G4TouchableHistory*) {
+    auto* track = step-&gt;GetTrack();
+    if (track-&gt;GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
+        return false;                                    // only optical photons
+
+    auto* hit = new SiPMHit();
+    hit-&gt;capId = step-&gt;GetPreStepPoint()-&gt;GetTouchable()-&gt;GetCopyNumber();
+    hit-&gt;time  = track-&gt;GetGlobalTime();                  // arrival time [ns]
+    hit-&gt;wavelen = 1239.8*eV / track-&gt;GetTotalEnergy();   // nm, for the PDE curve
+    fHitsCollection-&gt;insert(hit);
+
+    track-&gt;SetTrackStatus(fStopAndKill);                 // photon absorbed at the photocathode
+    return true;
+}</div>
+  <p>At end-of-event you now have, per capillary, a list of photon arrival times &mdash; an ideal,
+  noise-free, 100%-efficient sensor. Real SiPMs are none of those things.</p>
+
+  <h3>9.2 The SiPM &amp; electronics model</h3>
+  <p>A SiPM is a grid of tiny Geiger-mode photodiodes (microcells). Each detected photon fires one cell into a
+  fixed-size avalanche; the output is the sum over fired cells. The model adds, in order: <b>PDE</b> (only a
+  fraction of photons are detected), <b>dark counts</b> (cells fire thermally with no light), <b>optical
+  cross-talk</b> (one avalanche can trigger neighbours), <b>afterpulsing</b>, and <b>saturation</b> (a finite
+  number of cells). Then the electronics convolve the fired-cell times with a pulse shape, split into the
+  high- and low-gain chains, add electronic noise, and the DRS4 samples it. Done as a post-processing step on the
+  photon list:</p>
+  <div class="codecap">sipm.py — photon arrival times → a digitized waveform</div>
+  <div class="code">import numpy as np
+
+def make_waveform(arrival_ns, *, pde=0.40, gain_mV=2.0, dcr_GHz=5e-5,
+                  xtalk=0.15, tau_rise=1.0, tau_fall=20.0,
+                  fs_GHz=5.0, n=1024, noise_mV=1.3, rail_mV=820.0):
+    a = np.asarray(arrival_ns)
+    # 1. Photon detection efficiency: keep a random fraction
+    a = a[np.random.random(a.size) &lt; pde]
+    # 2. Optical cross-talk: each fired cell may trigger neighbours (extra cells, same time)
+    a = np.repeat(a, 1 + np.random.poisson(xtalk, a.size))
+    # 3. Dark counts: random fires spread over the digitizer window
+    window = n / fs_GHz                                  # ns
+    n_dark = np.random.poisson(dcr_GHz * window)
+    a = np.concatenate([a, np.random.uniform(0, window, n_dark)])
+    # 4. Convolve each fired cell with the single-cell pulse shape (bi-exponential)
+    t = np.arange(n) / fs_GHz                            # sample times [ns]
+    wave = np.zeros(n)
+    for t0 in a:
+        s = (t &gt;= t0)
+        wave += s * gain_mV * (np.exp(-(t - t0)/tau_fall) - np.exp(-(t - t0)/tau_rise))
+    # 5. Electronic noise — the ~1.3 mV DRS4 baseline RMS, then clip at the rail (saturation)
+    wave += np.random.normal(0.0, noise_mV, n)
+    wave = np.clip(wave, None, rail_mV)
+    return t, wave</div>
+
+  <p>To get the <b>dual-gain</b> readout, call this twice with two gains: a high <code>gain_mV</code> that clips at
+  the rail (the fast, saturated timing channel) and a low one that stays linear (the energy channel) &mdash;
+  exactly the HG/LG split the <a href="paper.html#dualgain">paper</a> dissects. Vary <code>pde</code> and the
+  scintillation yield to study how the timing floor moves with light; clip vs don't-clip to study saturation.</p>
+
+  <div class="keyidea"><span class="h">Now close the loop</span>
+    <p>The output of <code>make_waveform</code> is a 1024-sample trace in millivolts &mdash; the same shape as one
+    channel of a real RADiCAL event. Feed it to the <em>same</em> CFD-5% and (DW&minus;UP)/2 code from the
+    <a href="data_lab.html">Data Lab</a> and you can measure a simulated σ<sub>t</sub> with the identical pipeline
+    used on the beam data. Simulation and measurement become directly comparable &mdash; which is the entire point
+    of building the model.</p></div>
+</section>
+
+<!-- ===================== 10 ===================== -->
+<section class="step" id="c10">
+  <div class="shead"><span class="snum">CH 10</span><h2>Run it, and where to go next</h2></div>
+  <p>With the three mandatory classes in place, <code>./radical_sim</code> fires <code>BeamOn(N)</code> and writes,
+  per event, the deposited energy and the per-capillary photon lists. From there:</p>
+  <ul>
+    <li><b>Validate against data.</b> Compare three numbers to the beam test before trusting anything else:
+       the sampling fraction, the photo-electron yield per GeV, and σ<sub>t</sub> at 150 GeV (target ~27 ps,
+       <a href="paper.html">paper</a>). If those match, the model has earned the right to make predictions.</li>
+    <li><b>Then predict.</b> Scan the knobs from Chapter 8 &mdash; depth in X₀, capillary radius and position,
+       SiPM PDE, scintillator light yield &mdash; and watch energy and timing resolution respond.</li>
+    <li><b>Analyse simulated waveforms with real code.</b> Write the <code>make_waveform</code> output into the
+       same array layout the <a href="data_lab.html">Data Lab</a> reads, and run those macros unchanged.</li>
+  </ul>
+
+  <div class="inrad"><span class="h">The habit to keep</span>
+    <p>A simulation is only as trustworthy as its weakest validated link. Build the chain one box at a time
+    (Ch 1&rarr;9), check each against something you can measure, and never quote a simulated number whose inputs
+    you haven't pinned to data. A model that reproduces the 27 ps is a tool; one that hasn't been checked is a
+    guess with good production values.</p></div>
+
+  <p style="color:var(--dim);margin-top:18px">From here, the natural path back is the <a href="data_lab.html">Data
+  Lab</a> (analyse what you simulate), the <a href="paper.html">findings paper</a> (the numbers to match), and the
+  <a href="going_radical.html">GOING RADiCAL</a> primer (the physics underneath it all).</p>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  RADiCAL GEANT4 Lab · build the detector in software, from electron shower to digitized waveform ·
+  companion to <a href="going_radical.html">GOING RADiCAL</a>, the <a href="data_lab.html">Data Lab</a>, and the
+  <a href="paper.html">findings paper</a>. Code snippets are teaching scaffolds — accurate GEANT4/C++/Python, but
+  not a drop-in complete program; build them into the standard GEANT4 example structure.
+</div></footer>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.nav a[href^="#"]'));
+  var map={}; links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  var obs=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){
+      links.forEach(function(a){a.classList.remove('on');});
+      if(map[e.target.id]) map[e.target.id].classList.add('on');
+    }});
+  },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+  document.querySelectorAll('section.step').forEach(function(s){obs.observe(s);});
+})();
+</script>
+</body>
+</html>
