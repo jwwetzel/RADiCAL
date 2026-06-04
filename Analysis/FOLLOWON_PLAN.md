@@ -107,14 +107,46 @@ max*. Not two papers split by timing-vs-energy; split by **story/observable**.
 ## 6. Ordered task plan → draft
 
 1. ✅ Fix the depth & attribution errors (done).
-2. Extend `configResolution`/OOS to produce **σ_t(E) OOS best-bin + σ_E(E), per
-   config, all energies, with fits.**
-3. Build the **σ_t-vs-light-yield** plot (DSB1 + LuAG on one curve). *Highest value.*
-4. Run **per-config systematics**; check MIXED stats, reduce more from Argon if needed.
-5. Draft **Paper A** outline (NIM A; same collaboration; cite 2401.01747 + LuAG:Ce
-   Hu et al. NIM A 954 (2020) 161723).
+2. ✅ **σ_t(E) OOS best-bin + σ_E(E), per config, all energies, with fits**
+   (`configResolutionFull.C` → `capillary_figs/config_sigmat_vs_E.png`,
+   `config_sigmaE_vs_E.png`).
+3. ✅ **σ_t-vs-light-yield** plot, DSB1 vs LuAG (`lightYieldTiming.C` →
+   `capillary_figs/sigmat_vs_lightyield.png`) — first pass; intrinsic
+   (reference-subtracted) version is the paper-grade refinement still TODO.
+4. ✅ **Per-config systematics** (`configSystematics.C`, on the stable all-fiducial
+   σ_t; the jumpy best-bin systematic is selection-jitter-dominated — use OOS).
+5. ⏳ Draft **Paper A** outline (NIM A; cite 2401.01747 + Hu et al. NIM A 954 (2020) 161723).
 
-## 7. Target
+## 7. Results — first pass (June 2026)
+
+**σ_t (OOS best-bin, (DW−UP)/2, CFD-5%, 5-fold run-folded, FitGaussCore) [ps]:**
+
+| E (GeV) | DSB1 | LuAG | MIXED | TENERGY |
+|---|---|---|---|---|
+| 25  | 50.4 | — | — | — |
+| 50  | 42.9 | 64.7 | 46.0 | 51.4 |
+| 75  | 35.3 | 51.9 | 44.2 | 44.8 |
+| 100 | 36.1 | 50.7 | 42.9 | 41.2 |
+| 125 | 34.9 | 41.5 | 39.8 | 36.4 |
+| 150 | **29.0** | 37.4 | 38.2 | 38.0 |
+
+Fits σ_t = a/√E ⊕ b: DSB1 a=223, b=26.5; LuAG a=455, b=11.6; MIXED a=224,
+b=34.6; TENERGY a=299, b=28.4 (ps). **DSB1 lowest at every energy.** DSB1 @150 =
+29.0 reproduces the official 27.4 within ~1.6 ps (method-consistency check). σ_E/E
+flat ~13.5–15 % across builds (build-independent); DSB1 σ_E fit a≈52 %/√GeV matches
+the published 52.04.
+
+**Per-config systematic (cut variation on stable all-fid σ_t) [ps]:** DSB1 1.3,
+LuAG 1.1, MIXED 1.7, TENERGY 1.5 (≈ the published 2.7 total; fiducial dominates).
+
+**Caveats:** MIXED is thin at high E (N=16 k @150) → its OOS/systematic are noisier;
+consider reducing more MIXED runs from Argon (190/252 analyzed). The light-yield
+plot's single-channel σ_t is reference-limited (~150–280 ps, matching the paper's
+per-channel values); DSB1 & LuAG **overlap with no species separation** at equal
+light yield (the claim), but the sharp 1/√LY trend needs the reference-subtracted
+intrinsic σ_t (pairwise method) — paper-grade refinement.
+
+## 8. Target
 
 NIM A, RADiCAL Collaboration. Frames as the realization of arXiv:2401.01747
 Section 7 item 2. Radiation hardness of LuAG:Ce is the motivation (ref Hu et al.).

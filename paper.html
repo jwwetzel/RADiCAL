@@ -552,11 +552,21 @@ hr.s{border:0;border-top:1px solid var(--border);margin:30px 0}
     bright <em>enough</em>. The reason to test materials is radiation tolerance; the data say a rad-hard crystal
     that is bright enough will time just as well.</p></div>
 
+  <figure>
+    <img src="Analysis/capillary_figs/sigmat_vs_lightyield.png" alt="timing vs light yield by material">
+    <figcaption><span class="fnum">Figure 13.</span> Single-channel σ<sub>t</sub> versus light yield (mean
+    low-gain amplitude, a relative light-yield proxy), per capillary and per energy, coloured by scintillator
+    <em>material</em>. DSB1 and LuAG:Ce capillaries <b>overlap at equal light yield with no separation by
+    species</b> — timing tracks light yield, not crystal type. (Single-channel σ<sub>t</sub> here is
+    reference-limited, ~150–280 ps, matching the per-channel values of the published paper; the
+    reference-subtracted intrinsic σ<sub>t</sub> sharpens the 1/√LY trend.)</figcaption>
+  </figure>
+
   <h3>8.3 Same-method resolution across all four builds</h3>
   <p>For a like-for-like comparison we apply one simple method to every build — the <b>all-fiducial</b>
   (r &lt; 3 mm) (DW&minus;UP)/2 corner estimator at CFD-5%, with a truncated-core σ. These are deliberately
   <em>not</em> the energy-binned headline numbers: each build is read across at a fixed selection, rather than
-  down to its best-contained bin (Fig. 12b gives the out-of-sample best-bin values, where DSB1 reaches 29.4 ps
+  down to its best-contained bin (Fig. 14 gives the out-of-sample best-bin values at all energies, where DSB1 reaches 29.0 ps
   and reproduces the 27.4 ps headline).</p>
 
   <div class="tbl"><table>
@@ -573,9 +583,22 @@ hr.s{border:0;border-top:1px solid var(--border);margin:30px 0}
     </tbody>
   </table></div>
 
+  <p>Carried to the <b>energy-binned, out-of-sample best-bin</b> selection that sets the headline (the published
+  method, here 5-fold run-folded with a Gaussian-core fit), the ordering sharpens and <b>DSB1 wins at every
+  energy</b>, reaching <b>29.0 ps at 150 GeV</b> — reproducing the official 27.4 ps within ~1.6 ps. The per-build
+  systematic (cut-variation on the stable all-fiducial σ<sub>t</sub>) is 1.1–1.7 ps.</p>
+
+  <figure>
+    <img src="Analysis/capillary_figs/config_sigmat_vs_E.png" alt="per-build sigma_t vs energy, OOS best-bin">
+    <figcaption><span class="fnum">Figure 14.</span> Out-of-sample best-bin σ<sub>t</sub> versus beam energy for
+    all four builds, with a/√E ⊕ b fits (the all-energies version of Fig. 12b). DSB1 — uniformly the brightest
+    capillaries — is lowest at every energy (37–50 → 29.0 ps); the dim-LuAG-containing builds cluster higher
+    (37–38 ps at 150). At 150 GeV: DSB1 29.0, LuAG 37.4, mixed 38.2, TENERGY 38.0 ps.</figcaption>
+  </figure>
+
   <p>All-fiducial, the timing is comparable across builds and even <em>favours</em> LuAG at the top energy
   (49.8 ps at 150 GeV) — but that ordering is selection-dependent and <b>flips</b> under the best-bin selection
-  that sets the headline, where the uniformly-bright DSB1 build wins (Fig. 12b). The energy resolution, measured
+  that sets the headline, where the uniformly-bright DSB1 build wins (Fig. 14). The energy resolution, measured
   on the summed low-gain response, is flat and essentially build-independent:</p>
 
   <div class="tbl"><table>
