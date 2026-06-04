@@ -205,18 +205,52 @@ edge**, so de-saturation is moot for the headline — best achievable stays ~32 
 not by the clipped peak. (The earlier correlation-only estimate of "marginal benefit" is superseded
 by this direct measurement.)
 
+## 6c. Capillary TYPE: T-type (timing) vs E-type (energy) — TENERGY caveat RESOLVED
+
+The capillaries come in two builds (per arXiv:2401.01747): **T-type** (WLS filament only
+at shower max → fast, for timing) and **E-type** (WLS along the full length → for energy).
+The published paper used 4 T-type. **TENERGY ("3×DSB1, 1×Energy") contains one E-type
+"energy" capillary** — confirmed by (a) the logbook ("Changed to 3xDSB1, 1x Energy"; run
+2530 notes "E, 52, 54, 57"; "Added full LuAG Cap (Energy Cap) replacing 61 (NW)") and
+(b) the data: per-capillary @150 GeV, TENERGY's **NW corner is ~4–5× dimmer** (⟨LG⟩≈110 mV
+vs ≈480 mV for the three DSB1 caps) — the E-type signature (`configCapDiag.C`).
+
+**Consequence:** our (DW−UP)/2 estimator was averaging that energy cap in as a timing
+channel. Excluding the NW corner (`tenergyClean.C`) gives a clean 3×DSB1 timing estimate
+that **matches DSB1**, confirming the contamination:
+
+| E (GeV) | TENERGY all-4 (contaminated) | TENERGY excl-NW (clean 3×DSB1) | DSB1 |
+|---|---|---|---|
+| 75  | 44.7 | 40.8 | 35.4 |
+| 100 | 45.4 | 37.1 | 36.4 |
+| 125 | 40.7 | 39.3 | 34.0 |
+| 150 | 37.7 | **34.9** | 35.6 |
+
+**The other builds, from the same per-cap data:** DSB1 = 4 bright T-type (clean); MIXED = a
+clean 2+2 (NE+SW DSB1 bright, NW+SE LuAG dim, all T-type); LuAG = 4 dim caps, no bright
+E-type outlier → **looks** all-T-type, **but** the "full LuAG Energy Cap" logbook line means
+LuAG's NW should be confirmed (T-type or E-type?) before the LuAG timing/LY plot is called
+fully clean.
+
+**Reorganization:** the clean timing-material comparison is **DSB1 / LuAG / MIXED** (all
+T-type); **TENERGY is dropped from the timing headline** (its NW is an energy cap) and belongs
+in the energy / E-type discussion.
+
 ## 7. Caveats & next steps
 
 - **First-look only.** OOS-validated, best-bin per-config headlines + a/√E ⊕ b fits are TODO.
 - MIXED's borderline-amplitude slot (SE-D) flips DSB1/LuAG classification across energies —
   mild noise on the §4 grouping; the DSB1≈LuAG conclusion is robust to it.
-- TENERGY's "1×Energy" capillary is treated as a timing slot (all 8 HG slots are live);
-  worth confirming its intended role.
+- **TENERGY's NW = E-type energy cap (RESOLVED, see §6c)** — drop TENERGY from the timing
+  comparison; its clean 3×DSB1 estimate ≈ DSB1.
+- **OPEN:** confirm LuAG config's NW capillary type (T-type vs the full-length energy cap).
 
 ## 8. Tools (all reproducible, committed)
 
 `reduceRaw.C` · `discoverReduced.C` · `configResolution.C` · `configBestBin.C` ·
 `configResolutionDSB1.C` · `configBestBinDSB1.C` · `mixedHeadToHead.C` · `cfdFractionDSB1.C` ·
 `compareConfigsPlot.C` · `slewTest.C` (exploratory, confounded — kept for provenance) ·
-`desaturateCFD.C` (LG-referenced de-saturation test on raw waveforms, §6b).
+`desaturateCFD.C` (LG-referenced de-saturation test on raw waveforms, §6b) ·
+`configResolutionFull.C` (σ_t(E)+σ_E(E) OOS per build) · `lightYieldTiming.C` (σ_t vs light yield) ·
+`configSystematics.C` · `configCapDiag.C` (per-cap T/E-type ID, §6c) · `tenergyClean.C` (TENERGY excl-NW).
 HPC: `Analysis/hpc/{PRESCRIPTION.md, reduceRaw via sge_reduce.sh, submit_reduce.sh, merge_reduced.sh}`.

@@ -596,6 +596,15 @@ hr.s{border:0;border-top:1px solid var(--border);margin:30px 0}
     (37–38 ps at 150). At 150 GeV: DSB1 29.0, LuAG 37.4, mixed 38.2, TENERGY 38.0 ps.</figcaption>
   </figure>
 
+  <div class="callout caveat"><span class="lab">TENERGY is not a clean timing config</span>
+    <p>The "3×DSB1, 1×Energy" build carries an <b>E-type (full-length WLS) <em>energy</em> capillary at its NW
+    corner</b>, not a timing capillary — confirmed by the logbook and by the data (NW is ~4–5× dimmer than the
+    three DSB1 corners). The (DW−UP)/2 estimator above wrongly averages that energy cap in as a timing channel.
+    <b>Excluding the NW corner</b>, TENERGY's three DSB1 timing capillaries give <b>34.9 ps at 150 GeV — i.e.
+    ≈ DSB1 (35.6)</b> — so its apparent ~38 ps is contamination, not a real material effect. <b>The clean
+    timing-material comparison is therefore DSB1 / LuAG / MIXED</b> (all T-type); TENERGY's E-type cap is a preview
+    of the full-length <em>energy</em>-measurement direction (§future work), not a timing point.</p></div>
+
   <p>All-fiducial, the timing is comparable across builds and even <em>favours</em> LuAG at the top energy
   (49.8 ps at 150 GeV) — but that ordering is selection-dependent and <b>flips</b> under the best-bin selection
   that sets the headline, where the uniformly-bright DSB1 build wins (Fig. 14). The energy resolution, measured

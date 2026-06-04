@@ -146,6 +146,23 @@ per-channel values); DSB1 & LuAG **overlap with no species separation** at equal
 light yield (the claim), but the sharp 1/√LY trend needs the reference-subtracted
 intrinsic σ_t (pairwise method) — paper-grade refinement.
 
+## 7b. Capillary TYPE finding — TENERGY contains an E-type energy cap (June 2026)
+
+T-type = WLS at shower max (timing); E-type = WLS full-length (energy).
+**TENERGY ("3×DSB1, 1×Energy") has one E-type cap at NW** — logbook ("3xDSB1, 1x
+Energy"; "E,52,54,57"; "full LuAG Energy Cap … NW") + data (NW ⟨LG⟩≈110 mV vs
+≈480 for the DSB1 caps; `configCapDiag.C`). Our (DW−UP)/2 was averaging it as a
+timing channel. Excluding NW (`tenergyClean.C`) → clean 3×DSB1 timing **≈ DSB1**
+(150 GeV: 37.7 contaminated → **34.9** excl-NW vs DSB1 35.6).
+
+**Reorganization (decided):** the clean timing-material comparison is
+**DSB1 / LuAG / MIXED** (all T-type). **TENERGY is dropped from the timing
+headline**; its E-type cap belongs in the energy / future-work discussion.
+DSB1 (4 T-type) and MIXED (clean 2 DSB1 + 2 LuAG T-type) verified clean from the
+per-cap data. **OPEN — needs author confirmation:** LuAG config's NW capillary
+type (4 T-type, or does it also carry the full-length LuAG energy cap?). This
+gates whether the LuAG timing curve and the σ_t-vs-LY plot are fully clean.
+
 ## 8. Target
 
 NIM A, RADiCAL Collaboration. Frames as the realization of arXiv:2401.01747
