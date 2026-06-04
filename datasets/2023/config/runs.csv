@@ -1,0 +1,9 @@
+# RADiCAL 2023 run manifest (one row per run).
+# The full, per-build 2023 manifests already exist:
+#   Analysis/hpc/manifest_dsb1.csv, manifest_LUAG.csv, manifest_MIXED.csv, manifest_TENERGY.csv
+# (built from Analysis/hpc/logbook.csv). A few example rows are shown below; see
+# those files for the complete 2023 list used on the cluster.
+run,energy_GeV,label,v_up,v_down,beam,capillary,status
+1187,25,25GeV,42.25,42.25,25 GeV e-,DSB1,DONE
+1211,25,25GeV,42.25,42.25,25 GeV e-,DSB1,DONE
+1258,150,150GeV,42.25,42.25,150 GeV e-,DSB1,DONE

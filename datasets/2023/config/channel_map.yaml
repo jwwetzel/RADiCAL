@@ -1,0 +1,43 @@
+# Channel map — RADiCAL CERN SPS H2, May 2023  (REFERENCE / live campaign)
+#
+# Slot addressing (2 x CAEN DT5742 = DRS0, DRS1; each 2 groups of 9 channels):
+#     slot            = drs*18 + grp*9 + ch
+#     amplitude offset = slot * 1024
+#     time-axis offset = (drs*2 + grp) * 1024
+# Per event: amplitude[36864] (36 slots x 1024), timevalue[4096] (4 group axes x 1024).
+#
+# This file mirrors the live 2023 map in Analysis/ChannelConfig.h. For a new
+# campaign with the same DAQ but different wiring, THIS is usually the only file
+# that changes.
+
+daq:
+  digitizers: 2            # DRS0, DRS1 (CAEN DT5742, DRS4 chip)
+  groups_per_digitizer: 2
+  channels_per_group: 9    # 8 signal + 1 trigger
+  samples: 1024
+  sampling_GHz: 5.0
+
+# 8 capillaries, fixed order: NW-D, NE-D, SE-D, SW-D, NW-U, NE-U, SE-U, SW-U.
+# hg = high-gain (timing) channel; lg = low-gain (energy) channel; both as [drs,grp,ch].
+# Down (D) capillaries sample shower-max; Up (U) sample upstream.
+capillaries:
+  - {name: NW-D, hg: [0,0,1], lg: [1,0,1], mcp: mcp1}
+  - {name: NE-D, hg: [0,0,2], lg: [1,0,2], mcp: mcp1}
+  - {name: SE-D, hg: [0,0,3], lg: [1,0,3], mcp: mcp1}
+  - {name: SW-D, hg: [0,0,0], lg: [1,0,0], mcp: mcp1}
+  - {name: NW-U, hg: [0,0,5], lg: [1,0,5], mcp: mcp1}
+  - {name: NE-U, hg: [0,0,4], lg: [1,0,4], mcp: mcp1}
+  - {name: SE-U, hg: [0,0,6], lg: [1,0,6], mcp: mcp1}
+  - {name: SW-U, hg: [0,1,0], lg: [1,0,7], mcp: mcp2}   # lone DRS0-Group1 channel -> MCP2
+
+references:
+  mcp1:    [0,0,7]                                  # beam timing reference (DRS0 G0 ch7)
+  mcp2:    [0,1,7]                                  # passive split of the same MCP (DRS0 G1 ch7)
+  pbglass: [[0,1,1],[0,1,2],[0,1,3],[0,1,4]]        # leakage / containment tag
+
+wire_chamber:                                        # delay-line beam tracker
+  right: [1,1,1]
+  left:  [1,1,2]
+  down:  [1,1,3]
+  up:    [1,1,5]
+  scale_mm_per_ns: 0.194444                          # 7/36 ; x = scale*(t_right - t_left)

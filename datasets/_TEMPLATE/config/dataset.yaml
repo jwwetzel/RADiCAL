@@ -1,0 +1,40 @@
+# Campaign metadata — TEMPLATE. Fill in for this campaign.
+campaign: "CERN <facility> — <month> <YEAR>"   # TODO
+year: 0000                                      # TODO
+facility: "CERN SPS, H2 beamline"               # TODO confirm
+status: "new"
+
+beam:
+  particle: electron                            # TODO confirm
+  energies_GeV: [25, 50, 75, 100, 125, 150]     # TODO this campaign's scan
+
+detector: "RADiCAL W/LYSO shashlik, dual-gain scintillating-capillary readout"
+capillary_builds: []                            # TODO list builds taken this year
+
+geometry:
+  calo_center_xy_mm: [0.0, 0.0]                 # TODO from this year's beam data (moduleCenter)
+  fiducial_timing_mm: {le_100GeV: 2.5, ge_125GeV: 3.0}
+  fiducial_energy_mm: 2.0
+
+selection:                                       # start from 2023; re-tune per campaign
+  mcp_window_mV: [200, 750]
+  containment_max_pb_over_lg: 0.30
+  hg_min_peak_mV: 20
+  noise_rms_mV: 1.3
+  hg_saturation_rail_mV: 820
+
+config_files:
+  channel_map: config/channel_map.yaml
+  manifest: config/runs.csv
+
+paths:
+  raw: raw            # drop sample raw .root files here
+  reduced: reduced    # reduceRaw.C output
+
+# Per-campaign analysis tweaks (e.g. a different MCP window, a remapped reference,
+# a geometry constant). Keep the framework shared; record deviations here.
+overrides: []
+
+notes: >
+  TODO: one-paragraph description of this campaign — setup changes vs 2023,
+  known issues, which channel mappings were used, anything analysis must know.

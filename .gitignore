@@ -30,3 +30,10 @@ legacy/*.pdf
 
 # reduced ntuples copied from Argon (per-config, multi-GB) — data, not source
 reduced/
+
+# Multi-year dataset payloads: keep the dir skeleton + config + figures, ignore
+# the raw / reduced / analysis-output data (regenerated; large).
+datasets/*/raw/*
+datasets/*/reduced/*
+datasets/*/output/*
+!datasets/**/.gitkeep

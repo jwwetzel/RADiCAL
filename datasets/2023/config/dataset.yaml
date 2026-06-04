@@ -1,0 +1,42 @@
+# Campaign metadata — RADiCAL CERN SPS H2, May 2023
+campaign: "CERN SPS H2 — May 2023"
+year: 2023
+facility: "CERN SPS, H2 beamline"
+status: "reference (live: report/, paper.html, Analysis/)"
+
+beam:
+  particle: electron
+  energies_GeV: [25, 50, 75, 100, 125, 150]
+
+detector: "RADiCAL W/LYSO shashlik, dual-gain scintillating-capillary readout"
+capillary_builds: [DSB1, LUAG, "2xDSB1, 2xLuAG", "3xDSB1, 1xEnergy"]
+
+geometry:
+  calo_center_xy_mm: [6.6, 4.7]            # module centre in wire-chamber coords
+  fiducial_timing_mm: {le_100GeV: 2.5, ge_125GeV: 3.0}
+  fiducial_energy_mm: 2.0
+
+selection:                                  # per-campaign cut values (mirror SelectionCuts.h)
+  mcp_window_mV: [200, 750]
+  containment_max_pb_over_lg: 0.30
+  hg_min_peak_mV: 20
+  noise_rms_mV: 1.3
+  hg_saturation_rail_mV: 820
+
+config_files:
+  channel_map: config/channel_map.yaml
+  manifest: config/runs.csv
+
+# Where this campaign's payloads live. For 2023 (the legacy reference) the raw
+# data and reduced files are still in the repo-root /Data and /reduced; new
+# campaigns use datasets/<year>/{raw,reduced}.
+paths:
+  raw: "../../Data            # legacy 2023 location (datasets/2023/raw for new drops)"
+  reduced: "../../reduced     # legacy 2023 capillary-config reduced files"
+
+# Analysis tweaks specific to this campaign (none for the reference).
+overrides: []
+
+notes: >
+  Reference campaign. Full logbook: Analysis/hpc/logbook.csv (1278 rows).
+  Headline: sigma_t = 27.4 ps @ 150 GeV (DW-UP)/2, CFD-5%, OOS-validated.

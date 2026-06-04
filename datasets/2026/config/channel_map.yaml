@@ -1,0 +1,43 @@
+# =====================================================================
+#  TEMPLATE channel map — copied from the 2023 reference.
+#  >>> VERIFY EVERY [drs,grp,ch] AGAINST THIS CAMPAIGN'S WIRING <<<
+#  The DAQ is largely the same year to year, but the capillary->channel
+#  mapping is the thing that changes. Confirm against the run logbook /
+#  patch sheet before trusting any analysis. Delete this banner when done.
+# =====================================================================
+#
+# Slot addressing (2 x CAEN DT5742 = DRS0, DRS1; each 2 groups of 9 channels):
+#     slot            = drs*18 + grp*9 + ch
+#     amplitude offset = slot * 1024
+#     time-axis offset = (drs*2 + grp) * 1024
+
+daq:
+  digitizers: 2            # DRS0, DRS1 (CAEN DT5742) -- update if the DAQ changed
+  groups_per_digitizer: 2
+  channels_per_group: 9
+  samples: 1024
+  sampling_GHz: 5.0
+
+# 8 capillaries, order NW-D, NE-D, SE-D, SW-D, NW-U, NE-U, SE-U, SW-U.
+# hg/lg = [drs,grp,ch] of the high-gain (timing) / low-gain (energy) channel.
+capillaries:
+  - {name: NW-D, hg: [0,0,1], lg: [1,0,1], mcp: mcp1}   # TODO verify
+  - {name: NE-D, hg: [0,0,2], lg: [1,0,2], mcp: mcp1}   # TODO verify
+  - {name: SE-D, hg: [0,0,3], lg: [1,0,3], mcp: mcp1}   # TODO verify
+  - {name: SW-D, hg: [0,0,0], lg: [1,0,0], mcp: mcp1}   # TODO verify
+  - {name: NW-U, hg: [0,0,5], lg: [1,0,5], mcp: mcp1}   # TODO verify
+  - {name: NE-U, hg: [0,0,4], lg: [1,0,4], mcp: mcp1}   # TODO verify
+  - {name: SE-U, hg: [0,0,6], lg: [1,0,6], mcp: mcp1}   # TODO verify
+  - {name: SW-U, hg: [0,1,0], lg: [1,0,7], mcp: mcp2}   # TODO verify
+
+references:
+  mcp1:    [0,0,7]
+  mcp2:    [0,1,7]
+  pbglass: [[0,1,1],[0,1,2],[0,1,3],[0,1,4]]
+
+wire_chamber:
+  right: [1,1,1]
+  left:  [1,1,2]
+  down:  [1,1,3]
+  up:    [1,1,5]
+  scale_mm_per_ns: 0.194444   # 7/36 -- re-measure if the delay line changed

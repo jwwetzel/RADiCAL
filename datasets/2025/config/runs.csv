@@ -1,0 +1,4 @@
+# Run manifest for this campaign (one row per run). Fill from the logbook.
+# status: DONE / BAD / PARTIAL / SKIP (only DONE runs are analysed).
+run,energy_GeV,label,v_up,v_down,beam,capillary,status
+# 0000,150,150GeV,42.25,42.25,150 GeV e-,DSB1,DONE
