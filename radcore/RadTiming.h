@@ -79,7 +79,14 @@ inline TimingResult timingBestBin(RadView& v, double energy) {
         double blo=binLo+b*binW, bhi=blo+binW; std::vector<float> vt;
         for (size_t i=0;i<slg.size();++i) if (slg[i]>=blo && slg[i]<bhi) vt.push_back(tval[i]);
         if (vt.size()<500) continue;
-        double s=tebSigma(vt); if (s>0 && s<best){ best=s; r.best_bin=b; r.bestE=0.5*(blo+bhi); }
+        double s=tebSigma(vt);
+        // Guard: reject unphysical/degenerate bin fits. No real RADiCAL timing
+        // bin is < ~15 ps. Sub-floor fits come from legacy reduceRaw config files
+        // read via the DERIVED cfd05 path (s_cfd05@3mV - mcp_time), which is
+        // noise-dominated for DIM builds at LOW energy -> rigorous config-build
+        // timing requires the canonical re-reduction (hg_cfd05 with proper MCP
+        // referencing). DSB1 (canonical hg_cfd05) is unaffected.
+        if (s>15.0 && s<best){ best=s; r.best_bin=b; r.bestE=0.5*(blo+bhi); }
     }
     r.sigma_ps = best;
     return r;
