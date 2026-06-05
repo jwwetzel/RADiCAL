@@ -23,8 +23,8 @@ the CERN SPS H2 line (electrons, 25–150 GeV). Using the MCP-free (DW−UP)/2 c
 estimator with a constant-fraction discriminator and run-folded out-of-sample
 validation, we find that the per-capillary timing is governed by the **detected light
 yield and is independent of the scintillator species**: a confound-free, in-event
-comparison gives DSB1 ≈ LuAG:Ce, and the single-channel timing of both materials
-falls on a common curve as a function of light yield. The uniformly bright DSB1 build
+comparison gives DSB1 ≈ LuAG:Ce, and the per-build differences are accounted for by
+light yield. The uniformly bright DSB1 build
 reaches 29.0 ± [..] ps at 150 GeV; builds containing the dimmer LuAG:Ce cluster about
 8 ps higher, an offset fully accounted for by light yield. The total systematic
 uncertainty is 1.1–1.7 ps. These results show that a radiation-hard wavelength shifter
@@ -152,20 +152,24 @@ energy. **Within uncertainties the two materials are identical** (~200 ps per
 capillary, no systematic difference, equal at 150 GeV). With everything else held fixed
 in the same showers, the scintillator species does not change the per-capillary timing.
 
-### 4.3 Timing is set by light yield, not species
+### 4.3 The per-build differences track light yield
 
-If species is not the driver, light yield should be. Figure 3
-[`sigmat_vs_lightyield.png`] plots the single-channel timing resolution of every
-capillary, at every energy, against its light yield (the mean low-gain amplitude, an
-unsaturated relative measure of detected light), with DSB1 and LuAG:Ce capillaries
-distinguished by colour. **The two materials overlap: at equal light yield they time
-identically**, with no separation by species. The dimmer LuAG:Ce capillaries simply lie
-at the low-light-yield end of the same trend. [The single-channel resolution here is
-limited in part by the common reference; the reference-subtracted intrinsic resolution,
-which sharpens the 1/√(light yield) dependence, is shown in [Fig. 3b / to be added].]
-This is the central result: the per-build differences of §4.1 are entirely an
-expression of light yield, because the corner estimator is limited by its dimmest
-capillary, so the uniformly bright DSB1 build wins.
+The in-event result of §4.2 is the clean, confound-free demonstration that species does
+not matter; the remaining question is whether the *per-build* ordering of §4.1 is then
+explained by light yield. Figure 3 [`sigmat_vs_lightyield.png`] plots the
+reference-subtracted single-channel timing resolution of every capillary, at every
+energy, against its light yield (the mean low-gain amplitude, an unsaturated relative
+measure of detected light), with DSB1 and LuAG:Ce distinguished by colour. Both
+materials occupy the **same σ_t–light-yield band**, falling together with light yield;
+the dimmer LuAG:Ce capillaries lie at the low-light-yield end. We do not over-interpret
+the small residual offset between the binned material means: this cross-build view is
+**confounded**, because at equal light yield a (brighter) DSB1 capillary corresponds to
+a lower beam energy than a LuAG:Ce one, and beam energy independently affects the
+single-channel resolution. The clean statement is the in-event head-to-head of §4.2;
+Fig. 3 is consistent with it. Together they imply that the per-build differences of §4.1
+are an expression of light yield: the corner estimator is limited by its dimmest
+capillary, so the uniformly bright DSB1 build wins, while a build containing dimmer
+LuAG:Ce capillaries — of identical per-capillary quality — sits higher.
 
 ### 4.4 Systematic uncertainties
 

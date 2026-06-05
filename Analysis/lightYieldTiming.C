@@ -11,6 +11,7 @@
 #include "TTree.h"
 #include "TH1F.h"
 #include "TGraph.h"
+#include "TGraphErrors.h"
 #include "TF1.h"
 #include "TCanvas.h"
 #include "TLegend.h"
@@ -71,27 +72,48 @@ void lightYieldTiming(){
     for(int e=0;e<6;++e){ perCap("reduced/LUAG",false,Es[e],lyL,stL); }
     printf("\nDSB1 capillary-points: %zu   LuAG capillary-points: %zu\n", lyD.size(), lyL.size());
 
-    TCanvas* c=new TCanvas("c_ly","",880,640); c->SetGridx(); c->SetGridy(); c->SetLogx();
+    // --- reference-subtraction: intrinsic capillary sigma_t = sqrt(single^2 - ref^2),
+    //     ref = 73 ps = measured per-group MCP reference jitter (sigma(MCP1-MCP2)/sqrt2). ---
+    const double SREF=73.0;
+    auto intrinsic=[&](const std::vector<double>& s){ std::vector<double> o; o.reserve(s.size());
+        for(double v:s){ double w=v*v-SREF*SREF; o.push_back(w>100? std::sqrt(w):10.0); } return o; };
+    std::vector<double> stiD=intrinsic(stD), stiL=intrinsic(stL);
+    // binned profiles (mean intrinsic sigma_t per log-LY bin, per material) to show overlap
     double lymax=50; for(double v:lyD) lymax=std::max(lymax,v); for(double v:lyL) lymax=std::max(lymax,v);
-    TH1F* fr=c->DrawFrame(8, 80, lymax*1.3, 360);
-    fr->SetTitle("Timing vs light yield, by scintillator material;mean low-gain amplitude  (relative light yield) [mV];single-channel #sigma_{t}  [ps]");
-    TGraph* gD=new TGraph(lyD.size(),&lyD[0],&stD[0]); gD->SetMarkerStyle(20); gD->SetMarkerColor(kRRed);    gD->SetMarkerSize(1.1);
-    TGraph* gL=new TGraph(lyL.size(),&lyL[0],&stL[0]); gL->SetMarkerStyle(21); gL->SetMarkerColor(kAzure+1); gL->SetMarkerSize(1.1);
-    // one common curve sigma_t = sqrt(p0^2/LY + p1^2) fit to BOTH materials together
-    std::vector<double> lyAll=lyD, stAll=stD; lyAll.insert(lyAll.end(),lyL.begin(),lyL.end()); stAll.insert(stAll.end(),stL.begin(),stL.end());
+    const int NB=6; double l0=std::log10(15.), l1=std::log10(lymax*1.05), dw=(l1-l0)/NB;
+    auto profile=[&](const std::vector<double>& ly,const std::vector<double>& si,
+                     std::vector<double>& bx,std::vector<double>& by,std::vector<double>& be){
+        for(int b=0;b<NB;++b){ double lo=std::pow(10,l0+b*dw), hi=std::pow(10,l0+(b+1)*dw);
+            double a=0,a2=0; long m=0; for(size_t i=0;i<ly.size();++i) if(ly[i]>=lo&&ly[i]<hi){a+=si[i];a2+=si[i]*si[i];++m;}
+            if(m<3) continue; double mu=a/m,var=a2/m-mu*mu; bx.push_back(std::sqrt(lo*hi)); by.push_back(mu); be.push_back(std::sqrt(var>0?var:0)/std::sqrt((double)m)); } };
+    std::vector<double> dbx,dby,dbe,lbx,lby,lbe;
+    profile(lyD,stiD,dbx,dby,dbe); profile(lyL,stiL,lbx,lby,lbe);
+
+    TCanvas* c=new TCanvas("c_ly","",900,660); c->SetGridx(); c->SetGridy(); c->SetLogx();
+    TH1F* fr=c->DrawFrame(12, 60, lymax*1.3, 300);
+    fr->SetTitle("Intrinsic timing vs light yield, by scintillator material;mean low-gain amplitude  (light yield) [mV];reference-subtracted single-channel #sigma_{t}  [ps]");
+    TGraph* gD=new TGraph(lyD.size(),&lyD[0],&stiD[0]); gD->SetMarkerStyle(20); gD->SetMarkerColor(kRRed-9);    gD->SetMarkerSize(0.7);
+    TGraph* gL=new TGraph(lyL.size(),&lyL[0],&stiL[0]); gL->SetMarkerStyle(21); gL->SetMarkerColor(kAzure-8);   gL->SetMarkerSize(0.7);
+    gD->Draw("P SAME"); gL->Draw("P SAME");                       // faded per-point scatter
+    // joint fit to all intrinsic points
+    std::vector<double> lyAll=lyD, stAll=stiD; lyAll.insert(lyAll.end(),lyL.begin(),lyL.end()); stAll.insert(stAll.end(),stiL.begin(),stiL.end());
     TGraph* gAll=new TGraph(lyAll.size(),&lyAll[0],&stAll[0]);
-    TF1* f=new TF1("fly","sqrt([0]*[0]/x+[1]*[1])",8,lymax*1.3); f->SetParameters(800,90); f->SetLineColor(kGray+2); f->SetLineWidth(2); f->SetLineStyle(2);
-    gAll->Fit(f,"RQN");
-    f->Draw("SAME"); gD->Draw("P SAME"); gL->Draw("P SAME");
-    TLegend* lg=new TLegend(0.55,0.70,0.88,0.88);
-    lg->AddEntry(gD,"DSB1 capillaries","p"); lg->AddEntry(gL,"LuAG:Ce capillaries","p");
+    TF1* f=new TF1("fly","sqrt([0]*[0]/x+[1]*[1])",12,lymax*1.3); f->SetParameters(800,90); f->SetLineColor(kGray+2); f->SetLineWidth(2); f->SetLineStyle(2);
+    gAll->Fit(f,"RQN"); f->Draw("SAME");
+    // bold binned profiles on top
+    TGraphErrors* pD=new TGraphErrors(dbx.size(),&dbx[0],&dby[0],0,&dbe[0]); pD->SetMarkerStyle(20); pD->SetMarkerColor(kRRed);    pD->SetLineColor(kRRed);    pD->SetMarkerSize(1.6); pD->SetLineWidth(2);
+    TGraphErrors* pL=new TGraphErrors(lbx.size(),&lbx[0],&lby[0],0,&lbe[0]); pL->SetMarkerStyle(21); pL->SetMarkerColor(kAzure+2); pL->SetLineColor(kAzure+2); pL->SetMarkerSize(1.6); pL->SetLineWidth(2);
+    pD->Draw("PL SAME"); pL->Draw("PL SAME");
+    TLegend* lg=new TLegend(0.50,0.68,0.88,0.88);
+    lg->AddEntry(pD,"DSB1 (binned mean)","pl"); lg->AddEntry(pL,"LuAG:Ce (binned mean)","pl");
     lg->AddEntry(f,"joint fit  #sigma_{t}=#sqrt{p_{0}^{2}/LY+p_{1}^{2}}","l"); lg->Draw();
-    TLatex tl; tl.SetNDC(); tl.SetTextSize(0.027);
-    tl.DrawLatex(0.14,0.205,"Per capillary, per energy (25-150 GeV), single-channel MCP-referenced.");
-    tl.DrawLatex(0.14,0.165,"DSB1 and LuAG:Ce overlap at equal light yield #Rightarrow no separation by");
-    tl.DrawLatex(0.14,0.125,"crystal species; light yield sets the timing. (Reference-subtracted");
-    tl.DrawLatex(0.14,0.085,"intrinsic-#sigma_{t} sharpens the trend - paper-grade refinement.)");
+    TLatex tl; tl.SetNDC(); tl.SetTextSize(0.026);
+    tl.DrawLatex(0.14,0.235,"Per capillary, per energy (25-150 GeV); MCP reference (73 ps) subtracted.");
+    tl.DrawLatex(0.14,0.193,"DSB1 and LuAG:Ce occupy the same #sigma_{t}-light-yield band, both falling with");
+    tl.DrawLatex(0.14,0.151,"light yield. (At equal LY a DSB1 cap sits at lower beam energy than a LuAG one,");
+    tl.DrawLatex(0.14,0.109,"since DSB1 is brighter, so this cross-config view is confounded; the in-event");
+    tl.DrawLatex(0.14,0.067,"head-to-head is the clean, confound-free test - and shows DSB1 = LuAG.)");
     c->Print("Analysis/capillary_figs/sigmat_vs_lightyield.png");
-    printf("joint fit: p0=%.0f ps*sqrt(mV)  floor p1=%.0f ps\n", f->GetParameter(0), fabs(f->GetParameter(1)));
+    printf("joint fit (intrinsic): p0=%.0f ps*sqrt(mV)  floor p1=%.0f ps\n", f->GetParameter(0), fabs(f->GetParameter(1)));
     printf("wrote Analysis/capillary_figs/sigmat_vs_lightyield.png\n");
 }

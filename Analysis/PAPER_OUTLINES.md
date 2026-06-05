@@ -126,8 +126,16 @@ gap) is done.**
 - ✅ Per-build σ_t(E), σ_E(E), systematics, light-yield, localization, T/E cap ID,
   **E-type in-beam characterization** (`etypeChar.C`).
 - ✅ Paper 2's 4D demonstration figure (`fourD_demo.png`).
-- ✅ **Paper 1 prose first draft** (`PAPER1_DRAFT.md`) — ready for author review/edits.
+- ✅ **Paper 1 prose first draft** (`PAPER1_DRAFT.md`) and **Paper 2 prose first draft**
+  (`PAPER2_DRAFT.md`) — ready for author review/edits.
+- ✅ σ_t-vs-LY refined to reference-subtracted intrinsic with binned material profiles
+  (`sigmat_vs_lightyield.png`). **Honest finding:** the binned means do NOT cleanly
+  overlap — at equal light yield a DSB1 cap is at lower beam energy than a LuAG one
+  (DSB1 brighter), and energy independently affects σ_t, so this cross-build view is
+  confounded. The **in-event head-to-head (`mixed_h2h.png`) is the clean, confound-free
+  proof** that species doesn't matter; Fig 3 is supporting/consistent. Both drafts now
+  reflect this (lead with the head-to-head).
 - ☐ Confirm LuAG-NW capillary type (gates Paper 1's LuAG cleanliness).
-- ☐ Refine σ_t-vs-LY to intrinsic (reference-subtracted); draft Paper 2 prose.
-- ◐ Refine the σ_t-vs-LY plot to intrinsic (reference-subtracted) σ_t.
-- Draft order: **Paper 1 first** (nearly ready), then **Paper 2** once §5 (E-type) is done.
+- ☐ Polish: convert drafts to elsarticle; localization across energies/builds; finer
+  position truth; statistical-uncertainty section.
+- Draft order: both first drafts done; **Paper 1 is closer to submission**.
