@@ -144,6 +144,11 @@ cap, a single T-type cap, and the full eight-capillary low-gain sum: the E-type 
 here is limited by *sampling* fluctuations, not photostatistics, and its uniform
 longitudinal sampling captures the shower energy far more completely than a localized
 shower-max sample. This directly validates the E-type as the energy element of the design.
+A σ_E/E = a/√E ⊕ c fit gives a ≈ 50 %·√GeV (consistent with the published stochastic term
+[1]) over a dominant constant term c ≈ 14 %; the near-flat energy dependence over 50–150 GeV
+therefore reflects **constant-term (sampling / transverse-position) dominance** in this
+localized shower-max, single-module measurement — not the absence of a stochastic term.
+Exposing the steep a/√E behaviour requires full containment (a 3 × 3 array).
 
 We note an important limitation: the 2023 run contains **no four-E-type configuration** (the
 maximum is the single E-type cap of TENERGY), so a true energy-capillary-only measurement —

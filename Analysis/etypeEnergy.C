@@ -13,6 +13,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TGraph.h"
+#include "TF1.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TLatex.h"
@@ -60,20 +61,26 @@ void etypeEnergy(){
     }
     if(ex.size()<3){ printf("low stats\n"); return; }
     TCanvas* c=new TCanvas("c_ee","",900,640); c->SetGridx(); c->SetGridy();
-    double ymax=0; for(double v:eE) ymax=std::max(ymax,v); for(double v:eT) ymax=std::max(ymax,v);
-    TH1F* fr=c->DrawFrame(40,0,160,ymax*1.25);
+    TH1F* fr=c->DrawFrame(40,10,160,19);   // zoom so the gentle a/sqrtE falloff is visible
     fr->SetTitle("Per-capillary energy resolution: E-type vs T-type (TENERGY);Beam energy (GeV);#sigma_{E}/E  [%]");
-    auto mk=[&](std::vector<double>&y,int col,int ms){ TGraph* g=new TGraph(ex.size(),&ex[0],&y[0]); g->SetMarkerStyle(ms); g->SetMarkerColor(col); g->SetLineColor(col); g->SetMarkerSize(1.4); g->SetLineWidth(2); g->Draw("PL SAME"); return g; };
-    TGraph* gE=mk(eE,kAzure+1,21); TGraph* gT=mk(eT,kRRed,20); TGraph* gS=mk(eS,kGreen+3,33);
-    TLegend* lg2=new TLegend(0.45,0.66,0.88,0.88);
-    lg2->AddEntry(gE,"E-type capillary (full-length, energy)","pl");
-    lg2->AddEntry(gT,"T-type capillary (shower-max, single)","pl");
-    lg2->AddEntry(gS,"all 8 low-gain summed (standard)","pl");
+    printf("\n=== fits  sigma_E/E = a/sqrtE (+) c  ===\n");
+    auto mk=[&](std::vector<double>&y,int col,int ms,const char* nm)->TGraph*{
+        TGraph* g=new TGraph(ex.size(),&ex[0],&y[0]); g->SetMarkerStyle(ms); g->SetMarkerColor(col); g->SetLineColor(col); g->SetMarkerSize(1.6);
+        TF1* f=new TF1(Form("f_%s",nm),"sqrt([0]*[0]/x+[1]*[1])",45,158); f->SetParameters(40,13); f->SetLineColor(col); f->SetLineStyle(2); f->SetLineWidth(2);
+        g->Fit(f,"RQN"); g->Draw("P SAME"); f->Draw("SAME");
+        printf("  %-7s  a = %4.0f %%#sqrt{GeV}   c = %4.1f %% (constant)\n",nm,fabs(f->GetParameter(0)),fabs(f->GetParameter(1)));
+        return g; };
+    TGraph* gE=mk(eE,kAzure+1,21,"E-type"); TGraph* gT=mk(eT,kRRed,20,"T-type"); TGraph* gS=mk(eS,kGreen+3,33,"8sum");
+    TLegend* lg2=new TLegend(0.13,0.135,0.55,0.33); lg2->SetTextSize(0.027); lg2->SetFillColorAlpha(0,0);
+    lg2->AddEntry(gE,"E-type cap (full-length, energy)","pl");
+    lg2->AddEntry(gT,"T-type cap (shower-max, single)","pl");
+    lg2->AddEntry(gS,"all 8 low-gain summed","pl");
     lg2->Draw();
-    TLatex tl; tl.SetNDC(); tl.SetTextSize(0.026);
-    tl.DrawLatex(0.13,0.20,"Single E-type cap vs single T-type cap vs the 8-cap sum. Only ONE E-type cap exists");
-    tl.DrawLatex(0.13,0.16,"in the 2023 data (no 4xE-type config) -- a dedicated 4xE-type run is the clean");
-    tl.DrawLatex(0.13,0.12,"energy-capillary measurement (future).");
+    TLatex tl; tl.SetNDC(); tl.SetTextSize(0.027);
+    tl.DrawLatex(0.56,0.305,"Nearly flat = #bf{constant-term dominated}:");
+    tl.DrawLatex(0.56,0.255,"the a/#sqrt{E} stochastic term is small over");
+    tl.DrawLatex(0.56,0.205,"50-150 GeV; the large sampling / position");
+    tl.DrawLatex(0.56,0.155,"constant term c sets #sigma_{E}/E (dashed fit).");
     c->Print("Analysis/capillary_figs/etype_energy_resolution.png");
     printf("wrote Analysis/capillary_figs/etype_energy_resolution.png\n");
 }
