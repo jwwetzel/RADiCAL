@@ -39,23 +39,8 @@ static TString radRawPath(const rad::BuildConfig& cfg, const std::string& base) 
 }
 
 // ---------------------------------------------------------------------------
-// Reduce one (build, energy) -> outFile. Returns events written (or -1).
-static long reduceOne(const rad::BuildConfig& cfg, double energy, const char* outFile) {
-    auto it = cfg.runs.find(energy);
-    if (it == cfg.runs.end() || it->second.empty()) {
-        printf("[Reducer] %s: no runs for %.0f GeV\n", cfg.build.c_str(), energy);
-        return -1;
-    }
-    TChain* chain = new TChain("pulse");
-    int nfiles = 0;
-    for (const std::string& base : it->second) {
-        TString rp = radRawPath(cfg, base);
-        int n = chain->Add(rp);
-        printf("[Reducer]   + %s  (%d file)\n", rp.Data(), n);
-        nfiles += n;
-    }
-    if (nfiles == 0) { printf("[Reducer] no raw files for %.0f GeV\n", energy); delete chain; return -1; }
-
+// Core: reduce an already-built 'pulse' TChain -> outFile (canonical schema).
+static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energy, const char* outFile) {
     TFile* fout = TFile::Open(outFile, "RECREATE");
     fout->SetCompressionSettings(505);                 // ZSTD level 5 — small, copyable
     TTree* tree = new TTree("rad", Form("RADiCAL canonical reduced - %s %.0f GeV", cfg.build.c_str(), energy));
@@ -163,8 +148,39 @@ static long reduceOne(const rad::BuildConfig& cfg, double energy, const char* ou
     printf("\n[Reducer] %s %.0f GeV: %ld events (%ld good WC) -> %s\n",
            cfg.build.c_str(), energy, nTot, nWC, outFile);
     fout->cd(); tree->Write(); fout->Close();
-    delete chain;
     return nTot;
+}
+
+// Reduce one (build, energy) using the config's run list -> outFile.
+static long reduceOne(const rad::BuildConfig& cfg, double energy, const char* outFile) {
+    auto it = cfg.runs.find(energy);
+    if (it == cfg.runs.end() || it->second.empty()) {
+        printf("[Reducer] %s: no runs for %.0f GeV\n", cfg.build.c_str(), energy);
+        return -1;
+    }
+    TChain* chain = new TChain("pulse");
+    int nfiles = 0;
+    for (const std::string& base : it->second) {
+        TString rp = radRawPath(cfg, base);
+        int n = chain->Add(rp);
+        printf("[Reducer]   + %s  (%d file)\n", rp.Data(), n);
+        nfiles += n;
+    }
+    if (nfiles == 0) { printf("[Reducer] no raw files for %.0f GeV\n", energy); delete chain; return -1; }
+    long n = reduceChain(cfg, chain, energy, outFile);
+    delete chain;
+    return n;
+}
+
+// HPC / per-run entry: reduce a SINGLE raw file with a config -> outFile.
+// (SGE array job calls this once per run; merge per energy with hadd afterwards)
+void ReduceFile(const char* configPath, const char* rawFile, double energy, const char* outFile) {
+    rad::BuildConfig cfg = rad::BuildConfig::Load(configPath);
+    if (!cfg.valid()) { printf("[Reducer] config load failed: %s\n", cfg.error()); return; }
+    TChain* chain = new TChain("pulse");
+    if (chain->Add(rawFile) == 0) { printf("[Reducer] no file: %s\n", rawFile); delete chain; return; }
+    reduceChain(cfg, chain, energy, outFile);
+    delete chain;
 }
 
 // ---------------------------------------------------------------------------

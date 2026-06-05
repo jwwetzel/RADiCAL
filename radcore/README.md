@@ -65,8 +65,37 @@ always means the same physical corner/end across builds and years.
 
 1. Put raw files in `datasets/<year>/raw/`.
 2. Write `datasets/<year>/configs/<BUILD>.json` (channel map + materials + runs).
-3. Run the reducer (P2) → `datasets/<year>/reduced/<BUILD>/<E>GeV.root`.
+3. Run the reducer → `datasets/<year>/reduced/<BUILD>/<E>GeV.root`.
 4. Run analyses (build/year-agnostic) and harvest results into the report.
+
+## Running the reducer
+
+Locally, over the run list in the config (one or all energies):
+
+```
+ROOT_INCLUDE_PATH=radcore:Analysis \
+  root -l -b -q 'radcore/Reducer.C+("datasets/2023/configs/DSB1.json", 150)'   # one energy
+  root -l -b -q 'radcore/Reducer.C+("datasets/2023/configs/DSB1.json")'        # all energies
+```
+
+On the cluster (full statistics — all manifest runs), the SGE array job calls
+the per-run entry point once per raw file, then `hadd` merges per energy:
+
+```
+root -l -b -q 'radcore/Reducer.C+'   # compile once
+root -l -b -q 'ReduceFile("datasets/2023/configs/DSB1.json","<raw>.root",150,"<out>.root")'
+hadd datasets/2023/reduced/DSB1/150GeV.root <byrun>/*.root
+```
+
+`ReduceFile` is config-driven and bit-identical to the legacy `processRun.C`
+(`radcore/validateReduce.C` gate: worst |old−new| = 0 over a full run), so a
+full re-reduction reproduces the published numbers by construction. Swap the
+`reduceRaw.C` call in `Analysis/hpc/sge_reduce.sh` for this `ReduceFile` call to
+upgrade the cluster pipeline to the canonical schema.
+
+The canonical reader (`rad::RadEvent::ConnectBranches`) also reads the *existing*
+legacy DSB1 merges transparently (it binds the old `mcp_peak`→`mcp1_peak`), so
+analyses can move to the schema before the cluster re-reduction lands.
 
 ## Status
 

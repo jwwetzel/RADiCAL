@@ -131,6 +131,11 @@ struct RadEvent {
         SB("in_fiducial",&in_fiducial); SB("wc_peak",wc_peak);
         SB("mcp1_peak",&mcp1_peak); SB("mcp1_time",&mcp1_time);
         SB("mcp2_peak",&mcp2_peak); SB("mcp2_time",&mcp2_time);
+        // transitional: legacy DSB1 (processRun.C) files name the MCP1 reference
+        // mcp_peak/mcp_time — bind those to mcp1_* so the canonical reader works
+        // on both old and new files during the migration.
+        if (!t->GetBranch("mcp1_peak") && t->GetBranch("mcp_peak")) SB("mcp_peak",&mcp1_peak);
+        if (!t->GetBranch("mcp1_time") && t->GetBranch("mcp_time")) SB("mcp_time",&mcp1_time);
         SB("stopcell",stopcell);
         SB("hg_peak",hg_peak); SB("hg_ped_rms",hg_ped_rms);
         SB("hg_saturated",hg_saturated); SB("hg_spike",hg_spike);
