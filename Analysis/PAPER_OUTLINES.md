@@ -94,9 +94,16 @@ concept for the enhanced 4D RADiCAL module.
    **≈1.5 mm** vs the wire chamber, below the 2.9 mm spot spread ✅
    `shower_localization.png`; the module-ID / pattern-recognition concept.
    *Optional:* transverse maps (`report/report_images/transverse_maps_150GeV-1.png`).
-5. **The E-type energy capillary** — in-beam longitudinal uniformity & energy response
-   of the full-length WLS cap (the in-beam analog of [1] Fig 4); TENERGY's NW cap. ☐
-   (new analysis of the E-type signal.)
+5. **The E-type energy capillary** — in-beam characterization of the full-length WLS
+   cap (TENERGY's NW), the in-beam analog of [1] Fig 4 — ✅ `etype_vs_ttype.png`
+   (`etypeChar.C`). Findings: it collects **~4–5× less light at shower max** than the
+   T-types (WLS spread over the full length: 1.6 vs 6.7 mV/GeV) yet is **linear in
+   energy** — a uniform energy element. *Honest nuance (data overturned the naive
+   "E-type = slow" guess):* its single-channel timing is **comparable** to the T-type
+   (~200 ps @150), so the T/E division of labour is by light-collection geometry and
+   role, not raw timing capability — and the E-type is nonetheless excluded from the
+   (DW−UP)/2 corner estimator because including it degrades the combination (Paper 1,
+   `tenergyClean.C`).
 6. **Simultaneous time + energy + position (4D)** — the TENERGY module: 3 T-type DSB1
    give ~35 ps (≈ DSB1, `tenergyClean.C`) while the E-type cap measures energy and the
    four-corner light gives position — all in one event. Proof of concept for the
@@ -104,18 +111,20 @@ concept for the enhanced 4D RADiCAL module.
 7. **Discussion / outlook** — toward the 3×3 array and full containment; full 4D.
 8. **Conclusion.**
 
-**Remaining before submission:** ☐ the E-type capillary in-beam characterization
-(§5, the main new analysis); ◐ localization across energies & builds (currently DSB1
-@150); ◐ position resolution with a better truth than the coarse WC; quantify the 4D
-demonstration. **Status: substantial after adding localization; E-type analysis is the
-main gap.**
+**Remaining before submission:** ◐ localization across energies & builds (currently
+DSB1 @150); ◐ position resolution with a better truth than the coarse WC; quantify the
+4D demonstration plot (one event/run showing time+energy+position together). **Status:
+all three core analyses now in hand (energy ✅, position ✅, E-type ✅); remaining work
+is consolidation + the 4D demonstration figure. The E-type analysis (the former main
+gap) is done.**
 
 ---
 
 ## Shared status / next actions
 - ✅ Corrections to depth (25 X₀) & estimator attribution (BestMinus = [1]) — live.
-- ✅ Per-build σ_t(E), σ_E(E), systematics, light-yield, localization, T/E cap ID.
-- ☐ Paper 2's E-type capillary in-beam analysis (longitudinal uniformity / energy).
+- ✅ Per-build σ_t(E), σ_E(E), systematics, light-yield, localization, T/E cap ID,
+  **E-type in-beam characterization** (`etypeChar.C`).
 - ☐ Confirm LuAG-NW capillary type (gates Paper 1's LuAG cleanliness).
+- ☐ Paper 2's 4D demonstration figure (time+energy+position in one view).
 - ◐ Refine the σ_t-vs-LY plot to intrinsic (reference-subtracted) σ_t.
 - Draft order: **Paper 1 first** (nearly ready), then **Paper 2** once §5 (E-type) is done.
