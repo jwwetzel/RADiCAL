@@ -136,6 +136,21 @@ of raw timing capability. (Consistently, the E-type corner is nonetheless exclud
 the (DW−UP)/2 timing estimator, because including it degrades the four-corner combination;
 see the companion timing paper.)
 
+Crucially, the E-type capillary delivers a **better per-capillary energy resolution** than
+the T-type. Figure 4 [`etype_energy_resolution.png`] compares σ_E/E for the single E-type
+cap, a single T-type cap, and the full eight-capillary low-gain sum: the E-type reaches
+**~14% — better than a single T-type cap (~17–18%) and comparable to the entire 8-cap sum
+(~14–16%)**. Despite being ~4–5× dimmer, the full-length E-type wins because the resolution
+here is limited by *sampling* fluctuations, not photostatistics, and its uniform
+longitudinal sampling captures the shower energy far more completely than a localized
+shower-max sample. This directly validates the E-type as the energy element of the design.
+
+We note an important limitation: the 2023 run contains **no four-E-type configuration** (the
+maximum is the single E-type cap of TENERGY), so a true energy-capillary-only measurement —
+four full-length capillaries summed — is not yet available. The single-cap result above
+already implies it would be excellent; a dedicated 4×E-type run is the clean next
+measurement.
+
 ---
 
 ## 6. Simultaneous time, energy and position

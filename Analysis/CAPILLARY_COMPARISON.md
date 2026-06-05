@@ -254,6 +254,8 @@ in the energy / E-type discussion.
 `configResolutionFull.C` (σ_t(E)+σ_E(E) OOS per build) · `lightYieldTiming.C` (σ_t vs light yield) ·
 `configSystematics.C` · `configCapDiag.C` (per-cap T/E-type ID, §6c) · `tenergyClean.C` (TENERGY excl-NW) ·
 `showerLocalization.C` (4-capillary light center-of-gravity → position, ~1.5 mm vs WC — Paper 2) ·
-`etypeChar.C` (E-type vs T-type in-beam: dim ~4-5x but linear energy element; timing comparable — Paper 2 §5).
+`etypeChar.C` (E-type vs T-type in-beam: dim ~4-5x but linear energy element; timing comparable — Paper 2 §5) ·
+`etypeEnergy.C` (single E-type cap energy res ~14% — better than a single T-type cap, ≈ the 8-cap sum;
+NO 4xE-type config exists in 2023 — Paper 2). DataPaths.h: `radRaw()`/`radReduced()` resolve all data.
 Follow-on plan + paper outlines: `FOLLOWON_PLAN.md`, `PAPER_OUTLINES.md`.
 HPC: `Analysis/hpc/{PRESCRIPTION.md, reduceRaw via sge_reduce.sh, submit_reduce.sh, merge_reduced.sh}`.

@@ -135,7 +135,14 @@ gap) is done.**
   confounded. The **in-event head-to-head (`mixed_h2h.png`) is the clean, confound-free
   proof** that species doesn't matter; Fig 3 is supporting/consistent. Both drafts now
   reflect this (lead with the head-to-head).
-- ☐ Confirm LuAG-NW capillary type (gates Paper 1's LuAG cleanliness).
+- ✅ E-type **energy** resolution (`etypeEnergy.C` → `etype_energy_resolution.png`):
+  single E-type cap ~14% σ_E/E — **better than a single T-type cap (~17–18%)**, ≈ the
+  8-cap sum — validates the E-type as the energy element (Paper 2 §5).
+- **Data fact (logbook):** NO 4×E-type configuration in 2023 — max **one** E-type cap
+  per build (TENERGY's NW; and a one-off LUAG run 2247 = "3 LuAG timing + 1 LuAG
+  energy"). A true energy-capillary-only (4×E-type) run is a future measurement.
+- ☐ Confirm LuAG-NW capillary type (gates Paper 1's LuAG cleanliness) — note run 2247
+  carried 1 LuAG energy cap; consider excluding it from the LUAG timing set.
 - ☐ Polish: convert drafts to elsarticle; localization across energies/builds; finer
   position truth; statistical-uncertainty section.
 - Draft order: both first drafts done; **Paper 1 is closer to submission**.
