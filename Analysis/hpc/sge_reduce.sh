@@ -39,6 +39,11 @@ out="${outdir}/RUN${run}.root"
 echo "[reduce ${SGE_TASK_ID}] cfg=${RAD_CONFIG} run=${run} E=${energy} GeV -> ${out}"
 echo "  raw: ${raw}"
 
-# .so prebuilt by compile.sh; ACLiC loads it.
-root -l -b -q "Analysis/reduceRaw.C+(\"${raw}\", ${energy}., \"${out}\")"
+# CANONICAL config-driven reduction (radcore Reducer): proper role-resolved
+# hg_cfd05 etc. for EVERY build, via the build's channel map. .so prebuilt by
+# compile.sh; radcore headers on the include path.
+cfg="$RAD_REPO/datasets/${RAD_YEAR}/configs/${RAD_CONFIG}.json"
+[ -f "$cfg" ] || { echo "config not found: $cfg (expected datasets/${RAD_YEAR}/configs/${RAD_CONFIG}.json)"; exit 1; }
+ROOT_INCLUDE_PATH="$RAD_REPO/radcore:$RAD_REPO/Analysis" \
+  root -l -b -q "radcore/reduceRun.C+(\"${cfg}\", \"${raw}\", ${energy}., \"${out}\")"
 echo "[reduce ${SGE_TASK_ID}] done."

@@ -25,8 +25,15 @@ ln -sfn "$RAD_WORK/Output" Analysis/Output
 setup_data_links
 
 root -l -b -q -e '.L Analysis/processRun.C+' || true
-# config-agnostic reducer (all capillary configs) + channel-discovery tool
+# legacy config-agnostic reducer (kept for reference) + channel-discovery tool
 root -l -b -q -e '.L Analysis/reduceRaw.C+'        || true
 root -l -b -q -e '.L Analysis/discoverChannels.C+' || true
-ls -l Analysis/processRun_C*.so Analysis/reduceRaw_C*.so
+
+# CANONICAL config-driven reducer (radcore) — the unified reduction path for
+# ALL builds. Prebuild reduceRun_C.so so the array tasks load it instead of
+# racing to ACLiC-compile. radcore headers must be on the include path.
+ROOT_INCLUDE_PATH="$RAD_REPO/radcore:$RAD_REPO/Analysis" \
+  root -l -b -q -e '.L radcore/reduceRun.C+' || true
+
+ls -l Analysis/reduceRaw_C*.so radcore/reduceRun_C*.so
 echo "compile.sh done."
