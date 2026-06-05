@@ -64,13 +64,23 @@ the cluster into `reduced/`, merge, then run the shared analysis. The existing
 `Analysis/hpc/` scripts already parameterize by manifest — point them at the
 campaign's `runs.csv`. (See `Analysis/hpc/PRESCRIPTION.md`.)
 
-## Status / migration note
+## Data centralization (2023)
 
-The **2023 campaign is the live reference**: its analysis, the six-layer
-`report/`, and `paper.html` currently sit at the repo root and on GitHub Pages,
-and its channel map is compiled into `Analysis/ChannelConfig.h`. To avoid breaking
-the live site, 2023 has **not** been physically moved under `datasets/2023/` yet —
-that directory documents the 2023 config and points at the legacy locations. The
-clean next step is to (a) teach the framework to load `channel_map.yaml` per
-campaign, and (b) optionally migrate 2023's data/config under `datasets/2023/`.
-New campaigns (2024+) start clean under this structure from day one.
+All 2023 data now resolves through **one** place — `Analysis/DataPaths.h`:
+
+- **Canonical layout:** `datasets/2023/{raw, reduced/<BUILD>}` (mirrored on CERNBox).
+- **`datasets/2023/MANIFEST.csv`** maps every file to its canonical and legacy path.
+- **`Analysis/organize_data.sh`** consolidates local data into the canonical tree
+  (link / copy / move), or — for a newcomer who downloaded `datasets/2023/` from
+  CERNBox — bridges the old in-repo paths with `--legacy-links`.
+- The resolver tries the canonical path first and **falls back** to the legacy
+  locations (`Data/`, `reduced/`, `Analysis/Output/`), so existing checkouts and the
+  live site keep working during the transition.
+
+See `datasets/2023/README.md` to get started. The 2023 channel map is still compiled
+into `Analysis/ChannelConfig.h` (mirrored in `config/channel_map.yaml`); teaching the
+framework to load `channel_map.yaml` per campaign is the remaining multi-year step.
+
+**Code-migration status:** the data-reading macros are being moved onto
+`DataPaths.h` (`radRaw()` / `radReduced()`). Until all are migrated, the
+`--legacy-links` bridge makes every macro work against a CERNBox download.

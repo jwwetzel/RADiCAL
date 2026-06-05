@@ -17,7 +17,7 @@
 #include "TStyle.h"
 #include <cstdio>
 
-void beamProfile(const char* fname = "Data/RUN1258_150_GeV.root")
+void beamProfile(const char* fname = "datasets/2023/raw/RUN1258_150_GeV.root")
 {
     gStyle->SetOptStat(0);
     TFile* f = TFile::Open(fname);

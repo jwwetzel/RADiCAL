@@ -13,7 +13,7 @@
 #include "TCanvas.h"
 #include <cstdio>
 
-void peakSpectrum(int slot = 2, const char* fname = "Data/RUN1258_150_GeV.root")
+void peakSpectrum(int slot = 2, const char* fname = "datasets/2023/raw/RUN1258_150_GeV.root")
 {
     TFile* f = TFile::Open(fname);
     if (!f || f->IsZombie()){ printf("could not open %s\n", fname); return; }

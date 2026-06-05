@@ -198,24 +198,26 @@ cd RADiCAL</div>
   <p>The files for this lab live in the <code>student/</code> folder. Everything below is run from the
      <b>top of the <code>RADiCAL</code> folder</b> (the one you just <code>cd</code>'d into).</p>
 
-  <p><b>2b. The data.</b> The raw waveform files are large (~2&nbsp;GB each), so they aren't in the
-     repository — they're on <b>CERNBox</b>. Download <b>one</b> run to start with. A good first file is
-     a 150&nbsp;GeV run, <code>RUN1258_150_GeV.root</code>.</p>
+  <p><b>2b. The data.</b> The data files are large, so they aren't in the repository — they live on
+     <b>CERNBox</b>, organized in one tree: <code>datasets/2023/raw/</code> (raw ~2&nbsp;GB waveform runs)
+     and <code>datasets/2023/reduced/&lt;BUILD&gt;/</code> (small ~12&nbsp;MB analysis ntuples). The folder
+     structure on CERNBox <b>matches the repository</b> — download into the same paths.</p>
 
   <div class="warn"><span class="h">Instructor — paste your CERNBox share link here</span>
-    <p>Replace this box with the share link, e.g.
+    <p>Replace this box with the public share link, e.g.
        <a href="PASTE_CERNBOX_SHARE_LINK_HERE">RADiCAL test-beam data on CERNBox →</a>.
-       Students: click that link, download <code>RUN1258_150_GeV.root</code>, and move it into a
-       <code>Data/</code> folder inside the <code>RADiCAL</code> project.</p></div>
+       The CERNBox layout mirrors <code>datasets/2023/</code> (see <code>datasets/2023/README.md</code>).</p></div>
 
-  <p>From a browser: download the file, then make a <code>Data</code> folder and move it in. Or do it all
-     in Terminal — if your instructor gives you a direct download URL, CERNBox public shares download by
-     adding <code>/download</code> to the share link:</p>
-  <div class="code">mkdir -p Data
-curl -L -o Data/RUN1258_150_GeV.root "PASTE_DIRECT_DOWNLOAD_URL_HERE"</div>
+  <p>For this lab, download <b>one raw run</b> to start with — a 150&nbsp;GeV run,
+     <code>RUN1258_150_GeV.root</code> — into <code>datasets/2023/raw/</code>:</p>
+  <div class="code">mkdir -p datasets/2023/raw
+curl -L -o datasets/2023/raw/RUN1258_150_GeV.root "PASTE_DIRECT_DOWNLOAD_URL_HERE"</div>
+  <p class="small" style="color:var(--dim)">(CERNBox public shares download by appending <code>/download</code>
+     to the share link.) For the full cross-build analysis, grab the small
+     <code>datasets/2023/reduced/</code> files instead — see <code>datasets/2023/README.md</code>.</p>
 
   <p><b>2c. Sanity-check the download</b> — a truncated 2&nbsp;GB file is the #1 cause of "it crashed":</p>
-  <div class="code">ls -lh Data/RUN1258_150_GeV.root</div>
+  <div class="code">ls -lh datasets/2023/raw/RUN1258_150_GeV.root</div>
   <p>It should report roughly <b>2.0G</b>. If it's a few KB or MB, the download failed — get it again.</p>
 
   <details class="cyu"><summary>Check yourself</summary>
@@ -232,7 +234,7 @@ curl -L -o Data/RUN1258_150_GeV.root "PASTE_DIRECT_DOWNLOAD_URL_HERE"</div>
   <p>A ROOT file is a little filesystem of its own. Inside ours is one <b>TTree</b> named
      <code>pulse</code> — think of a TTree as a spreadsheet where each <b>row is one beam event</b> and each
      <b>column is a "branch."</b> Let's open the file and poke around interactively:</p>
-  <div class="code">root -l Data/RUN1258_150_GeV.root</div>
+  <div class="code">root -l datasets/2023/raw/RUN1258_150_GeV.root</div>
   <p>Now at the <code>root [0]</code> prompt, type these one at a time:</p>
   <div class="code"><span class="c">// what objects are in the file?</span>
 .ls

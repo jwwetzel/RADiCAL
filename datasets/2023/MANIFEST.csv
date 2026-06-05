@@ -1,0 +1,35 @@
+# RADiCAL 2023 data manifest — maps every data file to its canonical location.
+# kind: raw (DRS4 'pulse' tree) | reduced (analysis-ready 'rad' tree)
+# format: pulse = raw waveforms; rad-processRun (DSB1) ; rad-reduceRaw (config-agnostic)
+# organize_data.sh uses canonical<->legacy to consolidate the local files.
+build,energy_GeV,kind,canonical_path,legacy_path,format
+DSB1,25,raw,datasets/2023/raw/RUN1211_25_GeV.root,Data/RUN1211_25_GeV.root,pulse
+DSB1,50,raw,datasets/2023/raw/RUN1148_50_GeV.root,Data/RUN1148_50_GeV.root,pulse
+DSB1,75,raw,datasets/2023/raw/RUN1112_75_GeV.root,Data/RUN1112_75_GeV.root,pulse
+DSB1,100,raw,datasets/2023/raw/RUN1075_100_GeV.root,Data/RUN1075_100_GeV.root,pulse
+DSB1,125,raw,datasets/2023/raw/RUN1034_125_GeV.root,Data/RUN1034_125_GeV.root,pulse
+DSB1,150,raw,datasets/2023/raw/RUN1258_150_GeV.root,Data/RUN1258_150_GeV.root,pulse
+DSB1,150,raw,datasets/2023/raw/RUN1259_150_GeV.root,Data/RUN1259_150_GeV.root,pulse
+DSB1,150,raw,datasets/2023/raw/RUN1260_150_GeV.root,Data/RUN1260_150_GeV.root,pulse
+DSB1,150,raw,datasets/2023/raw/RUN1261_150_GeV.root,Data/RUN1261_150_GeV.root,pulse
+DSB1,25,reduced,datasets/2023/reduced/DSB1/25GeV.root,Analysis/Output/25GeV/ntuple.root,rad-processRun
+DSB1,50,reduced,datasets/2023/reduced/DSB1/50GeV.root,Analysis/Output/50GeV/ntuple.root,rad-processRun
+DSB1,75,reduced,datasets/2023/reduced/DSB1/75GeV.root,Analysis/Output/75GeV/ntuple.root,rad-processRun
+DSB1,100,reduced,datasets/2023/reduced/DSB1/100GeV.root,Analysis/Output/100GeV/ntuple.root,rad-processRun
+DSB1,125,reduced,datasets/2023/reduced/DSB1/125GeV.root,Analysis/Output/125GeV/ntuple.root,rad-processRun
+DSB1,150,reduced,datasets/2023/reduced/DSB1/150GeV.root,Analysis/Output/150GeV/ntuple.root,rad-processRun
+LUAG,50,reduced,datasets/2023/reduced/LUAG/50GeV.root,reduced/LUAG/50GeV.root,rad-reduceRaw
+LUAG,75,reduced,datasets/2023/reduced/LUAG/75GeV.root,reduced/LUAG/75GeV.root,rad-reduceRaw
+LUAG,100,reduced,datasets/2023/reduced/LUAG/100GeV.root,reduced/LUAG/100GeV.root,rad-reduceRaw
+LUAG,125,reduced,datasets/2023/reduced/LUAG/125GeV.root,reduced/LUAG/125GeV.root,rad-reduceRaw
+LUAG,150,reduced,datasets/2023/reduced/LUAG/150GeV.root,reduced/LUAG/150GeV.root,rad-reduceRaw
+MIXED,50,reduced,datasets/2023/reduced/MIXED/50GeV.root,reduced/MIXED/50GeV.root,rad-reduceRaw
+MIXED,75,reduced,datasets/2023/reduced/MIXED/75GeV.root,reduced/MIXED/75GeV.root,rad-reduceRaw
+MIXED,100,reduced,datasets/2023/reduced/MIXED/100GeV.root,reduced/MIXED/100GeV.root,rad-reduceRaw
+MIXED,125,reduced,datasets/2023/reduced/MIXED/125GeV.root,reduced/MIXED/125GeV.root,rad-reduceRaw
+MIXED,150,reduced,datasets/2023/reduced/MIXED/150GeV.root,reduced/MIXED/150GeV.root,rad-reduceRaw
+TENERGY,50,reduced,datasets/2023/reduced/TENERGY/50GeV.root,reduced/TENERGY/50GeV.root,rad-reduceRaw
+TENERGY,75,reduced,datasets/2023/reduced/TENERGY/75GeV.root,reduced/TENERGY/75GeV.root,rad-reduceRaw
+TENERGY,100,reduced,datasets/2023/reduced/TENERGY/100GeV.root,reduced/TENERGY/100GeV.root,rad-reduceRaw
+TENERGY,125,reduced,datasets/2023/reduced/TENERGY/125GeV.root,reduced/TENERGY/125GeV.root,rad-reduceRaw
+TENERGY,150,reduced,datasets/2023/reduced/TENERGY/150GeV.root,reduced/TENERGY/150GeV.root,rad-reduceRaw

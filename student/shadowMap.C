@@ -21,7 +21,7 @@
 #include "TColor.h"
 #include <cstdio>
 
-void shadowMap(const char* fname = "Data/RUN1258_150_GeV.root")
+void shadowMap(const char* fname = "datasets/2023/raw/RUN1258_150_GeV.root")
 {
     gStyle->SetOptStat(0);
     gStyle->SetPalette(kBird);

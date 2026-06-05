@@ -13,7 +13,7 @@
 #include <cstdio>
 
 void drawWaveform(int slot = 2, long event = 0,
-                  const char* fname = "Data/RUN1258_150_GeV.root")
+                  const char* fname = "datasets/2023/raw/RUN1258_150_GeV.root")
 {
     TFile* f = TFile::Open(fname);
     if (!f || f->IsZombie()){ printf("could not open %s\n", fname); return; }
