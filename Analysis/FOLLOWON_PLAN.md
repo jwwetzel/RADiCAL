@@ -81,28 +81,31 @@ Argon). No new beam time needed. Only MIXED may want a few more reduced runs.
 **Recommendation: ONE focused paper now — on TIMING — with energy as support;
 keep EM-shower-localization as a separate later paper.**
 
-Reasoning:
-- The **strong, novel result is timing**: per capillary DSB1 ≈ LuAG:Ce, light yield
-  (not species) drives timing, so a radiation-hard crystal that is "bright enough"
-  times just as well. This is roadmap item 2 and addresses the program's
-  radiation-hardness motivation. It carries a paper on its own.
-- The **energy resolution here is a supporting null** — shower-max-localized
-  (~14–17 %), build-independent. It is **not strong enough to anchor its own paper**
-  (a full-module energy resolution is impossible from a single ~1 R_M-wide module —
-  that needs the future 3×3 array). So **do not split timing from energy**; fold the
-  per-material energy characterization in as a supporting section. Splitting it off
-  would create a weak second paper and dilute both.
-- **EM shower localization (roadmap item 1)** is a genuinely different observable
-  (position, not time/energy). Bundling it would dilute the timing story. **Keep it
-  as a separate, later paper.**
-- Method refinements (CFD-5%, OOS, timebase, de-saturation): CFD-5% goes in the
-  methods of the timing paper (it removes the published 0.2 ns satellite — a concrete
-  improvement); OOS + timebase + de-saturation as a short methods/appendix.
+**FINAL STRUCTURE — two papers, split by observable/story (full outlines in
+`PAPER_OUTLINES.md`):**
 
-So: **Paper A (now)** — *Comparison of DSB1 and LuAG:Ce wavelength shifters for
-precision timing in RADiCAL modules* (timing headline + supporting per-material
-energy + improved method). **Paper B (later)** — *EM shower localization at shower
-max*. Not two papers split by timing-vs-energy; split by **story/observable**.
+**Paper 1 — TIMING.** *DSB1 vs LuAG:Ce wavelength shifters for precision timing.*
+Configs DSB1 / LuAG / MIXED (all T-type). Light yield, not crystal species, drives
+timing → a radiation-hard crystal that is bright enough times just as well (roadmap
+item 2; radiation-hardness motivation). Strong, nearly ready.
+
+**Paper 2 — ENERGY + POSITION (+ the 4D combination).** *Shower-max energy and
+position measurement with WLS capillaries.* Energy (shower-max-localized σ_E/E per
+build) **and** position (the 4-corner light center-of-gravity, ~1.5 mm vs the wire
+chamber) come from the *same* shower-max sampling — the published paper says so
+explicitly. Anchored by the **E-type (full-length WLS) energy capillary** and the
+**TENERGY module** as the simultaneous time+energy+position ("4D") demonstration.
+Covers roadmap item 1 (localization) + the energy/E-type direction.
+
+Why this split:
+- Two thin halves (energy alone = published null; localization alone = a position
+  measurement) combine into one solid paper because they are the **same measurement**
+  (shower-max light → energy *and* position).
+- **TENERGY is the combination's home (Paper 2)**, not the timing paper: its three
+  timing caps are just DSB1 (already in Paper 1); its novel element is the E-type
+  *energy* cap, and it demonstrates time+energy+position in one module.
+- Method refinements (CFD-5% removing the published 0.2 ns satellite, OOS, timebase,
+  de-saturation) → methods/appendix of Paper 1.
 
 ## 6. Ordered task plan → draft
 

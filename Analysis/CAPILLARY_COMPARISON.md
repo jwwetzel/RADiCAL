@@ -252,5 +252,7 @@ in the energy / E-type discussion.
 `compareConfigsPlot.C` · `slewTest.C` (exploratory, confounded — kept for provenance) ·
 `desaturateCFD.C` (LG-referenced de-saturation test on raw waveforms, §6b) ·
 `configResolutionFull.C` (σ_t(E)+σ_E(E) OOS per build) · `lightYieldTiming.C` (σ_t vs light yield) ·
-`configSystematics.C` · `configCapDiag.C` (per-cap T/E-type ID, §6c) · `tenergyClean.C` (TENERGY excl-NW).
+`configSystematics.C` · `configCapDiag.C` (per-cap T/E-type ID, §6c) · `tenergyClean.C` (TENERGY excl-NW) ·
+`showerLocalization.C` (4-capillary light center-of-gravity → position, ~1.5 mm vs WC — Paper 2).
+Follow-on plan + paper outlines: `FOLLOWON_PLAN.md`, `PAPER_OUTLINES.md`.
 HPC: `Analysis/hpc/{PRESCRIPTION.md, reduceRaw via sge_reduce.sh, submit_reduce.sh, merge_reduced.sh}`.
