@@ -67,6 +67,25 @@ struct RadView {
         for (auto& c : cfg->caps) if (c.corner == cfg->end[i].corner) return c.role == "timing";
         return true;
     }
+
+    // ScanRunCenters-equivalent beam center: ONE sum_lg-light-weighted centroid
+    // over the whole file (matches Analysis/PlotUtils.h ScanRunCenters). This is
+    // the center of the timing fiducial circle — the world-class method applied
+    // uniformly. Cuts from SelectionCuts.h: mcp>kMCP_minPeak_E(50), sum_lg>
+    // kSumLG_centroid(300). Format-agnostic via the accessors, so EVERY build
+    // gets it. Does a full pre-pass over the tree.
+    void beamCenter(double& xc, double& yc) {
+        double wx = 0., wy = 0., w = 0.;
+        Long64_t N = entries();
+        for (Long64_t i = 0; i < N; ++i) {
+            get(i);
+            if (!ev.wc_ok || ev.mcp1_peak < 50.0f) continue;   // kMCP_minPeak_E
+            double slg = sum_lg();
+            if (slg > 300.0) { wx += ev.x_trk * slg; wy += ev.y_trk * slg; w += slg; }  // kSumLG_centroid
+        }
+        xc = (w > 0.) ? wx / w : 0.;
+        yc = (w > 0.) ? wy / w : 0.;
+    }
 };
 
 } // namespace rad
