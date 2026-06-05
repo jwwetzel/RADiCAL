@@ -25,9 +25,15 @@ radcore/
   MiniJson.h        dependency-free JSON reader
   BuildConfig.h     loads a config JSON → resolved DRS4 offsets, geometry, runs
   Schema.h          the ONE canonical reduced-ntuple schema (RadEvent + branches)
-  Reducer.C         (P2) config-driven raw → canonical reducer
+  Reducer.C         config-driven raw → canonical reducer (bit-identical gate)
+  sigmaT.C          build-agnostic timing analysis template (canonical reader)
   testConfig.C      gate: JSON config == legacy hardcoded ChannelConfig.h map
+Analysis/           existing analysis macros — migrate onto Schema + BuildConfig
 ```
+
+(The analysis layer lives in `Analysis/`, not a separate `analysis/` — the
+filesystem is case-insensitive, so they are the same directory. `radcore/` is
+the new hub; analyses stay in `Analysis/` and move onto the canonical reader.)
 
 ## Config JSON (one file = one build)
 
