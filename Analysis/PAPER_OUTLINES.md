@@ -104,10 +104,11 @@ concept for the enhanced 4D RADiCAL module.
    role, not raw timing capability — and the E-type is nonetheless excluded from the
    (DW−UP)/2 corner estimator because including it degrades the combination (Paper 1,
    `tenergyClean.C`).
-6. **Simultaneous time + energy + position (4D)** — the TENERGY module: 3 T-type DSB1
-   give ~35 ps (≈ DSB1, `tenergyClean.C`) while the E-type cap measures energy and the
-   four-corner light gives position — all in one event. Proof of concept for the
-   enhanced module (ref [1] Fig 28). ◐
+6. **Simultaneous time + energy + position (4D)** — ✅ `fourD_demo.png` (`fourDdemo.C`):
+   one TENERGY module, 150 GeV, same events → σ_t ≈ 57 ps all-fiducial (best-bin ~35 ps,
+   from the 3 T-type DSB1), σ_E/E = 11.9 %, σ_x = 0.9 mm — time, energy and position
+   measured at once. The capstone / proof of concept for the enhanced module (ref [1]
+   Fig 28).
 7. **Discussion / outlook** — toward the 3×3 array and full containment; full 4D.
 8. **Conclusion.**
 
@@ -124,7 +125,9 @@ gap) is done.**
 - ✅ Corrections to depth (25 X₀) & estimator attribution (BestMinus = [1]) — live.
 - ✅ Per-build σ_t(E), σ_E(E), systematics, light-yield, localization, T/E cap ID,
   **E-type in-beam characterization** (`etypeChar.C`).
+- ✅ Paper 2's 4D demonstration figure (`fourD_demo.png`).
+- ✅ **Paper 1 prose first draft** (`PAPER1_DRAFT.md`) — ready for author review/edits.
 - ☐ Confirm LuAG-NW capillary type (gates Paper 1's LuAG cleanliness).
-- ☐ Paper 2's 4D demonstration figure (time+energy+position in one view).
+- ☐ Refine σ_t-vs-LY to intrinsic (reference-subtracted); draft Paper 2 prose.
 - ◐ Refine the σ_t-vs-LY plot to intrinsic (reference-subtracted) σ_t.
 - Draft order: **Paper 1 first** (nearly ready), then **Paper 2** once §5 (E-type) is done.
