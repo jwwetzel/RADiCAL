@@ -1,5 +1,5 @@
 year,build,config,material_map,energies_GeV,status,reference
 2023,DSB1,datasets/2023/configs/DSB1.json,4xDSB1:Ce (timing),25;50;75;100;125;150,config-ready,arXiv:2401.01747 baseline
-2023,LUAG,datasets/2023/configs/LUAG.json,4xLuAG:Ce (timing),50;75;100;125;150,config-pending,material/energy variant
-2023,MIXED,datasets/2023/configs/MIXED.json,2xDSB1 + 2xLuAG (timing),50;75;100;125;150,config-pending,in-event head-to-head
-2023,TENERGY,datasets/2023/configs/TENERGY.json,3xDSB1 (timing) + 1xE-type @ NW (energy),50;75;100;125;150,config-pending,timing+energy demo
+2023,LUAG,datasets/2023/configs/LUAG.json,4xLuAG:Ce (timing),50;75;100;125;150,config-ready,material/energy variant
+2023,MIXED,datasets/2023/configs/MIXED.json,NE+SW DSB1 / NW+SE LuAG (timing),50;75;100;125;150,config-ready,in-event head-to-head (materials data-inferred — confirm vs logbook)
+2023,TENERGY,datasets/2023/configs/TENERGY.json,3xDSB1 (timing) + 1xE-type @ NW (energy),50;75;100;125;150,config-ready,timing+energy demo

@@ -1,0 +1,45 @@
+{
+  "year": 2023,
+  "build": "TENERGY",
+  "description": "RADiCAL timing+energy demo: 3 DSB1 timing capillaries (NE/SE/SW) + 1 full-length E-type ENERGY capillary at NW. CERN SPS May 2023. Same DRS4 wiring as DSB1.",
+
+  "digitizer": {
+    "model": "CAEN DT5742",
+    "boards": 2, "groups_per_board": 2, "chans_per_group": 9, "samples": 1024, "sample_ns": 0.2
+  },
+
+  "channel_map": {
+    "_note": "identical wiring to DSB1 (only the scintillator fill changes); [drs, grp, ch].",
+    "ends": [
+      { "corner": "NW", "end": "D", "hg": [0,0,1], "lg": [1,0,1], "mcp_ref": 1 },
+      { "corner": "NE", "end": "D", "hg": [0,0,2], "lg": [1,0,2], "mcp_ref": 1 },
+      { "corner": "SE", "end": "D", "hg": [0,0,3], "lg": [1,0,3], "mcp_ref": 1 },
+      { "corner": "SW", "end": "D", "hg": [0,0,0], "lg": [1,0,0], "mcp_ref": 1 },
+      { "corner": "NW", "end": "U", "hg": [0,0,5], "lg": [1,0,5], "mcp_ref": 1 },
+      { "corner": "NE", "end": "U", "hg": [0,0,4], "lg": [1,0,4], "mcp_ref": 1 },
+      { "corner": "SE", "end": "U", "hg": [0,0,6], "lg": [1,0,6], "mcp_ref": 1 },
+      { "corner": "SW", "end": "U", "hg": [0,1,0], "lg": [1,0,7], "mcp_ref": 2 }
+    ],
+    "mcp1": [0,0,7],
+    "mcp2": [0,1,7],
+    "wc": { "xr": [1,1,1], "xl": [1,1,2], "yd": [1,1,3], "yu": [1,1,5], "scale_mm_per_ns_frac": [7, 36] },
+    "pbglass": [ [0,1,1], [0,1,2], [0,1,3], [0,1,4] ]
+  },
+
+  "capillaries": [
+    { "corner": "NW", "material": "E-type", "role": "energy" },
+    { "corner": "NE", "material": "DSB1",   "role": "timing" },
+    { "corner": "SE", "material": "DSB1",   "role": "timing" },
+    { "corner": "SW", "material": "DSB1",   "role": "timing" }
+  ],
+
+  "geometry": {
+    "X0_mm": 5.4, "RM_mm": 13.7, "depth_X0": 25, "transverse_mm": 14,
+    "n_lyso": 29, "lyso_mm": 1.5, "n_w": 28, "w_mm": 2.5,
+    "module_center_wc_mm": [6.6, 4.7]
+  },
+
+  "mcp_ref_jitter_ps": 73,
+
+  "runs_manifest": "Analysis/hpc/manifest_TENERGY.csv"
+}

@@ -12,8 +12,7 @@
 //   ROOT_INCLUDE_PATH=radcore:Analysis root -l -b -q \
 //     'radcore/sigmaT.C+("datasets/2023/configs/DSB1.json", 150)'
 // ============================================================================
-#include "BuildConfig.h"     // radcore
-#include "Schema.h"          // radcore
+#include "RadView.h"         // radcore: format-agnostic role-resolved view (pulls Schema + BuildConfig)
 #include "PlotUtils.h"       // Analysis: FitGaussCore
 #include "DataPaths.h"       // Analysis: radReduced
 #include "TFile.h"
@@ -65,40 +64,34 @@ void sigmaT(const char* configPath, double energy = 150) {
     rad::BuildConfig cfg = rad::BuildConfig::Load(configPath);
     if (!cfg.valid()) { printf("config load failed: %s\n", cfg.error()); return; }
 
-    // role of each canonical end (timing vs energy), from the per-corner config
-    bool timingEnd[8] = {false};
-    int  nTimeDown=0, nTimeUp=0;
-    for (int i=0; i<cfg.nend; ++i) {
-        std::string role = "timing";
-        for (auto& c : cfg.caps) if (c.corner == cfg.end[i].corner) role = c.role;
-        timingEnd[i] = (role == "timing");
-        if (timingEnd[i]) { if (i<4) ++nTimeDown; else ++nTimeUp; }
-    }
-    printf("build %s @ %.0f GeV: %d timing ends (%d down / %d up); energy caps excluded by role\n",
-           cfg.build.c_str(), energy, nTimeDown+nTimeUp, nTimeDown, nTimeUp);
-
     TFile* fp = TFile::Open(radReduced(cfg.build.c_str(), energy));
     if (!fp || fp->IsZombie()) { printf("no reduced file for %s @ %.0f\n", cfg.build.c_str(), energy); return; }
     TTree* t = (TTree*)fp->Get("rad");
-    rad::RadEvent ev; ev.ConnectBranches(t);
-    long N = t->GetEntries();
+    rad::RadView v; v.attach(t, &cfg);                 // format-agnostic (canonical or legacy slots)
 
+    int nTimeDown=0, nTimeUp=0;
+    for (int i=0; i<cfg.nend; ++i) if (v.is_timing(i)) { if (i<4) ++nTimeDown; else ++nTimeUp; }
+    printf("build %-8s @ %.0f GeV [%-9s]: %d timing ends (%d down/%d up); energy caps excluded by role\n",
+           cfg.build.c_str(), energy, v.named?"canonical":"slots", nTimeDown+nTimeUp, nTimeDown, nTimeUp);
+
+    Long64_t N = v.entries();
     double xs=0, ys=0; long nw=0;
-    for (long i=0; i<N && nw<50000; ++i) { t->GetEntry(i); if (ev.wc_ok && ev.x_trk>-100 && ev.x_trk<100){xs+=ev.x_trk;ys+=ev.y_trk;++nw;} }
+    for (Long64_t i=0; i<N && nw<50000; ++i) { v.get(i); if (v.wc_ok() && v.x_trk()>-100 && v.x_trk()<100){xs+=v.x_trk();ys+=v.y_trk();++nw;} }
     double xc=xs/nw, yc=ys/nw;
 
     std::vector<Ev> events;
-    for (long i=0; i<N; ++i) {
-        t->GetEntry(i);
-        if (!ev.wc_ok || ev.mcp1_peak<200 || ev.mcp1_peak>750) continue;
-        double dx=ev.x_trk-xc, dy=ev.y_trk-yc; if (dx*dx+dy*dy >= 9.0) continue;
+    for (Long64_t i=0; i<N; ++i) {
+        v.get(i);
+        if (!v.wc_ok() || v.mcp1_peak()<200 || v.mcp1_peak()>750) continue;
+        double dx=v.x_trk()-xc, dy=v.y_trk()-yc; if (dx*dx+dy*dy >= 9.0) continue;
         double ds=0, us=0; int dn=0, un=0;
-        for (int c=0; c<4; ++c) if (timingEnd[c] && ev.hg_cfd05[c]>-1e5) { ds+=ev.hg_cfd05[c]; ++dn; }
-        for (int c=4; c<8; ++c) if (timingEnd[c] && ev.hg_cfd05[c]>-1e5) { us+=ev.hg_cfd05[c]; ++un; }
+        for (int c=0; c<4; ++c) if (v.is_timing(c)) { float tc=v.cfd05(c); if (tc>-1e5){ ds+=tc; ++dn; } }
+        for (int c=4; c<8; ++c) if (v.is_timing(c)) { float tc=v.cfd05(c); if (tc>-1e5){ us+=tc; ++un; } }
         if (dn<1 || un<1) continue;
-        Ev e; e.run=ev.run; e.slg=ev.sum_lg; e.t=0.5f*(float)(ds/dn-us/un);
+        Ev e; e.run=v.run(); e.slg=v.sum_lg(); e.t=0.5f*(float)(ds/dn-us/un);
         events.push_back(e);
     }
     double s = oosBest(events);
     printf("  events=%zu   out-of-sample best-bin (DW-UP)/2 sigma_t = %.1f ps\n", events.size(), s);
+    fp->Close();
 }
