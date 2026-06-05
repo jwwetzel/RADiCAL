@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RADiCAL — CALOR 2026 (Santa Fe, NM)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Newsreader:ital@0;1&display=swap');
+:root{
+  --bg:#ffffff; --ink:#13161f; --dim:#5a6478; --line:#e3e7f0;
+  --navy:#003087; --blue:#2d6cdf; --teal:#0e9b8e; --amber:#b06000; --hot:#c0306a; --green:#16794a;
+  --card:#f6f8fc; --sans:'Inter',system-ui,-apple-system,sans-serif; --serif:'Newsreader',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0a0c12;font-family:var(--sans);color:var(--ink)}
+.deck{position:fixed;inset:0}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;background:var(--bg);
+       padding:3.2vh 4.2vw 5vh;overflow:hidden}
+.slide.on{display:flex;animation:fade .25s ease}
+@keyframes fade{from{opacity:.4}to{opacity:1}}
+
+/* top accent bar + kicker */
+.slide::before{content:"";position:absolute;top:0;left:0;right:0;height:7px;
+  background:linear-gradient(90deg,var(--navy),var(--blue),var(--teal))}
+.kick{font-size:1.5vh;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--teal)}
+h1.t{font-size:4.0vh;font-weight:800;color:var(--navy);letter-spacing:-.01em;line-height:1.08;margin:.5vh 0 1.6vh}
+h1.t .a{color:var(--teal)}
+.slide h2{font-size:3.4vh;font-weight:800;color:var(--navy);letter-spacing:-.01em;line-height:1.1;margin:.3vh 0 1.4vh}
+.slide h2 .a{color:var(--teal)}
+.lead{font-size:2.5vh;color:#2b2f3a;font-weight:500;max-width:60ch;margin-bottom:1.4vh}
+ul{list-style:none;margin:.4vh 0} li{font-size:2.25vh;line-height:1.5;color:#23262f;margin:.9vh 0;padding-left:3.2vh;position:relative}
+li::before{content:"";position:absolute;left:0;top:1.0vh;width:1.4vh;height:1.4vh;border-radius:3px;background:var(--teal)}
+li.x::before{background:var(--amber)} li.h::before{background:var(--hot)}
+li b{color:var(--navy)} b{color:var(--navy)}
+.big{font-size:2.5vh} .small{font-size:1.8vh;color:var(--dim)}
+.body{flex:1;display:flex;gap:3vw;min-height:0}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+figure{display:flex;flex-direction:column;min-height:0;height:100%;justify-content:center}
+figure img{max-width:100%;max-height:78vh;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#fff;align-self:center}
+figcaption{font-size:1.7vh;color:var(--dim);margin-top:1vh;line-height:1.4;text-align:center}
+figcaption b{color:var(--ink)}
+.kpis{display:flex;gap:1.6vw;flex-wrap:wrap;margin-top:1vh}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.6vh 2vw;min-width:13vw}
+.kpi b{display:block;font-size:4.2vh;font-weight:900;color:var(--navy);line-height:1}
+.kpi span{font-size:1.7vh;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.kpi.teal b{color:var(--teal)} .kpi.amber b{color:var(--amber)}
+.note{font-family:var(--serif);font-size:2.1vh;color:#2b2f3a;font-style:italic}
+table{border-collapse:collapse;font-size:2.0vh;width:100%}
+th,td{text-align:left;padding:1vh 1.2vw;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--navy);font-size:1.7vh;text-transform:uppercase;letter-spacing:.04em}
+td.m,th.m{font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:1.6vh;font-weight:700;padding:.3vh .8vw;border-radius:20px;margin-right:.4vw}
+.tag.t{background:#e8f6ee;color:var(--green)} .tag.e{background:#eaf0fc;color:var(--blue)}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.2vh 1.4vw;font-size:1.9vh}
+.callout{border-left:5px solid var(--teal);background:#eafaf8;border-radius:0 10px 10px 0;padding:1.4vh 1.6vw;margin:1.2vh 0;font-size:2.1vh}
+.callout.amber{border-color:var(--amber);background:var(--card)} .callout b{color:var(--navy)}
+.center{align-items:center;justify-content:center;text-align:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.4vh 2vw}
+
+/* title slide */
+.title .kick{font-size:1.8vh}
+.title h1{font-size:5.2vh;font-weight:900;color:var(--navy);line-height:1.07;letter-spacing:-.015em;margin:1.6vh 0}
+.title h1 .a{color:var(--teal)}
+.title .sub{font-size:2.4vh;color:#2b2f3a;max-width:74ch;line-height:1.5}
+.title .by{font-size:2.1vh;color:var(--dim);margin-top:2.4vh}
+.title .by b{color:var(--navy)}
+.goalrow{display:flex;gap:1.4vw;margin-top:2.6vh;flex-wrap:wrap}
+.goal{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--teal);border-radius:10px;padding:1.4vh 1.8vw}
+.goal b{display:block;font-size:3.2vh;font-weight:900;color:var(--teal)} .goal span{font-size:1.7vh;color:var(--dim)}
+
+/* schematic */
+.sch{width:100%;height:auto} .sch text{font-family:var(--sans);font-weight:600}
+
+/* chrome */
+#bar{position:fixed;bottom:0;left:0;height:5px;background:linear-gradient(90deg,var(--teal),var(--blue));z-index:50;transition:width .25s}
+#pc{position:fixed;bottom:1.4vh;right:2vw;font-size:1.7vh;color:var(--dim);z-index:50;font-variant-numeric:tabular-nums}
+#hint{position:fixed;bottom:1.2vh;left:2vw;font-size:1.5vh;color:#aab2c2;z-index:60;
+      transition:opacity .6s;background:rgba(255,255,255,.85);padding:.3vh .8vw;border-radius:6px}
+#hint.gone{opacity:0;pointer-events:none}
+.foot{position:absolute;bottom:2.9vh;left:4.2vw;font-size:1.6vh;color:#7a869c}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 1 TITLE -->
+<section class="slide title center on">
+  <div class="kick">CALOR 2026 · Santa Fe, New Mexico · Advanced Calorimetry</div>
+  <h1>RADi<span class="a">CAL</span><br><span style="font-size:.62em;font-weight:800">A Research &amp; Development Test Structure for Optical Materials<br>for Fast-Timing, Ultra-Compact EM Calorimetry</span></h1>
+  <div class="sub">An index-finger-sized W / LYSO:Ce module that turns shower-maximum light into
+    <b>time, position and energy</b> — and a reconfigurable <b>standard candle</b> for optical-materials R&amp;D.</div>
+  <div class="goalrow">
+    <div class="goal"><b>~10 ps</b><span>timing goal</span></div>
+    <div class="goal"><b>~1 mm</b><span>position goal</span></div>
+    <div class="goal"><b>~10%/√E</b><span>energy stochastic goal</span></div>
+  </div>
+  <div class="by"><b>James Wetzel</b> — on behalf of the <b>RADiCAL Collaboration</b></div>
+</section>
+
+<!-- 2 OUTLINE -->
+<section class="slide">
+  <div class="kick">Outline</div>
+  <h2>One simple device, a cornucopia of calorimetry</h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li><b>The challenge</b> — 4D calorimetry for future colliders</li>
+      <li><b>The device</b> — how RADiCAL is built, and how light becomes time/position/energy</li>
+      <li><b>The idea</b> — RADiCAL as a <b>standard candle</b>: a fixed reference to compare materials against</li>
+      <li><b>What we can change</b> — capillaries, scintillators, electronics</li>
+      <li class="x"><b>Results to date</b> — timing, energy, position, and a 4D demonstration</li>
+      <li class="x"><b>Tuning the detector</b> — how swapping one element opens a new study</li>
+      <li class="h"><b>The road to 10 ps</b> — and an invitation to collaborate</li>
+    </ul>
+  </div><div class="col center">
+    <div class="callout"><b>Thesis:</b> a single, well-understood, reconfigurable module lets the whole
+      community test optical materials head-to-head — and pushes precision timing toward 10 ps.</div>
+  </div></div>
+  <div class="foot">RADiCAL · CALOR 2026</div>
+</section>
+
+<!-- 3 MOTIVATION -->
+<section class="slide">
+  <div class="kick">The challenge</div>
+  <h2>Why timing, and why <span class="a">now</span></h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li>HL-LHC &amp; future colliders (FCC-ee/hh, fixed-target, forward physics): <b>up to ~200 overlapping interactions</b> per crossing, and intense <b>radiation</b>.</li>
+      <li>Space alone no longer separates them — reconstruction needs <b>time</b>, stamping each shower to a few tens of ps.</li>
+      <li>A calorimeter that measures <b>energy + time + position together</b> — "4D" — is a central instrumentation goal.</li>
+      <li class="h">The materials must be <b>radiation hard</b> and <b>fast</b>, and we must learn which ones work.</li>
+    </ul>
+  </div><div class="col center">
+    <div class="kpis">
+      <div class="kpi teal"><b>10 ps</b><span>timing target</span></div>
+      <div class="kpi"><b>1 mm</b><span>position target</span></div>
+      <div class="kpi amber"><b>10%/√E</b><span>energy stochastic</span></div>
+    </div>
+    <div class="note" style="margin-top:2vh">RADiCAL is the R&amp;D test structure to find the optical
+      materials that get us there.</div>
+  </div></div>
+</section>
+
+<!-- 4 CONCEPT -->
+<section class="slide">
+  <div class="kick">The concept</div>
+  <h2>Sample the light where the shower is <span class="a">brightest</span></h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li>An EM shower peaks at <b>shower maximum</b> — a small, dense, prompt burst of energy.</li>
+      <li>RADiCAL reads the scintillation light <b>right there</b>, through wavelength-shifting (WLS) filaments inside quartz capillaries that pipe it to SiPMs.</li>
+      <li>A compact, localized, very bright optical pulse → an excellent <b>timing</b> signal, and a handle on <b>position</b> and <b>energy</b>.</li>
+      <li><b>Index-finger-sized</b> module; 25 radiation lengths deep.</li>
+    </ul>
+  </div><div class="col center">
+    <figure><img src="report/report_images/transverse_maps_150GeV-1.png" alt="transverse maps">
+      <figcaption>The beam, imaged by the capillary light — the module "sees" the shower position.</figcaption></figure>
+  </div></div>
+</section>
+
+<!-- 5 CONSTRUCTION -->
+<section class="slide">
+  <div class="kick">Construction</div>
+  <h2>How it is built</h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li><b>Shashlik stack:</b> 28 tungsten (W) absorber plates interleaved with 29 LYSO:Ce scintillator plates — <b>25 X₀</b>, 14 × 14 × 135 mm³.</li>
+      <li><b>Quartz capillaries</b> penetrate the full length at the corners; each carries a WLS filament and acts as a waveguide.</li>
+      <li><b>SiPMs at both ends</b> (upstream + downstream), each in <b>dual gain</b>: high gain → timing, low gain → energy.</li>
+      <li>Digitized at <b>5 GS/s</b> (CAEN DT5742 / DRS4); an MCP gives a precision time reference.</li>
+    </ul>
+  </div><div class="col center">
+    <svg class="sch" viewBox="0 0 520 230" role="img" aria-label="module schematic">
+      <text x="20" y="22" font-size="13" fill="#5a6478">beam</text>
+      <path d="M6 40 H70" stroke="#c0306a" stroke-width="3" marker-end="url(#a)"/>
+      <defs><marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#c0306a"/></marker></defs>
+      <!-- shashlik stack -->
+      <g>
+        <rect x="78" y="55" width="300" height="120" fill="#eef2fb" stroke="#003087" stroke-width="1.5"/>
+        <!-- W/LYSO stripes -->
+        <g>
+          <rect x="86"  y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="104" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="122" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="140" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="158" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="176" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="194" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="212" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="230" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="248" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="266" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="284" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="302" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="320" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="338" y="58" width="9" height="114" fill="#3a4255"/>
+          <rect x="356" y="58" width="9" height="114" fill="#3a4255"/>
+        </g>
+        <!-- capillary -->
+        <rect x="40" y="108" width="440" height="10" fill="#0e9b8e" rx="5"/>
+        <rect x="170" y="105" width="60" height="16" fill="#b06000" rx="3"/>
+        <text x="200" y="100" font-size="11" fill="#b06000" text-anchor="middle">WLS @ shower max</text>
+        <!-- SiPMs -->
+        <rect x="22" y="98" width="20" height="30" fill="#003087" rx="3"/>
+        <rect x="478" y="98" width="20" height="30" fill="#003087" rx="3"/>
+        <text x="32" y="148" font-size="11" fill="#003087" text-anchor="middle">SiPM</text>
+        <text x="488" y="148" font-size="11" fill="#003087" text-anchor="middle">SiPM</text>
+      </g>
+      <text x="228" y="200" font-size="12" fill="#13161f" text-anchor="middle">W absorber (dark) + LYSO:Ce (light) · quartz capillary (teal) · 25 X₀, 135 mm</text>
+    </svg>
+  </div></div>
+</section>
+
+<!-- 6 CAPILLARIES T/E -->
+<section class="slide">
+  <div class="kick">The capillaries</div>
+  <h2>Two jobs, two capillary types</h2>
+  <div class="body"><div class="col">
+    <div class="pill" style="margin-bottom:1.4vh"><span class="tag t">T-type</span> <b>Timing.</b> WLS filament only at shower max → a sharp, bright, localized pulse. Fast leading edge.</div>
+    <div class="pill"><span class="tag e">E-type</span> <b>Energy.</b> WLS runs the <b>full length</b> → a uniform longitudinal response. Linear in energy.</div>
+    <ul style="margin-top:1.6vh">
+      <li>Read at <b>both ends</b> → the up/down difference cancels the reference and exposes intrinsic timing.</li>
+      <li>Same module, swappable inserts — the basis of the standard-candle method.</li>
+    </ul>
+  </div><div class="col center">
+    <div class="kpis">
+      <div class="kpi teal"><b>T</b><span>shower-max WLS → timing</span></div>
+      <div class="kpi amber"><b>E</b><span>full-length WLS → energy</span></div>
+    </div>
+    <div class="note" style="margin-top:2vh">Deploy T-type and E-type together → time, position <em>and</em> energy from one module.</div>
+  </div></div>
+</section>
+
+<!-- 7 STANDARD CANDLE -->
+<section class="slide">
+  <div class="kick">The idea</div>
+  <h2>RADiCAL as a <span class="a">standard candle</span></h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li>Fix a <b>standard reference configuration</b> (DSB1 T-type capillaries) and measure its baseline: timing, energy, position.</li>
+      <li><b>Swap one element at a time</b> — a capillary material, an electronics card, a scintillator plate — and measure the <b>delta vs the standard</b>.</li>
+      <li>The module, beam, geometry and analysis are held fixed, so the change <b>isolates</b> the effect of that material.</li>
+      <li class="x">A reproducible, head-to-head <b>test bed</b> for the whole community's optical materials.</li>
+    </ul>
+  </div><div class="col center">
+    <svg class="sch" viewBox="0 0 360 240" aria-label="standard candle">
+      <rect x="120" y="20" width="120" height="44" rx="10" fill="#0e9b8e"/>
+      <text x="180" y="40" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">STANDARD</text>
+      <text x="180" y="56" font-size="11" fill="#eafaf8" text-anchor="middle">DSB1 · baseline</text>
+      <g stroke="#2d6cdf" stroke-width="2" fill="none">
+        <path d="M120 64 C70 90 60 110 60 140" marker-end="url(#b)"/>
+        <path d="M180 64 V140" marker-end="url(#b)"/>
+        <path d="M240 64 C290 90 300 110 300 140" marker-end="url(#b)"/>
+      </g>
+      <defs><marker id="b" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#2d6cdf"/></marker></defs>
+      <rect x="18" y="142" width="84" height="40" rx="8" fill="#eaf0fc" stroke="#2d6cdf"/>
+      <text x="60" y="162" font-size="11" fill="#003087" text-anchor="middle" font-weight="700">swap WLS</text>
+      <text x="60" y="176" font-size="10" fill="#5a6478" text-anchor="middle">LuAG:Ce, LuO:Yb…</text>
+      <rect x="138" y="142" width="84" height="40" rx="8" fill="#eaf0fc" stroke="#2d6cdf"/>
+      <text x="180" y="162" font-size="11" fill="#003087" text-anchor="middle" font-weight="700">swap electronics</text>
+      <text x="180" y="176" font-size="10" fill="#5a6478" text-anchor="middle">front-end cards</text>
+      <rect x="258" y="142" width="84" height="40" rx="8" fill="#eaf0fc" stroke="#2d6cdf"/>
+      <text x="300" y="162" font-size="11" fill="#003087" text-anchor="middle" font-weight="700">swap plates</text>
+      <text x="300" y="176" font-size="10" fill="#5a6478" text-anchor="middle">LYSO → LuO:Yb</text>
+      <text x="180" y="214" font-size="12" fill="#13161f" text-anchor="middle">measure Δ(timing, energy, position) vs the standard</text>
+    </svg>
+  </div></div>
+</section>
+
+<!-- 8 CONFIGURABLE ELEMENTS -->
+<section class="slide">
+  <div class="kick">What we can change</div>
+  <h2>A reconfigurable test bed</h2>
+  <div class="body"><div class="col">
+    <table>
+      <tr><th>Element</th><th>Options tested / planned</th></tr>
+      <tr><td><b>WLS capillary</b></td><td><b>DSB1</b> (organic) · <b>LuAG:Ce</b> (ceramic, rad-hard) · <b>LuO:Yb</b> (ceramic, next) · QD glass · polysiloxane</td></tr>
+      <tr><td><b>Capillary type</b></td><td>T-type (timing) · E-type (energy) · mixtures in one module</td></tr>
+      <tr><td><b>Scintillator plate</b></td><td>LYSO:Ce (now) → <b>LuO:Yb ceramic</b> (near future)</td></tr>
+      <tr><td><b>Electronics</b></td><td>dual-gain SiPM front-end cards · DT5742 / DRS4 readout</td></tr>
+      <tr><td><b>Geometry</b></td><td>single module → 3 × 3 array (containment); capillary count &amp; placement</td></tr>
+    </table>
+  </div><div class="col center">
+    <div class="callout amber"><b>One knob at a time.</b> Each row is a controlled experiment against the
+      same standard — the data tell you exactly what that material bought you.</div>
+  </div></div>
+</section>
+
+<!-- 9 METHOD -->
+<section class="slide">
+  <div class="kick">How we measure</div>
+  <h2>An MCP-free <span class="a">corner</span> estimator</h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li><b>(DW − UP)/2</b>: the half-difference of downstream and upstream capillary times.</li>
+      <li>Cancels the timing reference, the inter-group sampler jitter, and the DRS4 cell-width error — exposes the <b>intrinsic</b> module resolution.</li>
+      <li>Constant-fraction (5%) time-stamping on the sharp low edge; energy-binned selection.</li>
+      <li class="x"><b>Out-of-sample validated</b> — every quoted number is reproduced on held-out runs.</li>
+    </ul>
+  </div><div class="col center">
+    <figure><img src="report/Summary/layer4_ladder.png" alt="resolution ladder">
+      <figcaption>From a single channel (~180 ps) → channel combination → the energy-binned corner headline.</figcaption></figure>
+  </div></div>
+</section>
+
+<!-- 10 TIMING -->
+<section class="slide">
+  <div class="kick">Results · timing</div>
+  <h2>The standard: <span class="a">27 ps</span> at 150 GeV</h2>
+  <div class="body"><div class="col center" style="flex:1.3">
+    <figure><img src="report/Summary/layer5_timing.png" alt="timing vs energy">
+      <figcaption>σ<sub>t</sub>(E) with the DSB1 standard capillaries; σ<sub>t</sub> = a/√E ⊕ b.</figcaption></figure>
+  </div><div class="col">
+    <div class="kpis"><div class="kpi teal"><b>27 ps</b><span>150 GeV (DSB1)</span></div></div>
+    <ul style="margin-top:1.2vh">
+      <li>The baseline against which every material is compared.</li>
+      <li>MCP-free, cross-validation-stable.</li>
+      <li class="h">Floor is set by the readout electronics — recoverable headroom toward the 10 ps goal.</li>
+    </ul>
+  </div></div>
+</section>
+
+<!-- 11 MATERIAL COMPARISON -->
+<section class="slide">
+  <div class="kick">Results · materials</div>
+  <h2>Light yield — <span class="a">not species</span> — drives timing</h2>
+  <div class="body"><div class="col center">
+    <figure><img src="Analysis/capillary_figs/mixed_h2h.png" alt="DSB1 vs LuAG in-event">
+      <figcaption><b>Confound-free:</b> DSB1 and LuAG:Ce capillaries in the <b>same showers</b> — identical per capillary.</figcaption></figure>
+  </div><div class="col center">
+    <figure><img src="Analysis/capillary_figs/config_sigmat_vs_E.png" alt="per-build timing">
+      <figcaption>Per build: the brightest (DSB1) wins; dimmer LuAG:Ce builds sit higher — entirely a light-yield effect.</figcaption></figure>
+  </div></div>
+  <div class="foot">⇒ a radiation-hard ceramic (LuAG:Ce, LuO:Yb) times just as well once made <b>bright enough</b>.</div>
+</section>
+
+<!-- 12 ENERGY -->
+<section class="slide">
+  <div class="kick">Results · energy</div>
+  <h2>Shower-max energy, build-independent</h2>
+  <div class="body"><div class="col center" style="flex:1.3">
+    <figure><img src="Analysis/capillary_figs/config_sigmaE_vs_E.png" alt="energy resolution">
+      <figcaption>σ<sub>E</sub>/E at shower max vs energy — ~14%, essentially the same for every capillary material.</figcaption></figure>
+  </div><div class="col">
+    <ul>
+      <li>Energy from the low-gain (unsaturated) chain at shower max.</li>
+      <li><b>~14%</b> — a localized shower-max measurement (≈3 LYSO tiles), not full containment.</li>
+      <li class="x">Full containment → a <b>3 × 3 array</b> drives the stochastic term toward 10%/√E.</li>
+    </ul>
+  </div></div>
+</section>
+
+<!-- 13 POSITION -->
+<section class="slide">
+  <div class="kick">Results · position</div>
+  <h2>Position from the <span class="a">corner light</span></h2>
+  <div class="body"><div class="col center" style="flex:1.4">
+    <figure><img src="Analysis/capillary_figs/shower_localization.png" alt="localization">
+      <figcaption>Capillary light center-of-gravity vs the wire chamber — a clean correlation in x and y.</figcaption></figure>
+  </div><div class="col">
+    <div class="kpis"><div class="kpi"><b>~1.5 mm</b><span>transverse position</span></div></div>
+    <ul style="margin-top:1.2vh">
+      <li>Same four capillaries that measure energy also <b>localize</b> the shower.</li>
+      <li>Below the beam-spot spread → real position information per shower.</li>
+      <li class="x">A handle for <b>module identification</b> in an array.</li>
+    </ul>
+  </div></div>
+</section>
+
+<!-- 14 E-TYPE -->
+<section class="slide">
+  <div class="kick">Results · the E-type capillary</div>
+  <h2>A dedicated, linear <span class="a">energy</span> element</h2>
+  <div class="body"><div class="col center" style="flex:1.4">
+    <figure><img src="Analysis/capillary_figs/etype_vs_ttype.png" alt="E-type vs T-type">
+      <figcaption>E-type (full-length WLS) vs T-type: ~4–5× dimmer at shower max, but linear in energy.</figcaption></figure>
+  </div><div class="col">
+    <ul>
+      <li>Full-length WLS → uniform longitudinal response (the energy element).</li>
+      <li>Linear in beam energy; single-channel timing comparable to T-type.</li>
+      <li class="x">Deploy E-type + T-type together → the full 4D module.</li>
+    </ul>
+  </div></div>
+</section>
+
+<!-- 15 4D DEMO -->
+<section class="slide">
+  <div class="kick">Results · the payoff</div>
+  <h2>One module — <span class="a">time + energy + position</span> at once</h2>
+  <div class="body center"><figure style="height:100%">
+    <img src="Analysis/capillary_figs/fourD_demo.png" alt="4D demonstration" style="max-height:64vh">
+    <figcaption>Same module, same 150 GeV events: <b>σ<sub>t</sub> ≈ 35 ps</b> · <b>σ<sub>E</sub>/E ≈ 12%</b> · <b>σ<sub>x</sub> ≈ 1 mm</b> — a 4D proof of concept.</figcaption>
+  </figure></div>
+</section>
+
+<!-- 16 CORNUCOPIA -->
+<section class="slide">
+  <div class="kick">Tuning the detector</div>
+  <h2>One device → a <span class="a">cornucopia</span> of studies</h2>
+  <div class="body"><div class="col">
+    <table>
+      <tr><th>Change this…</th><th>…and study this</th></tr>
+      <tr><td>WLS material (DSB1 → LuAG:Ce → LuO:Yb)</td><td>radiation hardness vs timing; light yield → timing</td></tr>
+      <tr><td>T-type ↔ E-type, filament length/placement</td><td>timing vs energy vs position trade-offs</td></tr>
+      <tr><td>Scintillator plate (LYSO:Ce → LuO:Yb)</td><td>sampling fraction, light yield, energy resolution</td></tr>
+      <tr><td>Electronics / SiPM card</td><td>noise, slew, the timing floor</td></tr>
+      <tr><td>Capillary count &amp; geometry, arrays</td><td>position resolution, containment, module ID</td></tr>
+    </table>
+  </div><div class="col center">
+    <div class="callout"><b>Every swap is a paper.</b> The same simple module yields timing, energy,
+      position, materials and 4D results — measured consistently against one standard.</div>
+  </div></div>
+</section>
+
+<!-- 17 ROAD TO 10 PS -->
+<section class="slide">
+  <div class="kick">The road to 10 ps</div>
+  <h2>More light, sharper edges</h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li>Timing precision ≈ <b>noise / slew rate</b> — and what sharpens the edge is <b>more detected photoelectrons</b>.</li>
+      <li>Levers: brighter (and rad-hard) WLS &amp; scintillators · thicker LYSO at shower max · better photodetectors · lower-noise, faster electronics.</li>
+      <li>We have shown the <b>material is not the limit</b> — light yield is the lever.</li>
+      <li class="h">Bridging 27 → <b>10 ps</b> is an electronics-and-light-yield program, well-matched to this test bed.</li>
+    </ul>
+  </div><div class="col center">
+    <figure><img src="Analysis/capillary_figs/sigmat_vs_lightyield.png" alt="timing vs light yield">
+      <figcaption>Timing improves with light yield, the same for both materials — the lever to 10 ps.</figcaption></figure>
+  </div></div>
+</section>
+
+<!-- 18 FUTURE -->
+<section class="slide">
+  <div class="kick">Plans</div>
+  <h2>What's next</h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li><b>LuO:Yb ceramic plates</b> — radiation-hard scintillator replacing LYSO:Ce.</li>
+      <li><b>LuAG:Ce &amp; LuO:Yb capillaries</b> — push the light yield of rad-hard shifters.</li>
+      <li><b>Enhanced modular design</b> — T-type + E-type together; updated front-end &amp; DAQ.</li>
+      <li><b>3 × 3 array</b> — full transverse containment → energy resolution toward 10%/√E.</li>
+      <li class="h"><b>Drive the timing floor</b> from electronics toward 10 ps.</li>
+    </ul>
+  </div><div class="col center">
+    <figure><img src="report/Summary/quality_overview_150.png" alt="beam quality">
+      <figcaption>A clean, well-understood module — the foundation for the next round.</figcaption></figure>
+  </div></div>
+</section>
+
+<!-- 19 INVITATION -->
+<section class="slide center">
+  <div class="kick">Collaborate</div>
+  <h2 style="font-size:4.2vh">An open test bed — <span class="a">join us</span></h2>
+  <div class="lead" style="text-align:center;max-width:70ch">RADiCAL is a small, reproducible, well-characterized structure for testing
+    <b>your</b> optical material, scintillator, or readout against a common standard.</div>
+  <div class="kpis center" style="justify-content:center;margin-top:1vh">
+    <div class="kpi teal"><b>27 → 10 ps</b><span>the timing goal</span></div>
+    <div class="kpi"><b>1 mm</b><span>position</span></div>
+    <div class="kpi amber"><b>materials</b><span>bring yours</span></div>
+  </div>
+  <div class="note" style="margin-top:2.4vh">We are eager to work with many groups to reach <b>10 ps</b> — the test bed is ready.</div>
+</section>
+
+<!-- 20 SUMMARY -->
+<section class="slide">
+  <div class="kick">Summary</div>
+  <h2>RADiCAL — a standard candle for fast-timing calorimetry</h2>
+  <div class="body"><div class="col">
+    <ul>
+      <li>An index-finger-sized W/LYSO:Ce module reads shower-max light → <b>time, energy, position</b>.</li>
+      <li>A fixed <b>standard</b> + one-knob-at-a-time swaps = a controlled <b>materials test bed</b>.</li>
+      <li>To date: <b>27 ps</b> timing, <b>~14%</b> shower-max energy, <b>~1.5 mm</b> position, and a <b>4D</b> demonstration.</li>
+      <li class="x">Timing is set by <b>light yield, not species</b> → radiation-hard ceramics are on the path.</li>
+      <li class="h">Goal: <b>10 ps</b> — and we want collaborators to get there.</li>
+    </ul>
+  </div><div class="col center">
+    <div class="kpis center">
+      <div class="kpi teal"><b>27 ps</b><span>timing</span></div>
+      <div class="kpi"><b>14%</b><span>energy</span></div>
+      <div class="kpi amber"><b>1.5 mm</b><span>position</span></div>
+    </div>
+    <div class="note" style="margin-top:2vh">Thank you — questions welcome.</div>
+  </div></div>
+  <div class="foot">RADiCAL Collaboration · CALOR 2026 · Santa Fe, NM</div>
+</section>
+
+</div>
+
+<div id="bar"></div><div id="pc"></div>
+<div id="hint">← → / space · F fullscreen</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide')), cur=0;
+  var bar=document.getElementById('bar'), pc=document.getElementById('pc');
+  function show(i){ slides[cur].classList.remove('on'); cur=Math.max(0,Math.min(slides.length-1,i));
+    slides[cur].classList.add('on'); pc.textContent=(cur+1)+' / '+slides.length;
+    bar.style.width=((cur+1)/slides.length*100)+'%';
+    if(location.hash!=='#'+(cur+1)) history.replaceState(null,'','#'+(cur+1)); }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '||e.key==='ArrowDown'){show(cur+1);e.preventDefault();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'||e.key==='ArrowUp'){show(cur-1);e.preventDefault();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+    else if(e.key==='f'||e.key==='F'){ if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen(); }
+  });
+  document.addEventListener('click',function(e){ if(e.target.closest('a,button'))return;
+    show(e.clientX>window.innerWidth*0.5?cur+1:cur-1); });
+  var h=parseInt((location.hash||'#1').slice(1),10); show(isNaN(h)?0:h-1);
+  var hint=document.getElementById('hint'); setTimeout(function(){hint.classList.add('gone');},4000);
+})();
+</script>
+</body>
+</html>
