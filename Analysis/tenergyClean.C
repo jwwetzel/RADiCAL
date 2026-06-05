@@ -8,6 +8,7 @@
 #include "ChannelConfig.h"
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TH1F.h"
 #include <cstdio>
@@ -42,7 +43,7 @@ static double oosBest(std::vector<Ev>& ev){
 }
 // excl = corner to drop (-1 none; 0 = NW). Drops that corner's DOWN and UP readout.
 static void loadCfg(const char* dir, bool isDSB1, double E, int excl, std::vector<Ev>& ev){
-    TString fn = isDSB1 ? Form("Analysis/Output/%.0fGeV/ntuple.root",E) : Form("%s/%.0fGeV.root",dir,E);
+    TString fn = isDSB1 ? radReduced("DSB1",E) : radReduced(dir,E);
     TFile* fp=TFile::Open(fn); if(!fp||fp->IsZombie()) return;
     TTree* t=(TTree*)fp->Get("rad"); if(!t){ fp->Close(); return; }
     Int_t run; Bool_t wc; Float_t x,y,m1t,m2t,m1p,sp[36],sc[36],mp,cfd[8],slgD;
@@ -79,8 +80,8 @@ void tenergyClean(){
     printf("%5s %14s %16s %12s\n","E","TEN_all4[ps]","TEN_exclNW[ps]","DSB1[ps]");
     for(int e=0;e<6;++e){
         std::vector<Ev> a,b,d;
-        loadCfg("reduced/TENERGY",false,Es[e],-1,a);
-        loadCfg("reduced/TENERGY",false,Es[e], 0,b);   // drop NW corner
+        loadCfg("TENERGY",false,Es[e],-1,a);
+        loadCfg("TENERGY",false,Es[e], 0,b);   // drop NW corner
         loadCfg("",true,Es[e],-1,d);
         double sa=oosBest(a), sb=oosBest(b), sd=oosBest(d);
         printf("%5.0f %14.1f %16.1f %12.1f\n",Es[e],sa,sb,sd);

@@ -10,6 +10,7 @@
 //   root -l 'Analysis/showerLocalization.C+(150)'
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TH2F.h"
 #include "TProfile.h"
@@ -21,7 +22,7 @@
 
 void showerLocalization(double E=150){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    TFile* fp=TFile::Open(Form("Analysis/Output/%.0fGeV/ntuple.root",E));
+    TFile* fp=TFile::Open(radReduced("DSB1",E));
     if(!fp||fp->IsZombie()){ printf("no DSB1 ntuple at %.0f GeV\n",E); return; }
     TTree* t=(TTree*)fp->Get("rad");
     Bool_t wc; Float_t x,y,mp,lg[8];

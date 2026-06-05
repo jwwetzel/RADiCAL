@@ -8,6 +8,7 @@
 #include "ChannelConfig.h"
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TGraphErrors.h"
 #include "TF1.h"
@@ -35,7 +36,7 @@ void etypeChar(){
     printf("\n=== E-type (NW) vs T-type (NE/SE/SW) in TENERGY ===\n");
     printf("%5s %10s %10s %12s %12s\n","E","Etype_LG","Ttype_LG","Etype_st[ps]","Ttype_st[ps]");
     for(int e=0;e<5;++e){
-        TFile* fp=TFile::Open(Form("reduced/TENERGY/%.0fGeV.root",Es[e])); if(!fp||fp->IsZombie()) continue;
+        TFile* fp=TFile::Open(radReduced("TENERGY",Es[e])); if(!fp||fp->IsZombie()) continue;
         TTree* t=(TTree*)fp->Get("rad"); if(!t){fp->Close();continue;}
         Bool_t wc; Float_t x,y,m1t,m1p,sp[36],sc[36];
         t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);

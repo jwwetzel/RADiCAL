@@ -8,6 +8,7 @@
 #include "ChannelConfig.h"
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TH1F.h"
 #include <cstdio>
@@ -22,7 +23,7 @@ static double gcoreSig(std::vector<float>& v){
     double mu,muE,sg,sgE; FitGaussCore(&h,2.0,mu,muE,sg,sgE); return sg>0? sg*1000.0:-1;
 }
 static void diag(const char* dir, bool isDSB1, const char* label, double E){
-    TString fn = isDSB1 ? Form("Analysis/Output/%.0fGeV/ntuple.root",E) : Form("%s/%.0fGeV.root",dir,E);
+    TString fn = isDSB1 ? radReduced("DSB1",E) : radReduced(dir,E);
     TFile* fp=TFile::Open(fn); if(!fp||fp->IsZombie()){ printf("  %s: no file\n",label); return; }
     TTree* t=(TTree*)fp->Get("rad"); if(!t){ fp->Close(); return; }
     Int_t run; Bool_t wc; Float_t x,y,m1t,m2t,m1p,sp[36],sc[36],mp,cfd[8],hgp[8],lgp[8];
@@ -55,7 +56,7 @@ static void diag(const char* dir, bool isDSB1, const char* label, double E){
 }
 void configCapDiag(){
     diag("",true,"DSB1",150);
-    diag("reduced/LUAG",false,"LuAG",150);
-    diag("reduced/MIXED",false,"MIXED",150);
-    diag("reduced/TENERGY",false,"TENERGY",150);
+    diag("LUAG",false,"LuAG",150);
+    diag("MIXED",false,"MIXED",150);
+    diag("TENERGY",false,"TENERGY",150);
 }

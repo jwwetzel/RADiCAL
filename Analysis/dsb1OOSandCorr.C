@@ -4,6 +4,7 @@
 // hg_peak vs lg_peak in the UNSATURATED regime (low E), per channel.
 //   root -l 'Analysis/dsb1OOSandCorr.C+'
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include <cstdio>
 #include <vector>
@@ -34,7 +35,7 @@ void dsb1OOSandCorr(){
     double Es[6]={25,50,75,100,125,150};
     printf("\n=== (a) DSB1 HG best-bin (DW-UP)/2 sigma_t [ps]: OOS (in-sample) ===\n");
     for(int e=0;e<6;++e){
-        TFile* fp=TFile::Open(Form("Analysis/Output/%.0fGeV/ntuple.root",Es[e]));if(!fp||fp->IsZombie())continue;
+        TFile* fp=TFile::Open(radReduced("DSB1",Es[e]));if(!fp||fp->IsZombie())continue;
         TTree* t=(TTree*)fp->Get("rad");if(!t){fp->Close();continue;}
         Int_t run;Bool_t wc;Float_t x,y,slg,cfd[8];
         t->SetBranchAddress("run",&run);t->SetBranchAddress("wc_ok",&wc);t->SetBranchAddress("x_trk",&x);t->SetBranchAddress("y_trk",&y);
@@ -52,7 +53,7 @@ void dsb1OOSandCorr(){
     printf("\n=== (b) LG->HG de-saturation viability: per-event hg_peak vs lg_peak ===\n");
     printf("    (unsaturated regime; correlation r and relative scatter of HG about the LG-fit)\n");
     for(double E : {25.,50.}){
-        TFile* fp=TFile::Open(Form("Analysis/Output/%.0fGeV/ntuple.root",E));if(!fp||fp->IsZombie())continue;
+        TFile* fp=TFile::Open(radReduced("DSB1",E));if(!fp||fp->IsZombie())continue;
         TTree* t=(TTree*)fp->Get("rad");if(!t){fp->Close();continue;}
         Bool_t wc;Float_t hg[8],lg[8];
         t->SetBranchAddress("wc_ok",&wc);t->SetBranchAddress("hg_peak",hg);t->SetBranchAddress("lg_peak",lg);

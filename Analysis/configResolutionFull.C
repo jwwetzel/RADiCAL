@@ -7,6 +7,7 @@
 #include "ChannelConfig.h"
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TGraphErrors.h"
 #include "TF1.h"
@@ -80,7 +81,7 @@ static void loadReduced(const char* dir, double E, std::vector<Ev>& ev, double& 
     for(int i=0;i<4;++i) dw[i]=kCap[i].hg/1024;
     for(int i=4;i<8;++i){ up[i-4]=kCap[i].hg/1024; upM2[i-4]=kCap[i].use_mcp2; }
     for(int i=0;i<8;++i) en[i]=kCap[i].lg/1024;
-    TFile* fp=TFile::Open(Form("%s/%.0fGeV.root",dir,E)); if(!fp||fp->IsZombie()) return;
+    TFile* fp=TFile::Open(radReduced(dir,E)); if(!fp||fp->IsZombie()) return;
     TTree* t=(TTree*)fp->Get("rad"); if(!t){ fp->Close(); return; }
     Int_t run; Bool_t wc; Float_t x,y,m1t,m2t,m1p,sp[36],sc[36];
     t->SetBranchAddress("run",&run); t->SetBranchAddress("wc_ok",&wc);
@@ -104,7 +105,7 @@ static void loadReduced(const char* dir, double E, std::vector<Ev>& ev, double& 
     sErel = coreSrel(elist); fp->Close();
 }
 static void loadDSB1(double E, std::vector<Ev>& ev, double& sErel){
-    TFile* fp=TFile::Open(Form("Analysis/Output/%.0fGeV/ntuple.root",E)); if(!fp||fp->IsZombie()) return;
+    TFile* fp=TFile::Open(radReduced("DSB1",E)); if(!fp||fp->IsZombie()) return;
     TTree* t=(TTree*)fp->Get("rad"); if(!t){ fp->Close(); return; }
     Int_t run; Bool_t wc; Float_t x,y,slg,mp,cfd[8];
     t->SetBranchAddress("run",&run); t->SetBranchAddress("wc_ok",&wc);
@@ -128,7 +129,7 @@ static void loadDSB1(double E, std::vector<Ev>& ev, double& sErel){
 void configResolutionFull(){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
     const char* lab[4]={"DSB1","LuAG","MIXED","TENERGY"};
-    const char* dir[4]={"","reduced/LUAG","reduced/MIXED","reduced/TENERGY"};
+    const char* dir[4]={"","LUAG","MIXED","TENERGY"};
     int col[4]={kRRed, kAzure+1, 30, kOrange+7};
     double Es[6]={25,50,75,100,125,150};
     double sig[4][6], sigErr[4][6], sigE[4][6], eff[4][6];

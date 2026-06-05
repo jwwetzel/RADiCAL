@@ -8,6 +8,7 @@
 #include "ChannelConfig.h"
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TH1F.h"
 #include "TLinearFitter.h"
@@ -30,7 +31,7 @@ static double coreS(std::vector<float> v){   // scale-adaptive truncated RMS (an
 void fourDdemo(double E=150){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
     int hg[8],lg[8]; for(int i=0;i<8;++i){ hg[i]=kCap[i].hg/1024; lg[i]=kCap[i].lg/1024; }
-    TFile* fp=TFile::Open(Form("reduced/TENERGY/%.0fGeV.root",E)); if(!fp||fp->IsZombie()){ printf("no TENERGY %.0f\n",E); return; }
+    TFile* fp=TFile::Open(radReduced("TENERGY",E)); if(!fp||fp->IsZombie()){ printf("no TENERGY %.0f\n",E); return; }
     TTree* t=(TTree*)fp->Get("rad"); if(!t){ fp->Close(); return; }
     Bool_t wc; Float_t x,y,m1t,m2t,m1p,sp[36],sc[36];
     t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);

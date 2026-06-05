@@ -8,6 +8,7 @@
 #include "ChannelConfig.h"
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TH1F.h"
 #include "TGraph.h"
@@ -31,8 +32,8 @@ static double gcoreSig(std::vector<float>& v){          // Gaussian-core sigma [
 // For a config at one energy, fill per-capillary (LY, sigma_t) for the 8 capillaries.
 static void perCap(const char* dir, bool isDSB1, double E,
                    std::vector<double>& ly, std::vector<double>& st){
-    TString fn = isDSB1 ? Form("Analysis/Output/%.0fGeV/ntuple.root",E)
-                        : Form("%s/%.0fGeV.root",dir,E);
+    TString fn = isDSB1 ? radReduced("DSB1",E)
+                        : radReduced(dir,E);
     TFile* fp=TFile::Open(fn); if(!fp||fp->IsZombie()) return;
     TTree* t=(TTree*)fp->Get("rad"); if(!t){ fp->Close(); return; }
     Int_t run; Bool_t wc; Float_t x,y;
@@ -69,7 +70,7 @@ void lightYieldTiming(){
     double Es[6]={25,50,75,100,125,150};
     std::vector<double> lyD,stD, lyL,stL;       // DSB1, LuAG
     for(int e=0;e<6;++e){ perCap("",true,Es[e],lyD,stD); }
-    for(int e=0;e<6;++e){ perCap("reduced/LUAG",false,Es[e],lyL,stL); }
+    for(int e=0;e<6;++e){ perCap("LUAG",false,Es[e],lyL,stL); }
     printf("\nDSB1 capillary-points: %zu   LuAG capillary-points: %zu\n", lyD.size(), lyL.size());
 
     // --- reference-subtraction: intrinsic capillary sigma_t = sqrt(single^2 - ref^2),

@@ -6,6 +6,7 @@
 #include "ChannelConfig.h"
 #include "PlotUtils.h"
 #include "TFile.h"
+#include "DataPaths.h"
 #include "TTree.h"
 #include "TH1F.h"
 #include <cstdio>
@@ -42,7 +43,7 @@ static double oosBest(std::vector<Ev>& ev){
 }
 static void loadCfg(const char* dir, bool isDSB1, double E,
                     double fidR, double mcpLo, double mcpHi, double contMax, std::vector<Ev>& ev){
-    TString fn = isDSB1 ? Form("Analysis/Output/%.0fGeV/ntuple.root",E) : Form("%s/%.0fGeV.root",dir,E);
+    TString fn = isDSB1 ? radReduced("DSB1",E) : radReduced(dir,E);
     TFile* fp=TFile::Open(fn); if(!fp||fp->IsZombie()) return;
     TTree* t=(TTree*)fp->Get("rad"); if(!t){ fp->Close(); return; }
     Int_t run; Bool_t wc; Float_t x,y,m1t,m2t,m1p,sp[36],sc[36],mp,cfd[8],slgD,spb;
@@ -82,7 +83,7 @@ static void loadCfg(const char* dir, bool isDSB1, double E,
 
 void configSystematics(){
     const char* lab[4]={"DSB1","LuAG","MIXED","TENERGY"};
-    const char* dir[4]={"","reduced/LUAG","reduced/MIXED","reduced/TENERGY"};
+    const char* dir[4]={"","LUAG","MIXED","TENERGY"};
     struct SV{ const char* n; double fid,cont,mlo,mhi; };
     SV var[7]={ {"Nominal",3.0,0.30,200,750},{"Fid-0.5",2.5,0.30,200,750},{"Fid+0.5",3.5,0.30,200,750},
                 {"Cont-0.05",3.0,0.25,200,750},{"Cont+0.05",3.0,0.35,200,750},
