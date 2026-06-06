@@ -97,6 +97,15 @@ static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energ
         ev.mcp1_peak = mcp1.peak; ev.mcp1_time = mcp1.crossingTime;
         ev.mcp2_peak = mcp2.peak; ev.mcp2_time = mcp2.crossingTime;
 
+        // --- TR0 trigger scintillator (ch8 of each DRS0 group), ABSOLUTE leading-edge ---
+        // Same PMT pulse split into both groups -> (tr0a_time - tr0b_time) gives the
+        // inter-group (mezzanine) timing offset for syncing the two free-running DRS4 chips.
+        ev.tr0a_time = kNoTime; ev.tr0a_peak = 0.f; ev.tr0b_time = kNoTime; ev.tr0b_peak = 0.f;
+        if (cfg.tr0a) { PulseMulti t0a = ExtractPulseMulti(T + cfg.tr0a_t, A + cfg.tr0a, kHG_LED_thresh, 30.f, 2000.f);
+                        ev.tr0a_peak = t0a.peak; ev.tr0a_time = t0a.ledTime; }
+        if (cfg.tr0b) { PulseMulti t0b = ExtractPulseMulti(T + cfg.tr0b_t, A + cfg.tr0b, kHG_LED_thresh, 30.f, 2000.f);
+                        ev.tr0b_peak = t0b.peak; ev.tr0b_time = t0b.ledTime; }
+
         // --- per capillary end ---
         ev.sum_lg = 0.f;
         for (int i = 0; i < cfg.nend; ++i) {

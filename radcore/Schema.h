@@ -53,6 +53,9 @@ struct RadEvent {
     // --- MCP timing references (config-invariant) ---
     Float_t mcp1_peak = 0.f, mcp1_time = kNoTime;   // legacy DSB1 name: mcp_peak/mcp_time
     Float_t mcp2_peak = 0.f, mcp2_time = kNoTime;
+    // --- TR0 trigger scintillator (split into ch8 of each DRS0 group), ABSOLUTE times ---
+    Float_t tr0a_peak = 0.f, tr0a_time = kNoTime;   // group 0 copy
+    Float_t tr0b_peak = 0.f, tr0b_time = kNoTime;   // group 1 copy  (tr0a-tr0b = inter-group sync)
 
     // --- DRS4 stop cells (D0G0,D0G1,D1G0,D1G1) ---
     Int_t   stopcell[NSTOP] = {0};
@@ -98,6 +101,10 @@ struct RadEvent {
         t->Branch("mcp1_time",   &mcp1_time,   "mcp1_time/F");
         t->Branch("mcp2_peak",   &mcp2_peak,   "mcp2_peak/F");
         t->Branch("mcp2_time",   &mcp2_time,   "mcp2_time/F");
+        t->Branch("tr0a_peak",   &tr0a_peak,   "tr0a_peak/F");
+        t->Branch("tr0a_time",   &tr0a_time,   "tr0a_time/F");
+        t->Branch("tr0b_peak",   &tr0b_peak,   "tr0b_peak/F");
+        t->Branch("tr0b_time",   &tr0b_time,   "tr0b_time/F");
         t->Branch("stopcell",     stopcell,    "stopcell[4]/I");
         t->Branch("hg_peak",      hg_peak,     "hg_peak[8]/F");
         t->Branch("hg_ped_rms",   hg_ped_rms,  "hg_ped_rms[8]/F");
@@ -131,6 +138,8 @@ struct RadEvent {
         SB("in_fiducial",&in_fiducial); SB("wc_peak",wc_peak);
         SB("mcp1_peak",&mcp1_peak); SB("mcp1_time",&mcp1_time);
         SB("mcp2_peak",&mcp2_peak); SB("mcp2_time",&mcp2_time);
+        SB("tr0a_peak",&tr0a_peak); SB("tr0a_time",&tr0a_time);   // present only after re-reduction
+        SB("tr0b_peak",&tr0b_peak); SB("tr0b_time",&tr0b_time);
         // transitional: legacy DSB1 (processRun.C) files name the MCP1 reference
         // mcp_peak/mcp_time — bind those to mcp1_* so the canonical reader works
         // on both old and new files during the migration.

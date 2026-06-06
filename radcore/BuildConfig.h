@@ -63,6 +63,7 @@ struct BuildConfig {
     int    nend = 0;
     EndMap end[8];
     int    mcp1 = 0, mcp1_t = 0, mcp2 = 0, mcp2_t = 0;
+    int    tr0a = 0, tr0a_t = 0, tr0b = 0, tr0b_t = 0;  // TR0 trigger scint, split into ch8 of each group
     int    wc_r = 0, wc_l = 0, wc_d = 0, wc_u = 0, wc_t = 0;
     double wc_scale = 7.0/36.0;
     int    npb = 0, pb[4] = {0,0,0,0}, pb_t = 0;
@@ -108,6 +109,11 @@ struct BuildConfig {
         // MCP references (resolve first — needed by per-end mcp_ref)
         c.mcp1 = offOf(cm["mcp1"]); c.mcp1_t = timeOf(cm["mcp1"]);
         c.mcp2 = offOf(cm["mcp2"]); c.mcp2_t = timeOf(cm["mcp2"]);
+
+        // TR0 trigger scintillator (optional): same PMT pulse split into ch8 of both
+        // DRS0 groups -> stored ABSOLUTE for inter-group sync (tr0a - tr0b).
+        if (cm.has("tr0a")) { c.tr0a = offOf(cm["tr0a"]); c.tr0a_t = timeOf(cm["tr0a"]); }
+        if (cm.has("tr0b")) { c.tr0b = offOf(cm["tr0b"]); c.tr0b_t = timeOf(cm["tr0b"]); }
 
         // ends (capillary readouts) — canonical order as listed
         const mj::Value& ends = cm["ends"];
