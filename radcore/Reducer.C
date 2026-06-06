@@ -101,7 +101,7 @@ static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energ
         ev.sum_lg = 0.f;
         for (int i = 0; i < cfg.nend; ++i) {
             const rad::EndMap& c = cfg.end[i];
-            PulseMulti hg = ExtractPulseMulti(T + c.hg_t, A + c.hg, kHG_LED_thresh, 5.f, 950.0f);
+            PulseMulti hg = ExtractPulseMulti(T + c.hg_t, A + c.hg, kHG_LED_thresh, 5.f, (float)cfg.hg_sat_mV);
             Pulse      lg = ExtractPulse(T + c.lg_t, A + c.lg, 0.20f, 5.f);
 
             // HG pedestal RMS (samples 3..52)

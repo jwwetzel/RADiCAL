@@ -6,7 +6,7 @@
 
   "digitizer": {
     "model": "CAEN DT5742",
-    "boards": 2, "groups_per_board": 2, "chans_per_group": 9, "samples": 1024, "sample_ns": 0.2
+    "boards": 2, "groups_per_board": 2, "chans_per_group": 9, "samples": 1024, "sample_ns": 0.2, "hg_sat_mV": 800
   },
 
   "channel_map": {

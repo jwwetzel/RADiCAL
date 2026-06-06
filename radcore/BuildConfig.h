@@ -55,6 +55,9 @@ struct BuildConfig {
     // digitizer geometry
     int    boards = 2, groups_per_board = 2, chans_per_group = 9, samples = 1024;
     double sample_ns = 0.2;
+    double hg_sat_mV = 950.0;   // HG positive clip/saturation level [mV]. 2023: ~800
+                                // because the DT5742 window was DC-offset down to
+                                // capture the negative afterpulse (default 950 = full rail)
 
     // channel map
     int    nend = 0;
@@ -96,6 +99,7 @@ struct BuildConfig {
             c.chans_per_group = dg["chans_per_group"].asInt() ? dg["chans_per_group"].asInt() : c.chans_per_group;
             c.samples         = dg["samples"].asInt() ? dg["samples"].asInt() : c.samples;
             if (dg.has("sample_ns")) c.sample_ns = dg["sample_ns"].asDouble(c.sample_ns);
+            if (dg.has("hg_sat_mV")) c.hg_sat_mV = dg["hg_sat_mV"].asDouble(c.hg_sat_mV);
         }
 
         const mj::Value& cm = j["channel_map"];
