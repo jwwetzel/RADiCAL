@@ -47,7 +47,9 @@ struct TimingResult {
 };
 
 // The headline (DW-UP)/2 Method A best-bin sigma_t, build-agnostic via RadView.
-inline TimingResult timingBestBin(RadView& v, double energy) {
+// src selects the per-end timing source (RadView::kCFD05 default = published method;
+// RadView::kLGCFD = CFD on the LG-predicted true peak, the improved headline).
+inline TimingResult timingBestBin(RadView& v, double energy, int src = RadView::kCFD05) {
     TimingResult r;
     v.beamCenter(r.xc, r.yc);                                  // ScanRunCenters LG-weighted centroid
     r.rFid = TimingFiducialR(energy); double r2 = r.rFid*r.rFid;
@@ -59,8 +61,8 @@ inline TimingResult timingBestBin(RadView& v, double energy) {
         if (!v.wc_ok() || v.mcp1_peak()<kMCP1_minPeak || v.mcp1_peak()>kMCP1_maxPeak) continue;
         double dx=v.x_trk()-r.xc, dy=v.y_trk()-r.yc; if (dx*dx+dy*dy >= r2) continue;
         double ds=0, us=0; int dn=0, un=0;
-        for (int c=0; c<4; ++c) if (v.is_timing(c) && v.hg_peak(c)>=kHG_minPeak) { float tc=v.cfd05(c); if (tc>-1e5){ ds+=tc; ++dn; } }
-        for (int c=4; c<8; ++c) if (v.is_timing(c) && v.hg_peak(c)>=kHG_minPeak) { float tc=v.cfd05(c); if (tc>-1e5){ us+=tc; ++un; } }
+        for (int c=0; c<4; ++c) if (v.is_timing(c) && v.hg_peak(c)>=kHG_minPeak) { float tc=v.timeOf(c,src); if (tc>-1e5){ ds+=tc; ++dn; } }
+        for (int c=4; c<8; ++c) if (v.is_timing(c) && v.hg_peak(c)>=kHG_minPeak) { float tc=v.timeOf(c,src); if (tc>-1e5){ us+=tc; ++un; } }
         if (dn<1 || un<1) continue;
         slg.push_back(v.sum_lg()); tval.push_back(0.5f*(float)(ds/dn-us/un));
     }

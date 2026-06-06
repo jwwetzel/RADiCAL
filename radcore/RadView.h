@@ -31,10 +31,39 @@ struct RadView {
     TTree* t = nullptr;
     bool named = false;          // file has role-resolved branches (hg_cfd05[8] etc.)
 
+    // selectable per-end timing source (all MCP-referenced in the schema)
+    enum { kCFD03=0, kCFD05, kCFD10, kCFD20, kCFD30, kCFD50, kLED, kLGCFD, kNSrc };
+    bool srcAvail[kNSrc] = {false};
+    static const char* srcName(int s) {
+        static const char* n[kNSrc] = {"cfd03","cfd05","cfd10","cfd20","cfd30","cfd50","led","lgcfd"};
+        return (s>=0 && s<kNSrc) ? n[s] : "?";
+    }
+    bool hasSrc(int s) const { return s>=0 && s<kNSrc && srcAvail[s]; }
+
     void attach(TTree* tree, const BuildConfig* c) {
         t = tree; cfg = c;
         ev.ConnectBranches(tree);
         named = (tree->GetBranch("hg_cfd05") != nullptr);
+        if (named) {
+            srcAvail[kCFD03]=tree->GetBranch("hg_cfd03"); srcAvail[kCFD05]=tree->GetBranch("hg_cfd05");
+            srcAvail[kCFD10]=tree->GetBranch("hg_cfd10"); srcAvail[kCFD20]=tree->GetBranch("hg_cfd");
+            srcAvail[kCFD30]=tree->GetBranch("hg_cfd30"); srcAvail[kCFD50]=tree->GetBranch("hg_cfd50");
+            srcAvail[kLED]  =tree->GetBranch("hg_led");   srcAvail[kLGCFD]=tree->GetBranch("hg_lgcfd");
+        } else {
+            srcAvail[kCFD05] = (tree->GetBranch("s_cfd05") != nullptr);   // legacy: only cfd05 derivable
+        }
+    }
+
+    // generic MCP-referenced per-end time for source s (kNoTime if unavailable)
+    float timeOf(int i, int s) const {
+        if (!named) return (s==kCFD05) ? cfd05(i) : kNoTime;
+        switch (s) {
+            case kCFD03: return ev.hg_cfd03[i]; case kCFD05: return ev.hg_cfd05[i];
+            case kCFD10: return ev.hg_cfd10[i]; case kCFD20: return ev.hg_cfd[i];
+            case kCFD30: return ev.hg_cfd30[i]; case kCFD50: return ev.hg_cfd50[i];
+            case kLED:   return ev.hg_led[i];   case kLGCFD: return ev.hg_lgcfd[i];
+        }
+        return kNoTime;
     }
     Long64_t entries() const { return t ? t->GetEntries() : 0; }
     void     get(Long64_t i) { t->GetEntry(i); }
