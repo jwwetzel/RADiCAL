@@ -95,6 +95,20 @@ void calibHGLG(const char* configPath, const char* tasklist = "", int nLowE = 2,
         printf("  %-5s HG = %6.1f + %.3f*LG   (n=%ld)%s\n", cfg.end[i].name.c_str(), A8[i], B8[i], n0, flag);
     }
 
+    // SUSPECT fallback: a degenerate slope means this channel is over-clipped at all
+    // available energies (no low-E lever arm) -> the unclipped subset is selection-
+    // biased and its slope is unrecoverable. Replace it with the build-median slope of
+    // the well-determined channels (steeper than the biased foot, conservative, and
+    // build-local). Affects e.g. MIXED's DSB1-material corners (no 25 GeV).
+    {
+        std::vector<double> good; for (int i=0;i<cfg.nend;++i) if (B8[i]>1.5 && B8[i]<8.0) good.push_back(B8[i]);
+        if (!good.empty()) { std::sort(good.begin(),good.end()); double medB = good[good.size()/2];
+            for (int i=0;i<cfg.nend;++i) if (B8[i]<1.5 || B8[i]>8.0) {
+                printf("  %-5s FALLBACK: slope %.3f -> build-median %.3f (over-clipped, no low-E lever arm)\n",
+                       cfg.end[i].name.c_str(), B8[i], medB);
+                B8[i] = medB; A8[i] = 0.0; } }
+    }
+
     // write sidecar  <config without .json>.hglg
     std::string side = configPath; size_t dot = side.rfind(".json");
     if (dot != std::string::npos) side = side.substr(0,dot); side += ".hglg";
