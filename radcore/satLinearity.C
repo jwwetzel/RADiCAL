@@ -26,6 +26,7 @@ void satLinearity() {
     rad::BuildConfig cfg = rad::BuildConfig::Load("datasets/2023/configs/DSB1.json");
     double Es[6]={25,50,75,100,125,150};
     double mHG[6]={0}, mLG[6]={0};
+    long   nCapHit[6]={0}, nCapSat[6]={0};        // HG timing-cap hits + those at/above the clip
     const int CAP=1;                              // NE-D, a bright timing cap
     TH2F* h2=new TH2F("h2","",120,0,1500,120,0,1050); h2->SetDirectory(0);
 
@@ -44,12 +45,14 @@ void satLinearity() {
             if(!wc||mcp<kMCP1_minPeak||mcp>kMCP1_maxPeak) continue;
             double dx=x-xc,dy=y-yc; if(dx*dx+dy*dy>=r2) continue;
             double aHG=0,aLG=0; int na=0;
-            for(int c=0;c<8;++c) if(hgp[c]>=kHG_minPeak){ aHG+=hgp[c]; aLG+=lgp[c]; ++na; }
+            for(int c=0;c<8;++c) if(hgp[c]>=kHG_minPeak){ aHG+=hgp[c]; aLG+=lgp[c]; ++na;
+                ++nCapHit[e]; if(hgp[c]>=cfg.hg_sat_mV) ++nCapSat[e]; }
             if(na>0){ sHG+=aHG/na; sLG+=aLG/na; ++n; }
             if(lgp[CAP]>5 && hgp[CAP]>5) h2->Fill(lgp[CAP],hgp[CAP]);
         }
         mHG[e]=n?sHG/n:0; mLG[e]=n?sLG/n:0;
-        printf("E=%3.0f  meanHG=%.0f  meanLG=%.0f mV\n", Es[e], mHG[e], mLG[e]);
+        printf("E=%3.0f  meanHG=%.0f  meanLG=%.0f mV  HG-cap saturated(>=%.0f)=%.0f%%\n",
+               Es[e], mHG[e], mLG[e], cfg.hg_sat_mV, nCapHit[e]?100.0*nCapSat[e]/nCapHit[e]:0);
         fp->Close();
     }
 
@@ -68,9 +71,12 @@ void satLinearity() {
     lg->AddEntry(gLG,"LG (energy channel) - linear","pl");
     lg->AddEntry(gHG,"HG (timing channel) - saturates","pl");
     lg->AddEntry(gid,"ideal linear (#propto E)","l"); lg->Draw();
-    TLatex tl; tl.SetNDC(); tl.SetTextSize(0.027);
-    tl.DrawLatex(0.16,0.30,"Same showers: LG tracks energy (#propto E); HG flat-tops by ~50 GeV.");
-    tl.DrawLatex(0.16,0.26,"=> the ~800 mV ceiling is the HG readout window, NOT SiPM saturation.");
+    TLatex tl; tl.SetNDC(); tl.SetTextSize(0.026);
+    tl.DrawLatex(0.16,0.34,"Same showers: LG tracks energy (#propto E); HG flat-tops by ~50 GeV.");
+    tl.DrawLatex(0.16,0.30,"=> DT5742 HG-CHANNEL saturation at the offset window (~800 mV),");
+    tl.DrawLatex(0.16,0.26,"   not SiPM saturation (LG, at lower gain, stays unsaturated).");
+    tl.DrawLatex(0.16,0.20,Form("HG-cap saturated fraction: 25 GeV %.0f%% (mostly unsaturated) #rightarrow 150 GeV %.0f%%",
+                                100.0*nCapSat[0]/nCapHit[0], 100.0*nCapSat[5]/nCapHit[5]));
 
     // Panel 2: per-event HG vs LG (one bright cap, all energies)
     c->cd(2); gPad->SetGridx(); gPad->SetGridy(); gPad->SetRightMargin(0.13); gPad->SetLogz();
@@ -78,7 +84,7 @@ void satLinearity() {
     h2->Draw("COLZ");
     TProfile* pf=h2->ProfileX("pf"); pf->SetLineColor(kBlack); pf->SetLineWidth(3); pf->SetMarkerStyle(20); pf->SetMarkerSize(0.8); pf->Draw("SAME");
     TLine* sl=new TLine(0,cfg.hg_sat_mV,1500,cfg.hg_sat_mV); sl->SetLineColor(kRed); sl->SetLineWidth(2); sl->SetLineStyle(2); sl->Draw();
-    TLatex ts; ts.SetTextColor(kRed); ts.SetTextSize(0.030); ts.DrawLatex(120,cfg.hg_sat_mV+22,Form("HG clip ~%.0f mV  (config hg_sat_mV)",cfg.hg_sat_mV));
+    TLatex ts; ts.SetTextColor(kRed); ts.SetTextSize(0.030); ts.DrawLatex(120,cfg.hg_sat_mV+22,Form("DT5742 HG-channel clip ~%.0f mV",cfg.hg_sat_mV));
 
     gSystem->mkdir("radcore/figs",kTRUE);
     c->Print("radcore/figs/hg_lg_saturation.png");
