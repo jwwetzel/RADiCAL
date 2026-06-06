@@ -10,7 +10,7 @@
     "chans_per_group": 9,
     "samples": 1024,
     "sample_ns": 0.2,
-    "hg_sat_mV": 800
+    "hg_sat_mV": 820
   },
 
   "channel_map": {
