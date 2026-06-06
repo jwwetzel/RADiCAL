@@ -61,6 +61,31 @@ static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energ
     TTreeReaderArray<float> time_v(reader, "timevalue");
     TTreeReaderArray<float> amp_v (reader, "amplitude");
 
+    // --- PRE-PASS: per-end HG_peak = fa + fb*LG_peak on UNCLIPPED events ---------
+    // (linear part of the HG-vs-LG "hockey stick"; used by hg_lgcfd to predict the
+    //  TRUE peak per event and time on the steep edge instead of the clipped foot.)
+    double fa[8] = {0}, fb[8] = {5,5,5,5,5,5,5,5};
+    {
+        double sx[8]={0}, sy[8]={0}, sxx[8]={0}, sxy[8]={0}; long fn[8]={0};
+        TTreeReader pre(chain);
+        TTreeReaderArray<float> pt(pre,"timevalue"), pa(pre,"amplitude");
+        long cnt = 0;
+        while (pre.Next() && cnt < 150000) { ++cnt;
+            const float* T = &pt[0]; const float* A = &pa[0];
+            for (int i = 0; i < cfg.nend; ++i) { const rad::EndMap& c = cfg.end[i];
+                Pulse hg = ExtractPulse(T + c.hg_t, A + c.hg, 0.20f, 5.f);
+                Pulse lg = ExtractPulse(T + c.lg_t, A + c.lg, 0.20f, 5.f);
+                if (hg.peak > 30.f && hg.peak < 700.f && lg.peak > 10.f) {  // unclipped HG only
+                    double X=lg.peak, Y=hg.peak; sx[i]+=X; sy[i]+=Y; sxx[i]+=X*X; sxy[i]+=X*Y; ++fn[i]; } }
+        }
+        for (int i = 0; i < cfg.nend; ++i) if (fn[i] > 100) {
+            double d = fn[i]*sxx[i] - sx[i]*sx[i];
+            if (std::fabs(d) > 1e-9) { fb[i] = (fn[i]*sxy[i] - sx[i]*sy[i])/d; fa[i] = (sy[i] - fb[i]*sx[i])/fn[i]; } }
+        printf("[Reducer] HG=a+b*LG fit (frac=%.2f): ", cfg.lgcfd_frac);
+        for (int i = 0; i < cfg.nend; ++i) printf("%s:%.0f+%.2fLG ", cfg.end[i].name.c_str(), fa[i], fb[i]);
+        printf("\n");
+    }
+
     long nTot = 0, nWC = 0;
     while (reader.Next()) {
         const float* T = &time_v[0];
@@ -130,6 +155,13 @@ static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energ
             ev.hg_cfd03[i] = (hg.cfd03  > -1e5f && ref > -1e5f) ? hg.cfd03  - ref : kNoTime;
             ev.hg_cfd05[i] = (hg.cfd05  > -1e5f && ref > -1e5f) ? hg.cfd05  - ref : kNoTime;
             ev.hg_led[i]   = (hg.ledTime> -1e5f && ref > -1e5f) ? hg.ledTime- ref : kNoTime;
+            // hg_lgcfd: CFD at frac*(LG-predicted TRUE peak) -> times the steep edge
+            // below the clip (express as a fraction of the MEASURED peak for ExtractPulse).
+            ev.hg_lgcfd[i] = kNoTime;
+            { double HGtrue = fa[i] + fb[i]*lg.peak, thr = cfg.lgcfd_frac * HGtrue;
+              if (thr > 20.0 && thr < 780.0 && hg.peak > thr && ref > -1e5f) {
+                  Pulse hc = ExtractPulse(T + c.hg_t, A + c.hg, (float)(thr/hg.peak), 5.f);
+                  if (hc.crossingTime > -1e5f) ev.hg_lgcfd[i] = hc.crossingTime - ref; } }
             ev.hg_tot[i]   = hg.totTime;
             ev.hg_charge[i]= hg.charge;
             ev.lg_charge[i]= lg.charge;

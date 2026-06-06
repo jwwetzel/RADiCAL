@@ -55,6 +55,7 @@ struct BuildConfig {
     // digitizer geometry
     int    boards = 2, groups_per_board = 2, chans_per_group = 9, samples = 1024;
     double sample_ns = 0.2;
+    double lgcfd_frac = 0.15;   // hg_lgcfd threshold = frac * (LG-predicted TRUE HG peak)
     double hg_sat_mV = 950.0;   // HG positive clip/saturation level [mV]. 2023: ~800
                                 // because the DT5742 window was DC-offset down to
                                 // capture the negative afterpulse (default 950 = full rail)
@@ -101,6 +102,7 @@ struct BuildConfig {
             c.samples         = dg["samples"].asInt() ? dg["samples"].asInt() : c.samples;
             if (dg.has("sample_ns")) c.sample_ns = dg["sample_ns"].asDouble(c.sample_ns);
             if (dg.has("hg_sat_mV")) c.hg_sat_mV = dg["hg_sat_mV"].asDouble(c.hg_sat_mV);
+            if (dg.has("lgcfd_frac")) c.lgcfd_frac = dg["lgcfd_frac"].asDouble(c.lgcfd_frac);
         }
 
         const mj::Value& cm = j["channel_map"];

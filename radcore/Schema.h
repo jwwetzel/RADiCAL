@@ -72,6 +72,7 @@ struct RadEvent {
     Float_t hg_cfd30[NCAP]   = {0};
     Float_t hg_cfd50[NCAP]   = {0};
     Float_t hg_led[NCAP]     = {0};
+    Float_t hg_lgcfd[NCAP]   = {0};   // MCP-ref CFD at frac*(LG-predicted TRUE peak) -- steep-edge timing
     Float_t hg_tot[NCAP]     = {0};
     Float_t hg_charge[NCAP]  = {0};
     Float_t lg_peak[NCAP]    = {0};
@@ -117,6 +118,7 @@ struct RadEvent {
         t->Branch("hg_cfd30",     hg_cfd30,    "hg_cfd30[8]/F");
         t->Branch("hg_cfd50",     hg_cfd50,    "hg_cfd50[8]/F");
         t->Branch("hg_led",       hg_led,      "hg_led[8]/F");
+        t->Branch("hg_lgcfd",     hg_lgcfd,    "hg_lgcfd[8]/F");
         t->Branch("hg_tot",       hg_tot,      "hg_tot[8]/F");
         t->Branch("hg_charge",    hg_charge,   "hg_charge[8]/F");
         t->Branch("lg_peak",      lg_peak,     "lg_peak[8]/F");
@@ -150,7 +152,7 @@ struct RadEvent {
         SB("hg_saturated",hg_saturated); SB("hg_spike",hg_spike);
         SB("hg_cfd03",hg_cfd03); SB("hg_cfd05",hg_cfd05); SB("hg_cfd",hg_cfd);
         SB("hg_cfd10",hg_cfd10); SB("hg_cfd30",hg_cfd30); SB("hg_cfd50",hg_cfd50);
-        SB("hg_led",hg_led); SB("hg_tot",hg_tot); SB("hg_charge",hg_charge);
+        SB("hg_led",hg_led); SB("hg_lgcfd",hg_lgcfd); SB("hg_tot",hg_tot); SB("hg_charge",hg_charge);
         SB("lg_peak",lg_peak); SB("lg_charge",lg_charge);
         SB("sum_lg",&sum_lg); SB("sum_pb",&sum_pb); SB("pb_peak",pb_peak);
         SB("s_peak",s_peak); SB("s_cfd05",s_cfd05); SB("s_charge",s_charge);
