@@ -61,11 +61,19 @@ static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energ
     TTreeReaderArray<float> time_v(reader, "timevalue");
     TTreeReaderArray<float> amp_v (reader, "amplitude");
 
-    // --- PRE-PASS: per-end HG_peak = fa + fb*LG_peak on UNCLIPPED events ---------
-    // (linear part of the HG-vs-LG "hockey stick"; used by hg_lgcfd to predict the
-    //  TRUE peak per event and time on the steep edge instead of the clipped foot.)
+    // --- HG_true = fa + fb*LG_peak per end (used by hg_lgcfd to predict the true
+    //     peak and time the steep edge instead of the clipped foot) ---------------
     double fa[8] = {0}, fb[8] = {5,5,5,5,5,5,5,5};
-    {
+    if (cfg.has_lgcal) {
+        // PREFERRED: energy-independent calibration from the <build>.hglg sidecar
+        // (calibHGLG.C, fit on clean low-energy data -> robust at every energy).
+        for (int i = 0; i < cfg.nend; ++i) { fa[i] = cfg.hg_lg_a[i]; fb[i] = cfg.hg_lg_b[i]; }
+        printf("[Reducer] HG=a+b*LG from sidecar calibration (frac=%.2f): ", cfg.lgcfd_frac);
+        for (int i = 0; i < cfg.nend; ++i) printf("%s:%.0f+%.2fLG ", cfg.end[i].name.c_str(), fa[i], fb[i]);
+        printf("\n");
+    } else {
+        // FALLBACK: per-file pre-pass fit. WARNING: unreliable for fully-clipped
+        // (high-energy) files -- run calibHGLG.C to generate the sidecar.
         double sx[8]={0}, sy[8]={0}, sxx[8]={0}, sxy[8]={0}; long fn[8]={0};
         TTreeReader pre(chain);
         TTreeReaderArray<float> pt(pre,"timevalue"), pa(pre,"amplitude");
@@ -75,13 +83,13 @@ static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energ
             for (int i = 0; i < cfg.nend; ++i) { const rad::EndMap& c = cfg.end[i];
                 Pulse hg = ExtractPulse(T + c.hg_t, A + c.hg, 0.20f, 5.f);
                 Pulse lg = ExtractPulse(T + c.lg_t, A + c.lg, 0.20f, 5.f);
-                if (hg.peak > 30.f && hg.peak < 700.f && lg.peak > 10.f) {  // unclipped HG only
+                if (hg.peak > 30.f && hg.peak < 700.f && lg.peak > 10.f) {
                     double X=lg.peak, Y=hg.peak; sx[i]+=X; sy[i]+=Y; sxx[i]+=X*X; sxy[i]+=X*Y; ++fn[i]; } }
         }
         for (int i = 0; i < cfg.nend; ++i) if (fn[i] > 100) {
             double d = fn[i]*sxx[i] - sx[i]*sx[i];
             if (std::fabs(d) > 1e-9) { fb[i] = (fn[i]*sxy[i] - sx[i]*sy[i])/d; fa[i] = (sy[i] - fb[i]*sx[i])/fn[i]; } }
-        printf("[Reducer] HG=a+b*LG fit (frac=%.2f): ", cfg.lgcfd_frac);
+        printf("[Reducer] HG=a+b*LG per-file fit (NO sidecar; frac=%.2f): ", cfg.lgcfd_frac);
         for (int i = 0; i < cfg.nend; ++i) printf("%s:%.0f+%.2fLG ", cfg.end[i].name.c_str(), fa[i], fb[i]);
         printf("\n");
     }

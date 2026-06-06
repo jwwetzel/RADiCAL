@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <fstream>
+#include <sstream>
 
 namespace rad {
 
@@ -65,6 +67,9 @@ struct BuildConfig {
     EndMap end[8];
     int    mcp1 = 0, mcp1_t = 0, mcp2 = 0, mcp2_t = 0;
     int    tr0a = 0, tr0a_t = 0, tr0b = 0, tr0b_t = 0;  // TR0 trigger scint, split into ch8 of each group
+    double hg_lg_a[8] = {0,0,0,0,0,0,0,0};      // HG_true = hg_lg_a + hg_lg_b*LG_peak (per end)
+    double hg_lg_b[8] = {5,5,5,5,5,5,5,5};      // from a <build>.hglg sidecar (calibHGLG.C)
+    bool   has_lgcal  = false;                  // true if the sidecar was found -> reducer skips its pre-pass
     int    wc_r = 0, wc_l = 0, wc_d = 0, wc_u = 0, wc_t = 0;
     double wc_scale = 7.0/36.0;
     int    npb = 0, pb[4] = {0,0,0,0}, pb_t = 0;
@@ -185,6 +190,21 @@ struct BuildConfig {
                 for (size_t i = 0; i < kv.second.size(); ++i) files.push_back(kv.second[i].asStr());
                 c.runs[E] = files;
             }
+        }
+
+        // HG-vs-LG calibration sidecar (<config>.hglg): lines "end_idx a b".
+        // Energy-independent per-channel gain ratio used by hg_lgcfd; computed by
+        // calibHGLG.C from clean low-energy data (robust vs over-clipped / bad runs).
+        { std::string side = path;
+          size_t dot = side.rfind(".json"); if (dot != std::string::npos) side = side.substr(0,dot);
+          side += ".hglg";
+          std::ifstream fin(side.c_str());
+          if (fin) { std::string line; int got = 0;
+              while (std::getline(fin, line)) {
+                  if (line.empty() || line[0]=='#') continue;
+                  std::istringstream iss(line); int idx; double a, b;
+                  if ((iss >> idx >> a >> b) && idx>=0 && idx<8) { c.hg_lg_a[idx]=a; c.hg_lg_b[idx]=b; ++got; } }
+              if (got > 0) c.has_lgcal = true; }
         }
 
         c.loaded = true;
