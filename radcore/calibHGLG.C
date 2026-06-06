@@ -7,9 +7,15 @@
 // (e.g. RUN1261 slope=0), so a per-file fit is unreliable; this pools clean low-E
 // runs with robust (3-sigma trimmed) fits and writes the result for the reducer.
 //
-//   ROOT_INCLUDE_PATH=radcore:Analysis root -l -b -q \
-//     'radcore/calibHGLG.C+("datasets/2023/configs/DSB1.json")'
-//   -> writes datasets/2023/configs/DSB1.hglg   (read automatically by BuildConfig)
+// Raw files come from the config's "runs" block (DSB1) OR, for manifest-driven
+// builds (LUAG/MIXED/TENERGY), from the SGE tasklist that submit_reduce.sh builds
+// (tab-separated: run, label, energy, raw_path) passed as the 2nd argument.
+//
+//   # DSB1 (has a runs block):
+//   root -l -b -q 'radcore/calibHGLG.C+("datasets/2023/configs/DSB1.json")'
+//   # LUAG/MIXED/TENERGY (tasklist from your reduce run):
+//   root -l -b -q 'radcore/calibHGLG.C+("datasets/2023/configs/LUAG.json","'$RAD_WORK'/tasks_LUAG.txt")'
+//   -> writes datasets/2023/configs/<BUILD>.hglg  (read automatically by BuildConfig)
 // ============================================================================
 #include "BuildConfig.h"
 #include "WaveformUtils.h"
@@ -22,15 +28,34 @@
 #include <cmath>
 #include <cstdio>
 #include <fstream>
+#include <map>
 
-void calibHGLG(const char* configPath, int nLowE = 2, long maxEvtPerE = 120000){
+void calibHGLG(const char* configPath, const char* tasklist = "", int nLowE = 2, long maxEvtPerE = 120000){
     rad::BuildConfig cfg = rad::BuildConfig::Load(configPath);
     if (!cfg.valid()) { printf("config load failed: %s\n", cfg.error()); return; }
 
-    // lowest nLowE energies available in the config
-    std::vector<double> Es; for (auto& kv : cfg.runs) Es.push_back(kv.first);
+    // energy -> list of FULL raw paths, from the tasklist (preferred) or cfg.runs
+    std::map<double, std::vector<std::string>> runs;
+    if (tasklist && tasklist[0]) {
+        std::ifstream tf(tasklist);
+        if (!tf) { printf("tasklist not found: %s\n", tasklist); return; }
+        std::string line;
+        while (std::getline(tf, line)) {
+            if (line.empty() || line[0]=='#') continue;
+            std::vector<std::string> f; std::string cur;
+            for (char ch : line) { if (ch=='\t') { f.push_back(cur); cur.clear(); } else cur.push_back(ch); }
+            f.push_back(cur);
+            if (f.size() < 4) continue;                       // run, label, energy, raw_path
+            double E = std::strtod(f[2].c_str(), nullptr);
+            if (E > 0) runs[E].push_back(f[3]);
+        }
+    } else {
+        for (auto& kv : cfg.runs) runs[kv.first] = std::vector<std::string>();
+        for (auto& kv : cfg.runs) for (auto& b : kv.second) runs[kv.first].push_back(radRaw(b.c_str()).Data());
+    }
+    std::vector<double> Es; for (auto& kv : runs) Es.push_back(kv.first);
     std::sort(Es.begin(), Es.end());
-    if (Es.empty()) { printf("no runs in config\n"); return; }
+    if (Es.empty()) { printf("no runs found (give a tasklist for manifest-driven builds)\n"); return; }
     if ((int)Es.size() > nLowE) Es.resize(nLowE);
     printf("[calibHGLG] %s : fitting HG=a+b*LG from energies", cfg.build.c_str());
     for (double E : Es) printf(" %.0f", E); printf(" GeV\n");
@@ -39,7 +64,7 @@ void calibHGLG(const char* configPath, int nLowE = 2, long maxEvtPerE = 120000){
     std::vector<std::vector<std::pair<float,float>>> pts(8);
     for (double E : Es) {
         TChain ch("pulse");
-        for (auto& base : cfg.runs[E]) ch.Add(radRaw(base.c_str()));
+        for (auto& path : runs[E]) ch.Add(path.c_str());
         TTreeReader rd(&ch);
         TTreeReaderArray<float> amp(rd,"amplitude"), tim(rd,"timevalue");
         long cnt = 0;
