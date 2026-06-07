@@ -28,13 +28,25 @@ inline double tebSigma(std::vector<float>& v) {
     if (v.size() < 50) return -1;
     double mu1=0; for(float x:v) mu1+=x; mu1/=v.size();
     double ms1=0; for(float x:v) ms1+=(x-mu1)*(x-mu1); ms1=std::sqrt(ms1/v.size()); if(ms1<0.008) ms1=0.1;
+    // --- ROBUST core width: iterative 2.5-sigma truncated RMS (never garbage). ---
+    // De-biased for the 2.5-sigma truncation (RMS_trunc = 0.9546*sigma for a Gaussian).
+    double rc=mu1, rw=ms1;
+    for(int it=0; it<5; ++it){ double s=0,ss=0; long n=0;
+        for(float x:v) if(std::fabs(x-rc)<2.5*rw){ s+=x; ss+=x*x; ++n; }
+        if(n<20) break; rc=s/n; double w2=ss/n-rc*rc; if(w2>0) rw=std::sqrt(w2); }
+    double robust = rw/0.9546*1000.0;   // ps, truncation-debiased
+    // --- Gaussian-core fit (preferred for clean peaks) ---
     double mu2=0; int n2=0; for(float x:v) if(std::fabs(x-mu1)<5*ms1){mu2+=x;++n2;}
     double ms2=ms1;
     if(n2>0){ mu2/=n2; ms2=0; for(float x:v) if(std::fabs(x-mu1)<5*ms1) ms2+=(x-mu2)*(x-mu2); ms2=std::sqrt(ms2/n2); if(ms2<0.008) ms2=0.1; }
     else mu2=mu1;
     TH1F h("_rt","",120, mu2-4*ms2, mu2+4*ms2); h.SetDirectory(nullptr);
     for(float x:v) h.Fill(x);
-    double mu,muE,s,sE; FitGaussCore(&h,2.0,mu,muE,s,sE); return s>0 ? s*1000.0 : -1;
+    double mu,muE,s,sE; FitGaussCore(&h,2.0,mu,muE,s,sE); double gfit=s*1000.0;
+    // Use the Gaussian fit ONLY if it agrees with the robust core (0.5x..2x); else
+    // the fit failed (sparse/non-Gaussian, e.g. low-light LuAG) -> trust the robust width.
+    if (gfit>0 && gfit>0.5*robust && gfit<2.0*robust) return gfit;
+    return robust>0 ? robust : -1;
 }
 
 struct TimingResult {
@@ -107,7 +119,7 @@ inline TimingResult timingBestBin(RadView& v, double energy, int src = RadView::
 // every energy. Monotonic in E and preserves the thin-bright-slice magnitude
 // (~the published headline), where the quantile best-bin above gives the broader,
 // more conservative ~typical-bright-shower number. Report BOTH.
-inline TimingResult timingBrightestK(RadView& v, double energy, int src = RadView::kCFD05, int K = 1500) {
+inline TimingResult timingBrightestK(RadView& v, double energy, int src = RadView::kCFD05, int K = 1000) {
     TimingResult r;
     v.beamCenter(r.xc, r.yc); r.rFid = TimingFiducialR(energy); double r2 = r.rFid*r.rFid;
     std::vector<std::pair<float,float>> sd;   // (sum_lg, (DW-UP)/2)

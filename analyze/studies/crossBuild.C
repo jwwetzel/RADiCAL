@@ -37,9 +37,10 @@ static double quantBest(std::vector<std::pair<float,float>> v, long& N){
         std::vector<float> t; for(size_t k=lo;k<hi;++k) t.push_back(v[k].second); double s=tebSigma(t);
         if(s>22&&s<best){best=s;N=hi-lo;} } return best<1e8?best:-1;   // >22: no real RADiCAL quantile (DW-UP)/2 bin is lower
 }
-// brightest-fraction f sigma (deterministic, OOS-stable); sets N=slice size
-static double brightFracN(std::vector<std::pair<float,float>> v,double f,long& N){
-    int K=(int)(f*v.size()); N=K; if(K<200) return -1;
+// brightest-K sigma (THE headline method: top K events by sum_lg, identical
+// statistical tightness at every energy); sets N=K. Same as timingBrightestK.
+static double brightKN(std::vector<std::pair<float,float>> v,int K,long& N){
+    if((int)v.size()<K){ N=0; return -1; } N=K;
     std::nth_element(v.begin(),v.begin()+K,v.end(),[](auto&a,auto&b){return a.first>b.first;});
     std::vector<float> t; for(int i=0;i<K;++i) t.push_back(v[i].second); return tebSigma(t);
 }
@@ -74,7 +75,7 @@ void crossBuild(){
                     for(int ch=0;ch<4;++ch) if(v.is_timing(ch)&&v.hg_peak(ch)>=kHG_minPeak){float tc=v.timeOf(ch,SRC[s]);if(tc>-1e5){ds+=tc;++dn;}}
                     for(int ch=4;ch<8;++ch) if(v.is_timing(ch)&&v.hg_peak(ch)>=kHG_minPeak){float tc=v.timeOf(ch,SRC[s]);if(tc>-1e5){us+=tc;++un;}}
                     if(dn>=1&&un>=1) P[s].push_back({(float)v.sum_lg(),0.5f*(float)(ds/dn-us/un)}); } }
-            for(int s=0;s<nS;++s){ long nn,nb; double sq=quantBest(P[s],nn), sb=brightFracN(P[s],0.02,nb);
+            for(int s=0;s<nS;++s){ long nn,nb; double sq=quantBest(P[s],nn), sb=brightKN(P[s],1000,nb);
                 if(sq>0){ double bv=(sb>0?sb:sq); q[s].push_back(sq); br[s].push_back(bv); Ev[s].push_back(E);
                     eq[s].push_back(sq/std::sqrt(2.0*nn));
                     ebr[s].push_back((sb>0&&nb>0)?sb/std::sqrt(2.0*nb):sq/std::sqrt(2.0*nn)); } }
