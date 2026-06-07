@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timing the Steep Edge — the HG/LG-ratio method (RADiCAL)</title>
+<style>
+  :root{
+    --bg:#0b0e14; --bg2:#121723; --card:#161c2b; --line:#232c42;
+    --ink:#e6edf6; --dim:#9aa7bd; --accent:#27e0c8; --accent2:#ffb454; --hot:#ff5c8a;
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  header{background:radial-gradient(1200px 420px at 72% -10%,rgba(39,224,200,.15),transparent),
+                   radial-gradient(900px 380px at 8% -20%,rgba(255,92,138,.12),transparent),var(--bg2);
+         border-bottom:1px solid var(--line);padding:48px 0 32px}
+  .kick{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--accent);text-transform:uppercase}
+  h1{margin:.18em 0 .12em;font-size:46px;letter-spacing:-1.2px;font-weight:800;line-height:1.05}
+  h1 .r{color:var(--accent)}
+  .tag{color:var(--dim);font-size:18px;max-width:680px}
+  .stats{display:flex;gap:30px;flex-wrap:wrap;margin-top:22px}
+  .stat{font-family:var(--mono)}
+  .stat b{display:block;font-size:26px;color:var(--accent2)}
+  .stat span{font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+  .nav{margin-top:20px;font-size:13px;color:var(--dim);border-left:2px solid var(--accent);padding-left:12px}
+  main{padding:10px 0 80px}
+  section{padding:34px 0;border-bottom:1px solid var(--line)}
+  .act{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--accent);text-transform:uppercase}
+  h2{font-size:30px;letter-spacing:-.6px;margin:.15em 0 .5em;font-weight:800}
+  p{margin:.7em 0;color:#d4dcec}
+  .lead{font-size:18px;color:var(--ink)}
+  figure{margin:26px 0 8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+  figure img{display:block;width:100%;height:auto;border-radius:5px}
+  figcaption{margin:10px 2px 2px;color:var(--dim);font-size:13.5px;font-family:var(--sans);background:var(--card);padding:9px 12px;border-radius:7px;border-left:2px solid var(--accent)}
+  .pull{margin:18px 0;padding:14px 18px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:8px}
+  .pull b{color:var(--accent2)}
+  code,.k{font-family:var(--mono);font-size:.92em;color:var(--accent);background:#0e1422;padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-family:var(--mono);font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:center}
+  th{background:var(--bg2);color:var(--accent);font-weight:700}
+  td.h{color:var(--accent2);font-weight:700}
+  .win{color:var(--accent);font-weight:700}
+  footer{padding:30px 0 60px;color:var(--dim);font-size:13px}
+  .mono{font-family:var(--mono)}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <div class="kick">RADiCAL · CERN SPS electron test beam · May 2023</div>
+  <h1>Timing the <span class="r">steep edge</span></h1>
+  <p class="tag">How detector saturation forced a new timing method — predicting the unclipped pulse
+   from a second, low-gain copy — and exactly what it bought us, told from the apparatus to the floor.</p>
+  <div class="stats">
+   <div class="stat"><b>25.6 ps</b><span>best-bin σ<sub>t</sub> · 125 GeV</span></div>
+   <div class="stat"><b>~20 ps</b><span>method floor (a/&radic;E &oplus; b)</span></div>
+   <div class="stat"><b>3.7&times;</b><span>steeper edge per pulse</span></div>
+   <div class="stat"><b>820 mV</b><span>the saturation clip</span></div>
+  </div>
+  <p class="nav">A chapter of the field guide. &nbsp;<a href="going_radical.html"><b>&#8592; Back to GOING RADiCAL</b></a>
+   &nbsp;·&nbsp; <a href="report/"><b>Full analysis report &#8594;</b></a>
+   &nbsp;·&nbsp; <a href="paper.html"><b>Findings paper &#8594;</b></a></p>
+ </div>
+</header>
+
+<main class="wrap">
+
+<section>
+  <div class="act">Act I · The instrument and the clock</div>
+  <h2>A calorimeter that also tells time</h2>
+  <p class="lead">RADiCAL is a compact tungsten / LYSO:Ce shashlik electromagnetic calorimeter — 25 radiation
+  lengths in ~135 mm. An electron shower deposits its energy as scintillation light, collected by four
+  wavelength-shifting capillaries read out <b>at both ends</b> (Down and Up) — eight SiPM channels in all.</p>
+  <p>Every channel is recorded twice, at two gains. The <b>high-gain (HG)</b> copy is the fast timing channel;
+  the <b>low-gain (LG)</b> copy measures energy and stays linear all the way to 150 GeV. Two CAEN DT5742
+  digitizers sample every waveform at <b>5 GS/s</b> (1024 cells), with a micro-channel-plate PMT providing a
+  common start <span class="k">t&#8320;</span> and wire chambers tracking where each electron entered.</p>
+  <p>The timing observable is the depth half-difference
+  <span class="k">(DW&minus;UP)/2</span> &mdash; half the difference between the down-end and up-end shower
+  times. The common start cancels, leaving a clean, self-referencing measure of <i>how deep in the crystal the
+  shower developed</i>. Target resolution: 20&ndash;30 ps. The rest of this page is the story of getting there.</p>
+</section>
+
+<section>
+  <div class="act">Act II · The wall</div>
+  <h2>The timing channel saturates</h2>
+  <p>The HG channel is digitized in a DC-offset window built to also catch the pulse's negative afterswing.
+  The price: a hard ceiling. Every HG pulse <b>clips flat at ~820 mV</b>. At 25 GeV only a few percent of pulses
+  reach it; by 75 GeV and above, <b>90&ndash;94% are clipped</b> &mdash; the true peak is simply gone.</p>
+  <figure>
+    <img src="assets/narrative_clip.png" alt="HG peak amplitude spectrum piling up at the 820 mV clip">
+    <figcaption><b>The wall.</b> HG pulse-peak spectrum at 125 GeV: instead of a smooth Landau, the
+    distribution slams into a spike at the 820 mV clip. Above ~75 GeV the true peak is unmeasurable.</figcaption>
+  </figure>
+  <p>Constant-fraction discrimination (CFD) times a pulse at a fixed <i>fraction of its peak</i>. But if the peak
+  you measure is the clip, the fraction is wrong &mdash; the crossing slides down to the <b>low-slope foot</b> of
+  the pulse, exactly where timing is most fragile. The tell is unmistakable:</p>
+  <div class="pull">Every CFD fraction we tried &mdash; 3%, 5%, 10%, 20%, 30%, 50% &mdash; lands at
+  <b>~28 ps at 150 GeV</b>. None beats another, because they are all referencing the <i>same clip</i>.
+  The resolution plateaus across 50&ndash;150 GeV: <b>more light does not help.</b></div>
+</section>
+
+<section>
+  <div class="act">Act III · The lever</div>
+  <h2>The low-gain copy never clips</h2>
+  <p>The same shower that saturates the HG channel lands, attenuated, in the LG channel &mdash; where it stays
+  comfortably on-scale and <b>linear to 150 GeV</b>. HG and LG are one pulse seen at two gains, so they are tied
+  by a single constant: <span class="k">HG_peak = a + b&middot;LG_peak</span>. Crucially, that gain ratio is a
+  property of the <i>electronics</i>, not the shower &mdash; it must not depend on beam energy.</p>
+  <figure>
+    <img src="assets/narrative_hglg.png" alt="HG peak vs LG peak per channel, the gain line">
+    <figcaption><b>One pulse, two gains.</b> HG vs LG peak for all eight channels at 100 GeV. The clean diagonal
+    is the gain line <span class="mono">HG = a + b&middot;LG</span> (slopes ~5&ndash;6); the flat-topped cloud at
+    HG&nbsp;=&nbsp;820 mV is the clipped population the LG still measures correctly.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/narrative_slope.png" alt="HG/LG gain slope vs energy, per channel, with errors">
+    <figcaption><b>Energy-independent, as it must be.</b> The fitted gain slope vs beam energy, per channel,
+    with stat&oplus;syst errors. The drift is &le;2% (0.3&ndash;1.5&sigma;) &mdash; consistent with a constant.
+    So the unclipped LG peak <i>predicts the true HG peak</i>, event by event.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="act">Act IV · The method</div>
+  <h2>hg_lgcfd: put the threshold on the edge</h2>
+  <p>The fix follows directly. For each event, predict the true (unclipped) HG peak from the low-gain copy,
+  <span class="k">HG_true = a + b&middot;LG_peak</span>, and place the CFD threshold at <b>15% of that true peak</b>.
+  Because the true peak towers over the clip, 15% of it lands high on the <b>steep rising edge</b> &mdash; not
+  down on the foot. We call this <span class="k">hg_lgcfd</span>.</p>
+  <figure>
+    <img src="assets/narrative_pulse.png" alt="A clipped HG pulse with cfd05 at the foot and hg_lgcfd on the steep edge">
+    <figcaption><b>The money shot.</b> A single 125 GeV pulse. The LG predicts a true peak of <b>1993 mV</b> &mdash;
+    2.4&times; the 820 mV clip. Standard <span class="mono" style="color:#c0392b">cfd05</span> sits at 42 mV on the
+    foot, where the edge rises at only <b>102 mV/ns</b>. <span class="mono" style="color:#2471c0">hg_lgcfd</span>
+    sits at 299 mV on the edge &mdash; <b>381 mV/ns, 3.7&times; steeper</b>. Same voltage noise, far less time
+    jitter.</figcaption>
+  </figure>
+  <p>Why 15%? Push the fraction to 30% and, for the brightest showers, the threshold rides into the clip itself
+  and the timing blows up. 15% is the steep-but-safe sweet spot &mdash; <b>~98.5% of pulses yield a valid
+  crossing</b>. The recipe is calibrated once from clean, unclipped low-energy data
+  (<span class="k">calibHGLG</span>) and applied at every energy.</p>
+</section>
+
+<section>
+  <div class="act">Act V · The payoff</div>
+  <h2>Better where it's clipped — and the honest ledger</h2>
+  <p>Run the identical best-bin <span class="k">(DW&minus;UP)/2</span> pipeline for both methods across all six
+  energies. <span class="mono" style="color:#2471c0">hg_lgcfd</span> wins <i>exactly where the HG is clipped</i> &mdash;
+  100&ndash;150 GeV &mdash; reaching a best single bin of <b class="win">25.6 ps at 125 GeV</b>:</p>
+  <table>
+    <tr><th>E (GeV)</th><th>25</th><th>50</th><th>75</th><th>100</th><th>125</th><th>150</th><th>floor&nbsp;b</th></tr>
+    <tr><td class="h">cfd05</td><td>47.4</td><td>33.3</td><td>29.5</td><td>30.6</td><td>28.6</td><td>28.2</td><td>21.4</td></tr>
+    <tr><td class="h">hg_lgcfd</td><td>44.6</td><td>34.6</td><td>29.9</td><td class="win">26.9</td><td class="win">25.6</td><td class="win">27.3</td><td class="win">19.6</td></tr>
+  </table>
+  <figure>
+    <img src="assets/narrative_ladder.png" alt="sigma_t vs energy, cfd05 vs hg_lgcfd, with a/sqrtE+b fits">
+    <figcaption><b>The ladder.</b> Best-bin (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy. The asymptotic floor
+    <span class="mono">a/&radic;E &oplus; b</span> tightens from <b>21.4&nbsp;&rarr;&nbsp;19.6 ps</b>. At 25&ndash;75 GeV,
+    where the HG never clips, the two methods agree &mdash; there's no clipped foot to rescue.</figcaption>
+  </figure>
+  <div class="pull">No overclaiming: the gain is <b>~10% at the clipped energies</b>, and the floors are close
+  (<b>21.4 &rarr; 19.6 ps</b>). The dramatic 3.7&times; per-pulse slope buys only ~10% in the final number &mdash;
+  and that is the most interesting result on the page.</div>
+</section>
+
+<section style="border-bottom:none">
+  <div class="act">Act VI · What's left is physics</div>
+  <h2>The floor is the shower, not the instrument</h2>
+  <p>Why doesn't a 3.7&times; steeper edge give a 3.7&times; better resolution? Because by the time we average
+  seven timing channels, the per-pulse slew term is already small &mdash; a few picoseconds. What dominates
+  <span class="k">(DW&minus;UP)/2</span> is something the electronics can't touch: <b>the longitudinal depth of the
+  shower fluctuates event to event</b>, by about one radiation length of LYSO, and that half-difference <i>is</i>
+  the measurement. The ~20 ps floor is shower-development physics.</p>
+  <p>So the HG/LG-ratio method does precisely the right thing &mdash; it recovers the true rising edge that
+  saturation hid &mdash; and the experiment then tells us, cleanly, where the remaining limit lives. We push the
+  instrument until the detector itself is the thing we're measuring. <b>That</b> is the headline: not a single
+  number, but a method that takes the clipped foot off the table and leaves us face to face with the shower.</p>
+  <div class="pull"><b>Bottom line.</b> hg_lgcfd &mdash; CFD on the LG-predicted true peak &mdash; gives a best-bin
+  <b>25.6 ps @ 125 GeV</b> and a <b>~20 ps</b> asymptotic floor, ~10% better than clipped-peak CFD at the
+  energies where the HG saturates, with the residual set by ~1 X&#8320; of shower-depth fluctuation.</div>
+</section>
+
+</main>
+<footer class="wrap">
+  RADiCAL · CERN May 2023 test beam · DSB1 (LYSO:Ce) build, full-statistics canonical reduction.
+  Figures regenerated by <span class="mono">analyze/studies/narrative{Figs,Ladder}.C</span> and
+  <span class="mono">analyze/slopeVsE.C</span>. &nbsp;<a href="going_radical.html">&#8592; field guide</a>
+</footer>
+</body>
+</html>
