@@ -45,8 +45,10 @@ analyze/             ← reduced → results
   studies/    ~80 one-off investigation macros (kept, runnable, quarantined)
 data/                ← ALL data, per year
   2023/{raw, reduced, configs, metadata}/                    (configs = <BUILD>.json + .hglg)
-figures/             ← every generated PNG/PDF
-report/              ← published GitHub Pages site
+figures/             ← analysis output plots (PNG/PDF)
+site/                ← published GitHub Pages website (self-contained)
+  *.html  report/  assets/                                   (deployed via Actions; see site/README.md)
+student/             ← self-contained student lab module (.C macros + expected figs)
 docs/                ← design notes, plans, paper drafts
 archive/             ← legacy code (superseded; kept for provenance)
 setup.sh             ← source once per shell

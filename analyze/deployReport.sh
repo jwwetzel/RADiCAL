@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 # ============================================================================
-# deployReport.sh — publish the generated analysis report to the committed
-# Pages folder (report/ at the repo root, served at <pages>/RADiCAL/report/).
+# deployReport.sh — publish the generated analysis report into the site/ folder
+# (site/report/, served at <pages-url>/report/ via the Pages Actions workflow).
 #
 # output/ is a gitignored build dir, so Pages can't serve from it.
-# This copies ONLY the assets report.html references into report/, and
+# This copies ONLY the assets report.html references into site/report/, and
 # downscales the oversized multi-page renders so we don't bloat git history.
 #
-# Run from the repo root, after makeReport.py:   bash Analysis/deployReport.sh
+# Run from the repo root, after makeReport.py:   bash analyze/deployReport.sh
 # ============================================================================
 set -euo pipefail
 
 SRC="output"
-DST="report"
+DST="site/report"
 
-[ -f "$SRC/report.html" ] || { echo "No $SRC/report.html — run 'python3 Analysis/makeReport.py' first."; exit 1; }
+[ -f "$SRC/report.html" ] || { echo "No $SRC/report.html — run 'python3 analyze/makeReport.py' first."; exit 1; }
 
 rm -rf "$DST"
 mkdir -p "$DST"

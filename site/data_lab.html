@@ -144,7 +144,7 @@ how much signal each detector saw. On the left, the 1×1&nbsp;cm scintillator re
 sharp square, edges and all. Each step below builds toward it.</p>
 
 <figure>
-  <img src="student/figs/expected_shadow_map.png" alt="calorimeter shadow and connector rings">
+  <img src="assets/expected_shadow_map.png" alt="calorimeter shadow and connector rings">
   <figcaption><b>The goal (Step 7).</b> Mean pulse amplitude versus beam position, 150&nbsp;GeV electrons.
   <b>Left:</b> the 1×1&nbsp;cm scintillator — the two glowing rings at ≈(7,5) and ≈(20,3)&nbsp;mm are showers
   off the MCP cable connectors. <b>Right:</b> the NE-D capillary — the bright square is the calorimeter face
@@ -299,7 +299,7 @@ g-&gt;Draw("AL");</div>
   <div class="code">root -l 'student/drawWaveform.C(2, 344)'</div>
 
   <figure>
-    <img src="student/figs/expected_waveform.png" alt="a single raw waveform">
+    <img src="assets/expected_waveform.png" alt="a single raw waveform">
     <figcaption><b>What you should see.</b> A flat <b>pedestal</b> (baseline) near 325&nbsp;mV, then a sharp
     <b>downward</b> spike — the physics pulses point <em>down</em>. We measure the <b>peak height</b> as
     <code>pedestal − (lowest sample)</code> ≈ 779&nbsp;mV here. The wiggle afterward is normal electronics
@@ -348,7 +348,7 @@ h-&gt;Draw();</div>
   <div class="code">root -l 'student/peakSpectrum.C+(2)'</div>
 
   <figure>
-    <img src="student/figs/expected_peak_spectrum.png" alt="peak amplitude spectrum">
+    <img src="assets/expected_peak_spectrum.png" alt="peak amplitude spectrum">
     <figcaption><b>What you should see.</b> A big spike near zero (events where NE-D barely lit up) and a
     broad bump out toward ~800&nbsp;mV (events where the shower core landed in this capillary). The pile-up
     right at the top edge is <b>saturation</b> — the high-gain channel is deliberately run so hot that big
@@ -393,7 +393,7 @@ h-&gt;Fill(x, y);                                     <span class="c">// a 2-D h
   <div class="code">root -l 'student/beamProfile.C+'</div>
 
   <figure>
-    <img src="student/figs/expected_beam_profile.png" alt="beam profile from the wire chamber">
+    <img src="assets/expected_beam_profile.png" alt="beam profile from the wire chamber">
     <figcaption><b>What you should see.</b> A fuzzy blob — the <b>beam spot</b>. This is simply <em>where</em>
     the ~30,000 particles crossed the wire chamber. It's a 2-D histogram (a <code>TH2F</code>): each bin counts
     how many tracks landed there. Next we'll colour it by signal instead of counts, and the detector hardware
@@ -427,7 +427,7 @@ m-&gt;Fill(x, y, findPeak(A + ampOffset(SLOT_1x1)));   <span class="c">// colour
   <div class="code">root -l 'student/shadowMap.C+'</div>
 
   <figure>
-    <img src="student/figs/expected_shadow_map.png" alt="calorimeter shadow and connector rings">
+    <img src="assets/expected_shadow_map.png" alt="calorimeter shadow and connector rings">
     <figcaption><b>The payoff.</b> <b>Left (1×1 scintillator):</b> two bright <b>connector rings</b> at
     ≈(7,5) and ≈(20,3)&nbsp;mm — particles passing through the dense MCP cable connectors shower and dump extra
     light. <b>Right (NE-D capillary):</b> the <b>calorimeter</b> blazes as a sharp square wherever the beam hits
