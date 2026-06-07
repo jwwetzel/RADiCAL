@@ -237,23 +237,24 @@
   <div class="act">Act VII · The full spectrum</div>
   <h2>Four materials, one law: light yield sets the clock</h2>
   <p>RADiCAL ran four detector builds with different scintillators. Push the <i>same</i> de-biased pipeline through
-  all of them &mdash; best timing source per build, equal-population bins, brightest-fraction cross-check &mdash; and
-  they fall into a single clean ordering by <b>scintillation light yield</b>. More light &rarr; faster rising edge
-  &rarr; better timing, exactly as the slew argument predicts.</p>
+  all of them &mdash; brightest-slice best, most robust timing source per build &mdash; and they fall into a single clean
+  ordering by <b>scintillation light yield</b>. More light &rarr; faster rising edge &rarr; better timing, exactly as the
+  slew argument predicts. (Each build's <i>best achievable</i> is shown; the broader &ldquo;typical&rdquo; quantile number
+  is ~3&ndash;4 ps higher, the same selection continuum as DSB1's headline.)</p>
   <table>
-    <tr><th>Build</th><th>Scintillator</th><th>Best source</th><th>&sigma;<sub>t</sub>@150 (typical)</th><th>(brightest)</th></tr>
-    <tr><td class="h">DSB1</td><td>LYSO:Ce &mdash; high light</td><td class="mono">lgcfd</td><td class="win">29.6 ps</td><td class="win">26.7 ps</td></tr>
-    <tr><td class="h">TENERGY</td><td>3&times;LYSO + Energy</td><td class="mono">led</td><td>33.9 ps</td><td>29.5 ps</td></tr>
-    <tr><td class="h">MIXED</td><td>LYSO + LuAG mix</td><td class="mono">cfd05</td><td>37.2 ps</td><td>34.2 ps</td></tr>
-    <tr><td class="h">LUAG</td><td>LuAG:Ce &mdash; low light</td><td class="mono">led</td><td>43.1 ps</td><td>43.0 ps</td></tr>
+    <tr><th>Build</th><th>Scintillator</th><th>Best source</th><th>&sigma;<sub>t</sub>@150 (best, brightest)</th><th>(typical)</th></tr>
+    <tr><td class="h">DSB1</td><td>LYSO:Ce &mdash; high light</td><td class="mono">lgcfd</td><td class="win">26.7 ps</td><td>29.6 ps</td></tr>
+    <tr><td class="h">TENERGY</td><td>3&times;LYSO + Energy</td><td class="mono">led</td><td>29.5 ps</td><td>33.9 ps</td></tr>
+    <tr><td class="h">MIXED</td><td>LYSO + LuAG mix</td><td class="mono">cfd05</td><td>34.2 ps</td><td>37.2 ps</td></tr>
+    <tr><td class="h">LUAG</td><td>LuAG:Ce &mdash; low light</td><td class="mono">lgcfd</td><td>42.6 ps</td><td>43.5 ps</td></tr>
   </table>
   <figure>
     <img src="assets/narrative_crossbuild.png" alt="sigma_t vs energy for four builds, de-biased">
-    <figcaption><b>The full spectrum.</b> Best-bin (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy, all four builds, de-biased
-    estimator, each build shown with its <b>most robust timing source</b> (see below) and error bars scaled to the real
-    point-to-point scatter (&radic;(&chi;&sup2;/ndf)). All four are monotonic: high-light <b>LYSO (DSB1)</b> sits lowest
-    (~30 ps), low-light <b>LuAG</b> tops out ~43 ps, the mix and energy builds in between &mdash; a clean light-yield
-    ordering. (MIXED's LG is partly compromised, so its mid-range is indicative.)</figcaption>
+    <figcaption><b>The full spectrum.</b> Brightest-slice (best achievable) (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy,
+    all four builds, each with its <b>most robust timing source</b> (see below) and error bars scaled to the real
+    point-to-point scatter (&radic;(&chi;&sup2;/ndf)). All four are monotonic: high-light <b>LYSO (DSB1)</b> sits lowest at
+    <b>~27 ps</b> (matching the headline), low-light <b>LuAG</b> tops out ~43 ps, the energy and mixed builds in between
+    &mdash; a clean light-yield ordering. (MIXED's LG is partly compromised, so its mid-range is indicative.)</figcaption>
   </figure>
   <h3 style="font-size:21px;margin:1.4em 0 .3em">Why LuAG misbehaved &mdash; cfd05 fails on small pulses</h3>
   <p>The wobble was the timing <i>source</i>, not the build. <span class="mono">cfd05</span> fires at <b>5% of the pulse
@@ -271,12 +272,13 @@
     is finally bright enough for cfd05 to work.</figcaption>
   </figure>
   <p>The fix isn't a patch &mdash; it's to stop trusting a cherry-picked number and pick the <b>most robust source per
-  build</b> (the smoothest, most monotonic). For LuAG that's the <b>fixed-threshold <span class="mono">led</span></b>:
-  it doesn't care about pulse shape, only that the edge crosses a set level, so small pulses don't break it. The result is
-  a clean <b>monotonic</b> LuAG ladder &mdash; <b>69 &rarr; 43 ps</b> from 50 to 150 GeV. More light, better timing, as it
-  must be. (LuAG's HG <i>does</i> also clip at high energy, 2% rising to 83% &mdash; but a robust source handles it; that
-  was never the real problem.)</p>
-  <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield, top to bottom &mdash; <b>~30 ps</b> for the
+  build</b> (the smoothest, most monotonic). For LuAG that's <b><span class="mono">lgcfd</span></b> &mdash; the smooth blue
+  curve in the panels above: it thresholds higher on the edge, where there's real signal, so the small pulses that kill
+  cfd05 don't break it. (Robust fixed-threshold <span class="mono">led</span> works too.) The result is a clean
+  <b>monotonic</b> LuAG ladder &mdash; <b>~68 &rarr; 43 ps</b> from 50 to 150 GeV. More light, better timing, as it must be.
+  (LuAG's HG <i>does</i> also clip at high energy, 2% rising to 83% &mdash; but a robust source handles it; that was never
+  the real problem.)</p>
+  <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield, top to bottom &mdash; <b>~27 ps</b> for the
   brightest LYSO down to <b>~43 ps</b> for low-light LuAG &mdash; once you read each build with the source it can actually
   support. The detector you build sets the clock you can read.</div>
 </section>

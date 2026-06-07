@@ -37,9 +37,9 @@ static double quantBest(std::vector<std::pair<float,float>> v, long& N){
         std::vector<float> t; for(size_t k=lo;k<hi;++k) t.push_back(v[k].second); double s=tebSigma(t);
         if(s>22&&s<best){best=s;N=hi-lo;} } return best<1e8?best:-1;   // >22: no real RADiCAL quantile (DW-UP)/2 bin is lower
 }
-// brightest-fraction f sigma (deterministic, OOS-stable)
-static double brightFrac(std::vector<std::pair<float,float>> v,double f){
-    int K=(int)(f*v.size()); if(K<200) return -1;
+// brightest-fraction f sigma (deterministic, OOS-stable); sets N=slice size
+static double brightFracN(std::vector<std::pair<float,float>> v,double f,long& N){
+    int K=(int)(f*v.size()); N=K; if(K<200) return -1;
     std::nth_element(v.begin(),v.begin()+K,v.end(),[](auto&a,auto&b){return a.first>b.first;});
     std::vector<float> t; for(int i=0;i<K;++i) t.push_back(v[i].second); return tebSigma(t);
 }
@@ -56,13 +56,13 @@ void crossBuild(){
 
     TCanvas* c=new TCanvas("cx","",960,680); c->SetLeftMargin(0.12); c->SetRightMargin(0.04); c->SetGridy();
     TLegend* lg=new TLegend(0.50,0.70,0.95,0.90); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.032);
-    TH1F* fr=c->DrawFrame(0,20,160,74); fr->SetTitle("RADiCAL: (DW#minusUP)/2 best-bin #sigma_{t} vs energy, four builds (de-biased);beam energy (GeV);#sigma_{t} (ps)");
-    printf("\n=== CROSS-BUILD full spectrum (de-biased) ===\n");
-    printf("build    material              best src  sigma@150[quant]  [bright1%%]  floor b\n");
+    TH1F* fr=c->DrawFrame(0,20,160,76); fr->SetTitle("RADiCAL: (DW#minusUP)/2 #sigma_{t} vs energy, four builds, brightest-slice (best achievable);beam energy (GeV);#sigma_{t} (ps)");
+    printf("\n=== CROSS-BUILD full spectrum (brightest slice = best achievable) ===\n");
+    printf("build    material              best src  sigma@150[bright]  [typical]  floor b\n");
     for(int bi=0;bi<4;++bi){ const char* B=builds[bi];
         BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",B)); if(!cfg.valid())continue;
-        // per source: quantile ladder + brightest ladder
-        std::vector<std::vector<double>> q(nS),br(nS),Ev(nS),eq(nS);
+        // per source: quantile (typical) ladder + brightest (best) ladder + errors
+        std::vector<std::vector<double>> q(nS),br(nS),Ev(nS),eq(nS),ebr(nS);
         for(double E:Es){ TFile* fp=TFile::Open(radReduced(B,E)); if(!fp||fp->IsZombie())continue;
             TTree* t=(TTree*)fp->Get("rad"); RadView v; v.attach(t,&cfg);
             double xc,yc; v.beamCenter(xc,yc); double r2=9.0; Long64_t N=v.entries();
@@ -74,33 +74,35 @@ void crossBuild(){
                     for(int ch=0;ch<4;++ch) if(v.is_timing(ch)&&v.hg_peak(ch)>=kHG_minPeak){float tc=v.timeOf(ch,SRC[s]);if(tc>-1e5){ds+=tc;++dn;}}
                     for(int ch=4;ch<8;++ch) if(v.is_timing(ch)&&v.hg_peak(ch)>=kHG_minPeak){float tc=v.timeOf(ch,SRC[s]);if(tc>-1e5){us+=tc;++un;}}
                     if(dn>=1&&un>=1) P[s].push_back({(float)v.sum_lg(),0.5f*(float)(ds/dn-us/un)}); } }
-            for(int s=0;s<nS;++s){ long nn; double sq=quantBest(P[s],nn), sb=brightFrac(P[s],0.02);
-                if(sq>0){q[s].push_back(sq);br[s].push_back(sb);Ev[s].push_back(E);eq[s].push_back(sq/std::sqrt(2.0*nn));} }
+            for(int s=0;s<nS;++s){ long nn,nb; double sq=quantBest(P[s],nn), sb=brightFracN(P[s],0.02,nb);
+                if(sq>0){ double bv=(sb>0?sb:sq); q[s].push_back(sq); br[s].push_back(bv); Ev[s].push_back(E);
+                    eq[s].push_back(sq/std::sqrt(2.0*nn));
+                    ebr[s].push_back((sb>0&&nb>0)?sb/std::sqrt(2.0*nb):sq/std::sqrt(2.0*nn)); } }
             fp->Close();
         }
         // pick the most ROBUST source, not the lowest cherry-picked number: penalize
         // non-monotonicity (upward steps), which flags an estimator that's failing on
         // some bins (e.g. cfd05 dies on LuAG's small low-light pulses -> garbage bins).
         int best=-1; double bestScore=1e18;
-        for(int s=0;s<nS;++s){ if(q[s].size()<3)continue; double s150=q[s].back(); if(s150<=0)continue;
-            double rough=0; for(size_t k=1;k<q[s].size();++k) rough+=std::max(0.0,q[s][k]-q[s][k-1]);
+        for(int s=0;s<nS;++s){ if(br[s].size()<3)continue; double s150=br[s].back(); if(s150<=0)continue;
+            double rough=0; for(size_t k=1;k<br[s].size();++k) rough+=std::max(0.0,br[s][k]-br[s][k-1]);
             double score=s150+3.0*rough;                 // smooth+low wins; jumpy source is demoted
             if(score<bestScore){bestScore=score;best=s;} }
         if(best<0) continue;
-        TF1 f("f","sqrt([0]*[0]/x+[1]*[1])",20,160); f.SetParameters(200,25);
-        std::vector<double> ze(q[best].size(),0.0);
-        TGraphErrors* g=new TGraphErrors(q[best].size(),&Ev[best][0],&q[best][0],&ze[0],&eq[best][0]); g->Fit(&f,"Q");
+        TF1 f("f","sqrt([0]*[0]/x+[1]*[1])",20,160); f.SetParameters(200,22);
+        std::vector<double> ze(br[best].size(),0.0);
+        TGraphErrors* g=new TGraphErrors(br[best].size(),&Ev[best][0],&br[best][0],&ze[0],&ebr[best][0]); g->Fit(&f,"Q");
         // inflate per-point errors by sqrt(chi2/ndf): the bare sigma/sqrt(2N) misses the real
         // point-to-point systematic scatter (run-to-run, selection) -- worst for low-light LuAG.
         double cn=f.GetChisquare()/std::max(1,f.GetNDF()), esc=(cn>1?std::sqrt(cn):1.0);
         for(int p=0;p<g->GetN();++p) g->SetPointError(p,0,g->GetErrorY(p)*esc);
-        double floor=std::fabs(f.GetParameter(1)), s150q=q[best].back(), s150b=br[best].back();
+        double floor=std::fabs(f.GetParameter(1)), s150b=br[best].back(), s150q=q[best].back();
         char fb[16]; if(floor>=5) snprintf(fb,16,"%.0f",floor); else snprintf(fb,16,"--");
-        char bb[16]; if(s150b>0) snprintf(bb,16,"%.1f",s150b); else snprintf(bb,16,"--");
-        printf("%-7s  %-20s  %-7s   %5.1f            %5s       %5s\n",B,mat[bi],sname[best],s150q,bb,fb);
+        char tb[16]; if(s150q>0) snprintf(tb,16,"%.1f",s150q); else snprintf(tb,16,"--");
+        printf("%-7s  %-20s  %-7s   %5.1f            %5s       %5s\n",B,mat[bi],sname[best],s150b,tb,fb);
         g->SetMarkerStyle(20+bi); g->SetMarkerColor(col[bi]); g->SetLineColor(col[bi]); g->SetMarkerSize(1.5); g->SetLineWidth(2);
         g->Draw("LP SAME"); TF1* ff=(TF1*)f.Clone(); ff->SetLineColor(col[bi]); ff->SetLineStyle(2); ff->SetLineWidth(1); ff->Draw("SAME");
-        lg->AddEntry(g,Form("%s  #color[920]{%s}  (%s)  %.0f ps",B,matS[bi],sname[best],s150q),"lp");
+        lg->AddEntry(g,Form("%s  #color[920]{%s}  (%s)  %.0f ps",B,matS[bi],sname[best],s150b),"lp");
     }
     lg->Draw();
     gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/cross_build.png");
