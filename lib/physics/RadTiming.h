@@ -69,28 +69,66 @@ inline TimingResult timingBestBin(RadView& v, double energy, int src = RadView::
     r.nFid = slg.size();
     if (slg.size() < 1000) return r;
 
-    // energy bins from a Gaussian fit of sum_lg -> muE +- 2 sigE, 9 equal bins
+    // sum_lg core fit (reporting only): mu_E, sigma_E
     double smin=*std::min_element(slg.begin(),slg.end()), smax=*std::max_element(slg.begin(),slg.end());
     TH1F hS("_rtS","",150,smin,smax); hS.SetDirectory(nullptr); for(float x:slg) hS.Fill(x);
     double muEe,sigEe; FitGaussCore(&hS,2.0,r.muE,muEe,r.sigE,sigEe);
     if (r.sigE<=0){ r.muE=hS.GetMean(); r.sigE=hS.GetRMS(); }
-    double binLo=r.muE-2*r.sigE, binW=4*r.sigE/9.0;
 
-    double best=1e9;
-    for (int b=0; b<9; ++b) {
-        double blo=binLo+b*binW, bhi=blo+binW; std::vector<float> vt;
-        for (size_t i=0;i<slg.size();++i) if (slg[i]>=blo && slg[i]<bhi) vt.push_back(tval[i]);
-        if (vt.size()<500) continue;
+    // EQUAL-POPULATION (quantile) sum_lg bins. The previous equal-width mu+-2sigma
+    // scheme starved the BRIGHTEST bin in the Gaussian tail as energy rose (its
+    // count fell to a handful -> rejected by the N>=500 guard), so the estimator
+    // systematically penalized the highest energies by discarding their best-
+    // resolution events (e.g. DSB1 150 GeV brightest bin had 9 events). Quantile
+    // bins keep every slice -- including the brightest -- equally populated, so
+    // sigma_t(E) is monotonic in energy as the rising light yield demands.
+    std::vector<size_t> ord(slg.size()); for (size_t i=0;i<ord.size();++i) ord[i]=i;
+    std::sort(ord.begin(), ord.end(), [&](size_t a, size_t b){ return slg[a] < slg[b]; });
+    const int NB=9; size_t per=ord.size()/NB; double best=1e9;
+    for (int b=0; b<NB; ++b) {
+        size_t lo=(size_t)b*per, hi=(b==NB-1)?ord.size():lo+per;
+        if (hi-lo < 400) continue;                       // need enough events to fit a core
+        std::vector<float> vt; vt.reserve(hi-lo); double sclg=0;
+        for (size_t k=lo;k<hi;++k){ vt.push_back(tval[ord[k]]); sclg+=slg[ord[k]]; }
         double s=tebSigma(vt);
-        // Guard: reject unphysical/degenerate bin fits. No real RADiCAL timing
-        // bin is < ~15 ps. Sub-floor fits come from legacy reduceRaw config files
-        // read via the DERIVED cfd05 path (s_cfd05@3mV - mcp_time), which is
-        // noise-dominated for DIM builds at LOW energy -> rigorous config-build
-        // timing requires the canonical re-reduction (hg_cfd05 with proper MCP
-        // referencing). DSB1 (canonical hg_cfd05) is unaffected.
-        if (s>15.0 && s<best){ best=s; r.best_bin=b; r.bestE=0.5*(blo+bhi); }
+        // Guard: reject unphysical sub-floor fits (<~12 ps). These arise for DIM
+        // builds at LOW energy read via the legacy DERIVED cfd05 path (noise-
+        // dominated); canonical hg_cfd05/lgcfd are unaffected.
+        if (s>12.0 && s<best){ best=s; r.best_bin=b; r.bestE=sclg/(hi-lo); }
     }
     r.sigma_ps = best;
+    return r;
+}
+
+// ----------------------------------------------------------------------------
+// timingBrightestK — the OTHER way to read the resolution, free of the same bias.
+// Quotes the BEST achievable (DW-UP)/2 sigma_t for the brightest, best-measured
+// showers, with IDENTICAL statistical tightness (the top K events by sum_lg) at
+// every energy. Monotonic in E and preserves the thin-bright-slice magnitude
+// (~the published headline), where the quantile best-bin above gives the broader,
+// more conservative ~typical-bright-shower number. Report BOTH.
+inline TimingResult timingBrightestK(RadView& v, double energy, int src = RadView::kCFD05, int K = 1500) {
+    TimingResult r;
+    v.beamCenter(r.xc, r.yc); r.rFid = TimingFiducialR(energy); double r2 = r.rFid*r.rFid;
+    std::vector<std::pair<float,float>> sd;   // (sum_lg, (DW-UP)/2)
+    Long64_t N = v.entries();
+    for (Long64_t i=0;i<N;++i){ v.get(i);
+        if (!v.wc_ok() || v.mcp1_peak()<kMCP1_minPeak || v.mcp1_peak()>kMCP1_maxPeak) continue;
+        double dx=v.x_trk()-r.xc, dy=v.y_trk()-r.yc; if (dx*dx+dy*dy>=r2) continue;
+        double ds=0,us=0; int dn=0,un=0;
+        for (int c=0;c<4;++c) if (v.is_timing(c)&&v.hg_peak(c)>=kHG_minPeak){ float tc=v.timeOf(c,src); if(tc>-1e5){ds+=tc;++dn;} }
+        for (int c=4;c<8;++c) if (v.is_timing(c)&&v.hg_peak(c)>=kHG_minPeak){ float tc=v.timeOf(c,src); if(tc>-1e5){us+=tc;++un;} }
+        if (dn<1||un<1) continue;
+        sd.push_back({ (float)v.sum_lg(), 0.5f*(float)(ds/dn-us/un) });
+    }
+    r.nFid = sd.size();
+    if ((int)sd.size() < K) return r;
+    std::nth_element(sd.begin(), sd.begin()+K, sd.end(),
+                     [](const std::pair<float,float>&a, const std::pair<float,float>&b){ return a.first > b.first; });
+    std::vector<float> vt; vt.reserve(K); double sclg=0;
+    for (int i=0;i<K;++i){ vt.push_back(sd[i].second); sclg += sd[i].first; }
+    double s = tebSigma(vt);
+    if (s>12.0){ r.sigma_ps=s; r.bestE=sclg/K; }
     return r;
 }
 

@@ -33,27 +33,21 @@ using namespace rad;
 
 static double medOf(std::vector<float> v){ if(v.empty())return 0; size_t k=v.size()/2; std::nth_element(v.begin(),v.begin()+k,v.end()); return v[k]; }
 
-// best-bin (>=500) tebSigma; bright-slice core fallback for thin samples
+// best of 9 EQUAL-POPULATION (quantile) sum_lg bins -> tebSigma. Quantile (not
+// equal-width mu+-2sigma) bins keep the brightest slice populated at every energy,
+// so the ladder is monotonic (the old equal-width scheme starved high-E's best bin).
 static double bestBinOrBright(std::vector<float>& slg, std::vector<float>& t){
     // t aligned to slg; t<-1e4 = invalid for this source
     std::vector<std::pair<float,float>> v;
     for(size_t i=0;i<slg.size();++i) if(t[i]>-1e4) v.push_back({slg[i],t[i]});
     if(v.size()<800) return -1;
-    // 9-bin best-bin
-    std::vector<float> sl; for(auto&p:v) sl.push_back(p.first);
-    double smin=*std::min_element(sl.begin(),sl.end()), smax=*std::max_element(sl.begin(),sl.end());
-    TH1F hS("hS","",150,smin,smax); hS.SetDirectory(0); for(float x:sl) hS.Fill(x);
-    double muE,muEe,sigE,sigEe; FitGaussCore(&hS,2.0,muE,muEe,sigE,sigEe); if(sigE<=0){muE=hS.GetMean();sigE=hS.GetRMS();}
-    double lo=muE-2*sigE, bw=4*sigE/9.0, best=1e9;
-    for(int b=0;b<9;++b){ double blo=lo+b*bw,bhi=blo+bw; std::vector<float> vt;
-        for(auto&p:v) if(p.first>=blo&&p.first<bhi) vt.push_back(p.second);
-        if(vt.size()<500) continue; double s=rad::tebSigma(vt); if(s>10&&s<best) best=s; }
-    if(best<1e8) return best;
-    // fallback: bright slice (top 45%) tight core
-    std::sort(v.begin(),v.end()); std::vector<float> bt;
-    for(size_t i=(size_t)(0.55*v.size());i<v.size();++i) bt.push_back(v[i].second);
-    double m=medOf(bt); std::vector<float> c; for(float x:bt) if(std::fabs(x-m)<1.0) c.push_back(x);
-    return c.size()>200 ? rad::tebSigma(c) : -1;
+    std::sort(v.begin(),v.end());                          // by sum_lg ascending
+    const int NB=9; size_t per=v.size()/NB; double best=1e9;
+    for(int b=0;b<NB;++b){ size_t lo=(size_t)b*per, hi=(b==NB-1)?v.size():lo+per;
+        if(hi-lo<400) continue; std::vector<float> vt; vt.reserve(hi-lo);
+        for(size_t k=lo;k<hi;++k) vt.push_back(v[k].second);
+        double s=rad::tebSigma(vt); if(s>10&&s<best) best=s; }
+    return best<1e8 ? best : -1;
 }
 
 void timingHeadline(const char* build, const char* dirArg=nullptr){
