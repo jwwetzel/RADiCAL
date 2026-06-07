@@ -6,7 +6,7 @@
 // external dependencies, ACLiC-compatible (root -l 'macro.C+'), C++11.
 //
 // Usage:
-//   mj::Value cfg = mj::parseFile("datasets/2023/configs/DSB1.json");
+//   mj::Value cfg = mj::parseFile("data/2023/configs/DSB1.json");
 //   std::string build = cfg["build"].str();
 //   int drs = cfg["channel_map"]["ends"][0]["hg"][0].asInt();
 //   for (auto& e : cfg["channel_map"]["ends"].arr) { ... }

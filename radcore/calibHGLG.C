@@ -15,10 +15,10 @@
 // (tab-separated: run, label, energy, raw_path) passed as the 2nd argument.
 //
 //   # DSB1 (has a runs block):
-//   root -l -b -q 'radcore/calibHGLG.C+("datasets/2023/configs/DSB1.json")'
+//   root -l -b -q 'radcore/calibHGLG.C+("data/2023/configs/DSB1.json")'
 //   # LUAG/MIXED/TENERGY (tasklist from your reduce run):
-//   root -l -b -q 'radcore/calibHGLG.C+("datasets/2023/configs/LUAG.json","'$RAD_WORK'/tasks_LUAG.txt")'
-//   -> writes datasets/2023/configs/<BUILD>.hglg  (read automatically by BuildConfig)
+//   root -l -b -q 'radcore/calibHGLG.C+("data/2023/configs/LUAG.json","'$RAD_WORK'/tasks_LUAG.txt")'
+//   -> writes data/2023/configs/<BUILD>.hglg  (read automatically by BuildConfig)
 // ============================================================================
 #include "BuildConfig.h"
 #include "WaveformUtils.h"

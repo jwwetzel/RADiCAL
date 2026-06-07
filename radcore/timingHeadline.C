@@ -8,7 +8,7 @@
 // fit sigma_t = a/sqrt(E) (+) b and ranked. cfd05 = the published headline; lgcfd =
 // CFD on the LG-predicted true peak.
 //   ROOT_INCLUDE_PATH=radcore:Analysis root -l -b -q \
-//     'radcore/timingHeadline.C+("DSB1","datasets/2023/reduced/DSB1")'
+//     'radcore/timingHeadline.C+("DSB1","data/2023/reduced/DSB1")'
 // ============================================================================
 #include "RadView.h"
 #include "RadTiming.h"          // rad::tebSigma
@@ -58,7 +58,7 @@ static double bestBinOrBright(std::vector<float>& slg, std::vector<float>& t){
 
 void timingHeadline(const char* build, const char* dir){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg = BuildConfig::Load(Form("datasets/2023/configs/%s.json",build));
+    BuildConfig cfg = BuildConfig::Load(Form("data/2023/configs/%s.json",build));
     if(!cfg.valid()){ printf("config load failed: %s\n", cfg.error()); return; }
     const double allE[6]={25,50,75,100,125,150};
     std::vector<double> Es; for(double E:allE) if(!gSystem->AccessPathName(Form("%s/%.0fGeV.root",dir,E))) Es.push_back(E);

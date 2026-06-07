@@ -8,10 +8,10 @@
 // generic per-slot arrays (faithful to reduceRaw.C, for rediscovery).
 //
 //   ROOT_INCLUDE_PATH=radcore:Analysis \
-//     root -l -b -q 'radcore/Reducer.C+("datasets/2023/configs/DSB1.json", 150)'
+//     root -l -b -q 'radcore/Reducer.C+("data/2023/configs/DSB1.json", 150)'
 //
 //   energy < 0  -> reduce every energy listed in the config's run list.
-//   outDir ""   -> datasets/<year>/reduced/<BUILD>/   (canonical location)
+//   outDir ""   -> data/<year>/reduced/<BUILD>/   (canonical location)
 // ============================================================================
 #include "BuildConfig.h"       // radcore
 #include "Schema.h"            // radcore
@@ -31,7 +31,7 @@
 
 // resolve a raw file basename to a path (year-aware canonical, legacy fallback)
 static TString radRawPath(const rad::BuildConfig& cfg, const std::string& base) {
-    TString p = Form("datasets/%s/raw/%s", cfg.year.c_str(), base.c_str());
+    TString p = Form("data/%s/raw/%s", cfg.year.c_str(), base.c_str());
     if (!gSystem->AccessPathName(p)) return p;                 // canonical exists
     TString legacy = Form("Data/%s", base.c_str());            // legacy location
     if (!gSystem->AccessPathName(legacy)) return legacy;
@@ -238,7 +238,7 @@ void Reducer(const char* configPath, double energy = -1, const char* outDir = ""
     if (!cfg.valid()) { printf("[Reducer] config load failed: %s\n", cfg.error()); return; }
 
     TString dir = outDir[0] ? TString(outDir)
-                            : Form("datasets/%s/reduced/%s", cfg.year.c_str(), cfg.build.c_str());
+                            : Form("data/%s/reduced/%s", cfg.year.c_str(), cfg.build.c_str());
     gSystem->mkdir(dir, kTRUE);
 
     if (energy >= 0) {

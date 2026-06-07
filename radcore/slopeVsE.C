@@ -47,7 +47,7 @@ static bool fitSlope(const std::vector<P>& raw, double shapeCut, double hgmax, d
 
 void slopeVsE(const char* build){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    rad::BuildConfig cfg = rad::BuildConfig::Load(Form("datasets/2023/configs/%s.json",build));
+    rad::BuildConfig cfg = rad::BuildConfig::Load(Form("data/2023/configs/%s.json",build));
     // energy -> raw path (local files)
     std::vector<std::pair<double,std::string>> runs;
     if (std::string(build)=="DSB1"){
@@ -55,9 +55,9 @@ void slopeVsE(const char* build){
               {75,radRaw("RUN1112_75_GeV.root").Data()},{100,radRaw("RUN1075_100_GeV.root").Data()},
               {125,radRaw("RUN1034_125_GeV.root").Data()},{150,radRaw("RUN1258_150_GeV.root").Data()}};
     } else { // MIXED valid era
-        runs={{50,"datasets/2023/raw/RUN2941.root"},{75,"datasets/2023/raw/RUN2913.root"},
-              {100,"datasets/2023/raw/RUN2995.root"},{125,"datasets/2023/raw/RUN2985.root"},
-              {150,"datasets/2023/raw/RUN2975.root"}};
+        runs={{50,"data/2023/raw/RUN2941.root"},{75,"data/2023/raw/RUN2913.root"},
+              {100,"data/2023/raw/RUN2995.root"},{125,"data/2023/raw/RUN2985.root"},
+              {150,"data/2023/raw/RUN2975.root"}};
     }
     int nE=runs.size();
     // b[ch][E], errors; nominal range [40,700] and unsaturated [40,300]

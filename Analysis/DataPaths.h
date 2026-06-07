@@ -1,18 +1,21 @@
 // ============================================================================
-// DataPaths.h — ONE place that resolves every RADiCAL data file.
+// DataPaths.h — THE one place that resolves every RADiCAL data file.
 //
 // Canonical layout (what lives on CERNBox and what a newcomer downloads):
-//     $RAD_DATA/datasets/<year>/raw/RUN<n>_<E>_GeV.root        (raw 'pulse' tree)
-//     $RAD_DATA/datasets/<year>/reduced/<BUILD>/<E>GeV.root    (analysis 'rad' tree)
+//     $RAD_DATA/data/<year>/raw/RUN<n>_<E>_GeV.root         (raw 'pulse' tree)
+//     $RAD_DATA/data/<year>/reduced/<BUILD>/<E>GeV.root      (analysis 'rad' tree)
+//     $RAD_DATA/data/<year>/configs/<BUILD>.json|.hglg       (build configs)
+//     $RAD_DATA/data/<year>/metadata/                        (channel map, run table)
 //
-// $RAD_DATA defaults to the repo root (".").  Each resolver tries the canonical
-// path first and FALLS BACK to the legacy in-repo location (Data/, reduced/,
-// Analysis/Output/) so existing checkouts keep working during the migration.
+// $RAD_DATA defaults to the repo root ("."). One canonical path each — no legacy
+// fallbacks. If a file is missing, the returned path points at where it SHOULD be,
+// so error messages are actionable.
 //
 // Usage in a macro:
 //     #include "DataPaths.h"
 //     TFile* f = TFile::Open(radReduced("DSB1", 150));   // DSB1 @150 GeV
 //     TFile* g = TFile::Open(radRaw("RUN1258_150_GeV.root"));
+//     std::string cfg = radConfig("DSB1").Data();        // build JSON path
 // ============================================================================
 #ifndef DATAPATHS_H
 #define DATAPATHS_H
@@ -20,42 +23,34 @@
 #include "TString.h"
 #include "TSystem.h"
 
-static const int kRadYear = 2023;   // default campaign under datasets/
+static const int kRadYear = 2023;   // default campaign under data/
 
 inline TString radDataBase(){
     const char* e = gSystem->Getenv("RAD_DATA");
     return (e && *e) ? TString(e) : TString(".");
 }
-inline bool radExists(const TString& p){ return gSystem->AccessPathName(p) == kFALSE; }
-
-// return the first path that exists; otherwise the canonical one (so error
-// messages point at the intended location).
-inline TString radPick(const TString& canonical, const TString& legacy){
-    if (radExists(canonical)) return canonical;
-    if (radExists(legacy))    return legacy;
-    return canonical;
-}
 
 // ---- raw waveform run, by basename e.g. "RUN1258_150_GeV.root" -------------
 inline TString radRaw(const char* basename, int year){
-    TString base = radDataBase();
-    return radPick(base + Form("/datasets/%d/raw/%s", year, basename),
-                   base + "/Data/" + basename);
+    return radDataBase() + Form("/data/%d/raw/%s", year, basename);
 }
 inline TString radRaw(const char* basename){ return radRaw(basename, kRadYear); }
 
 // ---- reduced ntuple for a build + energy ----------------------------------
-//   canonical:  datasets/<year>/reduced/<BUILD>/<E>GeV.root
-//   legacy (2023 only): DSB1 -> Analysis/Output/<E>GeV/ntuple.root
-//                       others -> reduced/<BUILD>/<E>GeV.root
 inline TString radReduced(const char* build, double E, int year){
-    TString base = radDataBase();
-    TString canonical = base + Form("/datasets/%d/reduced/%s/%.0fGeV.root", year, build, E);
-    TString legacy = (year == 2023 && TString(build) == "DSB1")
-        ? base + Form("/Analysis/Output/%.0fGeV/ntuple.root", E)
-        : base + Form("/reduced/%s/%.0fGeV.root", build, E);
-    return radPick(canonical, legacy);
+    return radDataBase() + Form("/data/%d/reduced/%s/%.0fGeV.root", year, build, E);
 }
 inline TString radReduced(const char* build, double E){ return radReduced(build, E, kRadYear); }
+
+// ---- build config JSON + its HG/LG calibration sidecar --------------------
+inline TString radConfig(const char* build, int year){
+    return radDataBase() + Form("/data/%d/configs/%s.json", year, build);
+}
+inline TString radConfig(const char* build){ return radConfig(build, kRadYear); }
+
+inline TString radHglg(const char* build, int year){
+    return radDataBase() + Form("/data/%d/configs/%s.hglg", year, build);
+}
+inline TString radHglg(const char* build){ return radHglg(build, kRadYear); }
 
 #endif // DATAPATHS_H

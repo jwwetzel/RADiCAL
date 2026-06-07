@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # organize_data.sh — consolidate the local RADiCAL data into the canonical
-#   datasets/2023/{raw,reduced/<BUILD>} layout, using datasets/2023/MANIFEST.csv.
+#   data/2023/{raw,reduced/<BUILD>} layout, using data/2023/MANIFEST.csv.
 #
 # Modes (run from the repo root):
 #   ./Analysis/organize_data.sh            # default: symlink canonical -> legacy
@@ -11,15 +11,15 @@
 #   ./Analysis/organize_data.sh --check    # report which files are present, no changes
 #
 #   ./Analysis/organize_data.sh --legacy-links
-#       For a NEWCOMER who downloaded datasets/2023/ from CERNBox: create the legacy
+#       For a NEWCOMER who downloaded data/2023/ from CERNBox: create the legacy
 #       paths (Data/, reduced/, Analysis/Output/<E>GeV/) as symlinks INTO the canonical
 #       files, so EVERY macro works (migrated or not) without moving anything.
 #
 # To prepare the CERNBox upload after linking:
-#   rsync -aL datasets/2023/raw datasets/2023/reduced /path/to/upload/   # -L follows links
+#   rsync -aL data/2023/raw data/2023/reduced /path/to/upload/   # -L follows links
 set -euo pipefail
 cd "$(dirname "$0")/.."                      # repo root
-MAN="datasets/2023/MANIFEST.csv"
+MAN="data/2023/MANIFEST.csv"
 MODE="${1:---link}"
 [ -f "$MAN" ] || { echo "manifest not found: $MAN"; exit 1; }
 
@@ -50,4 +50,4 @@ done < "$MAN"
 echo "----"
 echo "mode=$MODE   already-present=$n_ok   newly-mapped=$n_done   missing-legacy=$n_miss"
 [ "$MODE" = "--check" ] && echo "(dry run — no changes made)"
-echo "canonical tree now under datasets/2023/{raw,reduced}/"
+echo "canonical tree now under data/2023/{raw,reduced}/"

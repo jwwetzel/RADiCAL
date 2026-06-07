@@ -7,7 +7,7 @@
 // added generic s_peak[36] arrays).
 //
 //   ROOT_INCLUDE_PATH=radcore:Analysis root -l -b -q \
-//     'radcore/validateReduce.C+("datasets/2023/reduced/DSB1/25GeV.root","datasets/2023/reduced/_validate/25GeV.root")'
+//     'radcore/validateReduce.C+("data/2023/reduced/DSB1/25GeV.root","data/2023/reduced/_validate/25GeV.root")'
 // ============================================================================
 #include "Schema.h"
 #include "TFile.h"

@@ -19,7 +19,7 @@ setup_root
 : "${RAD_CONFIG:?set RAD_CONFIG to the capillary config name (e.g. DSB1, LUAG)}"
 
 src="$RAD_WORK/reduced/${RAD_CONFIG}/byrun"
-dst="$RAD_REPO/datasets/${RAD_YEAR}/reduced/${RAD_CONFIG}"   # canonical layout
+dst="$RAD_REPO/data/${RAD_YEAR}/reduced/${RAD_CONFIG}"   # canonical layout
 [ -d "$src" ] || { echo "no per-run output at $src — run sge_reduce first"; exit 1; }
 mkdir -p "$dst"
 
@@ -35,4 +35,4 @@ done
 echo "merged config '${RAD_CONFIG}' -> $dst"
 ls -lh "$dst"
 echo
-echo "Copy home:  rsync -av <argon>:$dst/  ./datasets/${RAD_YEAR}/reduced/${RAD_CONFIG}/"
+echo "Copy home:  rsync -av <argon>:$dst/  ./data/${RAD_YEAR}/reduced/${RAD_CONFIG}/"

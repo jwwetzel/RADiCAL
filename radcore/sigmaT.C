@@ -6,7 +6,7 @@
 // applied to every build/run/year. Reproduces DSB1/150 = 27.4 ps.
 //
 //   ROOT_INCLUDE_PATH=radcore:Analysis root -l -b -q \
-//     'radcore/sigmaT.C+("datasets/2023/configs/DSB1.json", 150)'
+//     'radcore/sigmaT.C+("data/2023/configs/DSB1.json", 150)'
 // ============================================================================
 #include "RadTiming.h"       // radcore: timingBestBin (the one method)
 #include "DataPaths.h"       // Analysis: radReduced

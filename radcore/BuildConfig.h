@@ -12,7 +12,7 @@
 //     chanOff(drs,grp,ch) = (1024*9*2)*drs + (1024*9)*grp + 1024*ch
 //     timeOff(drs,grp)    = (1024*2)*drs   + 1024*grp
 //
-//   rad::BuildConfig cfg = rad::BuildConfig::Load("datasets/2023/configs/DSB1.json");
+//   rad::BuildConfig cfg = rad::BuildConfig::Load("data/2023/configs/DSB1.json");
 //   if (!cfg.valid()) { ... cfg.error ... }
 //   for (int i=0;i<cfg.nend;++i) extract(A + cfg.end[i].hg, ...);
 // ============================================================================

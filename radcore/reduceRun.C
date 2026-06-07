@@ -5,7 +5,7 @@
 //  array job; one ACLiC translation unit, prebuilt by compile.sh.)
 //
 //   ROOT_INCLUDE_PATH=radcore:Analysis root -l -b -q \
-//     'radcore/reduceRun.C+("datasets/2023/configs/LUAG.json","<raw>.root",150,"<out>.root")'
+//     'radcore/reduceRun.C+("data/2023/configs/LUAG.json","<raw>.root",150,"<out>.root")'
 // ============================================================================
 #include "Reducer.C"
 

@@ -35,7 +35,7 @@ export RAD_WORK="${RAD_WORK:-/nfsscratch/$USER/RADiCAL_CERN_May2023/analysis_wor
 export MANIFEST="${RAD_MANIFEST:-$RAD_REPO/Analysis/hpc/manifest_dsb1.csv}"
 export TASKLIST="${RAD_TASKLIST:-$RAD_WORK/tasks.txt}"
 
-# Campaign year — selects datasets/<year>/{configs,raw,reduced}. Override for 2024-2026.
+# Campaign year — selects data/<year>/{configs,raw,reduced}. Override for 2024-2026.
 export RAD_YEAR="${RAD_YEAR:-2023}"
 
 # SGE queue / resources (adjust to Argon + your group's allocation).

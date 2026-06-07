@@ -1,7 +1,7 @@
 // ============================================================================
 // testConfig.C — Phase-1 gate: JSON config must reproduce the hardcoded map
 // ----------------------------------------------------------------------------
-// Loads datasets/2023/configs/DSB1.json via radcore/BuildConfig.h and checks
+// Loads data/2023/configs/DSB1.json via radcore/BuildConfig.h and checks
 // that every resolved DRS4 offset EQUALS the legacy Analysis/ChannelConfig.h
 // kCap[]/kMCP*/kWC_*/kPbGlass map. If this passes, the declarative config is a
 // faithful drop-in replacement for the hardcoded channel map.
@@ -20,7 +20,7 @@ static void CK(const char* what, long got, long exp) {
 }
 
 void testConfig() {
-    rad::BuildConfig cfg = rad::BuildConfig::Load("datasets/2023/configs/DSB1.json");
+    rad::BuildConfig cfg = rad::BuildConfig::Load("data/2023/configs/DSB1.json");
     if (!cfg.valid()) { printf("CONFIG LOAD FAILED: %s\n", cfg.error()); return; }
 
     printf("Loaded build '%s' (year %s): %s\n", cfg.build.c_str(), cfg.year.c_str(), cfg.description.c_str());

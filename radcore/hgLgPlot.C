@@ -3,7 +3,7 @@
 //              spike-cut + robust main-line fit drawn. Diagnostic for why a
 //              build's HG/LG calibration succeeds or fails.
 //   ROOT_INCLUDE_PATH=radcore:Analysis root -l -b -q \
-//     'radcore/hgLgPlot.C+("MIXED","datasets/2023/raw/RUN2941.root",50)'
+//     'radcore/hgLgPlot.C+("MIXED","data/2023/raw/RUN2941.root",50)'
 // ============================================================================
 #include "BuildConfig.h"
 #include "WaveformUtils.h"
@@ -26,7 +26,7 @@ struct P { float lg, hg, shp; };
 
 void hgLgPlot(const char* build, const char* rawPath, double E=50, long maxev=120000){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0); gStyle->SetPalette(kBird);
-    rad::BuildConfig cfg = rad::BuildConfig::Load(Form("datasets/2023/configs/%s.json",build));
+    rad::BuildConfig cfg = rad::BuildConfig::Load(Form("data/2023/configs/%s.json",build));
     if(!cfg.valid()){ printf("config load failed\n"); return; }
 
     TH2F* h[8]; std::vector<P> pts[8];

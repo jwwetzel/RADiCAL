@@ -9,7 +9,7 @@
 #include <cmath>
 #include <cstdio>
 
-void gateDSB1(const char* f = "datasets/2023/reduced/DSB1/150GeV.root") {
+void gateDSB1(const char* f = "data/2023/reduced/DSB1/150GeV.root") {
     TFile* fp = TFile::Open(f); if (!fp || fp->IsZombie()) { printf("no file %s\n", f); return; }
     TTree* t = (TTree*)fp->Get("rad");
     rad::RadEvent ev; ev.ConnectBranches(t);
