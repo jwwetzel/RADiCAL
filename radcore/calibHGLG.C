@@ -60,8 +60,11 @@ void calibHGLG(const char* configPath, const char* tasklist = "", int nLowE = 2,
     printf("[calibHGLG] %s : fitting HG=a+b*LG from energies", cfg.build.c_str());
     for (double E : Es) printf(" %.0f", E); printf(" GeV\n");
 
-    // collect unclipped (LG,HG) pairs per end
-    std::vector<std::vector<std::pair<float,float>>> pts(8);
+    // collect unclipped (LG, HG, pulse-shape) per end. shape = charge/peak (~pulse
+    // width); direct-hit/Cherenkov SPIKES in the HG fiber are narrow (low shape),
+    // concentrated, off-beam -> they form the steeper faint line and bias the fit.
+    struct P { float lg, hg, shp; };
+    std::vector<std::vector<P>> pts(8);
     for (double E : Es) {
         TChain ch("pulse");
         for (auto& path : runs[E]) ch.Add(path.c_str());
@@ -74,25 +77,31 @@ void calibHGLG(const char* configPath, const char* tasklist = "", int nLowE = 2,
                 Pulse hg = ExtractPulse(T + c.hg_t, A + c.hg, 0.20f, 5.f);
                 Pulse lg = ExtractPulse(T + c.lg_t, A + c.lg, 0.20f, 5.f);
                 if (hg.peak > 30.f && hg.peak < 700.f && lg.peak > 10.f)
-                    pts[i].push_back({lg.peak, hg.peak}); }
+                    pts[i].push_back({lg.peak, hg.peak, hg.charge/hg.peak}); }
         }
     }
 
-    // robust per-end linear fit: fit, then 3-sigma trim on residuals, refit
+    // per-end: drop spikes (shape < 0.6*median) -> only real showers -> robust
+    // 3-sigma-trimmed linear fit on the cleaned points.
     double A8[8]={0}, B8[8]={5,5,5,5,5,5,5,5};
     for (int i = 0; i < cfg.nend; ++i) {
-        auto fit = [&](const std::vector<std::pair<float,float>>& v, double& a, double& b)->long{
-            double sx=0,sy=0,sxx=0,sxy=0; long n=v.size(); if(n<50) return 0;
-            for (auto& p : v){ sx+=p.first; sy+=p.second; sxx+=p.first*p.first; sxy+=p.first*p.second; }
+        std::vector<float> sh; for (auto& p : pts[i]) sh.push_back(p.shp);
+        double medS = 0; if (!sh.empty()) { std::sort(sh.begin(),sh.end()); medS = sh[sh.size()/2]; }
+        double shCut = 0.6*medS;
+        std::vector<std::pair<float,float>> v; long nspk=0;
+        for (auto& p : pts[i]) { if (p.shp > shCut) v.push_back({p.lg,p.hg}); else ++nspk; }
+        auto fit = [&](const std::vector<std::pair<float,float>>& w, double& a, double& b)->long{
+            double sx=0,sy=0,sxx=0,sxy=0; long n=w.size(); if(n<50) return 0;
+            for (auto& p : w){ sx+=p.first; sy+=p.second; sxx+=p.first*p.first; sxy+=p.first*p.second; }
             double d = n*sxx - sx*sx; if (std::fabs(d)<1e-9) return 0;
             b = (n*sxy - sx*sy)/d; a = (sy - b*sx)/n; return n; };
-        double a=0,b=5; long n0=fit(pts[i],a,b);
-        if (n0>0){ double s2=0; for(auto&p:pts[i]){double r=p.second-(a+b*p.first); s2+=r*r;} double rms=std::sqrt(s2/n0);
-            std::vector<std::pair<float,float>> kept; for(auto&p:pts[i]) if(std::fabs(p.second-(a+b*p.first))<3*rms) kept.push_back(p);
+        double a=0,b=5; long n0=fit(v,a,b);
+        if (n0>0){ double s2=0; for(auto&p:v){double r=p.second-(a+b*p.first); s2+=r*r;} double rms=std::sqrt(s2/n0);
+            std::vector<std::pair<float,float>> kept; for(auto&p:v) if(std::fabs(p.second-(a+b*p.first))<3*rms) kept.push_back(p);
             fit(kept,a,b); n0=kept.size(); }
         A8[i]=a; B8[i]=b;
         const char* flag = (B8[i]>1.0 && B8[i]<8.0 && n0>500) ? "" : "  <-- SUSPECT (check)";
-        printf("  %-5s HG = %6.1f + %.3f*LG   (n=%ld)%s\n", cfg.end[i].name.c_str(), A8[i], B8[i], n0, flag);
+        printf("  %-5s HG = %6.1f + %.3f*LG   (n=%ld, spikes cut=%ld)%s\n", cfg.end[i].name.c_str(), A8[i], B8[i], n0, nspk, flag);
     }
 
     // SUSPECT fallback: a degenerate slope means this channel is over-clipped at all

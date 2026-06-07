@@ -62,7 +62,7 @@ void timingHeadline(const char* build, const char* dir){
     if(!cfg.valid()){ printf("config load failed: %s\n", cfg.error()); return; }
     const double allE[6]={25,50,75,100,125,150};
     std::vector<double> Es; for(double E:allE) if(!gSystem->AccessPathName(Form("%s/%.0fGeV.root",dir,E))) Es.push_back(E);
-    int nE=Es.size(); if(nE<3){ printf("need >=3 energies in %s\n",dir); return; }
+    int nE=Es.size(); if(nE<2){ printf("need >=2 energies in %s\n",dir); return; }
 
     double sig[RadView::kNSrc][6]; bool avail[RadView::kNSrc]={false};
     for(int s=0;s<RadView::kNSrc;++s) for(int e=0;e<6;++e) sig[s][e]=-1;
@@ -98,7 +98,7 @@ void timingHeadline(const char* build, const char* dir){
     std::vector<Row> rows; double Ea[6]; for(int e=0;e<nE;++e) Ea[e]=Es[e];
     for(int s=0;s<RadView::kNSrc;++s){ if(!avail[s]) continue;
         double y[6]; int n=0; for(int e=0;e<nE;++e) if(sig[s][e]>0){y[n]=sig[s][e];Ea[n]=Es[e];++n;}
-        if(n<3) continue;
+        if(n<2) continue;
         TGraph g(n,Ea,y); TF1 f("f","sqrt([0]*[0]/x+[1]*[1])",20,160); f.SetParameters(200,25); g.Fit(&f,"Q");
         double s150=-1; for(int e=0;e<nE;++e) if(std::fabs(Es[e]-150)<1) s150=sig[s][e];
         rows.push_back({s,f.GetParameter(0),std::fabs(f.GetParameter(1)),s150}); }
