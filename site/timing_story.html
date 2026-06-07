@@ -263,22 +263,42 @@
   noisy edge, so the crossing time jitters by <b>nanoseconds</b>. The (DW&minus;UP)/2 in those bins genuinely spans ~18 ns
   (with a few bins collapsing to spurious narrow fits). The cfd05 &ldquo;best bin&rdquo; was then the lowest survivor of a
   garbage set &mdash; which is exactly the non-monotonic ladder you'd have seen.</p>
-  <figure>
-    <img src="assets/narrative_luagdiag.png" alt="LuAG per-energy sigma_t vs sum_lg bin landscape">
-    <figcaption><b>The diagnosis.</b> &sigma;<sub>t</sub> vs &Sigma;LG bin, per energy
-    (<span style="color:#c0392b">&#9675; cfd05</span>, <span style="color:#2471c0">&#9679; lgcfd</span>). At low energy
-    <span style="color:#c0392b">cfd05</span> is <b>erratic</b> &mdash; its 5%-of-peak crossing fails on the small pulses,
-    so per-bin &sigma; blows up to nanoseconds or collapses to a fake-narrow fit. <span style="color:#2471c0">lgcfd</span>
-    stays smooth (it thresholds higher on the edge). The right two panels (125 &amp; 150 GeV) look clean only because LuAG
-    is finally bright enough for cfd05 to work.</figcaption>
-  </figure>
   <p>The fix isn't a patch &mdash; it's to stop trusting a cherry-picked number and pick the <b>most robust source per
   build</b> (the smoothest, most monotonic). For LuAG that's the fixed-threshold <b><span class="mono">led</span></b>: it
   fires at a set level on the edge rather than a fraction of a tiny, noisy peak, so the small low-light pulses that kill
-  cfd05 don't break it (<span class="mono">lgcfd</span>, the smooth blue curve above, works equally well). The result is a
-  clean <b>monotonic</b> LuAG ladder &mdash; <b>~74 &rarr; 42 ps</b> from 50 to 150 GeV. More light, better timing, as it
-  must be. (LuAG's HG <i>does</i> also clip at high energy, 2% rising to 83% &mdash; but a robust source handles it; that
-  was never the real problem.)</p>
+  cfd05 don't break it (<span class="mono">lgcfd</span> works equally well). The result is a clean <b>monotonic</b> LuAG
+  ladder &mdash; <b>~74 &rarr; 42 ps</b> from 50 to 150 GeV. More light, better timing, as it must be. (LuAG's HG <i>does</i>
+  also clip at high energy, 2% rising to 83% &mdash; but a robust source handles it; that was never the real problem.)</p>
+
+  <h3 style="font-size:21px;margin:1.6em 0 .3em">The proof: every bin is a clean Gaussian</h3>
+  <p>The old &sigma;-vs-bin diagnostic <i>looked</i> like garbage because it plotted the failing cfd05 &mdash; not because the
+  underlying data was bad. Read with the robust source and shown the way the publication does it
+  (<b>arXiv:2401.01747, Fig.&nbsp;21</b>), the data is unambiguous. For each build we pool <b>all six energies</b>, bin by
+  shower amplitude (&Sigma;LG), and Gaussian-fit the <b>(DW&minus;UP)/2</b> (MCP-free) and <b>(DW+UP)/2</b> (absolute)
+  distributions in <i>every</i> bin. They are clean Gaussians at every amplitude; &sigma;<sub>t</sub> falls smoothly with
+  light, and the brightest-1000 slice reaches each build's headline. This is the data behind every number on this page.</p>
+  <figure>
+    <img src="assets/pub_DSB1.png" alt="DSB1 per-amplitude-bin timing distributions, arXiv Fig 21 style">
+    <figcaption><b>DSB1 (LYSO, lgcfd).</b> Top: (DW&minus;UP)/2 distributions per amplitude bin with Gaussian fits;
+    middle: the (DW+UP)/2 absolute cross-check (wider, since it keeps the common-mode jitter the difference cancels);
+    bottom: &sigma;<sub>t</sub> vs amplitude for both. The brightest-1000 slice lands at <b>25.4 ps</b> &mdash; the headline.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/pub_LUAG.png" alt="LuAG per-amplitude-bin timing distributions, arXiv Fig 21 style">
+    <figcaption><b>LuAG (low light, led).</b> The build that &ldquo;looked like garbage&rdquo; &mdash; in fact clean
+    Gaussians at every amplitude, &sigma;<sub>t</sub> falling 175&nbsp;&rarr;&nbsp;48 ps, brightest-1000 at <b>~41 ps</b>.
+    The data was always sound; only the cfd05 readout wasn't.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/pub_TENERGY.png" alt="TENERGY per-amplitude-bin timing distributions">
+    <figcaption><b>TENERGY (3&times;LYSO + Energy, led).</b> Same clean Gaussian behaviour across the full amplitude range;
+    brightest-1000 at <b>~29 ps</b>.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/pub_MIXED.png" alt="MIXED per-amplitude-bin timing distributions">
+    <figcaption><b>MIXED (LYSO + LuAG, lgcfd).</b> Clean peaks even with the partly-compromised LG; brightest-1000 at
+    <b>~41 ps</b>.</figcaption>
+  </figure>
   <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield, top to bottom &mdash; <b>25.3 ps</b> for the
   brightest LYSO down to <b>~42 ps</b> for low-light LuAG &mdash; once you read each build with the source it can actually
   support. The detector you build sets the clock you can read.</div>
