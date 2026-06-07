@@ -221,6 +221,34 @@
   ~1 X&#8320; of shower-depth fluctuation &mdash; the shower, not the instrument.</div>
 </section>
 
+<section style="border-bottom:none">
+  <div class="act">Act VII · The full spectrum</div>
+  <h2>Four materials, one law: light yield sets the clock</h2>
+  <p>RADiCAL ran four detector builds with different scintillators. Push the <i>same</i> de-biased pipeline through
+  all of them &mdash; best timing source per build, equal-population bins, brightest-fraction cross-check &mdash; and
+  they fall into a single clean ordering by <b>scintillation light yield</b>. More light &rarr; faster rising edge
+  &rarr; better timing, exactly as the slew argument predicts.</p>
+  <table>
+    <tr><th>Build</th><th>Scintillator</th><th>Best source</th><th>&sigma;<sub>t</sub>@150 (typical)</th><th>(brightest)</th></tr>
+    <tr><td class="h">DSB1</td><td>LYSO:Ce &mdash; high light</td><td class="mono">lgcfd</td><td class="win">29.6 ps</td><td class="win">26.7 ps</td></tr>
+    <tr><td class="h">TENERGY</td><td>3&times;LYSO + Energy</td><td class="mono">led</td><td>33.9 ps</td><td>29.5 ps</td></tr>
+    <tr><td class="h">MIXED</td><td>LYSO + LuAG mix</td><td class="mono">cfd05</td><td>37.2 ps</td><td>34.2 ps</td></tr>
+    <tr><td class="h">LUAG</td><td>LuAG:Ce &mdash; low light</td><td class="mono">cfd05</td><td>42.4 ps</td><td>~44 ps</td></tr>
+  </table>
+  <figure>
+    <img src="assets/narrative_crossbuild.png" alt="sigma_t vs energy for four builds, de-biased">
+    <figcaption><b>The full spectrum.</b> Best-bin (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy, all four builds, de-biased
+    estimator. High-light <b>LYSO (DSB1)</b> sits lowest at ~30 ps; low-light <b>LuAG</b> tops out near 42 ps; the
+    mixed and energy builds fall cleanly in between. The best timing source also tracks the material: high-light,
+    heavily-clipped LYSO rewards <span class="mono">lgcfd</span> (true-peak edge), while dimmer LuAG &mdash; never
+    clipped &mdash; times best right at the <span class="mono">cfd05</span> foot. (MIXED's LG is partly compromised, so
+    treat its mid-range points as indicative.)</figcaption>
+  </figure>
+  <div class="pull"><b>The spectrum, in one line.</b> Timing resolution is a light-yield thermometer: ~30 ps for the
+  brightest LYSO build down to ~42 ps for low-light LuAG &mdash; and the HG/LG-ratio method pays off precisely where
+  the light is brightest and the clipping is worst. The detector you build sets the clock you can read.</div>
+</section>
+
 </main>
 <footer class="wrap">
   RADiCAL · CERN May 2023 test beam · DSB1 (LYSO:Ce) build, full-statistics canonical reduction.
