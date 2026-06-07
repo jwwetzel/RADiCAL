@@ -56,8 +56,8 @@
   <p class="tag">How detector saturation forced a new timing method — predicting the unclipped pulse
    from a second, low-gain copy — and exactly what it bought us, told from the apparatus to the floor.</p>
   <div class="stats">
-   <div class="stat"><b>25&ndash;30 ps</b><span>(DW&minus;UP)/2 depth resolution</span></div>
-   <div class="stat"><b>20&ndash;23 ps</b><span>floor (a/&radic;E &oplus; b)</span></div>
+   <div class="stat"><b>29.6 ps</b><span>hg_lgcfd, OOS · 150 GeV</span></div>
+   <div class="stat"><b>~11%</b><span>below cfd05 (matched sel.)</span></div>
    <div class="stat"><b>3.7&times;</b><span>steeper edge per pulse</span></div>
    <div class="stat"><b>820 mV</b><span>the saturation clip</span></div>
   </div>
@@ -148,24 +148,27 @@
 
 <section>
   <div class="act">Act V · The payoff</div>
-  <h2>Better where it's clipped — and monotonic in energy</h2>
-  <p>Run the identical best-bin <span class="k">(DW&minus;UP)/2</span> pipeline for both methods across all six
-  energies. <span class="mono" style="color:#2471c0">hg_lgcfd</span> wins <i>exactly where the HG is clipped</i>
-  (75&ndash;150 GeV), and &mdash; with the de-biased estimator described next &mdash; the ladder falls
-  <b>monotonically with energy</b>, reaching a best of <b class="win">25.3 ps at 150 GeV</b> for the brightest showers:</p>
+  <h2>Better where it's clipped — monotonic, and held-out honest</h2>
+  <p>Run the de-biased (equal-population) best-bin <span class="k">(DW&minus;UP)/2</span> pipeline for both methods.
+  <span class="mono" style="color:#2471c0">hg_lgcfd</span> falls <b>monotonically with energy</b> and sits below cfd05
+  at every clipped energy &mdash; and, crucially, it <b>survives held-out (fold-by-run) validation unchanged</b>:
+  <b class="win">29.6 ps in-sample = 29.6 ps out-of-sample at 150 GeV</b>. No overfitting.</p>
   <table>
     <tr><th>E (GeV)</th><th>25</th><th>50</th><th>75</th><th>100</th><th>125</th><th>150</th><th>floor&nbsp;b</th></tr>
-    <tr><td class="h">cfd05</td><td>49.4</td><td>34.6</td><td>30.8</td><td>31.2</td><td>28.9</td><td>28.5</td><td>~27</td></tr>
-    <tr><td class="h">hg_lgcfd</td><td>43.4</td><td>35.6</td><td>30.7</td><td class="win">28.9</td><td class="win">25.6</td><td class="win">25.3</td><td class="win">~20</td></tr>
+    <tr><td class="h">cfd05</td><td>51.1</td><td>42.0</td><td>36.4</td><td>35.8</td><td>35.6</td><td>33.1</td><td>28.8</td></tr>
+    <tr><td class="h">hg_lgcfd</td><td>48.3</td><td>38.7</td><td>32.9</td><td class="win">31.1</td><td class="win">29.9</td><td class="win">29.6</td><td class="win">23.2</td></tr>
   </table>
   <figure>
-    <img src="assets/narrative_ladder.png" alt="sigma_t vs energy, cfd05 vs hg_lgcfd, monotonic">
-    <figcaption><b>The ladder (de-biased).</b> Best-achievable (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy, brightest-shower
-    slice. Monotonic &mdash; 150&nbsp;&le;&nbsp;125 &mdash; with lgcfd below cfd05 at every clipped energy and an
-    <span class="mono">a/&radic;E &oplus; b</span> floor near <b>20 ps</b>.</figcaption>
+    <img src="assets/narrative_ladder.png" alt="sigma_t vs energy, cfd05 vs hg_lgcfd, equal-population bins">
+    <figcaption><b>The ladder (de-biased, OOS-robust).</b> Best-bin (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy with
+    equal-population bins. Monotonic &mdash; 150&nbsp;&le;&nbsp;125 &mdash; lgcfd below cfd05 at every clipped energy,
+    floor <b>23 vs 29 ps</b>. (The brightest-shower thin slice dips to ~25 ps, but that tighter selection is optimistic
+    and not held-out-stable &mdash; next panel.)</figcaption>
   </figure>
-  <div class="pull">hg_lgcfd beats clipped-peak cfd05 across 75&ndash;150 GeV and the curve now falls monotonically with
-  energy, as the rising light yield demands. What's left is set by the shower, not the clip (Act VI).</div>
+  <div class="pull"><b>The honest headline.</b> The published cfd05 result &mdash; <b>27.4 ps at 150 GeV, out-of-sample
+  validated</b> (matching arXiv:2401.01747) &mdash; stands. hg_lgcfd doesn't replace that single number; it does
+  something cleaner: a <b>~11% lower resolution at every matched selection</b>, monotonic in energy, with a ~20% lower
+  floor (23 vs 29 ps).</div>
 </section>
 
 <section>
@@ -183,15 +186,18 @@
     highest energies by throwing away their best events.</figcaption>
   </figure>
   <p>The fix: bin by <b>equal population</b> (quantile) so every slice &mdash; including the brightest &mdash; stays filled,
-  and cross-check with a fixed <b>brightest-K</b> slice. Both make the ladder monotonic, and together they bracket what
-  &ldquo;the resolution&rdquo; even means:</p>
+  and cross-check with a fixed <b>brightest-K</b> slice. Both make the ladder monotonic &mdash; but only one survives the
+  held-out test that decides which number we're allowed to quote:</p>
   <figure>
     <img src="assets/narrative_methods.png" alt="hg_lgcfd two estimators, quantile vs brightest-K">
-    <figcaption><b>Two honest readings.</b> hg_lgcfd (DW&minus;UP)/2 by the quantile best-bin (broad, typical-bright
-    slice &rarr; floor 23 ps) and the brightest-1000 slice (best case &rarr; floor 20 ps). Both monotonic; the band,
-    <b>~25&ndash;30 ps</b>, is the resolution's selection range. The old &ldquo;27 ps&rdquo; sat in between &mdash; the thin slice,
-    before the bias was removed.</figcaption>
+    <figcaption><b>Which number is real?</b> The quantile best-bin (floor 23 ps) is <b>out-of-sample stable</b> &mdash;
+    measured on held-out runs it gives <b>29.6 = 29.6 ps at 150 GeV</b>, no overfitting. The brightest-1000 slice (floor
+    20 ps) dips to ~25 ps but <b>does not survive OOS</b> &mdash; fold-to-fold it scatters 25.8/26.9 and depends on sample
+    size. So the defensible hg_lgcfd resolution is the quantile <b>~30 ps</b>, not the optimistic ~25.</figcaption>
   </figure>
+  <p>This is the same discipline behind the published <b>27.4 ps</b> cfd05 headline (arXiv:2401.01747): its in-sample
+  best bin (~25.6 ps) generalizes to 27.5 ps out-of-sample &mdash; so 27.4 is what gets quoted, not 25.6. We hold
+  hg_lgcfd to the identical standard.</p>
 </section>
 
 <section style="border-bottom:none">
@@ -206,10 +212,11 @@
   saturation hid &mdash; and the experiment then tells us, cleanly, where the remaining limit lives. We push the
   instrument until the detector itself is the thing we're measuring. <b>That</b> is the headline: not a single
   number, but a method that takes the clipped foot off the table and leaves us face to face with the shower.</p>
-  <div class="pull"><b>Bottom line.</b> hg_lgcfd &mdash; CFD on the LG-predicted true peak &mdash; gives a monotonic
-  energy ladder reaching <b>25.3 ps @ 150 GeV</b> (brightest slice) to <b>~30 ps</b> (typical), with an
-  <span class="mono">a/&radic;E &oplus; b</span> floor of <b>20&ndash;23 ps</b> &mdash; roughly <b>20% below</b> clipped-peak
-  cfd05 (floor ~27&ndash;29 ps) at the energies where the HG saturates. The residual is ~1 X&#8320; of shower-depth fluctuation.</div>
+  <div class="pull"><b>Bottom line.</b> The published <b>27.4 ps</b> cfd05 headline (OOS-validated, arXiv:2401.01747)
+  stands. hg_lgcfd &mdash; CFD on the LG-predicted true peak &mdash; is a <i>cleaner method</i>, not a smaller headline:
+  out-of-sample robust at <b>29.6 ps @ 150 GeV</b>, monotonic in energy, and <b>~11% below cfd05 at every matched
+  selection</b> with a ~20% lower floor (23 vs 29 ps). The residual is ~1 X&#8320; of shower-depth fluctuation &mdash; the
+  shower, not the instrument.</div>
 </section>
 
 </main>
