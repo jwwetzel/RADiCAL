@@ -1,11 +1,14 @@
 // ============================================================================
 // calibHGLG.C — HG-vs-LG gain calibration for hg_lgcfd (writes a <build>.hglg sidecar).
 // ----------------------------------------------------------------------------
-// The per-channel slope HG_peak = a + b*LG_peak is an energy-INDEPENDENT gain ratio.
-// It must be fit where HG is UNCLIPPED -> use the LOWEST energies (25/50 GeV). High-E
-// files are fully clipped (no lever arm) and some single runs are degenerate
-// (e.g. RUN1261 slope=0), so a per-file fit is unreliable; this pools clean low-E
-// runs with robust (3-sigma trimmed) fits and writes the result for the reducer.
+// The per-channel slope HG_peak = a + b*LG_peak is an energy-INDEPENDENT gain ratio,
+// but it is only cleanly fit at energies where the HG-LG diagonal is well-populated and
+// not over-clipped. Which energies are clean varies by BUILD: DSB1 (high-light LYSO) is
+// clean at 25-125 but degenerate at 150 (94% clipped -> biased unclipped tail); MIXED is
+// degenerate at 50/75 (faint/bad runs) but clean at 100-150. So: fit EACH energy
+// separately (spike cut + 3-sigma trim), keep only SANE fits (slope 1.5-8, n>300), and
+// take the per-channel MEDIAN. Auto-rejects the bad energies on either end; build-median
+// fallback for any channel with no sane energy. Default nLowE=0 -> use ALL energies.
 //
 // Raw files come from the config's "runs" block (DSB1) OR, for manifest-driven
 // builds (LUAG/MIXED/TENERGY), from the SGE tasklist that submit_reduce.sh builds
@@ -30,7 +33,7 @@
 #include <fstream>
 #include <map>
 
-void calibHGLG(const char* configPath, const char* tasklist = "", int nLowE = 2, long maxEvtPerE = 120000){
+void calibHGLG(const char* configPath, const char* tasklist = "", int nLowE = 0, long maxEvtPerE = 120000){
     rad::BuildConfig cfg = rad::BuildConfig::Load(configPath);
     if (!cfg.valid()) { printf("config load failed: %s\n", cfg.error()); return; }
 
@@ -56,67 +59,60 @@ void calibHGLG(const char* configPath, const char* tasklist = "", int nLowE = 2,
     std::vector<double> Es; for (auto& kv : runs) Es.push_back(kv.first);
     std::sort(Es.begin(), Es.end());
     if (Es.empty()) { printf("no runs found (give a tasklist for manifest-driven builds)\n"); return; }
-    if ((int)Es.size() > nLowE) Es.resize(nLowE);
-    printf("[calibHGLG] %s : fitting HG=a+b*LG from energies", cfg.build.c_str());
-    for (double E : Es) printf(" %.0f", E); printf(" GeV\n");
+    if (nLowE > 0 && (int)Es.size() > nLowE) Es.resize(nLowE);   // nLowE<=0 -> use ALL energies
+    printf("[calibHGLG] %s : per-energy HG=a+b*LG over", cfg.build.c_str());
+    for (double E : Es) printf(" %.0f", E); printf(" GeV  (median of SANE slopes)\n");
 
-    // collect unclipped (LG, HG, pulse-shape) per end. shape = charge/peak (~pulse
-    // width); direct-hit/Cherenkov SPIKES in the HG fiber are narrow (low shape),
-    // concentrated, off-beam -> they form the steeper faint line and bias the fit.
     struct P { float lg, hg, shp; };
-    std::vector<std::vector<P>> pts(8);
-    for (double E : Es) {
-        TChain ch("pulse");
-        for (auto& path : runs[E]) ch.Add(path.c_str());
-        TTreeReader rd(&ch);
-        TTreeReaderArray<float> amp(rd,"amplitude"), tim(rd,"timevalue");
-        long cnt = 0;
-        while (rd.Next() && cnt < maxEvtPerE) { ++cnt;
-            const float* T=&tim[0]; const float* A=&amp[0];
-            for (int i = 0; i < cfg.nend; ++i) { const rad::EndMap& c = cfg.end[i];
-                Pulse hg = ExtractPulse(T + c.hg_t, A + c.hg, 0.20f, 5.f);
-                Pulse lg = ExtractPulse(T + c.lg_t, A + c.lg, 0.20f, 5.f);
-                if (hg.peak > 30.f && hg.peak < 700.f && lg.peak > 10.f)
-                    pts[i].push_back({lg.peak, hg.peak, hg.charge/hg.peak}); }
-        }
-    }
+    auto fit = [](const std::vector<std::pair<float,float>>& w, double& a, double& b)->long{
+        double sx=0,sy=0,sxx=0,sxy=0; long n=w.size(); if(n<30) return 0;
+        for (auto& p : w){ sx+=p.first; sy+=p.second; sxx+=p.first*p.first; sxy+=p.first*p.second; }
+        double d = n*sxx - sx*sx; if (std::fabs(d)<1e-9) return 0;
+        b = (n*sxy - sx*sy)/d; a = (sy - b*sx)/n; return n; };
+    // robust per-energy per-channel fit: spike cut (shape<0.6*median) + 3-sigma trim
+    auto fitClean = [&](std::vector<P>& raw, double& a, double& b)->long{
+        std::vector<float> sh; for (auto& p : raw) sh.push_back(p.shp);
+        if (sh.empty()) return 0; std::sort(sh.begin(),sh.end()); double shCut=0.6*sh[sh.size()/2];
+        std::vector<std::pair<float,float>> v; for (auto& p : raw) if (p.shp>shCut) v.push_back({p.lg,p.hg});
+        long n=fit(v,a,b); if(n<=0) return 0;
+        double s2=0; for(auto&p:v){double r=p.second-(a+b*p.first); s2+=r*r;} double rms=std::sqrt(s2/n);
+        std::vector<std::pair<float,float>> k; for(auto&p:v) if(std::fabs(p.second-(a+b*p.first))<3*rms) k.push_back(p);
+        return fit(k,a,b); };
 
-    // per-end: drop spikes (shape < 0.6*median) -> only real showers -> robust
-    // 3-sigma-trimmed linear fit on the cleaned points.
+    // The HG/LG slope is energy-INDEPENDENT (gain ratio). Fit each energy separately,
+    // keep only SANE fits (slope 1.5-8, n>300), and take the per-channel MEDIAN. This
+    // auto-rejects energies where the diagonal is corrupted/faint (e.g. MIXED's low-E)
+    // and uses the clean ones (DSB1: low-E; MIXED: high-E).
     double A8[8]={0}, B8[8]={5,5,5,5,5,5,5,5};
-    for (int i = 0; i < cfg.nend; ++i) {
-        std::vector<float> sh; for (auto& p : pts[i]) sh.push_back(p.shp);
-        double medS = 0; if (!sh.empty()) { std::sort(sh.begin(),sh.end()); medS = sh[sh.size()/2]; }
-        double shCut = 0.6*medS;
-        std::vector<std::pair<float,float>> v; long nspk=0;
-        for (auto& p : pts[i]) { if (p.shp > shCut) v.push_back({p.lg,p.hg}); else ++nspk; }
-        auto fit = [&](const std::vector<std::pair<float,float>>& w, double& a, double& b)->long{
-            double sx=0,sy=0,sxx=0,sxy=0; long n=w.size(); if(n<50) return 0;
-            for (auto& p : w){ sx+=p.first; sy+=p.second; sxx+=p.first*p.first; sxy+=p.first*p.second; }
-            double d = n*sxx - sx*sx; if (std::fabs(d)<1e-9) return 0;
-            b = (n*sxy - sx*sy)/d; a = (sy - b*sx)/n; return n; };
-        double a=0,b=5; long n0=fit(v,a,b);
-        if (n0>0){ double s2=0; for(auto&p:v){double r=p.second-(a+b*p.first); s2+=r*r;} double rms=std::sqrt(s2/n0);
-            std::vector<std::pair<float,float>> kept; for(auto&p:v) if(std::fabs(p.second-(a+b*p.first))<3*rms) kept.push_back(p);
-            fit(kept,a,b); n0=kept.size(); }
-        A8[i]=a; B8[i]=b;
-        const char* flag = (B8[i]>1.0 && B8[i]<8.0 && n0>500) ? "" : "  <-- SUSPECT (check)";
-        printf("  %-5s HG = %6.1f + %.3f*LG   (n=%ld, spikes cut=%ld)%s\n", cfg.end[i].name.c_str(), A8[i], B8[i], n0, nspk, flag);
+    std::vector<std::vector<double>> slope(8), inter(8);
+    for (double E : Es) {
+        std::vector<std::vector<P>> pts(8);
+        TChain ch("pulse"); for (auto& path : runs[E]) ch.Add(path.c_str());
+        TTreeReader rd(&ch); TTreeReaderArray<float> amp(rd,"amplitude"), tim(rd,"timevalue");
+        long cnt=0;
+        while (rd.Next() && cnt<maxEvtPerE) { ++cnt; const float* T=&tim[0]; const float* A=&amp[0];
+            for (int i=0;i<cfg.nend;++i){ const rad::EndMap& c=cfg.end[i];
+                Pulse hg=ExtractPulse(T+c.hg_t,A+c.hg,0.20f,5.f), lg=ExtractPulse(T+c.lg_t,A+c.lg,0.20f,5.f);
+                if (hg.peak>30.f&&hg.peak<700.f&&lg.peak>10.f) pts[i].push_back({lg.peak,hg.peak,hg.charge/hg.peak}); } }
+        printf("  E=%-4.0f:", E);
+        for (int i=0;i<cfg.nend;++i){ double a=0,b=0; long n=fitClean(pts[i],a,b);
+            bool sane=(b>1.5&&b<8.0&&n>300);
+            printf(" %s=%.2f%s", cfg.end[i].name.c_str(), b, sane?"":"*");
+            if (sane){ slope[i].push_back(b); inter[i].push_back(a); } }
+        printf("   (*=rejected)\n");
     }
-
-    // SUSPECT fallback: a degenerate slope means this channel is over-clipped at all
-    // available energies (no low-E lever arm) -> the unclipped subset is selection-
-    // biased and its slope is unrecoverable. Replace it with the build-median slope of
-    // the well-determined channels (steeper than the biased foot, conservative, and
-    // build-local). Affects e.g. MIXED's DSB1-material corners (no 25 GeV).
-    {
-        std::vector<double> good; for (int i=0;i<cfg.nend;++i) if (B8[i]>1.5 && B8[i]<8.0) good.push_back(B8[i]);
-        if (!good.empty()) { std::sort(good.begin(),good.end()); double medB = good[good.size()/2];
-            for (int i=0;i<cfg.nend;++i) if (B8[i]<1.5 || B8[i]>8.0) {
-                printf("  %-5s FALLBACK: slope %.3f -> build-median %.3f (over-clipped, no low-E lever arm)\n",
-                       cfg.end[i].name.c_str(), B8[i], medB);
-                B8[i] = medB; A8[i] = 0.0; } }
-    }
+    for (int i=0;i<cfg.nend;++i) if (!slope[i].empty()){
+        std::sort(slope[i].begin(),slope[i].end()); B8[i]=slope[i][slope[i].size()/2];
+        std::sort(inter[i].begin(),inter[i].end()); A8[i]=inter[i][inter[i].size()/2]; }
+    // fallback: channels with NO sane energy -> build-median of the well-determined ones
+    { std::vector<double> good; for (int i=0;i<cfg.nend;++i) if (!slope[i].empty()) good.push_back(B8[i]);
+      if (!good.empty()){ std::sort(good.begin(),good.end()); double medB=good[good.size()/2];
+        for (int i=0;i<cfg.nend;++i) if (slope[i].empty()){
+            printf("  %-5s FALLBACK: no sane energy -> build-median %.3f\n", cfg.end[i].name.c_str(), medB);
+            B8[i]=medB; A8[i]=0.0; } } }
+    printf("  RESULT:");
+    for (int i=0;i<cfg.nend;++i) printf(" %s=%.0f+%.2fLG", cfg.end[i].name.c_str(), A8[i], B8[i]);
+    printf("\n");
 
     // write sidecar  <config without .json>.hglg
     std::string side = configPath; size_t dot = side.rfind(".json");
