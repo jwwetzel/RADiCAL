@@ -8,7 +8,7 @@
 // fit sigma_t = a/sqrt(E) (+) b and ranked. cfd05 = the published headline; lgcfd =
 // CFD on the LG-predicted true peak.
 //   ROOT_INCLUDE_PATH=lib/waveform:lib/io:lib/physics:lib/viz root -l -b -q \
-//     'analyze/timingHeadline.C+("DSB1","data/2023/reduced/DSB1")'
+//     'analyze/timingHeadline.C+("DSB1")'   (dir defaults to data/2023/reduced/<BUILD>)
 // ============================================================================
 #include "RadView.h"
 #include "RadTiming.h"          // rad::tebSigma
@@ -56,19 +56,22 @@ static double bestBinOrBright(std::vector<float>& slg, std::vector<float>& t){
     return c.size()>200 ? rad::tebSigma(c) : -1;
 }
 
-void timingHeadline(const char* build, const char* dir){
+void timingHeadline(const char* build, const char* dirArg=nullptr){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
     BuildConfig cfg = BuildConfig::Load(Form("data/2023/configs/%s.json",build));
     if(!cfg.valid()){ printf("config load failed: %s\n", cfg.error()); return; }
+    // default the reduced dir from the build name -> data/2023/reduced/<BUILD>
+    TString dir = (dirArg && dirArg[0]) ? TString(dirArg)
+                                        : TString(Form("data/2023/reduced/%s", build));
     const double allE[6]={25,50,75,100,125,150};
-    std::vector<double> Es; for(double E:allE) if(!gSystem->AccessPathName(Form("%s/%.0fGeV.root",dir,E))) Es.push_back(E);
-    int nE=Es.size(); if(nE<2){ printf("need >=2 energies in %s\n",dir); return; }
+    std::vector<double> Es; for(double E:allE) if(!gSystem->AccessPathName(Form("%s/%.0fGeV.root",dir.Data(),E))) Es.push_back(E);
+    int nE=Es.size(); if(nE<2){ printf("need >=2 energies in %s\n",dir.Data()); return; }
 
     double sig[RadView::kNSrc][6]; bool avail[RadView::kNSrc]={false};
     for(int s=0;s<RadView::kNSrc;++s) for(int e=0;e<6;++e) sig[s][e]=-1;
 
     for(int e=0;e<nE;++e){ double E=Es[e];
-        TFile* fp=TFile::Open(Form("%s/%.0fGeV.root",dir,E)); TTree* t=(TTree*)fp->Get("rad");
+        TFile* fp=TFile::Open(Form("%s/%.0fGeV.root",dir.Data(),E)); TTree* t=(TTree*)fp->Get("rad");
         RadView v; v.attach(t,&cfg);
         double xc,yc; v.beamCenter(xc,yc); double rF=TimingFiducialR(E),r2=rF*rF;
         std::vector<float> slg; std::vector<float> tval[RadView::kNSrc];

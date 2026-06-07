@@ -2,7 +2,7 @@
 
 Starting point for a new test-beam campaign. To use:
 
-1. `cp -r datasets/_TEMPLATE datasets/<year>` (already done for 2024–2026).
+1. `cp -r data/_TEMPLATE data/<year>` (already done for 2024–2026).
 2. Edit `config/dataset.yaml` — year, facility, beam, energies, capillary builds,
    geometry centre, any per-campaign cut overrides.
 3. Edit `config/channel_map.yaml` — **verify every `[drs,grp,ch]`** against this
@@ -12,5 +12,5 @@ Starting point for a new test-beam campaign. To use:
    before submitting the full set to the cluster.
 
 `raw/`, `reduced/`, `output/` are gitignored (data payloads); `config/` and
-`figures/` are tracked. See `datasets/README.md` for the full scheme and the
+`figures/` are tracked. See `data/README.md` for the full scheme and the
 cluster workflow.

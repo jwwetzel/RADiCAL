@@ -1,12 +1,13 @@
-# RADiCAL Workspace Reorganization Plan
+# RADiCAL Workspace Reorganization Plan  —  ✅ COMPLETED
 
-**Status:** APPROVED, awaiting execution. Decisions locked 2026-06.
-**Gate:** Do NOT execute until the in-flight Argon reduction (all 4 builds) is
-finished, `verify.C`-clean, and rsynced home. The reorg renames paths the live
-reduction + rsync target depend on; moving early breaks the pipeline.
+**Status:** DONE. Executed in four commits (data → code split → figures → README)
+after all 26 reduced files verified clean. The end-state is documented in the
+top-level `README.md`; this file is kept as a historical record of the plan.
+(Some `datasets/`→`data/` strings below were auto-rewritten by the migration's
+own path sweep — read them as the original intent.)
 
 ## Locked decisions
-1. **Data home:** rename `datasets/` → **`data/`** (one home; absorbs the legacy
+1. **Data home:** rename `data/` → **`data/`** (one home; absorbs the legacy
    `Data/` + top-level `reduced/` symlink shims).
 2. **Disposition:** **archive everything** — nothing deleted. One-off macros →
    `analyze/studies/`; `legacy/` → `archive/`. All recoverable.
@@ -24,14 +25,14 @@ RADiCAL/
 │   └── viz/       PlotUtils.h  RADiCALStyle.h
 ├── reduce/              ← raw → reduced (CURRENT pipeline only)
 │   ├── Reducer.C  reduceRun.C  calibHGLG.C  validateReduce.C
-│   └── hpc/            (SGE scripts, env.sh, manifests — from Analysis/hpc)
+│   └── hpc/            (SGE scripts, env.sh, manifests — from reduce/hpc)
 ├── analyze/            ← reduced → results
 │   ├── timingHeadline.C  sigmaT.C  timingLadder.C  slopeVsE.C   (curated)
 │   └── studies/        (every other .C — kept, runnable, quarantined)
 ├── data/               ← ALL data, per year
 │   └── 2023/{raw, reduced, configs, metadata}/  README.md  MANIFEST.csv
-│       configs/  = <BUILD>.json + <BUILD>.hglg   (was datasets/2023/configs)
-│       metadata/ = channel_map.yaml dataset.yaml runs.csv  (was datasets/2023/config)
+│       configs/  = <BUILD>.json + <BUILD>.hglg   (was data/2023/configs)
+│       metadata/ = channel_map.yaml dataset.yaml runs.csv  (was data/2023/config)
 ├── figures/            ← all generated PNG/PDF (was radcore/figs, scattered)
 ├── report/             ← GitHub Pages site — UNTOUCHED
 ├── docs/               ← this plan, design notes; apparatus doc lives in memory
@@ -42,7 +43,7 @@ RADiCAL/
 - **One include root:** `ROOT_INCLUDE_PATH=lib/waveform:lib/io:lib/physics:lib/viz`.
   Bare `#include "X.h"` lines are unchanged — only files move + env updates.
 - **One data resolver:** `lib/io/DataPaths.h` points only at `data/<year>/…`;
-  delete the legacy `Data/`, `reduced/`, `Analysis/Output/` fallbacks.
+  delete the legacy `Data/`, `reduced/`, `output/` fallbacks.
 - **Dependency direction:** `reduce/` and `analyze/` depend on `lib/`, never reverse.
   `lib/` knows nothing about specific studies.
 
@@ -79,15 +80,15 @@ RADiCAL/
 ## Path-coupling checklist (edit together, one commit per phase)
 - [ ] `lib/io/DataPaths.h` — drop legacy fallbacks; canonical = `data/<year>/…`.
 - [ ] `ROOT_INCLUDE_PATH` everywhere: reduce/hpc/env.sh, README cmds, macro
-      header comments (`ROOT_INCLUDE_PATH=radcore:Analysis` → the 4 lib subdirs).
-- [ ] Hardcoded `datasets/2023/...` strings in macros (e.g. calibHGLG.C,
-      slopeVsE.C, hgLgPlot.C, hgLgClean.C use `datasets/2023/configs/%s.json` and
-      `datasets/2023/raw/...`) → `data/2023/...`. grep before moving.
+      header comments (`ROOT_INCLUDE_PATH=lib/waveform:lib/io:lib/physics:lib/viz` → the 4 lib subdirs).
+- [ ] Hardcoded `data/2023/...` strings in macros (e.g. calibHGLG.C,
+      slopeVsE.C, hgLgPlot.C, hgLgClean.C use `data/2023/configs/%s.json` and
+      `data/2023/raw/...`) → `data/2023/...`. grep before moving.
 - [ ] `radcore/figs/` output paths in macros → `figures/`.
 - [ ] reduce/hpc scripts: REC_DIR / RAD_WORK / repo paths, manifest locations.
-- [ ] rsync-home target: `datasets/2023/reduced/` → `data/2023/reduced/`.
-- [ ] .gitignore: Data/, reduced/, datasets/*/raw, datasets/*/reduced,
-      datasets/*/output, Analysis/Output, legacy/* → data/*/raw, data/*/reduced,
+- [ ] rsync-home target: `data/2023/reduced/` → `data/2023/reduced/`.
+- [ ] .gitignore: Data/, reduced/, data/*/raw, data/*/reduced,
+      data/*/output, output, legacy/* → data/*/raw, data/*/reduced,
       figures cache, archive/.
 
 ## Execution order (each = compile-tested commit)
@@ -99,14 +100,14 @@ RADiCAL/
   `ROOT_INCLUDE_PATH` to the 4 subdirs; compile smoke-test (one reduce + one
   analyze macro). Include lines unchanged.
 - **C — Code split:** create `reduce/`, `analyze/`, `analyze/studies/`; `git mv`
-  per routing table; `git mv Analysis/hpc reduce/hpc`; fix hardcoded data paths.
+  per routing table; `git mv reduce/hpc reduce/hpc`; fix hardcoded data paths.
 - **D — Figures:** `git mv radcore/figs/* figures/`; repoint macro output paths.
 - **E — Legacy:** `git mv legacy archive/legacy`; move dead scratch in.
 - **F — README:** top-level quickstart so a newcomer can drive (reduce + analyze
   one-liners, where data lives, how to add a year/build).
 
 ## Do-not-break
-- `report/` GitHub Pages site (report/Summary/*.png, Analysis/Output/Summary/
+- `report/` GitHub Pages site (report/Summary/*.png, output/Summary/
   results.json) — keep building. If results.json path moves, update its writer.
 - Argon access: port 40 (`ssh -p 40`), ROOT via `setup_root`. Cannot reach Argon
   from local Mac.

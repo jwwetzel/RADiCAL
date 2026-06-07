@@ -38,14 +38,14 @@ few tens of MB; a whole config is ~1 GB. The full reduced set is ~15 GB.
 
 ```bash
 git clone <repo> RADiCAL && cd RADiCAL
-source Analysis/hpc/env.sh         # sets REC_DIR (raw), RAD_WORK (scratch), queue
+source reduce/hpc/env.sh         # sets REC_DIR (raw), RAD_WORK (scratch), queue
 #   check/override: REC_DIR=/Shared/lss_yonel/jwwetzel/RADiCAL_CERN_May2023/rec/rec
-qsub Analysis/hpc/compile.sh       # prebuilds processRun + reduceRaw + discoverChannels .so
+qsub reduce/hpc/compile.sh       # prebuilds processRun + reduceRaw + discoverChannels .so
 ```
 
 ## 1.  Manifests — already built (logbook is committed)
 
-The CERN run logbook is committed at **`Analysis/hpc/logbook.csv`**, and a
+The CERN run logbook is committed at **`reduce/hpc/logbook.csv`**, and a
 manifest per config is **already generated and committed**:
 
 ```
@@ -57,10 +57,10 @@ Nothing to do here unless you want to change the selection. To regenerate (e.g.
 the space after the comma:
 
 ```bash
-LB=Analysis/hpc/logbook.csv
-python3 Analysis/hpc/build_manifest.py "$LB" --capillary "LUAG"             -o Analysis/hpc/manifest_LUAG.csv
-python3 Analysis/hpc/build_manifest.py "$LB" --capillary "2xDSB1, 2xLuAG"   -o Analysis/hpc/manifest_MIXED.csv
-python3 Analysis/hpc/build_manifest.py "$LB" --capillary "3xDSB1, 1xEnergy" -o Analysis/hpc/manifest_TENERGY.csv
+LB=reduce/hpc/logbook.csv
+python3 reduce/hpc/build_manifest.py "$LB" --capillary "LUAG"             -o reduce/hpc/manifest_LUAG.csv
+python3 reduce/hpc/build_manifest.py "$LB" --capillary "2xDSB1, 2xLuAG"   -o reduce/hpc/manifest_MIXED.csv
+python3 reduce/hpc/build_manifest.py "$LB" --capillary "3xDSB1, 1xEnergy" -o reduce/hpc/manifest_TENERGY.csv
 ```
 Each prints a per-energy run-count summary to stderr — sanity-check it.
 (Add `--all-bias` to include the 41.25 V scan; default keeps the single 42.25 V gain.)
@@ -72,14 +72,14 @@ Each prints a per-energy run-count summary to stderr — sanity-check it.
 manifest via `RAD_CONFIG` / `RAD_MANIFEST` (NOT `MANIFEST` — see note):
 
 ```bash
-RAD_CONFIG=LUAG RAD_MANIFEST=$PWD/Analysis/hpc/manifest_LUAG.csv \
-    bash Analysis/hpc/submit_reduce.sh
+RAD_CONFIG=LUAG RAD_MANIFEST=$PWD/reduce/hpc/manifest_LUAG.csv \
+    bash reduce/hpc/submit_reduce.sh
 ```
 Repeat for the other configs:
 ```bash
-RAD_CONFIG=DSB1    RAD_MANIFEST=$PWD/Analysis/hpc/manifest_DSB1.csv    bash Analysis/hpc/submit_reduce.sh
-RAD_CONFIG=MIXED   RAD_MANIFEST=$PWD/Analysis/hpc/manifest_MIXED.csv   bash Analysis/hpc/submit_reduce.sh
-RAD_CONFIG=TENERGY RAD_MANIFEST=$PWD/Analysis/hpc/manifest_TENERGY.csv bash Analysis/hpc/submit_reduce.sh
+RAD_CONFIG=DSB1    RAD_MANIFEST=$PWD/reduce/hpc/manifest_DSB1.csv    bash reduce/hpc/submit_reduce.sh
+RAD_CONFIG=MIXED   RAD_MANIFEST=$PWD/reduce/hpc/manifest_MIXED.csv   bash reduce/hpc/submit_reduce.sh
+RAD_CONFIG=TENERGY RAD_MANIFEST=$PWD/reduce/hpc/manifest_TENERGY.csv bash reduce/hpc/submit_reduce.sh
 ```
 (DSB1 is the cross-check — its reduced result must reproduce the validated one.)
 Monitor with `qstat -u $USER`; merged files land in `reduced/<CONFIG>/<E>GeV.root`.

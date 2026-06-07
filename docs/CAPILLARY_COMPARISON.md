@@ -26,7 +26,7 @@ cross-config results.)
 
 ## 1. Dataset & pipeline
 
-Run logbook (`Analysis/hpc/logbook.csv`, 1278 rows). Electron, DONE, nominal-bias subsets:
+Run logbook (`reduce/hpc/logbook.csv`, 1278 rows). Electron, DONE, nominal-bias subsets:
 
 | config (logbook label) | total runs | analyzed | energies |
 |---|---|---|---|
@@ -38,7 +38,7 @@ Run logbook (`Analysis/hpc/logbook.csv`, 1278 rows). Electron, DONE, nominal-bia
 Only DSB1 was run at 25 GeV. Reduction is config-agnostic (`reduceRaw.C`): for all 36 DRS
 slots it stores `(peak, CFD-5% time, charge)` plus the config-invariant wire-chamber track
 and both MCPs — no channel map needed at reduction. Argon recipe in
-`Analysis/hpc/PRESCRIPTION.md`.
+`reduce/hpc/PRESCRIPTION.md`.
 
 ## 2. Channel layout (all configs identical)
 
@@ -258,4 +258,4 @@ in the energy / E-type discussion.
 `etypeEnergy.C` (single E-type cap energy res ~14% — better than a single T-type cap, ≈ the 8-cap sum;
 NO 4xE-type config exists in 2023 — Paper 2). DataPaths.h: `radRaw()`/`radReduced()` resolve all data.
 Follow-on plan + paper outlines: `FOLLOWON_PLAN.md`, `PAPER_OUTLINES.md`.
-HPC: `Analysis/hpc/{PRESCRIPTION.md, reduceRaw via sge_reduce.sh, submit_reduce.sh, merge_reduced.sh}`.
+HPC: `reduce/hpc/{PRESCRIPTION.md, reduceRaw via sge_reduce.sh, submit_reduce.sh, merge_reduced.sh}`.

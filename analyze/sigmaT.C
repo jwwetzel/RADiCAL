@@ -8,7 +8,7 @@
 //   ROOT_INCLUDE_PATH=lib/waveform:lib/io:lib/physics:lib/viz root -l -b -q \
 //     'analyze/sigmaT.C+("data/2023/configs/DSB1.json", 150)'
 // ============================================================================
-#include "RadTiming.h"       // radcore: timingBestBin (the one method)
+#include "RadTiming.h"       // lib/physics: timingBestBin (the one method)
 #include "DataPaths.h"       // Analysis: radReduced
 #include "TFile.h"
 #include "TTree.h"

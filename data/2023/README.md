@@ -7,7 +7,7 @@ folder. The files are large, so they are **not** in git — download them from C
 ## Layout (mirror this on CERNBox)
 
 ```
-datasets/2023/
+data/2023/
   raw/                       # raw DRS4 waveforms ('pulse' tree), ~2 GB/run  [optional]
     RUN1211_25_GeV.root … RUN1261_150_GeV.root          (DSB1 runs)
   reduced/                   # small, analysis-ready ntuples ('rad' tree)    [START HERE]
@@ -28,15 +28,15 @@ re-reduction.
 > **CERNBox:** <PASTE_CERNBOX_SHARE_LINK_HERE>  *(public share — folder structure
 > matches the tree above)*
 
-Download (at minimum) `reduced/` into `datasets/2023/reduced/` here. Then either:
+Download (at minimum) `reduced/` into `data/2023/reduced/` here. Then either:
 
 **A. Point the code at it (recommended).** The analysis resolves data through
 `Analysis/DataPaths.h`; by default the base is the repo root, so files placed at
-`datasets/2023/reduced/<BUILD>/<E>GeV.root` are found automatically. (Set
+`data/2023/reduced/<BUILD>/<E>GeV.root` are found automatically. (Set
 `export RAD_DATA=/path/to/checkout` if your data lives elsewhere.)
 
 **B. Bridge the legacy paths.** Some macros still use the old in-repo locations
-(`reduced/`, `Analysis/Output/`). One command makes them all work against your
+(`reduced/`, `output/`). One command makes them all work against your
 download, without moving anything:
 
 ```
