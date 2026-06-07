@@ -1,5 +1,7 @@
 # site/ — the published RADiCAL website
 
+**Live:** https://jwwetzel.github.io/RADiCAL/
+
 Self-contained GitHub Pages site. Everything it references lives **inside this
 folder**, so it deploys as one unit.
 
