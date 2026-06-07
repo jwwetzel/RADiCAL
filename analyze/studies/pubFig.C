@@ -55,6 +55,24 @@ static void trimMS(std::vector<float>& x,double& mu,double& sg){
     mu=mt; sg=(st>1e-4?st:s>1e-4?s:0.05);
 }
 
+// CENTRAL-PEAK Gaussian fit, just like the publication: iterate the fit window in
+// on the core so the satellite shoulder can't drag it, and draw the fitted curve
+// over the core ONLY (+-2sigma), not into the tails. Returns the TF1 and sigma_ps.
+static TF1* coreFit(TH1F* h,const char* nm,double mu0,double sg0,double& sigma_ps){
+    double mu=mu0, sg=(sg0>1e-4?sg0:0.02);
+    TF1* g=new TF1(nm,"gaus",mu-1.8*sg,mu+1.8*sg);
+    for(int it=0;it<3;++it){
+        g->SetRange(mu-1.8*sg,mu+1.8*sg);
+        g->SetParameters(h->GetMaximum(),mu,sg);
+        h->Fit(g,"QRN");
+        double m=g->GetParameter(1), s=std::fabs(g->GetParameter(2));
+        if(s>1e-4 && std::fabs(m-mu0)<4*sg0){ mu=m; sg=s; } else break;
+    }
+    sigma_ps=sg*1000.0;
+    g->SetRange(mu-2.0*sg, mu+2.0*sg);    // draw the central peak only
+    return g;
+}
+
 void pubFig(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0); gStyle->SetOptFit(0);
     BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
@@ -79,29 +97,39 @@ void pubFig(const char* build="DSB1"){
     }
     if(ev.size()<3000){ printf("%s: too few events (%zu)\n",build,ev.size()); return; }
     std::sort(ev.begin(),ev.end(),[](const EV&a,const EV&b){return a.slg<b.slg;});
-    const int NB=9; size_t per=ev.size()/NB;
+    const int NB=9; size_t per=ev.size()/NB; long Nbin=(long)per;
     std::vector<double> amp(NB),sdiff(NB),ssum(NB),ediff(NB),esum(NB);
     std::vector<TH1F*> hd(NB),hs(NB); std::vector<TF1*> fd(NB),fs(NB);
-    printf("\n=== %s (%s): arXiv-Fig21-style, all energies pooled, %zu events ===\n",build,srcName(SRC),ev.size());
+    // pass 1: per-bin slices + trimmed centers -> ONE common x-range per row (shared)
+    std::vector<std::vector<float>> VD(NB),VS(NB);
+    std::vector<double> MD(NB),SGD(NB),MS(NB),SGS(NB);
+    double loD=1e9,hiD=-1e9,loS=1e9,hiS=-1e9;
+    for(int b=0;b<NB;++b){
+        size_t lo=(size_t)b*per, hi=(b==NB-1)?ev.size():lo+per; double sa=0;
+        for(size_t k=lo;k<hi;++k){ VD[b].push_back(ev[k].dmu); VS[b].push_back(ev[k].smu); sa+=ev[k].slg; }
+        amp[b]=sa/(hi-lo);
+        trimMS(VD[b],MD[b],SGD[b]); trimMS(VS[b],MS[b],SGS[b]);
+        loD=std::min(loD,MD[b]-4.5*SGD[b]); hiD=std::max(hiD,MD[b]+4.5*SGD[b]);
+        loS=std::min(loS,MS[b]-4.5*SGS[b]); hiS=std::max(hiS,MS[b]+4.5*SGS[b]);
+    }
+    // pass 2: hist over the COMMON range (shared binning -> comparable absolute counts),
+    // central-peak-only Gaussian fit. Track the shared y-max per row for absolute scaling.
+    const int NHB=100; double ymaxD=0,ymaxS=0;
+    printf("\n=== %s (%s): arXiv-Fig21-style, all energies pooled, %zu events (%ld/bin, equal-population) ===\n",build,srcName(SRC),ev.size(),Nbin);
     printf("  bin  <ampl>   N     sigma(DW-UP)/2   sigma(DW+UP)/2  [ps]\n");
     for(int b=0;b<NB;++b){
-        size_t lo=(size_t)b*per, hi=(b==NB-1)?ev.size():lo+per;
-        std::vector<float> vd,vs; double sa=0;
-        for(size_t k=lo;k<hi;++k){ vd.push_back(ev[k].dmu); vs.push_back(ev[k].smu); sa+=ev[k].slg; }
-        amp[b]=sa/(hi-lo);
-        double md,sgd,ms,sgs; trimMS(vd,md,sgd); trimMS(vs,ms,sgs);
-        TH1F* Hd=new TH1F(Form("hd%s%d",build,b),"",70,md-4*sgd,md+4*sgd); Hd->SetDirectory(nullptr);
-        TH1F* Hs=new TH1F(Form("hs%s%d",build,b),"",70,ms-4*sgs,ms+4*sgs); Hs->SetDirectory(nullptr);
-        for(float q:vd) Hd->Fill(q); for(float q:vs) Hs->Fill(q);
-        TF1* Fd=new TF1(Form("fd%s%d",build,b),"gaus",md-2*sgd,md+2*sgd); Hd->Fit(Fd,"QRN");
-        TF1* Fs=new TF1(Form("fs%s%d",build,b),"gaus",ms-2*sgs,ms+2*sgs); Hs->Fit(Fs,"QRN");
-        Fd->SetRange(md-4*sgd,md+4*sgd); Fs->SetRange(ms-4*sgs,ms+4*sgs);
-        double sd=Fd->GetParameter(2)*1000.0, ss=Fs->GetParameter(2)*1000.0;
-        if(!(sd>0&&sd<2.0*sgd*1000)) sd=sgd*1000;          // robust fallback
-        if(!(ss>0&&ss<2.0*sgs*1000)) ss=sgs*1000;
-        sdiff[b]=sd; ssum[b]=ss; ediff[b]=sd/std::sqrt(2.0*vd.size()); esum[b]=ss/std::sqrt(2.0*vs.size());
+        TH1F* Hd=new TH1F(Form("hd%s%d",build,b),"",NHB,loD,hiD); Hd->SetDirectory(nullptr);
+        TH1F* Hs=new TH1F(Form("hs%s%d",build,b),"",NHB,loS,hiS); Hs->SetDirectory(nullptr);
+        for(float q:VD[b]) Hd->Fill(q); for(float q:VS[b]) Hs->Fill(q);
+        double sd,ss;
+        TF1* Fd=coreFit(Hd,Form("fd%s%d",build,b),MD[b],SGD[b],sd);
+        TF1* Fs=coreFit(Hs,Form("fs%s%d",build,b),MS[b],SGS[b],ss);
+        if(!(sd>0&&sd<2.0*SGD[b]*1000)) sd=SGD[b]*1000;          // robust fallback
+        if(!(ss>0&&ss<2.0*SGS[b]*1000)) ss=SGS[b]*1000;
+        sdiff[b]=sd; ssum[b]=ss; ediff[b]=sd/std::sqrt(2.0*VD[b].size()); esum[b]=ss/std::sqrt(2.0*VS[b].size());
         hd[b]=Hd; hs[b]=Hs; fd[b]=Fd; fs[b]=Fs;
-        printf("  %2d  %6.0f %6zu       %6.1f           %6.1f\n",b,amp[b],hi-lo,sd,ss);
+        ymaxD=std::max(ymaxD,Hd->GetMaximum()); ymaxS=std::max(ymaxS,Hs->GetMaximum());
+        printf("  %2d  %6.0f %6zu       %6.1f           %6.1f\n",b,amp[b],VD[b].size(),sd,ss);
     }
     // brightest-1000 headline (the top of the amplitude axis)
     std::vector<float> vtop; for(size_t k=(ev.size()>=1000?ev.size()-1000:0);k<ev.size();++k) vtop.push_back(ev[k].dmu);
@@ -114,20 +142,27 @@ void pubFig(const char* build="DSB1"){
     TPad* pTop=new TPad("pTop","",0.0,0.655,1.0,0.945); pTop->Draw();
     TPad* pMid=new TPad("pMid","",0.0,0.365,1.0,0.655); pMid->Draw();
     TPad* pBot=new TPad("pBot","",0.0,0.0,1.0,0.365);  pBot->Draw();
-    pTop->Divide(NB,1,0.0008,0.0008); pMid->Divide(NB,1,0.0008,0.0008);
+    pTop->Divide(NB,1,0.0,0.0); pMid->Divide(NB,1,0.0,0.0);
     for(int b=0;b<NB;++b){
-        pTop->cd(b+1); gPad->SetTopMargin(0.13); gPad->SetBottomMargin(0.14); gPad->SetLeftMargin(0.03); gPad->SetRightMargin(0.02);
-        hd[b]->SetLineColor(kAzure+2); hd[b]->SetFillColorAlpha(kAzure+2,0.28); hd[b]->SetLineWidth(1);
-        hd[b]->GetXaxis()->SetLabelSize(0.075); hd[b]->GetYaxis()->SetLabelSize(0.0); hd[b]->GetXaxis()->SetNdivisions(304);
-        hd[b]->GetXaxis()->SetTitle("(DW#minusUP)/2 (ns)"); hd[b]->GetXaxis()->SetTitleSize(0.075); hd[b]->GetXaxis()->SetTitleOffset(0.85);
-        hd[b]->Draw("HIST"); fd[b]->SetLineColor(kOrange+8); fd[b]->SetLineWidth(2); fd[b]->Draw("SAME");
-        TLatex tx; tx.SetNDC(); tx.SetTextFont(62); tx.SetTextSize(0.10); tx.DrawLatex(0.08,0.80,Form("#sigma=%.0f",sdiff[b]));
-        pMid->cd(b+1); gPad->SetTopMargin(0.13); gPad->SetBottomMargin(0.14); gPad->SetLeftMargin(0.03); gPad->SetRightMargin(0.02);
-        hs[b]->SetLineColor(kGray+2); hs[b]->SetFillColorAlpha(kGray+1,0.30); hs[b]->SetLineWidth(1);
-        hs[b]->GetXaxis()->SetLabelSize(0.075); hs[b]->GetYaxis()->SetLabelSize(0.0); hs[b]->GetXaxis()->SetNdivisions(304);
-        hs[b]->GetXaxis()->SetTitle("(DW+UP)/2 (ns)"); hs[b]->GetXaxis()->SetTitleSize(0.075); hs[b]->GetXaxis()->SetTitleOffset(0.85);
-        hs[b]->Draw("HIST"); fs[b]->SetLineColor(kOrange+8); fs[b]->SetLineWidth(2); fs[b]->Draw("SAME");
-        TLatex tx2; tx2.SetNDC(); tx2.SetTextFont(62); tx2.SetTextSize(0.10); tx2.DrawLatex(0.08,0.80,Form("#sigma=%.0f",ssum[b]));
+        bool first=(b==0); double lm=(first?0.26:0.03);
+        pTop->cd(b+1); gPad->SetTopMargin(0.12); gPad->SetBottomMargin(0.15); gPad->SetLeftMargin(lm); gPad->SetRightMargin(0.02);
+        hd[b]->SetLineColor(kAzure+2); hd[b]->SetFillColorAlpha(kAzure+2,0.30); hd[b]->SetLineWidth(1);
+        hd[b]->GetYaxis()->SetRangeUser(0,ymaxD*1.15);                 // SHARED absolute y per row
+        hd[b]->GetXaxis()->SetLabelSize(0.072); hd[b]->GetXaxis()->SetNdivisions(304);
+        hd[b]->GetXaxis()->SetTitle("(DW-UP)/2 (ns)"); hd[b]->GetXaxis()->SetTitleSize(0.07); hd[b]->GetXaxis()->SetTitleOffset(0.95);
+        hd[b]->GetYaxis()->SetLabelSize(first?0.066:0.0); hd[b]->GetYaxis()->SetNdivisions(first?505:0);
+        if(first){ hd[b]->GetYaxis()->SetTitle("events"); hd[b]->GetYaxis()->SetTitleSize(0.075); hd[b]->GetYaxis()->SetTitleOffset(1.55); }
+        hd[b]->Draw("HIST"); fd[b]->SetLineColor(kOrange+8); fd[b]->SetLineWidth(3); fd[b]->Draw("SAME");
+        TLatex tx; tx.SetNDC(); tx.SetTextFont(62); tx.SetTextSize(0.092); tx.DrawLatex(first?0.32:0.09,0.83,Form("#sigma=%.0f",sdiff[b]));
+        pMid->cd(b+1); gPad->SetTopMargin(0.12); gPad->SetBottomMargin(0.15); gPad->SetLeftMargin(lm); gPad->SetRightMargin(0.02);
+        hs[b]->SetLineColor(kGray+2); hs[b]->SetFillColorAlpha(kGray+1,0.32); hs[b]->SetLineWidth(1);
+        hs[b]->GetYaxis()->SetRangeUser(0,ymaxS*1.15);                 // SHARED absolute y per row
+        hs[b]->GetXaxis()->SetLabelSize(0.072); hs[b]->GetXaxis()->SetNdivisions(304);
+        hs[b]->GetXaxis()->SetTitle("(DW+UP)/2 (ns)"); hs[b]->GetXaxis()->SetTitleSize(0.07); hs[b]->GetXaxis()->SetTitleOffset(0.95);
+        hs[b]->GetYaxis()->SetLabelSize(first?0.066:0.0); hs[b]->GetYaxis()->SetNdivisions(first?505:0);
+        if(first){ hs[b]->GetYaxis()->SetTitle("events"); hs[b]->GetYaxis()->SetTitleSize(0.075); hs[b]->GetYaxis()->SetTitleOffset(1.55); }
+        hs[b]->Draw("HIST"); fs[b]->SetLineColor(kOrange+8); fs[b]->SetLineWidth(3); fs[b]->Draw("SAME");
+        TLatex tx2; tx2.SetNDC(); tx2.SetTextFont(62); tx2.SetTextSize(0.092); tx2.DrawLatex(first?0.32:0.09,0.83,Form("#sigma=%.0f",ssum[b]));
     }
     pBot->cd(); gPad->SetLeftMargin(0.085); gPad->SetRightMargin(0.03); gPad->SetTopMargin(0.05); gPad->SetBottomMargin(0.17); gPad->SetGridy();
     std::vector<double> ze(NB,0.0);
