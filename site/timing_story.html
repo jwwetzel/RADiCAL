@@ -250,16 +250,31 @@
   <figure>
     <img src="assets/narrative_crossbuild.png" alt="sigma_t vs energy for four builds, de-biased">
     <figcaption><b>The full spectrum.</b> Best-bin (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy, all four builds, de-biased
-    estimator. Error bars are scaled to the real point-to-point scatter (&radic;(&chi;&sup2;/ndf) &mdash; the bare
-    &sigma;/&radic;(2N) badly understates it). High-light <b>LYSO (DSB1)</b> sits lowest (~30 ps) with <b>tiny</b> error
-    bars; low-light <b>LuAG</b> tops out near 42 ps with <b>large</b> ones &mdash; its apparent jumpiness is fully
-    consistent with a smooth curve, the price of ~10&times; less light (not a bad bin). The best timing source also tracks
-    the material: clipped high-light LYSO rewards <span class="mono">lgcfd</span> (true-peak edge); dim, never-clipped
-    LuAG times best at the <span class="mono">cfd05</span> foot. (MIXED's LG is partly compromised.)</figcaption>
+    estimator, with error bars scaled to the real point-to-point scatter (&radic;(&chi;&sup2;/ndf) &mdash; the bare
+    &sigma;/&radic;(2N) badly understates it). High-light <b>LYSO (DSB1)</b> sits lowest (~30 ps) with <b>tiny</b> bars;
+    <b>LuAG</b> tops out ~42 ps with <b>large</b> ones, and is the one non-monotonic curve &mdash; for a real reason (below).
+    (MIXED's LG is partly compromised.)</figcaption>
   </figure>
-  <div class="pull"><b>The spectrum, in one line.</b> Timing resolution is a light-yield thermometer &mdash; and so is its
-  <i>precision</i>: ~30 ps with tight error bars for the brightest LYSO build, down to ~42 ps with wide ones for low-light
-  LuAG. More light buys you both a faster clock and a steadier reading. The detector you build sets the clock you can read.</div>
+  <h3 style="font-size:21px;margin:1.4em 0 .3em">Why LuAG misbehaves &mdash; it clips too</h3>
+  <p>&ldquo;Low light&rdquo; isn't the answer; <b>clipping</b> is. LuAG's HG <i>also</i> saturates &mdash; just at higher
+  energy, because it's dimmer. Per energy, the fraction of pulses hitting the 820 mV clip climbs
+  <b>2% &rarr; 8% &rarr; 32% &rarr; 63% &rarr; 83%</b> from 50 to 150 GeV, and the foot-timing degrades exactly as it does
+  for DSB1 &mdash; &sigma;<sub>t</sub> rising toward ~100 GeV. The twist: <b>lgcfd can't rescue LuAG</b> the way it rescues
+  DSB1, because low light makes the LG-predicted true peak itself noisy. So LuAG is stuck timing the clipped foot.</p>
+  <figure>
+    <img src="assets/narrative_luagdiag.png" alt="LuAG per-energy sigma_t vs sum_lg bin landscape">
+    <figcaption><b>How each LuAG point is built.</b> &sigma;<sub>t</sub> vs &Sigma;LG bin, per energy
+    (<span style="color:#c0392b">&#9675; cfd05</span>, <span style="color:#2471c0">&#9679; lgcfd</span>, &#9733; = chosen
+    best cfd05 bin). Two things jump out: <span style="color:#2471c0">lgcfd</span> is <b>smooth and monotonic</b>, while
+    <span style="color:#c0392b">cfd05</span> is <b>erratic</b> &mdash; in the dim bins the Gaussian-core &sigma; fit fails
+    outright (returning 0.1, 200, even 18000 ps), because low-light (DW&minus;UP)/2 distributions have non-Gaussian
+    tails. The cfd05 &ldquo;best bin&rdquo; is just the lowest survivor of that noisy set, so the ladder wobbles. The clean
+    physical signal &mdash; the clipping rise &mdash; is buried under estimator noise that the big error bars honestly
+    reflect.</figcaption>
+  </figure>
+  <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield &mdash; and clipping. Bright LYSO clips
+  early and lgcfd buys it back to ~30 ps; dim LuAG clips late, can't use lgcfd, and its low-light fits add the scatter you
+  see. The detector you build sets the clock you can read &mdash; and how cleanly you can read it.</div>
 </section>
 
 </main>

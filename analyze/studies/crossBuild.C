@@ -56,7 +56,7 @@ void crossBuild(){
 
     TCanvas* c=new TCanvas("cx","",960,680); c->SetLeftMargin(0.12); c->SetRightMargin(0.04); c->SetGridy();
     TLegend* lg=new TLegend(0.50,0.70,0.95,0.90); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.032);
-    TH1F* fr=c->DrawFrame(0,20,160,62); fr->SetTitle("RADiCAL: (DW#minusUP)/2 best-bin #sigma_{t} vs energy, four builds (de-biased);beam energy (GeV);#sigma_{t} (ps)");
+    TH1F* fr=c->DrawFrame(0,20,160,74); fr->SetTitle("RADiCAL: (DW#minusUP)/2 best-bin #sigma_{t} vs energy, four builds (de-biased);beam energy (GeV);#sigma_{t} (ps)");
     printf("\n=== CROSS-BUILD full spectrum (de-biased) ===\n");
     printf("build    material              best src  sigma@150[quant]  [bright1%%]  floor b\n");
     for(int bi=0;bi<4;++bi){ const char* B=builds[bi];
