@@ -78,7 +78,8 @@ void pubFig(const char* build="DSB1"){
     BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
     int SRC=robustSrc(build);
     const double Es[]={25,50,75,100,125,150}; int nE=6;
-    std::vector<EV> ev;
+    std::vector<EV> ev;                       // pooled (top/middle distribution panels)
+    std::vector<std::vector<EV>> byE(nE);     // per-energy (bottom: 1000-event slices, no cross-energy mixing)
     for(int e=0;e<nE;++e){ double E=Es[e];
         TFile* fp=TFile::Open(radReduced(build,E)); if(!fp||fp->IsZombie())continue;
         TTree* t=(TTree*)fp->Get("rad"); RadView v; v.attach(t,&cfg);
@@ -91,7 +92,8 @@ void pubFig(const char* build="DSB1"){
             for(int c=4;c<8;++c) if(v.is_timing(c)&&v.hg_peak(c)>=kHG_minPeak){float tc=v.timeOf(c,SRC);if(tc>-1e5){us+=tc;++un;}}
             if(dn<1||un<1) continue;
             double da=ds/dn, ua=us/un;
-            ev.push_back({(float)v.sum_lg(),0.5f*(float)(da-ua),0.5f*(float)(da+ua)});
+            EV q{(float)v.sum_lg(),0.5f*(float)(da-ua),0.5f*(float)(da+ua)};
+            ev.push_back(q); byE[e].push_back(q);
         }
         fp->Close();
     }
@@ -131,11 +133,12 @@ void pubFig(const char* build="DSB1"){
         ymaxD=std::max(ymaxD,Hd->GetMaximum()); ymaxS=std::max(ymaxS,Hs->GetMaximum());
         printf("  %2d  %6.0f %6zu       %6.1f           %6.1f\n",b,amp[b],VD[b].size(),sd,ss);
     }
-    // brightest-1000 headline (the top of the amplitude axis)
-    std::vector<float> vtop; for(size_t k=(ev.size()>=1000?ev.size()-1000:0);k<ev.size();++k) vtop.push_back(ev[k].dmu);
-    double sTop=tebSigma(vtop);
-    double ampTop=0; for(size_t k=(ev.size()>=1000?ev.size()-1000:0);k<ev.size();++k) ampTop+=ev[k].slg; ampTop/=std::min((size_t)1000,ev.size());
-    printf("  brightest-1000 (DW-UP)/2 sigma = %.1f ps  (<ampl>=%.0f)\n",sTop,ampTop);
+    // brightest-1000 overall = the headline (the bright end of the highest-energy curve below)
+    const int KS=1000;
+    std::vector<float> vtop; double saT=0; size_t k0=(ev.size()>=1000?ev.size()-1000:0);
+    for(size_t k=k0;k<ev.size();++k){ vtop.push_back(ev[k].dmu); saT+=ev[k].slg; }
+    double sTop=tebSigma(vtop), ampTop=saT/std::max((size_t)1,ev.size()-k0);
+    printf("  brightest-1000 overall (headline) sigma=%.1f ps (<ampl>=%.0f)\n",sTop,ampTop);
 
     // ---- draw ----
     TCanvas* c=new TCanvas("pub","",1820,1040);
@@ -165,29 +168,33 @@ void pubFig(const char* build="DSB1"){
         TLatex tx2; tx2.SetNDC(); tx2.SetTextFont(62); tx2.SetTextSize(0.092); tx2.DrawLatex(first?0.32:0.09,0.83,Form("#sigma=%.0f",ssum[b]));
     }
     pBot->cd(); gPad->SetLeftMargin(0.085); gPad->SetRightMargin(0.03); gPad->SetTopMargin(0.05); gPad->SetBottomMargin(0.17); gPad->SetGridy();
-    std::vector<double> ze(NB,0.0);
-    TGraphErrors* gd=new TGraphErrors(NB,&amp[0],&sdiff[0],&ze[0],&ediff[0]);
-    TGraphErrors* gs=new TGraphErrors(NB,&amp[0],&ssum[0],&ze[0],&esum[0]);
-    gd->SetMarkerStyle(22); gd->SetMarkerColor(kAzure+2); gd->SetLineColor(kAzure+2); gd->SetMarkerSize(1.7); gd->SetLineWidth(2);
-    gs->SetMarkerStyle(20); gs->SetMarkerColor(kOrange+8); gs->SetLineColor(kOrange+8); gs->SetMarkerSize(1.5); gs->SetLineWidth(2);
-    double ymax=0; for(int b=0;b<NB;++b) ymax=std::max(ymax,std::max(sdiff[b],ssum[b]));
-    gd->SetTitle(";shower amplitude  #SigmaLG (a.u.)  #minus  all energies 25#minus150 GeV  (bins ~58k events, star = brightest 1000);time resolution  #sigma_{t} (ps)");
-    gd->GetYaxis()->SetRangeUser(0,ymax*1.18); gd->GetYaxis()->SetTitleSize(0.062); gd->GetYaxis()->SetTitleOffset(0.62);
-    gd->GetYaxis()->SetLabelSize(0.055); gd->GetXaxis()->SetTitleSize(0.050); gd->GetXaxis()->SetTitleOffset(1.25); gd->GetXaxis()->SetLabelSize(0.05);
-    gd->GetXaxis()->SetLimits(amp[0]-150, (sTop>0?ampTop:amp[NB-1])*1.05);   // room for the brightest-1000 tip
-    gd->Draw("ALP"); gs->Draw("LP SAME");
-    TGraph* gtop=nullptr;
-    if(sTop>0){
-        // the brightest-1000 headline is the EXTREME bright tip of the last bin -- a tighter
-        // selection (1000 ev) than any equal-population point (~58k ev). Plot it as a real
-        // point at its own (higher) mean amplitude and connect the curve down to it.
-        TLine* cn=new TLine(amp[NB-1],sdiff[NB-1],ampTop,sTop); cn->SetLineColor(kAzure+2); cn->SetLineStyle(2); cn->SetLineWidth(2); cn->Draw();
-        gtop=new TGraph(1,&ampTop,&sTop); gtop->SetMarkerStyle(29); gtop->SetMarkerColor(kAzure+3); gtop->SetMarkerSize(3.4); gtop->Draw("P SAME");
-        TLatex th; th.SetTextColor(kAzure+3); th.SetTextSize(0.05); th.SetTextAlign(31); th.DrawLatex(ampTop, sTop+ymax*0.05, Form("brightest-1000: %.1f ps",sTop));
-    }
-    TLegend* lg=new TLegend(0.60,0.66,0.965,0.95); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.05);
-    lg->AddEntry(gd,"(DW#minusUP)/2  (MCP-free), ~58k/bin","lp"); lg->AddEntry(gs,"(DW+UP)/2  (absolute)","lp");
-    if(gtop) lg->AddEntry(gtop,"brightest-1000 (the headline)","p"); lg->Draw();
+    // per-energy consecutive 1000-event brightness slices (DW-UP)/2: no cross-energy
+    // mixing, so each curve is clean. Brightest slice of the highest energy = headline.
+    const int ecol[6]={kViolet+1,kAzure+2,kTeal+2,kSpring-6,kOrange+7,kRed+1};
+    std::vector<TGraph*> gE(nE,nullptr); std::vector<double> ax,ay;
+    double gymax=0,gminA=1e9,gmaxA=-1e9;
+    for(int e=0;e<nE;++e){ auto V=byE[e]; if((int)V.size()<KS) continue;
+        std::sort(V.begin(),V.end(),[](const EV&a,const EV&b){return a.slg<b.slg;});
+        int ns=(int)(V.size()/KS); ax.clear(); ay.clear();
+        for(int j=0;j<ns;++j){ size_t hi=V.size()-(size_t)j*KS, lo=hi-KS; double sa=0;
+            std::vector<float> d_; for(size_t k=lo;k<hi;++k){ d_.push_back(V[k].dmu); sa+=V[k].slg; }
+            double sg=tebSigma(d_); if(sg>0){ ax.push_back(sa/KS); ay.push_back(sg); } }
+        if(ax.size()<2) continue;
+        TGraph* g=new TGraph(ax.size(),&ax[0],&ay[0]); g->SetLineColor(ecol[e]); g->SetLineWidth(2);
+        g->SetMarkerColor(ecol[e]); g->SetMarkerStyle(20); g->SetMarkerSize(0.5); gE[e]=g;
+        for(double y:ay) gymax=std::max(gymax,y); for(double a:ax){gminA=std::min(gminA,a);gmaxA=std::max(gmaxA,a);} }
+    if(gymax>170)gymax=170;
+    TH1F* fr=pBot->DrawFrame(gminA-100,0,gmaxA*1.04,gymax*1.12);
+    fr->SetTitle(";shower amplitude  #SigmaLG (a.u.)  #minus  consecutive 1000-event brightness slices, by beam energy;time resolution  #sigma_{t} (ps)");
+    fr->GetYaxis()->SetTitleSize(0.062); fr->GetYaxis()->SetTitleOffset(0.62); fr->GetYaxis()->SetLabelSize(0.055);
+    fr->GetXaxis()->SetTitleSize(0.052); fr->GetXaxis()->SetTitleOffset(1.22); fr->GetXaxis()->SetLabelSize(0.05);
+    for(int e=0;e<nE;++e) if(gE[e]) gE[e]->Draw("LP SAME");
+    if(sTop>0){    // brightest 1000 overall = the headline = bright end of the highest-energy curve
+        TGraph* gh=new TGraph(1,&ampTop,&sTop); gh->SetMarkerStyle(29); gh->SetMarkerColor(kRed+2); gh->SetMarkerSize(3.0); gh->Draw("P SAME");
+        TLatex th; th.SetTextColor(kRed+2); th.SetTextSize(0.05); th.SetTextAlign(31); th.DrawLatex(ampTop,sTop+gymax*0.07,Form("brightest 1000 = headline: %.1f ps",sTop)); }
+    TLegend* lg=new TLegend(0.40,0.66,0.965,0.955); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.046); lg->SetNColumns(3);
+    for(int e=0;e<nE;++e) if(gE[e]) lg->AddEntry(gE[e],Form("%.0f GeV",Es[e]),"l");
+    lg->Draw();
     c->cd(); TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.025);
     tt.DrawLatex(0.05,0.967,Form("%s (%s): per-amplitude-bin timing distributions are clean Gaussians  --  top: (DW-UP)/2,  middle: (DW+UP)/2,  all six energies pooled (25-150 GeV)",build,srcName(SRC)));
     gSystem->mkdir("figures/narrative",kTRUE); c->Print(Form("figures/narrative/pub_%s.png",build));

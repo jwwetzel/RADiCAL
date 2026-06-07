@@ -275,16 +275,18 @@
   underlying data was bad. Read with the robust source and shown the way the publication does it
   (<b>arXiv:2401.01747, Fig.&nbsp;21</b>), the data is unambiguous. For each build we pool <b>all six energies</b>, bin by
   shower amplitude (&Sigma;LG), and Gaussian-fit the <b>(DW&minus;UP)/2</b> (MCP-free) and <b>(DW+UP)/2</b> (absolute)
-  distributions in <i>every</i> bin. They are clean Gaussians at every amplitude; &sigma;<sub>t</sub> falls smoothly with
-  light, and the brightest-1000 slice reaches each build's headline. This is the data behind every number on this page.</p>
+  distributions in <i>every</i> bin (each &sigma; is the fitted <i>central-peak</i> width &mdash; the satellite shoulder is
+  excluded, exactly as the publication does). They are clean Gaussians at every amplitude. The bottom panel then reads
+  &sigma;<sub>t</sub> in <b>consecutive 1000-event brightness slices</b> &mdash; brightest 1000, next 1000, &hellip; &mdash;
+  the <i>same</i> selection size as the headline, plotted separately per beam energy: where the energies overlap they fall
+  on <b>one curve</b>, so timing is set by <b>light yield, not beam energy</b>, and the brightest 1000 is the headline.</p>
   <figure>
     <img src="assets/pub_DSB1.png" alt="DSB1 per-amplitude-bin timing distributions, arXiv Fig 21 style">
-    <figcaption><b>DSB1 (LYSO, lgcfd).</b> Top: (DW&minus;UP)/2 distributions per amplitude bin with Gaussian fits
-    (each &sigma; is the fitted central-peak width); middle: the (DW+UP)/2 absolute cross-check (wider, since it keeps the
-    common-mode jitter the difference cancels); bottom: &sigma;<sub>t</sub> vs amplitude. The binned points are
-    <b>equal-population</b> (~58k events each), so the curve bottoms near 35 ps; the <b>brightest-1000</b> slice
-    (&#9733;, a tighter cut &mdash; the bright tip of the last bin) reaches <b>25.4 ps</b>, the headline. The dashed line
-    is the continuation as the selection tightens.</figcaption>
+    <figcaption><b>DSB1 (LYSO, lgcfd).</b> Top: (DW&minus;UP)/2 distributions per amplitude bin with central-peak Gaussian
+    fits; middle: the (DW+UP)/2 absolute cross-check (wider &mdash; it keeps the common-mode jitter the difference cancels).
+    Bottom: &sigma;<sub>t</sub> in consecutive <b>1000-event brightness slices</b> (the headline's selection size), per beam
+    energy (colour). The curves <b>collapse onto one &sigma;(amplitude) law</b> where they overlap; the brightest 1000 of
+    150&nbsp;GeV (&#9733;) is the <b>25.4 ps</b> headline &mdash; the natural bright end of the series.</figcaption>
   </figure>
   <figure>
     <img src="assets/pub_LUAG.png" alt="LuAG per-amplitude-bin timing distributions, arXiv Fig 21 style">
