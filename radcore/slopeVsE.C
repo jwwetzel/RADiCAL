@@ -81,31 +81,50 @@ void slopeVsE(const char* build){
             double bU,eU; if(fitSlope(pts[i],0.6*med,300,bU,eU)){ bu[i].push_back(bU); eu[i].push_back(eU); }
         }
     }
-    // plot: 8 panels, b vs E (nominal black, unsaturated red), + linear fit
-    TCanvas* c=new TCanvas("c_se","",1400,720); c->Divide(4,2,0.001,0.001);
+    // ---- report-quality figure: title strip + 4x2 panels ----------------------
+    TCanvas* c=new TCanvas("c_se","",1500,820);
+    TPad* tp=new TPad("tp","",0,0.925,1,1.0); tp->SetFillStyle(0); tp->Draw(); tp->cd();
+    { TLatex t; t.SetNDC(); t.SetTextAlign(22);
+      t.SetTextFont(62); t.SetTextSize(0.44);
+      t.DrawLatex(0.5,0.66,Form("%s :  HG / LG gain slope vs beam energy", build));
+      t.SetTextFont(42); t.SetTextSize(0.30); t.SetTextColor(kGray+3);
+      t.DrawLatex(0.5,0.24,"#color[1]{#bullet} nominal fit [40,700 mV]     #color[2]{#circ} unsaturated [40,300 mV]     error bars = stat #oplus syst (spike-cut & fit-range)"); }
+    c->cd();
+    TPad* mp=new TPad("mp","",0,0,1,0.925); mp->SetFillStyle(0); mp->Draw(); mp->cd();
+    mp->Divide(4,2,0.006,0.010);
     printf("[%s] db/dE (nominal [40,700]) and (unsaturated [40,300]):\n", build);
-    for(int i=0;i<cfg.nend;++i){ c->cd(i+1); gPad->SetGridy();
+    for(int i=0;i<cfg.nend;++i){ mp->cd(i+1);
+        gPad->SetGridy(); gPad->SetTopMargin(0.11); gPad->SetLeftMargin(0.17); gPad->SetBottomMargin(0.15); gPad->SetRightMargin(0.04);
         int n=bn[i].size(); if(n<3){ continue; }
+        // y-range covering BOTH series and their errors
+        double ymin=1e9,ymax=-1e9;
+        for(int k=0;k<n;++k){ ymin=std::min(ymin,bn[i][k]-en[i][k]); ymax=std::max(ymax,bn[i][k]+en[i][k]); }
+        for(size_t k=0;k<bu[i].size();++k){ ymin=std::min(ymin,bu[i][k]-eu[i][k]); ymax=std::max(ymax,bu[i][k]+eu[i][k]); }
+        double pad=0.18*(ymax-ymin)+0.05;
         TGraphErrors* g=new TGraphErrors(n,&Ev[i][0],&bn[i][0],nullptr,&en[i][0]);
-        g->SetMarkerStyle(20); g->SetMarkerColor(kBlack); g->SetLineColor(kBlack); g->SetMarkerSize(1.3);
-        double ymin=*std::min_element(bn[i].begin(),bn[i].end()), ymax=*std::max_element(bn[i].begin(),bn[i].end());
-        g->SetTitle(Form("%s;beam energy (GeV);HG/LG slope",cfg.end[i].name.c_str()));
-        g->GetYaxis()->SetRangeUser(ymin-0.5,ymax+0.5); g->Draw("AP");
-        TF1 f("f","[0]+[1]*x",0,160); g->Fit(&f,"Q");
-        double dbdE=f.GetParameter(1), edb=f.GetParError(1), b0=f.GetParameter(0);
+        g->SetMarkerStyle(20); g->SetMarkerColor(kBlack); g->SetLineColor(kBlack); g->SetMarkerSize(1.4); g->SetLineWidth(2);
+        g->SetTitle(Form("%s;beam energy (GeV);HG / LG slope", cfg.end[i].name.c_str()));
+        g->GetYaxis()->SetRangeUser(ymin-pad,ymax+pad);
+        g->GetXaxis()->SetLimits(0,165);
+        g->GetXaxis()->SetTitleSize(0.060); g->GetYaxis()->SetTitleSize(0.060);
+        g->GetXaxis()->SetLabelSize(0.052); g->GetYaxis()->SetLabelSize(0.052);
+        g->GetYaxis()->SetTitleOffset(1.35); g->GetXaxis()->SetTitleOffset(1.05);
+        g->Draw("AP");
+        TF1* f=new TF1(Form("f%d",i),"[0]+[1]*x",0,165); f->SetLineColor(kBlack); f->SetLineStyle(2); f->SetLineWidth(2);
+        g->Fit(f,"Q"); f->Draw("SAME");
+        double dbdE=f->GetParameter(1), edb=f->GetParError(1), b0=f->GetParameter(0);
         double pct = b0!=0 ? 100.0*dbdE*125.0/b0 : 0;   // % change over 25->150
+        double dbu=0;
         if((int)bu[i].size()==n){ TGraphErrors* gu=new TGraphErrors(n,&Ev[i][0],&bu[i][0],nullptr,&eu[i][0]);
-            gu->SetMarkerStyle(24); gu->SetMarkerColor(kRed+1); gu->SetLineColor(kRed+1); gu->SetMarkerSize(1.3); gu->Draw("P SAME"); }
-        TLatex tx; tx.SetNDC(); tx.SetTextSize(0.06); tx.SetTextColor(kBlue+2);
-        tx.DrawLatex(0.18,0.86,Form("db/dE=%.4f#pm%.4f", dbdE,edb));
-        tx.DrawLatex(0.18,0.80,Form("(%.1f%% over range)", pct));
-        // unsaturated trend
-        double dbu=0; if((int)bu[i].size()==n){ TGraphErrors gg(n,&Ev[i][0],&bu[i][0],nullptr,&eu[i][0]); TF1 fu("fu","[0]+[1]*x",0,160); gg.Fit(&fu,"Q"); dbu=fu.GetParameter(1);}
+            gu->SetMarkerStyle(24); gu->SetMarkerColor(kRed+1); gu->SetLineColor(kRed+1); gu->SetMarkerSize(1.4); gu->SetLineWidth(2); gu->Draw("P SAME");
+            TGraphErrors gg(n,&Ev[i][0],&bu[i][0],nullptr,&eu[i][0]); TF1 fu("fu","[0]+[1]*x",0,165); gg.Fit(&fu,"Q"); dbu=fu.GetParameter(1); }
+        TLatex nm; nm.SetNDC(); nm.SetTextFont(62); nm.SetTextSize(0.090); nm.SetTextAlign(22); nm.SetTextColor(kBlack);
+        nm.DrawLatex(0.60,0.955,cfg.end[i].name.c_str());
+        TLatex tx; tx.SetNDC(); tx.SetTextSize(0.060); tx.SetTextColor(kBlue+2); tx.SetTextAlign(12);
+        tx.DrawLatex(0.21,0.875,Form("#Deltab = %+.1f%% (%.1f#sigma)", pct, edb>0?std::fabs(dbdE/edb):0));
         printf("  %-5s nominal db/dE=%+.4f (%.1f%% over 25-150, %.1f-sigma)   unsat db/dE=%+.4f\n",
                cfg.end[i].name.c_str(), dbdE, pct, edb>0?std::fabs(dbdE/edb):0, dbu);
     }
-    c->cd(0); TLatex t; t.SetNDC(); t.SetTextFont(62); t.SetTextSize(0.03);
-    t.DrawLatex(0.22,0.985,Form("%s  HG/LG slope vs energy   (black = fit [40,700],  red = unsaturated [40,300])",build));
     gSystem->mkdir("radcore/figs",kTRUE); c->Print(Form("radcore/figs/slope_vs_E_%s.png",build));
     printf("wrote radcore/figs/slope_vs_E_%s.png\n",build);
 }
