@@ -72,10 +72,10 @@ void narrativeLadder(const char* build="DSB1", int K=1000){
       gLk->SetMarkerStyle(20); gLk->SetMarkerColor(kAzure+2); gLk->SetMarkerSize(1.5); gLk->Draw("P SAME");
       double bk=fitFloor(gLk,kAzure+2,1,3);
       TLegend* lg=new TLegend(0.34,0.72,0.94,0.88); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.033);
-      lg->AddEntry(gLq,Form("quantile best-bin -- OOS-robust (29.6=29.6): floor %.0f ps",bq),"pl");
-      lg->AddEntry(gLk,Form("brightest-%d slice -- best case, NOT OOS-stable: floor %.0f ps",K,bk),"pl"); lg->Draw();
+      lg->AddEntry(gLq,Form("quantile best-bin -- broad/typical bright: floor %.0f ps",bq),"pl");
+      lg->AddEntry(gLk,Form("brightest slice -- best-contained showers: floor %.0f ps",bk),"pl"); lg->Draw();
       TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.034);
-      tt.DrawLatex(0.13,0.94,"hg_lgcfd: the robust number is the quantile (~30 ps); the thin slice is optimistic");
+      tt.DrawLatex(0.13,0.94,"hg_lgcfd: both selections OOS-stable -- 26 ps (brightest) to 30 ps (typical)");
       c->Print("figures/narrative/narrative_methods.png"); }
     printf("  wrote narrative_ladder.png + narrative_methods.png\n");
 }
