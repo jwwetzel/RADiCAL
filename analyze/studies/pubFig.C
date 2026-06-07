@@ -171,14 +171,23 @@ void pubFig(const char* build="DSB1"){
     gd->SetMarkerStyle(22); gd->SetMarkerColor(kAzure+2); gd->SetLineColor(kAzure+2); gd->SetMarkerSize(1.7); gd->SetLineWidth(2);
     gs->SetMarkerStyle(20); gs->SetMarkerColor(kOrange+8); gs->SetLineColor(kOrange+8); gs->SetMarkerSize(1.5); gs->SetLineWidth(2);
     double ymax=0; for(int b=0;b<NB;++b) ymax=std::max(ymax,std::max(sdiff[b],ssum[b]));
-    gd->SetTitle(";shower amplitude  #SigmaLG (a.u.)  #minus  all energies 25#minus150 GeV;time resolution  #sigma_{t} (ps)");
+    gd->SetTitle(";shower amplitude  #SigmaLG (a.u.)  #minus  all energies 25#minus150 GeV  (bins ~58k events, star = brightest 1000);time resolution  #sigma_{t} (ps)");
     gd->GetYaxis()->SetRangeUser(0,ymax*1.18); gd->GetYaxis()->SetTitleSize(0.062); gd->GetYaxis()->SetTitleOffset(0.62);
-    gd->GetYaxis()->SetLabelSize(0.055); gd->GetXaxis()->SetTitleSize(0.058); gd->GetXaxis()->SetTitleOffset(1.15); gd->GetXaxis()->SetLabelSize(0.05);
+    gd->GetYaxis()->SetLabelSize(0.055); gd->GetXaxis()->SetTitleSize(0.050); gd->GetXaxis()->SetTitleOffset(1.25); gd->GetXaxis()->SetLabelSize(0.05);
+    gd->GetXaxis()->SetLimits(amp[0]-150, (sTop>0?ampTop:amp[NB-1])*1.05);   // room for the brightest-1000 tip
     gd->Draw("ALP"); gs->Draw("LP SAME");
-    if(sTop>0){ TLine* ln=new TLine(amp[0],sTop,amp[NB-1],sTop); ln->SetLineColor(kAzure+3); ln->SetLineStyle(2); ln->SetLineWidth(2); ln->Draw();
-        TLatex th; th.SetTextColor(kAzure+3); th.SetTextSize(0.05); th.DrawLatex(amp[1],sTop+ymax*0.03,Form("brightest-1000 headline: %.1f ps",sTop)); }
-    TLegend* lg=new TLegend(0.70,0.70,0.965,0.95); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.058);
-    lg->AddEntry(gd,"(DW#minusUP)/2  (MCP-free)","lp"); lg->AddEntry(gs,"(DW+UP)/2  (absolute)","lp"); lg->Draw();
+    TGraph* gtop=nullptr;
+    if(sTop>0){
+        // the brightest-1000 headline is the EXTREME bright tip of the last bin -- a tighter
+        // selection (1000 ev) than any equal-population point (~58k ev). Plot it as a real
+        // point at its own (higher) mean amplitude and connect the curve down to it.
+        TLine* cn=new TLine(amp[NB-1],sdiff[NB-1],ampTop,sTop); cn->SetLineColor(kAzure+2); cn->SetLineStyle(2); cn->SetLineWidth(2); cn->Draw();
+        gtop=new TGraph(1,&ampTop,&sTop); gtop->SetMarkerStyle(29); gtop->SetMarkerColor(kAzure+3); gtop->SetMarkerSize(3.4); gtop->Draw("P SAME");
+        TLatex th; th.SetTextColor(kAzure+3); th.SetTextSize(0.05); th.SetTextAlign(31); th.DrawLatex(ampTop, sTop+ymax*0.05, Form("brightest-1000: %.1f ps",sTop));
+    }
+    TLegend* lg=new TLegend(0.60,0.66,0.965,0.95); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.05);
+    lg->AddEntry(gd,"(DW#minusUP)/2  (MCP-free), ~58k/bin","lp"); lg->AddEntry(gs,"(DW+UP)/2  (absolute)","lp");
+    if(gtop) lg->AddEntry(gtop,"brightest-1000 (the headline)","p"); lg->Draw();
     c->cd(); TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.025);
     tt.DrawLatex(0.05,0.967,Form("%s (%s): per-amplitude-bin timing distributions are clean Gaussians  --  top: (DW-UP)/2,  middle: (DW+UP)/2,  all six energies pooled (25-150 GeV)",build,srcName(SRC)));
     gSystem->mkdir("figures/narrative",kTRUE); c->Print(Form("figures/narrative/pub_%s.png",build));
