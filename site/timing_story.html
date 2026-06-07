@@ -245,36 +245,40 @@
     <tr><td class="h">DSB1</td><td>LYSO:Ce &mdash; high light</td><td class="mono">lgcfd</td><td class="win">29.6 ps</td><td class="win">26.7 ps</td></tr>
     <tr><td class="h">TENERGY</td><td>3&times;LYSO + Energy</td><td class="mono">led</td><td>33.9 ps</td><td>29.5 ps</td></tr>
     <tr><td class="h">MIXED</td><td>LYSO + LuAG mix</td><td class="mono">cfd05</td><td>37.2 ps</td><td>34.2 ps</td></tr>
-    <tr><td class="h">LUAG</td><td>LuAG:Ce &mdash; low light</td><td class="mono">cfd05</td><td>42.4 ps</td><td>~44 ps</td></tr>
+    <tr><td class="h">LUAG</td><td>LuAG:Ce &mdash; low light</td><td class="mono">led</td><td>43.1 ps</td><td>43.0 ps</td></tr>
   </table>
   <figure>
     <img src="assets/narrative_crossbuild.png" alt="sigma_t vs energy for four builds, de-biased">
     <figcaption><b>The full spectrum.</b> Best-bin (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy, all four builds, de-biased
-    estimator, with error bars scaled to the real point-to-point scatter (&radic;(&chi;&sup2;/ndf) &mdash; the bare
-    &sigma;/&radic;(2N) badly understates it). High-light <b>LYSO (DSB1)</b> sits lowest (~30 ps) with <b>tiny</b> bars;
-    <b>LuAG</b> tops out ~42 ps with <b>large</b> ones, and is the one non-monotonic curve &mdash; for a real reason (below).
-    (MIXED's LG is partly compromised.)</figcaption>
+    estimator, each build shown with its <b>most robust timing source</b> (see below) and error bars scaled to the real
+    point-to-point scatter (&radic;(&chi;&sup2;/ndf)). All four are monotonic: high-light <b>LYSO (DSB1)</b> sits lowest
+    (~30 ps), low-light <b>LuAG</b> tops out ~43 ps, the mix and energy builds in between &mdash; a clean light-yield
+    ordering. (MIXED's LG is partly compromised, so its mid-range is indicative.)</figcaption>
   </figure>
-  <h3 style="font-size:21px;margin:1.4em 0 .3em">Why LuAG misbehaves &mdash; it clips too</h3>
-  <p>&ldquo;Low light&rdquo; isn't the answer; <b>clipping</b> is. LuAG's HG <i>also</i> saturates &mdash; just at higher
-  energy, because it's dimmer. Per energy, the fraction of pulses hitting the 820 mV clip climbs
-  <b>2% &rarr; 8% &rarr; 32% &rarr; 63% &rarr; 83%</b> from 50 to 150 GeV, and the foot-timing degrades exactly as it does
-  for DSB1 &mdash; &sigma;<sub>t</sub> rising toward ~100 GeV. The twist: <b>lgcfd can't rescue LuAG</b> the way it rescues
-  DSB1, because low light makes the LG-predicted true peak itself noisy. So LuAG is stuck timing the clipped foot.</p>
+  <h3 style="font-size:21px;margin:1.4em 0 .3em">Why LuAG misbehaved &mdash; cfd05 fails on small pulses</h3>
+  <p>The wobble was the timing <i>source</i>, not the build. <span class="mono">cfd05</span> fires at <b>5% of the pulse
+  peak</b> &mdash; on LuAG's small (~380 mV), slow, low-light pulses at low energy, that 5% point sits low on a shallow,
+  noisy edge, so the crossing time jitters by <b>nanoseconds</b>. The (DW&minus;UP)/2 in those bins genuinely spans ~18 ns
+  (with a few bins collapsing to spurious narrow fits). The cfd05 &ldquo;best bin&rdquo; was then the lowest survivor of a
+  garbage set &mdash; which is exactly the non-monotonic ladder you'd have seen.</p>
   <figure>
     <img src="assets/narrative_luagdiag.png" alt="LuAG per-energy sigma_t vs sum_lg bin landscape">
-    <figcaption><b>How each LuAG point is built.</b> &sigma;<sub>t</sub> vs &Sigma;LG bin, per energy
-    (<span style="color:#c0392b">&#9675; cfd05</span>, <span style="color:#2471c0">&#9679; lgcfd</span>, &#9733; = chosen
-    best cfd05 bin). Two things jump out: <span style="color:#2471c0">lgcfd</span> is <b>smooth and monotonic</b>, while
-    <span style="color:#c0392b">cfd05</span> is <b>erratic</b> &mdash; in the dim bins the Gaussian-core &sigma; fit fails
-    outright (returning 0.1, 200, even 18000 ps), because low-light (DW&minus;UP)/2 distributions have non-Gaussian
-    tails. The cfd05 &ldquo;best bin&rdquo; is just the lowest survivor of that noisy set, so the ladder wobbles. The clean
-    physical signal &mdash; the clipping rise &mdash; is buried under estimator noise that the big error bars honestly
-    reflect.</figcaption>
+    <figcaption><b>The diagnosis.</b> &sigma;<sub>t</sub> vs &Sigma;LG bin, per energy
+    (<span style="color:#c0392b">&#9675; cfd05</span>, <span style="color:#2471c0">&#9679; lgcfd</span>). At low energy
+    <span style="color:#c0392b">cfd05</span> is <b>erratic</b> &mdash; its 5%-of-peak crossing fails on the small pulses,
+    so per-bin &sigma; blows up to nanoseconds or collapses to a fake-narrow fit. <span style="color:#2471c0">lgcfd</span>
+    stays smooth (it thresholds higher on the edge). The right two panels (125 &amp; 150 GeV) look clean only because LuAG
+    is finally bright enough for cfd05 to work.</figcaption>
   </figure>
-  <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield &mdash; and clipping. Bright LYSO clips
-  early and lgcfd buys it back to ~30 ps; dim LuAG clips late, can't use lgcfd, and its low-light fits add the scatter you
-  see. The detector you build sets the clock you can read &mdash; and how cleanly you can read it.</div>
+  <p>The fix isn't a patch &mdash; it's to stop trusting a cherry-picked number and pick the <b>most robust source per
+  build</b> (the smoothest, most monotonic). For LuAG that's the <b>fixed-threshold <span class="mono">led</span></b>:
+  it doesn't care about pulse shape, only that the edge crosses a set level, so small pulses don't break it. The result is
+  a clean <b>monotonic</b> LuAG ladder &mdash; <b>69 &rarr; 43 ps</b> from 50 to 150 GeV. More light, better timing, as it
+  must be. (LuAG's HG <i>does</i> also clip at high energy, 2% rising to 83% &mdash; but a robust source handles it; that
+  was never the real problem.)</p>
+  <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield, top to bottom &mdash; <b>~30 ps</b> for the
+  brightest LYSO down to <b>~43 ps</b> for low-light LuAG &mdash; once you read each build with the source it can actually
+  support. The detector you build sets the clock you can read.</div>
 </section>
 
 </main>

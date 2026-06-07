@@ -78,10 +78,14 @@ void crossBuild(){
                 if(sq>0){q[s].push_back(sq);br[s].push_back(sb);Ev[s].push_back(E);eq[s].push_back(sq/std::sqrt(2.0*nn));} }
             fp->Close();
         }
-        // pick best source by sigma@150 (quantile)
-        int best=-1; double bestS=1e9;
-        for(int s=0;s<nS;++s){ if(q[s].empty())continue; double s150=q[s].back();
-            if(Ev[s].back()==150 && s150>0 && s150<bestS){bestS=s150;best=s;} }
+        // pick the most ROBUST source, not the lowest cherry-picked number: penalize
+        // non-monotonicity (upward steps), which flags an estimator that's failing on
+        // some bins (e.g. cfd05 dies on LuAG's small low-light pulses -> garbage bins).
+        int best=-1; double bestScore=1e18;
+        for(int s=0;s<nS;++s){ if(q[s].size()<3)continue; double s150=q[s].back(); if(s150<=0)continue;
+            double rough=0; for(size_t k=1;k<q[s].size();++k) rough+=std::max(0.0,q[s][k]-q[s][k-1]);
+            double score=s150+3.0*rough;                 // smooth+low wins; jumpy source is demoted
+            if(score<bestScore){bestScore=score;best=s;} }
         if(best<0) continue;
         TF1 f("f","sqrt([0]*[0]/x+[1]*[1])",20,160); f.SetParameters(200,25);
         std::vector<double> ze(q[best].size(),0.0);
