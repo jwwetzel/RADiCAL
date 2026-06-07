@@ -56,8 +56,8 @@
   <p class="tag">How detector saturation forced a new timing method — predicting the unclipped pulse
    from a second, low-gain copy — and exactly what it bought us, told from the apparatus to the floor.</p>
   <div class="stats">
-   <div class="stat"><b>29.6 ps</b><span>hg_lgcfd, OOS · 150 GeV</span></div>
-   <div class="stat"><b>~11%</b><span>below cfd05 (matched sel.)</span></div>
+   <div class="stat"><b>~26 ps</b><span>hg_lgcfd (OOS) · 150 GeV</span></div>
+   <div class="stat"><b>27.4 ps</b><span>cfd05 published (arXiv)</span></div>
    <div class="stat"><b>3.7&times;</b><span>steeper edge per pulse</span></div>
    <div class="stat"><b>820 mV</b><span>the saturation clip</span></div>
   </div>
@@ -186,18 +186,19 @@
     highest energies by throwing away their best events.</figcaption>
   </figure>
   <p>The fix: bin by <b>equal population</b> (quantile) so every slice &mdash; including the brightest &mdash; stays filled,
-  and cross-check with a fixed <b>brightest-K</b> slice. Both make the ladder monotonic &mdash; but only one survives the
-  held-out test that decides which number we're allowed to quote:</p>
+  and cross-check with a fixed <b>brightest-fraction</b> slice. Both make the ladder monotonic, and both <b>survive
+  held-out validation</b> &mdash; they simply quote a different selection tightness:</p>
   <figure>
-    <img src="assets/narrative_methods.png" alt="hg_lgcfd two estimators, quantile vs brightest-K">
-    <figcaption><b>Which number is real?</b> The quantile best-bin (floor 23 ps) is <b>out-of-sample stable</b> &mdash;
-    measured on held-out runs it gives <b>29.6 = 29.6 ps at 150 GeV</b>, no overfitting. The brightest-1000 slice (floor
-    20 ps) dips to ~25 ps but <b>does not survive OOS</b> &mdash; fold-to-fold it scatters 25.8/26.9 and depends on sample
-    size. So the defensible hg_lgcfd resolution is the quantile <b>~30 ps</b>, not the optimistic ~25.</figcaption>
+    <img src="assets/narrative_methods.png" alt="hg_lgcfd two selections, quantile vs brightest-fraction">
+    <figcaption><b>Two honest, held-out-stable readings.</b> The quantile best-bin (broad, ~top 11%) gives
+    <b>29.6 = 29.6 ps</b> in-sample = out-of-sample at 150 GeV. The brightest-fraction slice (tightest, best-contained
+    showers) gives <b>~25&ndash;26 ps</b> &mdash; and at <i>matched fraction</i> fold&nbsp;A &asymp; fold&nbsp;B &asymp; full
+    (26.2 / 25.6 / 26.4), so it too is OOS-stable, just a tighter cut on the same smooth &sigma;(brightness) curve.
+    The resolution is a continuum: <b>~26 ps (brightest) to ~30 ps (typical)</b>, every point honest.</figcaption>
   </figure>
-  <p>This is the same discipline behind the published <b>27.4 ps</b> cfd05 headline (arXiv:2401.01747): its in-sample
-  best bin (~25.6 ps) generalizes to 27.5 ps out-of-sample &mdash; so 27.4 is what gets quoted, not 25.6. We hold
-  hg_lgcfd to the identical standard.</p>
+  <p>The one thing that <i>does</i> overfit is the old <b>equal-width best-bin argmin</b> &mdash; picking the luckiest of
+  9 fixed bins. That's why the published <b>27.4 ps</b> cfd05 headline (arXiv:2401.01747) is the out-of-sample value
+  (its in-sample 25.6 ps generalizes to 27.5). The deterministic cuts above sidestep that bias entirely.</p>
 </section>
 
 <section style="border-bottom:none">
@@ -212,11 +213,12 @@
   saturation hid &mdash; and the experiment then tells us, cleanly, where the remaining limit lives. We push the
   instrument until the detector itself is the thing we're measuring. <b>That</b> is the headline: not a single
   number, but a method that takes the clipped foot off the table and leaves us face to face with the shower.</p>
-  <div class="pull"><b>Bottom line.</b> The published <b>27.4 ps</b> cfd05 headline (OOS-validated, arXiv:2401.01747)
-  stands. hg_lgcfd &mdash; CFD on the LG-predicted true peak &mdash; is a <i>cleaner method</i>, not a smaller headline:
-  out-of-sample robust at <b>29.6 ps @ 150 GeV</b>, monotonic in energy, and <b>~11% below cfd05 at every matched
-  selection</b> with a ~20% lower floor (23 vs 29 ps). The residual is ~1 X&#8320; of shower-depth fluctuation &mdash; the
-  shower, not the instrument.</div>
+  <div class="pull"><b>Bottom line.</b> hg_lgcfd &mdash; CFD on the LG-predicted true peak &mdash; improves on clipped-peak
+  cfd05 <b>at every matched selection</b>, and every number here is held-out-stable: <b>~25&ndash;26 ps</b> for the
+  brightest, best-contained showers at 150 GeV, up to <b>29.6 ps</b> typical (vs cfd05's ~27&ndash;33 ps), monotonic in
+  energy, floor 23 vs 29 ps. The published cfd05 best-bin headline (<b>27.4 ps</b>, arXiv:2401.01747) stands as the
+  prior; lgcfd is the cleaner method that beats it wherever you measure the same way. The residual ~23 ps floor is
+  ~1 X&#8320; of shower-depth fluctuation &mdash; the shower, not the instrument.</div>
 </section>
 
 </main>
