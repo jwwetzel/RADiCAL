@@ -186,19 +186,29 @@
     highest energies by throwing away their best events.</figcaption>
   </figure>
   <p>The fix: bin by <b>equal population</b> (quantile) so every slice &mdash; including the brightest &mdash; stays filled,
-  and cross-check with a fixed <b>brightest-fraction</b> slice. Both make the ladder monotonic, and both <b>survive
-  held-out validation</b> &mdash; they simply quote a different selection tightness:</p>
+  and cross-check with a fixed <b>brightest-fraction</b> slice. Both make the ladder monotonic, both <b>survive held-out
+  validation</b> (at matched fraction, fold&nbsp;A &asymp; fold&nbsp;B &asymp; full) &mdash; they just quote a different
+  selection tightness on the same smooth &sigma;(brightness) curve: <b>~26 ps (brightest) to ~30 ps (typical)</b>.</p>
+  <h3 style="font-size:21px;margin:1.4em 0 .3em">But should you trust the &ldquo;floor&rdquo;?</h3>
+  <p>Each curve, fit to <span class="k">&sigma;<sub>t</sub> = a/&radic;E &oplus; b</span>, reports a different floor
+  <span class="k">b</span> (20 vs 23 ps) &mdash; which looks like the two selections hit different physical limits. They
+  don't. Two things make <span class="k">b</span> the softest number here:</p>
   <figure>
-    <img src="assets/narrative_methods.png" alt="hg_lgcfd two selections, quantile vs brightest-fraction">
-    <figcaption><b>Two honest, held-out-stable readings.</b> The quantile best-bin (broad, ~top 11%) gives
-    <b>29.6 = 29.6 ps</b> in-sample = out-of-sample at 150 GeV. The brightest-fraction slice (tightest, best-contained
-    showers) gives <b>~25&ndash;26 ps</b> &mdash; and at <i>matched fraction</i> fold&nbsp;A &asymp; fold&nbsp;B &asymp; full
-    (26.2 / 25.6 / 26.4), so it too is OOS-stable, just a tighter cut on the same smooth &sigma;(brightness) curve.
-    The resolution is a continuum: <b>~26 ps (brightest) to ~30 ps (typical)</b>, every point honest.</figcaption>
+    <img src="assets/narrative_methods.png" alt="both selections share one depth floor; they differ in the stochastic term a">
+    <figcaption><b>Two selections, one floor.</b> Refit with a <b>single shared floor</b>, the data are described just as
+    well (&chi;&sup2;/ndf &asymp; 1.05, same as the free fits): both selections sit on <b>one common ~22 ps floor</b>
+    (dashed), differing only in the <b>stochastic term a (221 vs 189)</b>. The brightest slice's edge is in <i>a</i>
+    &mdash; light &amp; slew, which dies off as 1/&radic;E &mdash; <b>not</b> a lower floor. The &ldquo;20 vs 23&rdquo; split was
+    purely the <b>a&harr;b anti-correlation</b> (&rho; &asymp; &minus;0.8) in a fit whose floor sits <i>below the lowest
+    data point</i>: no beam exceeded 150 GeV, so the floor is an <b>extrapolation</b> &mdash; honest to quote, but not a
+    number we measured.</figcaption>
   </figure>
-  <p>The one thing that <i>does</i> overfit is the old <b>equal-width best-bin argmin</b> &mdash; picking the luckiest of
-  9 fixed bins. That's why the published <b>27.4 ps</b> cfd05 headline (arXiv:2401.01747) is the out-of-sample value
-  (its in-sample 25.6 ps generalizes to 27.5). The deterministic cuts above sidestep that bias entirely.</p>
+  <p>So treat the floor as a shared, projected ~22 ps depth limit, and trust the <b>measured</b> &sigma;<sub>t</sub> at
+  150 GeV as the real result. (The cfd05-vs-lgcfd gap, by contrast, <i>is</i> a genuine difference: same <i>a</i>,
+  different curve &mdash; lgcfd is lower at every measured energy, not just in the extrapolation.) One thing that
+  <i>does</i> overfit is the old <b>equal-width best-bin argmin</b>; that's why the published <b>27.4 ps</b> cfd05
+  headline (arXiv:2401.01747) is the out-of-sample value (in-sample 25.6 &rarr; OOS 27.5). The deterministic cuts here
+  sidestep that bias.</p>
 </section>
 
 <section style="border-bottom:none">
