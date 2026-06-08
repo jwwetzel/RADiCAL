@@ -10,6 +10,14 @@
 //
 // The amplitude array has  2*2*9*1024 = 36864 floats per event.
 // The timevalue array has  2*2*1024   =  4096 floats per event.
+//
+// SAMPLING RATES DIFFER BY BOARD (logbook channel map; confirmed J. Wetzel 2026):
+//   DRS0 @ 5 GS/s (0.2 ns/cell) — TIMING board: the 8 HG capillary channels, both
+//                 MCP copies, the 4 Pb-glass bars, and the 1x1/2x2 trigger scints.
+//   DRS1 @ 1 GS/s (1.0 ns/cell) — energy + tracking: the 8 LG capillary channels
+//                 and the wire chambers.
+//   => only DRS0 carries the fine 0.2 ns/cell timebase; DRS1 cells are 5x coarser.
+//      Never use DRS1 (LG / wire-chamber) channels for fine timing.
 // ============================================================================
 
 #ifndef CHANNELCONFIG_H

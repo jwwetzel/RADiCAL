@@ -23,6 +23,13 @@ The **reduced/** files (~12 MB each) are all you need for the full timing / ener
 position analysis. The **raw/** files are only needed for waveform-level studies or
 re-reduction.
 
+> **Digitizer rates differ by board:** the two CAEN DT5742s ran at different sampling
+> rates — **DRS0 @ 5 GS/s** (timing: the 8 HG capillary channels, both MCP copies,
+> the 4 Pb-glass bars, the 1×1/2×2 trigger scintillators) and **DRS1 @ 1 GS/s** (the
+> 8 LG energy capillary channels + the wire chambers). Only DRS0 carries the 0.2 ns/cell
+> timebase; DRS1 cells are 5× coarser, so never use DRS1 channels for fine timing. See
+> `lib/waveform/ChannelConfig.h`.
+
 ## Download from CERNBox
 
 > **CERNBox:** <PASTE_CERNBOX_SHARE_LINK_HERE>  *(public share — folder structure
