@@ -116,8 +116,8 @@ static const int kPbGlass_t = kT_D0G1;
 // processRun.C splits on ';' and adds each entry to a TChain, so multiple
 // runs at the same energy are transparently chained together.
 //
-// Example (single file):   "Data/RUN1211_25_GeV.root"
-// Example (four runs):     "Data/RUN1258_150_GeV.root;Data/RUN1259_150_GeV.root;..."
+// Example (single file):   "data/2023/raw/RUN1211_25_GeV.root"
+// Example (four runs):     "data/2023/raw/RUN1258_150_GeV.root;data/2023/raw/RUN1259_150_GeV.root;..."
 // ---------------------------------------------------------------------------
 struct RunCfg {
     double  energy_GeV;
@@ -126,16 +126,16 @@ struct RunCfg {
 };
 
 static const RunCfg kRuns[] = {
-    {  25., "Data/RUN1211_25_GeV.root",  "25GeV"  },
-    {  50., "Data/RUN1148_50_GeV.root",  "50GeV"  },
-    {  75., "Data/RUN1112_75_GeV.root",  "75GeV"  },
-    { 100., "Data/RUN1075_100_GeV.root", "100GeV" },
-    { 125., "Data/RUN1034_125_GeV.root", "125GeV" },
+    {  25., "data/2023/raw/RUN1211_25_GeV.root",  "25GeV"  },
+    {  50., "data/2023/raw/RUN1148_50_GeV.root",  "50GeV"  },
+    {  75., "data/2023/raw/RUN1112_75_GeV.root",  "75GeV"  },
+    { 100., "data/2023/raw/RUN1075_100_GeV.root", "100GeV" },
+    { 125., "data/2023/raw/RUN1034_125_GeV.root", "125GeV" },
     // 150 GeV: four runs chained (~8.5 GB total, ~120k events)
-    { 150., "Data/RUN1258_150_GeV.root"
-            ";Data/RUN1259_150_GeV.root"
-            ";Data/RUN1260_150_GeV.root"
-            ";Data/RUN1261_150_GeV.root", "150GeV" },
+    { 150., "data/2023/raw/RUN1258_150_GeV.root"
+            ";data/2023/raw/RUN1259_150_GeV.root"
+            ";data/2023/raw/RUN1260_150_GeV.root"
+            ";data/2023/raw/RUN1261_150_GeV.root", "150GeV" },
 };
 static const int kNRuns = 6;
 
