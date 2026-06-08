@@ -323,6 +323,21 @@
     <tr><td class="h">MIXED</td><td>40.0 ps</td><td>40.2 &plusmn; 0.9 ps</td></tr>
     <tr><td class="h">LUAG</td><td>41.2 ps</td><td>36.0 &plusmn; 3.0 ps</td></tr>
   </table>
+
+  <h3 style="font-size:21px;margin:1.6em 0 .3em">How you'd actually quote it: a threshold, not a count</h3>
+  <p>&ldquo;Brightest 1000&rdquo; is convenient, but it's a fixed <i>count</i> &mdash; with 10&times; the beam time it would
+  be a tighter, brighter 1000 and a lower number. The reproducible way is a <b>threshold</b>: quote &sigma;<sub>t</sub> for
+  all showers above an amplitude cut &Sigma;LG&nbsp;&gt;&nbsp;X. Selecting the top 1000 is <i>identical</i> to one such cut
+  (the amplitude of the 1000th-brightest event) &mdash; so scan the cut and the headline becomes one point on a continuous,
+  dataset-size-independent curve.</p>
+  <figure>
+    <img src="assets/pub_thresh_DSB1.png" alt="DSB1 resolution vs amplitude threshold (cumulative)">
+    <figcaption><b>Resolution vs amplitude threshold (cumulative).</b> &sigma;<sub>t</sub> of <i>all</i> events above the cut
+    &Sigma;LG&nbsp;&gt;&nbsp;X, per energy. Raise the cut, keep only brighter showers, and &sigma;<sub>t</sub> slides from
+    <b>~50 ps</b> (all contained 150&nbsp;GeV showers) down toward the <b>24.7 ps</b> floor. The headline
+    &ldquo;brightest 1000&rdquo; is simply the point at <b>&Sigma;LG&nbsp;&gt;&nbsp;5135 &rarr; 25.3 ps</b> (&#9733;) &mdash;
+    one cut on a reproducible curve, not a special selection. (A fixed count drifts with dataset size; a threshold doesn't.)</figcaption>
+  </figure>
   <figure>
     <img src="assets/pub_res_LUAG.png" alt="LuAG resolution vs amplitude, per energy, with slew floor fit">
     <figcaption><b>LuAG &mdash; resolution &amp; floor.</b> Lower light, so the curve sits higher and is still falling steeply
