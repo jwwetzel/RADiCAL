@@ -303,36 +303,39 @@
   containment cut removes the under-measured tails that otherwise spike the dim end). Two things fall out. First, where the
   energies overlap in amplitude they land on <b>one curve</b>: timing is set by <b>light yield, not beam energy</b>. Second,
   &sigma;<sub>t</sub> falls <i>faster</i> than the 1/&radic;light of photostatistics &mdash; it goes as <b>1/light</b>, the
-  signature of <b>slew-rate timing</b> (&sigma;<sub>t</sub> = noise/slope, and slope &prop; amplitude). Fitting
-  <span class="k">&sigma;<sub>t</sub> = &radic;(a&sup2;/&Sigma;LG&sup2; &oplus; b&sup2;)</span> to the bright, converged
-  region gives the irreducible floor <span class="k">b</span> as amplitude&nbsp;&rarr;&nbsp;&infin;.</p>
+  signature of <b>slew-rate timing</b> (&sigma;<sub>t</sub> = noise/slope, and slope &prop; amplitude). We read the floor
+  off the cleanest points: the <b>brightest 1000 of each energy</b> (one open circle per colour &mdash; each energy's
+  best-measured, best-contained showers), fit with
+  <span class="k">&sigma;<sub>t</sub> = &radic;(a&sup2;/&Sigma;LG&sup2; &oplus; b&sup2;)</span> &rarr; the irreducible floor
+  <span class="k">b</span> as amplitude&nbsp;&rarr;&nbsp;&infin;.</p>
   <figure>
     <img src="assets/pub_res_DSB1.png" alt="DSB1 resolution vs amplitude, per energy, with slew floor fit">
     <figcaption><b>DSB1 &mdash; resolution &amp; floor.</b> Each colour is one beam energy, sliced into 1000-event brightness
-    bins; they collapse onto a single &sigma;(amplitude) law. The brightest 1000 of 150&nbsp;GeV (&#9733;) is the
-    <b>25.4 ps</b> headline. The slew fit (black) extrapolates to a floor <b>b = 23.5 &plusmn; 0.6 ps</b> &mdash;
-    independently consistent with the <b>~23 ps</b> floor from the &sigma;-vs-<i>energy</i> fit (Act&nbsp;V&frac12;): two
-    different extrapolations, one floor.</figcaption>
+    bins; they collapse onto a single &sigma;(amplitude) law. The brightest 1000 of 150&nbsp;GeV is the <b>25.4 ps</b>
+    headline. The slew fit (black) through the <b>brightest point of each energy</b> (&#9675;) extrapolates to a floor
+    <b>b = 24.7 &plusmn; 1.1 ps</b> &mdash; independently consistent with the <b>~23 ps</b> floor from the
+    &sigma;-vs-<i>energy</i> fit (Act&nbsp;V&frac12;): two different extrapolations, one floor.</figcaption>
   </figure>
   <table>
     <tr><th>Build</th><th>Headline (brightest 1000)</th><th>Slew floor <span class="mono">b</span> (&Sigma;LG&rarr;&infin;)</th></tr>
-    <tr><td class="h">DSB1</td><td class="win">25.4 ps</td><td>23.5 &plusmn; 0.6 ps</td></tr>
-    <tr><td class="h">TENERGY</td><td>28.7 ps</td><td>28.1 &plusmn; 0.7 ps</td></tr>
-    <tr><td class="h">MIXED</td><td>40.0 ps</td><td>35.6 &plusmn; 0.9 ps</td></tr>
-    <tr><td class="h">LUAG</td><td>41.2 ps</td><td>32.2 &plusmn; 0.8 ps</td></tr>
+    <tr><td class="h">DSB1</td><td class="win">25.4 ps</td><td>24.7 &plusmn; 1.1 ps</td></tr>
+    <tr><td class="h">TENERGY</td><td>28.7 ps</td><td>28.1 &plusmn; 1.6 ps</td></tr>
+    <tr><td class="h">MIXED</td><td>40.0 ps</td><td>40.2 &plusmn; 0.9 ps</td></tr>
+    <tr><td class="h">LUAG</td><td>41.2 ps</td><td>36.0 &plusmn; 3.0 ps</td></tr>
   </table>
   <figure>
     <img src="assets/pub_res_LUAG.png" alt="LuAG resolution vs amplitude, per energy, with slew floor fit">
     <figcaption><b>LuAG &mdash; resolution &amp; floor.</b> Lower light, so the curve sits higher and is still falling steeply
-    at the brightest; the slew fit floor is <b>32 ps</b>.</figcaption>
+    at the brightest; the brightest-per-energy slew fit gives a floor <b>36 ps</b>.</figcaption>
   </figure>
   <figure>
     <img src="assets/pub_res_TENERGY.png" alt="TENERGY resolution vs amplitude with slew floor fit">
-    <figcaption><b>TENERGY &mdash; resolution &amp; floor.</b> Floor <b>28 ps</b>, near its 150&nbsp;GeV headline.</figcaption>
+    <figcaption><b>TENERGY &mdash; resolution &amp; floor.</b> Floor <b>28 ps</b>, right at its 150&nbsp;GeV headline.</figcaption>
   </figure>
   <figure>
     <img src="assets/pub_res_MIXED.png" alt="MIXED resolution vs amplitude with slew floor fit">
-    <figcaption><b>MIXED &mdash; resolution &amp; floor.</b> Floor <b>36 ps</b> (LG partly compromised, so indicative).</figcaption>
+    <figcaption><b>MIXED &mdash; resolution &amp; floor.</b> Floor <b>40 ps</b> (LG partly compromised, so its brightest
+    points barely fall &mdash; indicative only).</figcaption>
   </figure>
   <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield, top to bottom &mdash; <b>25.3 ps</b> for the
   brightest LYSO down to <b>~42 ps</b> for low-light LuAG &mdash; once you read each build with the source it can actually

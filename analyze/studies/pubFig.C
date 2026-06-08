@@ -200,34 +200,33 @@ void pubFig(const char* build="DSB1"){
 
     const int ecol[6]={kViolet+1,kAzure+2,kTeal+2,kSpring-6,kOrange+7,kRed+1};
     std::vector<TGraph*> gE(nE,nullptr);
-    std::vector<double> fX,fY,fE;     // all slice points -> floor fit
+    std::vector<double> fX,fY,fE;     // BRIGHTEST slice of each energy -> floor fit
     double gymax=0,gminA=1e9,gmaxA=-1e9;
     for(int e=0;e<nE;++e){ auto V=byE[e]; if((int)V.size()<KS) continue;
         std::sort(V.begin(),V.end(),[](const EV&a,const EV&b){return a.slg<b.slg;});
         int ns=(int)(V.size()/KS); std::vector<double> ax,ay;
         for(int j=0;j<ns;++j){ size_t hi=V.size()-(size_t)j*KS, lo=hi-KS; double sa=0;
             std::vector<float> d_; for(size_t k=lo;k<hi;++k){ d_.push_back(V[k].dmu); sa+=V[k].slg; }
-            double sg=tebSigma(d_); if(sg>0){ ax.push_back(sa/KS); ay.push_back(sg);
-                fX.push_back(sa/KS); fY.push_back(sg); fE.push_back(sg/std::sqrt(2.0*KS)); } }
+            double sg=tebSigma(d_); if(sg>0){ ax.push_back(sa/KS); ay.push_back(sg); } }
         if(ax.size()<2) continue;
         TGraph* g=new TGraph(ax.size(),&ax[0],&ay[0]); g->SetLineColor(ecol[e]); g->SetLineWidth(2);
         g->SetMarkerColor(ecol[e]); g->SetMarkerStyle(20); g->SetMarkerSize(0.5); gE[e]=g;
+        // ax[0],ay[0] = brightest 1000 of THIS energy = its best-measured (cleanest) point
+        fX.push_back(ax[0]); fY.push_back(ay[0]); fE.push_back(ay[0]/std::sqrt(2.0*KS));
         for(double y:ay) gymax=std::max(gymax,y); for(double a:ax){gminA=std::min(gminA,a);gmaxA=std::max(gmaxA,a);} }
     if(gymax>140)gymax=140;
 
-    // floor fit: SLEW-limited timing, sigma_t = sqrt(a^2/x^2 + b^2), x = amplitude.
-    // (slew: sigma_t = noise/slope, slope proportional to amplitude -> sigma ~ 1/x, which
-    //  falls FASTER than the 1/sqrt(x) photostatistics form -- matching the data.)
-    // Fit only the BRIGHT, converged region (x > xcut) where the curves coincide and
-    // the floor is being approached; b = the irreducible floor as amplitude -> infinity.
-    double xcut=0.42*gmaxA;
-    std::vector<double> qx,qy,qe; for(size_t i=0;i<fX.size();++i) if(fX[i]>xcut){qx.push_back(fX[i]);qy.push_back(fY[i]);qe.push_back(fE[i]);}
-    TGraphErrors* gAll=new TGraphErrors(qx.size(),&qx[0],&qy[0],0,&qe[0]);
-    TF1 ff("ff","sqrt([0]*[0]/(x*x)+[1]*[1])",xcut,gmaxA); ff.SetParameters(60000,18);
+    // FLOOR fit on the BRIGHTEST slice of EACH energy (the best-contained, least-depth-
+    // fluctuation, cleanest point per energy -- one per colour). SLEW-limited timing:
+    // sigma_t = sqrt(a^2/x^2 + b^2) (sigma = noise/slope, slope proportional to amplitude
+    // -> sigma ~ 1/x, falling faster than 1/sqrt(x) photostatistics). b = floor at x->inf.
+    TGraphErrors* gAll=new TGraphErrors(fX.size(),&fX[0],&fY[0],0,&fE[0]);
+    double xlo=1e9,xhi=-1e9; for(double x:fX){xlo=std::min(xlo,x);xhi=std::max(xhi,x);}
+    TF1 ff("ff","sqrt([0]*[0]/(x*x)+[1]*[1])",xlo,xhi); ff.SetParameters(60000,18);
     gAll->Fit(&ff,"Q0");
     double bF=std::fabs(ff.GetParameter(1)), beF=ff.GetParError(1);
     double cn=ff.GetChisquare()/std::max(1,ff.GetNDF()); if(cn>1) beF*=std::sqrt(cn);
-    printf("  brightest-1000 (headline) = %.1f ps; SLEW FLOOR fit b = %.1f +- %.1f ps (x>%.0f, chi2/ndf=%.1f)\n",sTop,bF,beF,xcut,cn);
+    printf("  headline=%.1f ps; FLOOR (brightest-per-energy, n=%zu) b=%.1f +- %.1f ps (chi2/ndf=%.1f)\n",sTop,fX.size(),bF,beF,cn);
 
     TCanvas* c2=new TCanvas("pub2","",1040,720);
     c2->SetLeftMargin(0.10); c2->SetRightMargin(0.035); c2->SetTopMargin(0.085); c2->SetBottomMargin(0.13); c2->SetGridy();
@@ -236,10 +235,11 @@ void pubFig(const char* build="DSB1"){
     fr->GetYaxis()->SetTitleSize(0.045); fr->GetYaxis()->SetTitleOffset(1.05); fr->GetYaxis()->SetLabelSize(0.04);
     fr->GetXaxis()->SetTitleSize(0.045); fr->GetXaxis()->SetTitleOffset(1.30); fr->GetXaxis()->SetLabelSize(0.04);
     for(int e=0;e<nE;++e) if(gE[e]) gE[e]->Draw("LP SAME");
-    // floor fit curve + asymptote
-    TF1* ffd=(TF1*)ff.Clone("ffd"); ffd->SetRange(xcut,gmaxA*1.05); ffd->SetLineColor(kBlack); ffd->SetLineWidth(3); ffd->Draw("SAME");
+    // floor fit curve + asymptote (fit = the brightest point of each energy, big circles)
+    TF1* ffd=(TF1*)ff.Clone("ffd"); ffd->SetRange(xlo,gmaxA*1.05); ffd->SetLineColor(kBlack); ffd->SetLineWidth(3); ffd->Draw("SAME");
     TLine* fl=new TLine(gminA-100,bF,gmaxA*1.05,bF); fl->SetLineColor(kBlack); fl->SetLineStyle(2); fl->SetLineWidth(2); fl->Draw();
-    TLatex tf; tf.SetTextColor(kBlack); tf.SetTextSize(0.040); tf.DrawLatex(gminA+0.28*(gmaxA-gminA),bF-gymax*0.075,Form("slew floor  b = %.1f #pm %.1f ps   (#sigma_{t}=#sqrt{a^{2}/#SigmaLG^{2} #oplus b^{2}})",bF,beF));
+    TGraph* gpts=new TGraph(fX.size(),&fX[0],&fY[0]); gpts->SetMarkerStyle(24); gpts->SetMarkerColor(kBlack); gpts->SetMarkerSize(2.4); gpts->SetLineWidth(0); gpts->Draw("P SAME");
+    TLatex tf; tf.SetTextColor(kBlack); tf.SetTextSize(0.040); tf.DrawLatex(gminA+0.20*(gmaxA-gminA),bF-gymax*0.085,Form("slew floor  b = %.1f #pm %.1f ps     (fit to #circ = best 1000 of each energy)",bF,beF));
     if(sTop>0){ TGraph* gh=new TGraph(1,&ampTop,&sTop); gh->SetMarkerStyle(29); gh->SetMarkerColor(kRed+2); gh->SetMarkerSize(2.8); gh->Draw("P SAME");
         TLatex th; th.SetTextColor(kRed+2); th.SetTextSize(0.038); th.SetTextAlign(31); th.DrawLatex(ampTop,sTop+gymax*0.22,Form("brightest 1000 = headline: %.1f ps",sTop)); }
     TLegend* lg2=new TLegend(0.42,0.62,0.965,0.90); lg2->SetBorderSize(0); lg2->SetFillStyle(0); lg2->SetTextSize(0.034); lg2->SetNColumns(3);
