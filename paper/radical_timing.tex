@@ -1,8 +1,8 @@
 %% RADiCAL timing paper -- NIM A (Elsevier elsarticle) style, preprint format.
 %% Compile: tectonic radical_timing.tex   (or pdflatex, twice)
-%% NOTE: the author/affiliation block and a few references are PLACEHOLDERS to be
-%% completed with the full RADiCAL author list before submission.
-\documentclass[preprint,12pt]{elsarticle}
+%% NOTE: the author/affiliation block is a PLACEHOLDER; complete it with the full
+%% RADiCAL author list (as in Ref.~[2], NIM A 1068 (2024) 169737) before submission.
+\documentclass[final,5p,times,twocolumn]{elsarticle}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -75,12 +75,14 @@ calorimetry~\cite{cmsmtd}. Achieving this in a radiation-hard, finely-segmented
 electromagnetic calorimeter is the goal of the RADiCAL R\&D
 programme~\cite{radical}.
 
-A previous RADiCAL test-beam analysis established a time resolution of $27.4$~ps for
-$150$~GeV electrons using a constant-fraction discriminator at $5\%$ of the measured
-(clipped) pulse height~\cite{radical}. That measurement is limited by a feature of
-the front end: the high-gain (HG) channels optimised for timing saturate the
-digitiser well before the shower maximum, so the pulse \emph{peak} --- and with it
-the steepest, most informative part of the rising edge --- is never recorded. In
+A first RADiCAL test-beam measurement reported a time resolution of $\approx\!27$~ps
+at $150$~GeV using a constant-fraction discriminator at $5\%$ of the measured
+(clipped) pulse height, with the resolution parametrised as
+$\sigma_t = a/\sqrt{E}\oplus b$ and $b=17.5$~ps~\cite{radical}. That measurement is
+limited by a feature of the front end: the high-gain (HG) channels optimised for
+timing saturate the digitiser well before the shower maximum, so the pulse \emph{peak}
+--- and with it the steepest, most informative part of the rising edge --- is never
+recorded; nor was the saturated peak recovered. In
 this paper we show that the unclipped edge can be reconstructed event by event from
 a simultaneously-recorded low-gain (LG) copy of the same pulse, and that timing this
 recovered edge improves the resolution and exposes the underlying physics that sets
@@ -305,6 +307,15 @@ and the physical expectation from shower-depth fluctuation discussed in
 Section~\ref{sec:discuss} ($\sim\!28$~ps, i.e.\ $\sim\!1\,X_0$). The convergence on
 $\sim\!23$--$28$~ps makes a substantially lower floor unlikely.
 
+The earlier $\sigma_t = a/\sqrt{E}\oplus b$ parametrisation of Ref.~\cite{radical}
+returns a lower floor, $b=17.5$~ps. That form assumes a photostatistics
+($1/\sqrt{E}$) stochastic term; the data of Section~\ref{sec:slew}, however, fall as
+$1/\Sigma\mathrm{LG}$ (slew-rate limited), more steeply than $1/\sqrt{\,}$. A
+$1/\sqrt{E}$ fit forced through such data compensates with an artificially low floor.
+The slew interpretation, which matches the observed scaling, assigns more of the
+measured resolution to the irreducible term and raises the floor to $\sim\!25$~ps,
+identifying it with shower-depth fluctuation (Section~\ref{sec:discuss}).
+
 \subsection{Cross-build comparison: light yield sets the clock}
 \label{sec:cross}
 Applying the same analysis to all four builds (Fig.~\ref{fig:cross}) orders them
@@ -396,8 +407,10 @@ We thank the CERN SPS staff for the test-beam operation. %% TODO: funding/agency
 \begin{thebibliography}{9}
 \bibitem{cmsmtd} CMS Collaboration, \textit{A MIP Timing Detector for the CMS Phase-2
 Upgrade}, Technical Design Report CERN-LHCC-2019-003 (2019).
-\bibitem{radical} RADiCAL Collaboration, \textit{Precision timing with the RADiCAL
-electromagnetic calorimeter}, arXiv:2401.01747 (2024). %% verify final reference
+\bibitem{radical} C.~Perez-Lara, J.~Wetzel, U.~Akgun, et al. (RADiCAL Collaboration),
+\textit{Study of time resolution measurements and prospects for energy resolution of
+an ultra-compact sampling calorimeter (RADiCAL) module at EM shower maximum over the
+energy range 25~GeV--150~GeV}, Nucl. Instrum. Methods A \textbf{1068} (2024) 169737.
 \bibitem{drs4} S.~Ritt, R.~Dinapoli, U.~Hartmann, \textit{Application of the DRS chip
 for fast waveform digitizing}, Nucl. Instrum. Methods A \textbf{623} (2010) 486--488.
 \end{thebibliography}
