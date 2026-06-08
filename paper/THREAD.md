@@ -88,11 +88,23 @@ the published 17.5 ps, not a revision. The floor is shared shower-depth physics.
 | **7 MONEY PLOT** | light_yield_thesis | 4-in-1 | ✅ |
 | 8 kill-shot | mixed_h2h | MIXED | ✅ |
 | 9 floor | floor_model | 4 | ✅ |
+| + systematics | tab_systematics + systematics | 4 | ✅ (paperSystematics.C, §5.4) |
+| + optimization | optimization (+ opt_scan per build) | 4 | ✅ (optAppendix.C + optScan.C, App. A) |
 
-## Next batch (to fully satisfy "extend all Paper 1 & 2 plots")
-- **Paper 1 completion:** extend `clip` and `method_compare` to all LYSO builds; the systematics
-  table (configSystematics/systematicUncertainties → all builds); the selection/optimization
-  appendix (optScan/optLadder/cfdScan/channelCombinationScan — mostly param(build), just run).
+## Paper 1 — COMPLETE (systematics + optimization wired in)
+- **Systematic budget** (paperSystematics.C → Table 2 / `tab_systematics.tex`, Fig. A.8):
+  faithful in-memory mirror of the locked estimator (validated mirror==locked, Δ=0.00 ps),
+  full-stats sweep of selection knobs (brightest-N, fiducial r, MCP window, HG threshold,
+  fit range). Total selection systematic on σ_t(150): ≤1 ps (high-light), ~1.5 ps (MIXED/LUAG).
+  Floor stable: DSB1 b=19.5±1.1(st)±1.2(sy); ~20 ps across LYSO builds → **the published 17.5 ps
+  survives the variations.** The method choice (cfd05 vs recovered edge) is §5.3, excluded here.
+- **Optimization appendix** (optAppendix.C → Fig. A.7): source/CFD-fraction (adopted recovered
+  edge beats the whole clipped family), brightest-N (knee at K~1000), fiducial plateau (r=3.0),
+  HG-threshold robustness (20 mV). Per-build best-bin landscape: optScan.C → opt_scan_<build>.png.
+
+## Still open (minor Paper-1 polish + Paper 2)
+- **Paper 1 polish:** extend `clip` and `method_compare` to all LYSO builds (DSB1-only today);
+  integrate the kill-shot (mixed_h2h) into the paper body as §5.x (currently in OUTLINE only).
 - **Paper 2 (deferred plots, DSB1-only → extend):** energy resolution (configResolution),
   shower localization (showerLocalization, transverseMaps, positionCorrection), E-type response
   (etypeEnergy, etypeChar), the 4D demo (fourDdemo) — all on TENERGY + per-build.
