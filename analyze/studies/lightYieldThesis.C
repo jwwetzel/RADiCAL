@@ -65,8 +65,6 @@ void lightYieldThesis(){
         printf("%-8s  %-5s   %8.1f          %5.1f +- %.1f  (chi2/ndf=%.1f)\n",B,srcName(SRC),a,b,be,cn);
     }
     lg->Draw();
-    TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.034);
-    tt.DrawLatex(0.12,0.945,"Light yield sets the stochastic term a; the floor b is ~material-independent (#sigma_{t}=a/#sqrt{E}#oplus b)");
     gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/light_yield_thesis.png");
     printf("  wrote figures/narrative/light_yield_thesis.png\n");
 }
