@@ -1,0 +1,405 @@
+%% RADiCAL timing paper -- NIM A (Elsevier elsarticle) style, preprint format.
+%% Compile: tectonic radical_timing.tex   (or pdflatex, twice)
+%% NOTE: the author/affiliation block and a few references are PLACEHOLDERS to be
+%% completed with the full RADiCAL author list before submission.
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\graphicspath{{figs/}}
+
+\journal{Nuclear Instruments and Methods in Physics Research A}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Timing the steep edge: recovering picosecond time resolution from a
+saturated sampling calorimeter with a high-gain/low-gain ratio method}
+
+%% ---- PLACEHOLDER author block: replace with the full RADiCAL author list ----
+\author[uiowa]{J.~Wetzel\corref{cor}}
+\ead{james@animal-lamps.com}
+\cortext[cor]{Corresponding author.}
+\author[radical]{for the RADiCAL Collaboration}
+\affiliation[uiowa]{organization={University of Iowa},
+            city={Iowa City}, state={IA}, country={USA}}
+\affiliation[radical]{organization={RADiCAL Collaboration}}
+%% ---------------------------------------------------------------------------
+
+\begin{abstract}
+Future high-luminosity collider experiments require electromagnetic calorimeters
+that measure not only the energy but also the arrival time of showers to a few tens
+of picoseconds. We report time-resolution measurements made with a
+tungsten/LYSO:Ce sampling ``shashlik'' calorimeter module (RADiCAL) exposed to
+$25$--$150$~GeV electrons at the CERN SPS in May 2023. The high-gain channels used
+for timing saturate, clipping at $820$~mV and destroying the pulse peak. We recover
+the unclipped rising edge using a second, low-gain copy of each pulse: a
+constant-fraction discriminator is placed at a fixed fraction of the
+\emph{low-gain-predicted} true peak (\texttt{hg\_lgcfd}), which times an edge a
+factor $\sim3.7$ steeper than the clipped-peak foot. Using a microchannel-plate
+(MCP)-free differential estimator, $(\mathrm{DW}-\mathrm{UP})/2$, formed from the
+four upstream and four downstream silicon-photomultiplier readouts, we measure the
+time resolution and its dependence on shower brightness. The resolution improves as
+the inverse of the collected light, the signature of slew-rate-limited timing,
+reaching $25.4$~ps for the brightest, best-contained $150$~GeV showers and
+extrapolating to a floor of $24.7\pm1.1$~ps consistent with an irreducible
+shower-depth fluctuation of $\sim\!1\,X_0$. Expressed as a reproducible amplitude
+threshold rather than a fixed event count, the resolution falls continuously from
+$\sim\!50$~ps for all contained showers toward this floor. Across four detector
+builds the resolution tracks the scintillation light yield, confirming that light,
+not beam energy, sets the clock. We discuss the implications for detector design and
+a depth-corrected estimator as the route below the present floor.
+\end{abstract}
+
+\begin{keyword}
+Fast timing \sep Sampling calorimeter \sep LYSO \sep Silicon photomultiplier \sep
+Constant-fraction discrimination \sep Signal saturation \sep 4D calorimetry
+\end{keyword}
+
+\end{frontmatter}
+
+%======================================================================
+\section{Introduction}
+\label{sec:intro}
+
+At the High-Luminosity LHC and proposed future colliders, of order 100--200
+simultaneous interactions per bunch crossing overlap in space. Associating energy
+deposits with the correct primary vertex, and rejecting out-of-time pile-up,
+requires that calorimeters resolve the \emph{time} of a shower to a few tens of
+picoseconds in addition to its energy --- so-called 4D, or fast-timing,
+calorimetry~\cite{cmsmtd}. Achieving this in a radiation-hard, finely-segmented
+electromagnetic calorimeter is the goal of the RADiCAL R\&D
+programme~\cite{radical}.
+
+A previous RADiCAL test-beam analysis established a time resolution of $27.4$~ps for
+$150$~GeV electrons using a constant-fraction discriminator at $5\%$ of the measured
+(clipped) pulse height~\cite{radical}. That measurement is limited by a feature of
+the front end: the high-gain (HG) channels optimised for timing saturate the
+digitiser well before the shower maximum, so the pulse \emph{peak} --- and with it
+the steepest, most informative part of the rising edge --- is never recorded. In
+this paper we show that the unclipped edge can be reconstructed event by event from
+a simultaneously-recorded low-gain (LG) copy of the same pulse, and that timing this
+recovered edge improves the resolution and exposes the underlying physics that sets
+it. We further show that the resolution is governed by the collected scintillation
+light through a slew-rate law, extrapolate the irreducible floor, and identify its
+origin as shower-depth fluctuation.
+
+%======================================================================
+\section{Experimental setup}
+\label{sec:setup}
+
+\subsection{Detector}
+The module under test is a tungsten/LYSO:Ce sampling calorimeter of the ``shashlik''
+type: alternating plates of tungsten absorber and cerium-doped lutetium--yttrium
+oxyorthosilicate (LYSO:Ce) scintillator, read out longitudinally by wavelength-shifting
+capillaries. Four capillaries traverse the stack and are each read out at both ends,
+giving $4\times2 = 8$ silicon-photomultiplier (SiPM) channels. We label the four
+downstream ends collectively DW and the four upstream ends UP. The transverse
+position of each incident electron is measured by a wire chamber and used to define
+a fiducial region centred on the beam spot.
+
+Four detector builds were exposed, differing in their scintillator/absorber
+composition and hence in light yield: a high-light LYSO build (``DSB1''), a
+mixed LYSO/LuAG build (``MIXED''), a low-light LuAG:Ce build (``LUAG''), and a
+three-segment LYSO build with an energy section (``TENERGY''). DSB1, the brightest,
+is used for the headline measurements; all four are compared in
+Section~\ref{sec:cross}.
+
+\subsection{Readout and digitisation}
+Each capillary end is read by a SiPM whose signal is split into a high-gain (HG)
+copy, optimised for timing, and a low-gain (LG) copy, optimised for energy linearity.
+All channels are digitised by DRS4 switched-capacitor waveform digitisers
+(CAEN~DT5742)~\cite{drs4} sampling at $5$~GS/s over a 1024-cell window, with per-cell
+timing and amplitude calibration applied offline. The HG channels clip at
+$\approx\!820$~mV; the LG channels remain linear across the full energy range.
+
+\subsection{Beam and timing reference}
+The measurements were performed in a $25$--$150$~GeV electron beam at the CERN SPS in
+May 2023. A microchannel-plate photomultiplier (MCP-PMT) upstream of the module
+provides a common start signal; all per-channel crossing times in the reduced data
+are expressed relative to this MCP time. As shown below, our differential estimator
+cancels this common reference, so the MCP jitter does not enter the quoted
+resolutions.
+
+%======================================================================
+\section{Saturation and the HG/LG-ratio timing method}
+\label{sec:method}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\linewidth]{clip.png}
+\caption{Distribution of recorded high-gain pulse-peak amplitudes (one channel,
+$125$~GeV). The pile-up at $\approx\!820$~mV is the digitiser clip: most showers
+saturate, so the true peak --- and the steep edge that leads to it --- is not
+directly recorded.}
+\label{fig:clip}
+\end{figure}
+
+The difficulty is illustrated in Fig.~\ref{fig:clip}: for all but the smallest
+showers the HG pulse rises into the $820$~mV clip and piles up there, so the recorded
+waveform is flat across its maximum. A constant-fraction discriminator (CFD)
+referenced to the \emph{measured} peak is then forced onto the shallow ``foot'' of the
+pulse, where the slope --- and therefore the timing information --- is poor.
+
+The LG copy, although too small for precise timing on its own, remains linear and
+therefore measures the true pulse amplitude that the HG channel \emph{would} have
+reached. We exploit this with a per-end calibration
+\begin{equation}
+  \mathrm{HG}_\mathrm{true} = a + b\,\mathrm{LG}_\mathrm{peak},
+  \label{eq:hglg}
+\end{equation}
+determined from the unsaturated population (Fig.~\ref{fig:hglg}), which predicts the
+unclipped HG peak event by event. A CFD threshold is then placed at a fixed fraction
+($15\%$) of this predicted true peak and applied to the \emph{recorded} HG waveform.
+Because the predicted peak lies far above the clip, this threshold sits on the steep,
+unsaturated portion of the rising edge rather than on the foot. We denote the
+resulting MCP-referenced crossing time \texttt{hg\_lgcfd}.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.96\linewidth]{hglg.png}
+\caption{High-gain versus low-gain pulse-peak amplitude for the eight readout channels
+($100$~GeV). The high-gain response saturates at $820$~mV (horizontal band) while the
+low-gain copy remains linear; the per-channel linear fit (red line), Eq.~(\ref{eq:hglg}),
+predicts the unclipped true peak event by event.}
+\label{fig:hglg}
+\end{figure*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{pulse.png}
+\caption{A single saturated high-gain waveform (one channel, $125$~GeV). The recorded
+pulse clips at $820$~mV (grey); the low-gain copy predicts a true peak of $1997$~mV
+(green). Placing the CFD at $15\%$ of the predicted peak (\texttt{hg\_lgcfd}, blue)
+times an edge of $381$~mV/ns, against only $102$~mV/ns at the clipped-peak foot where
+the $5\%$ CFD (\texttt{cfd05}, red) is forced to sit --- a factor $3.7$ steeper.}
+\label{fig:pulse}
+\end{figure}
+
+The benefit is direct (Fig.~\ref{fig:pulse}): the recovered edge is timed where the
+local slope is $381$~mV/ns, against $102$~mV/ns at the clipped-peak foot --- a factor
+$\sim\!3.7$. Since the slew contribution to the time resolution scales as
+$\sigma_t \simeq \sigma_V/(\mathrm{d}V/\mathrm{d}t)$ with $\sigma_V$ the voltage noise,
+this steeper edge translates directly into better timing.
+
+%======================================================================
+\section{Timing estimator and event selection}
+\label{sec:estimator}
+
+For each event we form the per-end mean crossing time from the channels with a valid
+pulse, and combine the two ends into the differential estimator
+\begin{equation}
+  t_{\mathrm{DW-UP}} \equiv \tfrac{1}{2}\!\left(\bar t_\mathrm{DW} - \bar t_\mathrm{UP}\right),
+  \label{eq:dwup}
+\end{equation}
+where $\bar t_\mathrm{DW}$ and $\bar t_\mathrm{UP}$ average up to four downstream and
+four upstream SiPM times respectively. The difference cancels any time common to both
+ends --- in particular the MCP start --- so $t_{\mathrm{DW-UP}}$ is free of the
+reference jitter; averaging four channels per end suppresses uncorrelated
+single-channel noise by up to a factor of two. The complementary sum
+$(\mathrm{DW}+\mathrm{UP})/2$, which retains the common reference, is used only as a
+cross-check. The single-event time resolution quoted throughout is the standard
+deviation of a Gaussian fit to the \emph{central peak} of the $t_{\mathrm{DW-UP}}$
+distribution; the small non-Gaussian shoulder from mis-measured low-amplitude
+channels is excluded from the fit, as in Ref.~\cite{radical}.
+
+Events are required to fall within the wire-chamber fiducial region and to have a
+valid MCP signal. To suppress poorly-contained showers, whose low light makes them
+non-representative outliers, we require at least two of the four ends on each side to
+have a good pulse and reject events whose total low-gain signal $\Sigma\mathrm{LG}$
+(our amplitude/brightness estimator) falls below $40\%$ of the per-energy median.
+
+A central theme of this paper is the dependence of $\sigma_t$ on
+$\Sigma\mathrm{LG}$. Because shower fluctuations spread the collected light at fixed
+beam energy, $\Sigma\mathrm{LG}$ and beam energy are distinct: the brightest events
+at one energy overlap the typical events at the next. We therefore analyse the
+resolution as a function of brightness directly.
+
+%======================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Timing distributions}
+Figure~\ref{fig:dist} shows, for DSB1 with all six energies pooled and binned by
+$\Sigma\mathrm{LG}$, the $t_{\mathrm{DW-UP}}$ (top) and $(\mathrm{DW}+\mathrm{UP})/2$
+(middle) distributions together with their central-peak Gaussian fits, and the
+fitted $\sigma_t$ versus amplitude (bottom). The distributions are clean,
+single-peaked and well described by the fits at every amplitude; the differential
+estimator is consistently narrower than the absolute one, as expected once the
+common-mode reference jitter is removed. The fitted width falls monotonically with
+brightness.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{dist.png}
+\caption{DSB1 timing distributions, all energies pooled and binned by amplitude
+$\Sigma\mathrm{LG}$. Top: $(\mathrm{DW}-\mathrm{UP})/2$ (MCP-free). Middle:
+$(\mathrm{DW}+\mathrm{UP})/2$ (absolute). Each $\sigma$ (ps) is the central-peak
+Gaussian fit. Bottom: the fitted $\sigma_t$ versus amplitude for both estimators.}
+\label{fig:dist}
+\end{figure*}
+
+\subsection{Resolution versus brightness: the slew law}
+\label{sec:slew}
+Slicing each beam energy into consecutive groups of 1000 events ordered by brightness
+yields the per-energy resolution curves of Fig.~\ref{fig:res}. Two features stand
+out. First, where the energies overlap in $\Sigma\mathrm{LG}$ they fall on a
+\emph{single} curve: the time resolution is set by the collected light, not by the
+beam energy. Second, $\sigma_t$ falls faster than the $1/\sqrt{\Sigma\mathrm{LG}}$
+expected from photostatistics; it scales as $1/\Sigma\mathrm{LG}$, the signature of
+slew-rate-limited timing, since the edge slope is proportional to amplitude. We
+therefore fit
+\begin{equation}
+  \sigma_t(\Sigma\mathrm{LG}) = \sqrt{\left(\frac{a}{\Sigma\mathrm{LG}}\right)^{\!2} + b^2},
+  \label{eq:slew}
+\end{equation}
+to the brightest (best-measured) slice of each energy, where $b$ is the irreducible
+floor as $\Sigma\mathrm{LG}\to\infty$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{res.png}
+\caption{DSB1 resolution in consecutive 1000-event brightness slices, per beam energy.
+The curves collapse onto one $\sigma_t(\Sigma\mathrm{LG})$ law. The slew fit of
+Eq.~(\ref{eq:slew}) to the brightest slice of each energy (open circles) gives a floor
+$b = 24.7\pm1.1$~ps; the brightest 1000 of $150$~GeV ($\star$) is the $25.4$~ps
+headline.}
+\label{fig:res}
+\end{figure}
+
+\subsection{Resolution versus amplitude threshold}
+\label{sec:thresh}
+A fixed ``brightest-$N$'' selection is convenient but depends on the size of the data
+set. The reproducible, experiment-independent quantity is the resolution of all events
+above an amplitude \emph{threshold}. Selecting the brightest 1000 events is identical
+to one such cut (here $\Sigma\mathrm{LG} > 5135$). Scanning the threshold gives the
+cumulative curve of Fig.~\ref{fig:thresh}: as the cut is raised, only brighter,
+better-timed showers survive and $\sigma_t$ slides from $\sim\!50$~ps for all
+contained $150$~GeV showers toward the floor. The amplitude cut alone improves the
+resolution by roughly a factor of two. The headline number is thus one point on a
+continuous curve rather than a special selection.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{thresh.png}
+\caption{DSB1 resolution versus amplitude threshold: $\sigma_t$ of all events with
+$\Sigma\mathrm{LG} > X$, per energy. Raising the cut keeps brighter showers and the
+resolution approaches the floor. The ``brightest 1000'' headline is the single point
+at $\Sigma\mathrm{LG}>5135$ ($\star$).}
+\label{fig:thresh}
+\end{figure}
+
+\subsection{The floor}
+\label{sec:floor}
+The slew fit, Eq.~(\ref{eq:slew}), yields $b = 24.7\pm1.1$~ps for DSB1. An independent
+extrapolation of $\sigma_t$ versus beam energy gives a consistent
+$\sim\!23$~ps. Crucially, the data do not exhibit a measured plateau: the resolution
+is still falling, if gently, at the brightest events, so the floor is an
+extrapolation and its true uncertainty exceeds the fit error. Three estimates
+nonetheless converge: the amplitude fit ($24.7$~ps), the energy fit ($\sim\!23$~ps),
+and the physical expectation from shower-depth fluctuation discussed in
+Section~\ref{sec:discuss} ($\sim\!28$~ps, i.e.\ $\sim\!1\,X_0$). The convergence on
+$\sim\!23$--$28$~ps makes a substantially lower floor unlikely.
+
+\subsection{Cross-build comparison: light yield sets the clock}
+\label{sec:cross}
+Applying the same analysis to all four builds (Fig.~\ref{fig:cross}) orders them
+cleanly by scintillation light yield. The best-achievable (brightest-slice) resolution
+at $150$~GeV is $25.4$~ps for high-light LYSO (DSB1), $28.7$~ps for the
+LYSO+energy build (TENERGY), $40.0$~ps for the mixed build (MIXED), and $41.2$~ps for
+low-light LuAG (LUAG); the corresponding slew floors are $24.7$, $28.1$, $40.2$ and
+$36.0$~ps. More light gives a faster edge and better timing, exactly as the slew
+argument predicts. (For the low-light builds a fixed-threshold leading-edge
+discriminator is the most robust timing source, the LG-ratio CFD being susceptible to
+the small pulses; for the LYSO-rich builds \texttt{hg\_lgcfd} is used.)
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{cross.png}
+\caption{Best-achievable $(\mathrm{DW}-\mathrm{UP})/2$ resolution versus energy for the
+four builds. The ordering follows the scintillation light yield: high-light LYSO
+(DSB1) lowest, low-light LuAG highest.}
+\label{fig:cross}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Best-achievable resolution (brightest-1000 slice) and extrapolated slew floor
+at $150$~GeV for the four builds.}
+\label{tab:builds}
+\begin{tabular}{lcc}
+\toprule
+Build & $\sigma_t$ (brightest) & Slew floor $b$ \\
+\midrule
+DSB1 (LYSO, high light)      & $25.4$~ps & $24.7\pm1.1$~ps \\
+TENERGY ($3\times$LYSO+E)    & $28.7$~ps & $28.1\pm1.6$~ps \\
+MIXED (LYSO+LuAG)            & $40.0$~ps & $40.2\pm0.9$~ps \\
+LUAG (LuAG, low light)       & $41.2$~ps & $36.0\pm3.0$~ps \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%======================================================================
+\section{Discussion}
+\label{sec:discuss}
+
+The measurements show that, with the rising edge recovered, RADiCAL timing is
+slew-rate limited over the entire accessible range: $\sigma_t \propto
+1/\Sigma\mathrm{LG}$, and the resolution is a function of collected light alone. At
+the brightest events the slew term has fallen to only $\sim\!5$~ps and the floor
+dominates, so additional light yields rapidly diminishing returns --- a doubling of
+light would improve $\sigma_t$ by only a few tenths of a picosecond.
+
+What, then, is the floor? It cannot be electronics jitter alone, which the
+four-channel-per-end average already suppresses. The differential estimator
+$(\mathrm{DW}-\mathrm{UP})/2$ is, by construction, sensitive to the longitudinal
+position of the shower: light from a deeper shower reaches the downstream end earlier
+and the upstream end later, shifting the two in opposite senses. Shower-to-shower
+fluctuation in the depth of energy deposition therefore produces an irreducible spread
+in $t_{\mathrm{DW-UP}}$ that does \emph{not} decrease with light, because it is common
+to all channels at an end and geometric rather than statistical in origin. Its scale,
+$\sim\!1\,X_0$ of path-length difference, is $\sim\!25$--$28$~ps, matching the fitted
+floor. The very feature that makes the estimator MCP-free --- its differential
+construction --- is also what couples it to shower depth.
+
+This identification points to the route below the floor. The same channel-to-channel
+light-sharing that carries the depth information could be used to estimate each
+shower's depth and subtract its timing bias event by event. Such a depth-corrected
+estimator is the natural next step and is the subject of ongoing work.
+
+%======================================================================
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have demonstrated that saturation of the timing front end in a W/LYSO sampling
+calorimeter need not limit its time resolution. By predicting the unclipped pulse peak
+from a linear low-gain copy and timing a constant fraction of that predicted peak, the
+steep rising edge lost to clipping is recovered, improving on the clipped-peak result.
+Using an MCP-free differential estimator we measure a best-achievable resolution of
+$25.4$~ps for $150$~GeV electrons in the high-light LYSO build, and we show that the
+resolution is slew-rate limited, scaling as the inverse of the collected light and
+depending on shower brightness rather than beam energy. The resolution extrapolates to
+a floor of $\approx\!25$~ps, consistent across amplitude- and energy-based
+extrapolations and with the expected shower-depth fluctuation of $\sim\!1\,X_0$. Across
+four builds the resolution tracks the scintillation light yield. The dominant
+remaining limitation is the shower itself; a depth-corrected estimator offers a path
+beyond it.
+
+%======================================================================
+\section*{Acknowledgements}
+We thank the CERN SPS staff for the test-beam operation. %% TODO: funding/agency text.
+
+\begin{thebibliography}{9}
+\bibitem{cmsmtd} CMS Collaboration, \textit{A MIP Timing Detector for the CMS Phase-2
+Upgrade}, Technical Design Report CERN-LHCC-2019-003 (2019).
+\bibitem{radical} RADiCAL Collaboration, \textit{Precision timing with the RADiCAL
+electromagnetic calorimeter}, arXiv:2401.01747 (2024). %% verify final reference
+\bibitem{drs4} S.~Ritt, R.~Dinapoli, U.~Hartmann, \textit{Application of the DRS chip
+for fast waveform digitizing}, Nucl. Instrum. Methods A \textbf{623} (2010) 486--488.
+\end{thebibliography}
+
+\end{document}
