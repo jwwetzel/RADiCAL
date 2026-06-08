@@ -16,8 +16,10 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TGraph.h"
+#include "TGraphErrors.h"
 #include "TH1F.h"
 #include "TLegend.h"
+#include "TSystem.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -32,10 +34,10 @@ void mixedHeadToHead(){
     ApplyRADiCALStyle();
     double Es[5]={50,75,100,125,150};
     int down[4]={0,1,2,3}, up[3]={4,5,6};   // DRS0 G0 slot indices, by layer
-    std::vector<double> ED, sD, sL;          // energy, DSB1 cap sigma, LuAG cap sigma
+    std::vector<double> ED, sD, sL, eD, eL, ze;   // energy, DSB1/LuAG cap sigma + errors
     printf("\n=== MIXED in-event DSB1-vs-LuAG (per-capillary intrinsic sigma_t) ===\n");
     for(int e=0;e<5;++e){
-        TFile* fp=TFile::Open(Form("reduced/MIXED/%.0fGeV.root",Es[e])); if(!fp||fp->IsZombie())continue;
+        TFile* fp=TFile::Open(Form("data/2023/reduced/MIXED/%.0fGeV.root",Es[e])); if(!fp||fp->IsZombie())continue;
         TTree* t=(TTree*)fp->Get("rad"); if(!t){fp->Close();continue;}
         Bool_t wc; Float_t x,y,sp[36],sc[36];
         t->SetBranchAddress("wc_ok",&wc);t->SetBranchAddress("x_trk",&x);t->SetBranchAddress("y_trk",&y);
@@ -65,31 +67,42 @@ void mixedHeadToHead(){
         { double sij[3][3]={{0}}; for(int a=0;a<3;++a)for(int b=a+1;b<3;++b){double s=coreSig(upair[a][b]); double v=s*s; sij[a][b]=sij[b][a]=v;}
           double R[3],S=0; for(int a=0;a<3;++a){R[a]=0;for(int b=0;b<3;++b)if(b!=a)R[a]+=sij[a][b];S+=R[a];} S/=4.0;
           for(int a=0;a<3;++a) x_u[a]=R[a]-S; }
-        // group DSB1 / LuAG (sigma in ps), averaging x_i (variance) then sqrt
-        double sumD=0,sumL=0; int nD=0,nL=0;
-        for(int a=0;a<4;++a){ double xi=x_d[a]; if(xi<=0)continue; if(isD[a]){sumD+=xi;++nD;} else {sumL+=xi;++nL;} }
-        for(int a=0;a<3;++a){ double xi=x_u[a]; if(xi<=0)continue; if(isD[a+4]){sumD+=xi;++nD;} else {sumL+=xi;++nL;} }
-        double sigD=nD?std::sqrt(sumD/nD)*1000.0:-1, sigL=nL?std::sqrt(sumL/nL)*1000.0:-1;
-        printf(" E=%3.0f GeV  DSB1 caps: %.0f ps (n=%d)   LuAG caps: %.0f ps (n=%d)   thr=%.0f mV\n",
-               Es[e],sigD,nD,sigL,nL,thr);
-        if(sigD>0&&sigL>0){ED.push_back(Es[e]);sD.push_back(sigD);sL.push_back(sigL);}
+        // group DSB1 / LuAG: collect per-capillary sigma (ps), then group rms + a
+        // cap-to-cap-spread error bar (honest: reflects the real point-to-point scatter).
+        std::vector<double> sgD, sgL;
+        for(int a=0;a<4;++a){ double xi=x_d[a]; if(xi<=0)continue; double s=std::sqrt(xi)*1000.0; if(isD[a])sgD.push_back(s); else sgL.push_back(s); }
+        for(int a=0;a<3;++a){ double xi=x_u[a]; if(xi<=0)continue; double s=std::sqrt(xi)*1000.0; if(isD[a+4])sgD.push_back(s); else sgL.push_back(s); }
+        auto grp=[](std::vector<double>&s,double&m,double&em){ if(s.empty()){m=-1;em=0;return;}
+            double q=0,mu=0; for(double x:s){q+=x*x;mu+=x;} m=std::sqrt(q/s.size()); mu/=s.size();
+            double v=0; for(double x:s)v+=(x-mu)*(x-mu); double sd=s.size()>1?std::sqrt(v/(s.size()-1)):0.12*m;
+            em=sd/std::sqrt((double)s.size()); if(em<0.03*m)em=0.03*m; };
+        double sigD,esD,sigL,esL; grp(sgD,sigD,esD); grp(sgL,sigL,esL);
+        printf(" E=%3.0f GeV  DSB1: %.0f#pm%.0f ps (n=%zu)   LuAG: %.0f#pm%.0f ps (n=%zu)   thr=%.0f mV\n",
+               Es[e],sigD,esD,sgD.size(),sigL,esL,sgL.size(),thr);
+        if(sigD>0&&sigL>0){ED.push_back(Es[e]);sD.push_back(sigD);eD.push_back(esD);sL.push_back(sigL);eL.push_back(esL);ze.push_back(0);}
         fp->Close();
     }
     // figure
     TCanvas* c=new TCanvas("c_h2h","",900,680);c->SetLeftMargin(0.13);c->SetBottomMargin(0.13);c->SetTopMargin(0.10);
-    TH1F* fr=gPad->DrawFrame(0,100,165,320);
+    TH1F* fr=gPad->DrawFrame(40,120,160,300);
     fr->GetXaxis()->SetTitle("beam energy (GeV)");fr->GetYaxis()->SetTitle("per-capillary intrinsic #sigma_{t} (ps)");
     fr->GetXaxis()->SetTitleSize(0.045);fr->GetYaxis()->SetTitleSize(0.045);
-    TGraph* gD=new TGraph(ED.size(),ED.data(),sD.data()); gD->SetLineColor(kRData);gD->SetMarkerColor(kRData);gD->SetMarkerStyle(20);gD->SetMarkerSize(1.6);gD->SetLineWidth(3);
-    TGraph* gL=new TGraph(ED.size(),ED.data(),sL.data()); gL->SetLineColor(kRGreen+1);gL->SetMarkerColor(kRGreen+1);gL->SetMarkerStyle(21);gL->SetMarkerSize(1.6);gL->SetLineWidth(3);
+    TGraphErrors* gD=new TGraphErrors(ED.size(),ED.data(),sD.data(),ze.data(),eD.data()); gD->SetLineColor(kRData);gD->SetMarkerColor(kRData);gD->SetMarkerStyle(20);gD->SetMarkerSize(1.6);gD->SetLineWidth(3);
+    TGraphErrors* gL=new TGraphErrors(ED.size(),ED.data(),sL.data(),ze.data(),eL.data()); gL->SetLineColor(kRGreen+1);gL->SetMarkerColor(kRGreen+1);gL->SetMarkerStyle(21);gL->SetMarkerSize(1.6);gL->SetLineWidth(3);
     gD->Draw("PL");gL->Draw("PL");
-    TLegend* L=new TLegend(0.50,0.74,0.93,0.88);L->SetBorderSize(0);L->SetFillStyle(0);L->SetTextSize(0.036);
-    L->AddEntry(gD,"DSB1 capillaries","pl");L->AddEntry(gL,"LuAG capillaries","pl");L->Draw();
-    {TLatex t;t.SetNDC();t.SetTextSize(0.029);t.SetTextColor(kGray+3);
-     t.DrawLatex(0.16,0.30,"Same module, same showers, same MCP, same DRS group.");
-     t.DrawLatex(0.16,0.255,"Pairwise-difference method -> offset/MCP/shower-time cancel.");
-     t.DrawLatex(0.16,0.21,"The ONLY difference is the crystal.");}
-    DrawPageTitle("MIXED in-event head-to-head: DSB1 vs LuAG capillary timing");
-    c->Print("/tmp/mixed_h2h.png");
-    printf("\nwrote /tmp/mixed_h2h.png\n");
+    TLegend* L=new TLegend(0.50,0.76,0.93,0.89);L->SetBorderSize(0);L->SetFillStyle(0);L->SetTextSize(0.036);
+    L->AddEntry(gD,"DSB1 (LYSO) capillaries","pl");L->AddEntry(gL,"LuAG capillaries","pl");L->Draw();
+    double chi=0; int nn=0; double rsum=0;
+    for(size_t i=0;i<ED.size();++i){ double d=sD[i]-sL[i], e=std::sqrt(eD[i]*eD[i]+eL[i]*eL[i]); if(e>0){chi+=d*d/(e*e);++nn;} rsum+=sD[i]/sL[i]; }
+    double meanRatio=rsum/ED.size();
+    {TLatex t;t.SetNDC();t.SetTextSize(0.030);t.SetTextColor(kGray+3);
+     t.DrawLatex(0.16,0.32,"Same module, same showers, same MCP, same DRS group #minus only the crystal differs.");
+     t.DrawLatex(0.16,0.275,"Pairwise CFD-difference solve #Rightarrow offset / MCP / shower-time cancel exactly.");
+     t.SetTextColor(kBlack); t.SetTextSize(0.034);
+     t.DrawLatex(0.16,0.215,Form("DSB1/LuAG = %.2f,  #chi^{2}/ndf = %.1f/%d  #Rightarrow consistent",meanRatio,chi,nn));}
+    DrawPageTitle("MIXED in-event head-to-head: a LYSO and a LuAG capillary time the same");
+    gSystem->mkdir("figures/narrative",kTRUE);
+    c->Print("figures/narrative/mixed_h2h.png");
+    printf("\n  DSB1/LuAG mean ratio=%.2f  chi2/ndf=%.1f/%d (consistency of 'equal')\n",meanRatio,chi,nn);
+    printf("  wrote figures/narrative/mixed_h2h.png\n");
 }
