@@ -183,3 +183,73 @@ block; (15) typical-shower ~30 ps alongside 25.4.
 - Depth-corrected point in Paper 1 vs 2-paper plan → **defer to Paper 2; at most one forward-pointer point.**
 - Method ~40% of paper vs thesis is headline → **compress §III, expand §V (kill-shot + honest floor).**
 - "25.4 best result" vs "not new" → **never sell 25.4 as a record; headline the two genuine novelties.**
+
+## (f) INTEGRATED FROM THE DETECTOR REPORT (DSB1-only; `site/report/index.html`)
+The DSB1 layered report (6 layers + per-energy appendix, `makeReport.py`) supplies concrete numbers, methods,
+and QA evidence. Folded in by target section — **all DSB1 single-build; do NOT conflate with the 4-build / MIXED
+numbers.**
+
+**→ II Setup / II.B DRS4 group map.** One physical MCP passively split to both DT5742 groups (amplitude
+corr = 1.000) → MCP jitter cancels in (DW−UP)/2; SW-U is the lone group-1 cap (refs MCP2), the other 7 ref MCP1
+in group 0, so NW/NE/SE are exactly reference-free and only SW carries a sub-dominant inter-group residual
+(`mcpJitter.C`). Timing-group per-cell width RMS <1 ps (no width calibration needed; D1 LG/WC groups ~4–5 ps)
+(`drs4TimeBase.C`). Pulse primitive: negative-going, peak = ped−min, ped = mean(samp 3–52), CFD = first
+rising-edge crossing of fraction×peak (`WaveformUtils.h:37-94`).
+
+**→ III Method.** HG = sharp prompt peak in first ~18 ns; LG AC-coupled, ~35% balancing undershoot recovering
+to baseline by ~500 ns, no ringing → the LG edge-recovery copy is usable. Pulse shape energy-invariant 25–150 GeV
+(only amplitude grows; CFD-20%-aligned, 5000 wf/E) → stable CFD point (`averageWaveforms.C`). CFD-5% rationale:
+coarse 10–50% scan → CFD-20% near-optimal; fine 3/5/10/20/30/50% scan → adopt 5% (Down caps monotone in fraction
+for E≥50; 25 GeV inverts at 3% from noise) (`timingResolution.C`, `layer4_cfd_fraction_*`).
+
+**→ IV Estimator & selection.** Four named cuts: (a) 4-plane WC track (`wc_ok`); (b) per-E fiducial r<2.5–3.0 mm;
+(c) clean MCP 200<A<750 mV; (d) containment SumPb<0.30·SumLG (`SelectionCuts.h`). Per-E fiducial is OOS-optimized
+(`TimingFiducialR`: 3.0 mm if E>112 else 2.5; tightening to 2.5 improves 50/75/100 by 1.7–3.6 ps; 125 GeV
+overfits at 2.5 → in-sample 27.1→OOS 33.1, so high-E keep 3 mm), run-folded OOS bias 0.0 ps, replicas <0.5 ps
+(`fiducialTimingScan.C`). Overfit armor: naive radius×bin argmin = 15 ps in-sample @100 but +2…+26 ps OOS; the
+fixed-radius headline survives OOS (`fiducial_overfit`). Best-bin jitter is a selection artifact (bin7 N crosses
+the N≥500 line → 3–6 ps flips), not physics. Headline = single highest-Emeas bin = 0.7% of fiducial events @150
+up to 7.2% @25 (`timingEnergyBins.C`) → keep the typical-vs-best-case honesty.
+
+**→ V Results (DSB1 single-build = the per-build money-plot anchor).** Resolution ladder ~180 ps best single ch
+→ ~62 ps A²-weighted 8-ch combo → 27 ps energy-binned (DW−UP)/2 (`layer4_ladder` — strong §V opener). Headline
+σ_t(E): 27.4±1.2 ps @150, 47 ps @25, fit σ_t = 200/√E ⊕ 21.8 ps (`layer5_timing`). σ_t ~flat across the core
+fiducial @150, mild edge walk → robust to position (`uniformityScan.C`). TAIL/satellite backbone (feeds §V.A
+MANDATORY inset): @150/r<3/top-2%, ~2.6% beyond 2.5σ (vs 1.2% Gaussian), trimmed-RMS 33 vs 31 ps core; tail
+events have the SAME Emeas (5128 vs 5119 mV) and SAME worst-channel deviation (225 vs 231 ps) → NOT walk, NOT a
+rogue channel, intrinsic non-Gaussian CFD shape; only 0.13% beyond 250 ps (`timingTailAnalysis.C`). 255-subset
+channel-combination scan: best-7 (drop NW-U) 54.1 vs all-8 60.6 ps @150, but dropping SW-U worsens it (61→65) →
+"keep the laggards." Detector-potential projection (supports the all-uniform→~25 ps claim): if NW-U/SW-U followed
+the Up trend, 27→~25 ps @150 (−2 ps; ~3.5 max @125; vanishes <75), model-validated 69 vs 67 ps — **measured
+27 ps stands** (`idealUniform.C`).
+
+**→ Systematics (the (e)-FATAL deliverable).** Report total syst = 2.7 ps (A²-combo @150), quadrature of 8
+one-at-a-time variations (fiducial ±0.5 mm, containment ±0.05, MCP-lo +50, MCP-hi −50, HG thr +5 mV) on the MOST
+cut-sensitive estimator → conservative; the MCP-window term does NOT apply to the MCP-free headline, so the
+headline syst is <2.7 ps (`systematicUncertainties.C`, `layer6_budget/band`). A robust truncated-RMS core-σ
+replaced a Gaussian-fit instability that gave spurious ~40 ps bands at 25/125 GeV. [Our `paperSystematics.C`
+now gives the cleaner per-build budget; use these report numbers as the cross-check / method provenance.]
+
+**→ QA appendix (one supplement bullet; DSB1 single-module health).** All 8 HG caps alive/quiet (ped RMS ~1.3
+vs 5 mV floor, active >94%, HG sat <0.1% @150, spikes ~0.2%, hit eff >90%); channels independent (ρ=0.86–1.00
+from shower-sharing; neighbor-subtraction worsens → no shared electronic path; `channelIntegrity.C`); stop cell
+rotates uniformly (RMS 295 vs 296) and the split-half OOS stop-cell correction improves the A²-combo 120.7→99.5 ps
+but leaves the corner (DW−UP)/2 UNCHANGED — proving the corner already cancels the cell-width residual
+(`drs4TimeBase.C`); MCP1−MCP2 clean Gaussians at all 6 E; Pop-B hadronic punch-through 6.2% @150, containment
+eff 95.3% @150; MCP-connector "rings" in the transverse maps are pre-showering brass/steel (~1 X₀, ~2.4×
+enhancement) and a BNC veto WORSENS the headline 27.4→30.5 ps → no veto applied (`transverseMaps.C`,
+`pbglass_investigation`).
+
+**⚠ CONFLICT FLAGS (do NOT import verbatim):**
+- **Floor "22 vs 17.5":** the report (`timingFloorComparison.C`) fits b≈21.8 (a=200) vs published 17.5 (a=256)
+  and calls the 4–5 ps gap a fit-decomposition artifact (ρ_ab≈−0.8; both fits cross at ~27 ps @150, peel apart
+  only in the extrapolation). This PREDATES the `floorModel.C` resolution. **Use the ρ_ab≈−0.8 / "fits cross at
+  27, only the extrapolation differs" as SUPPORTING evidence inside the honest-floor treatment — do NOT import
+  "this analysis floor = 22 ps" as a competing number.** Settled position: 1/√E preferred over 1/E (χ²/p),
+  b≈20 ps = shower-depth physics, **confirms (not revises) 17.5**.
+- **"37 / 62 ps" vs the 27 ps headline:** 37/62 ps are INTERMEDIATE combination (A²-combo / all-8) values used
+  only for the ladder figure; the paper headline is 27 ps (DW−UP)/2 energy-binned. Label them as intermediate.
+
+**→ Figure-list additions:** `layer4_ladder` (ladder), `layer5_timing` (σ_t(E)+fit), `timing_tails` (core/tail),
+`layer6_budget`+`band` (systematics), `fiducial_overfit`+`fiducial_timing_scan_bestbin` (OOS appendix),
+`layer5_uniformity` (uniformity), `layer4_cfd_fraction_*`+`layer4_edge_shape/jitter` (CFD/edge appendix).

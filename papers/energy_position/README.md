@@ -52,6 +52,9 @@ Authoritative figure index (status LIVE-PAPER2 entries): memory `figure_catalog.
 copy the chosen figures into `figs/` before building.
 
 ## Pointers
+- **Report-derived inputs already in hand:** `OUTLINE.md` — module center (6.58, 4.66 mm), MCP alignment
+  (0.79 mm), wire-chamber resolution (~3.6 mm, the comparator that limits the ~1.5 mm position result),
+  transverse-map method, the DSB1 energy backbone (σ_E/E = 13.9 % @150), and the 4-population containment.
 - Prose draft: `docs/PAPER2_DRAFT.md`; outline: `docs/PAPER_OUTLINES.md`.
 - Plan & physics: memory `radical_apparatus_conclusions.md` (★★ PAPER PLAN, §7 mapping).
 - Apparatus / E-type / channel map: memory `experimental_setup.md`.
