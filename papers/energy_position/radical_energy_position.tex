@@ -1,0 +1,100 @@
+%% RADiCAL Paper 2 (energy + position + 4D) -- NIM A (elsarticle) two-column style.
+%% Compile: tectonic radical_energy_position.tex
+%% STATUS: SKELETON. Section bodies are stubs; the localization analysis and final
+%% figures still need to be built (see README.md and docs/PAPER2_DRAFT.md for the prose).
+%% NOTE: the author block is a PLACEHOLDER; complete with the full RADiCAL author list
+%% (Ref.~[2], NIM A 1068 (2024) 169737) before submission.
+\documentclass[final,5p,times,twocolumn]{elsarticle}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\graphicspath{{figs/}}
+
+\journal{Nuclear Instruments and Methods in Physics Research A}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Shower-maximum energy and position measurement with wavelength-shifting
+capillaries, and a simultaneous time--energy--position demonstration, in a RADiCAL
+calorimeter module}
+
+%% ---- Author block PLACEHOLDER (collaboration sets the full author order; see Ref.~[2]).
+\author[uiowa]{J.~Wetzel\corref{cor}}
+\ead{james@animal-lamps.com}
+\cortext[cor]{Corresponding author.}
+\author[radical]{\textit{for the RADiCAL Collaboration}}
+\affiliation[uiowa]{organization={University of Iowa},
+            city={Iowa City}, state={IA}, country={USA}}
+\affiliation[radical]{organization={RADiCAL Collaboration}}
+%% ---------------------------------------------------------------------------
+
+\begin{abstract}
+%% TODO. Same W/LYSO:Ce shashlik module and 25--150 GeV CERN SPS dataset as Paper~1.
+%% Energy and transverse position from the four shower-maximum corner capillaries; the
+%% E-type (full-length) energy capillary characterized in-beam; a simultaneous
+%% time+energy+position ("4D") demonstration in one TENERGY module. Key numbers to land:
+%% sigma_E/E ~14% @150 GeV (WLS-species-independent), position residual ~1.5 mm vs the
+%% wire chamber, 4D demo sigma_t/sigma_E/sigma_x in one event sample.
+\end{abstract}
+
+\begin{keyword}
+sampling calorimeter \sep shower maximum \sep wavelength shifter \sep position resolution
+\sep 4D calorimetry \sep RADiCAL
+\end{keyword}
+
+\end{frontmatter}
+
+%% ===========================================================================
+\section{Introduction}
+\label{sec:intro}
+%% TODO: motivation; relation to the parent paper (NIM A 1068 (2024) 169737) §7.1, §7.3/7.4;
+%% energy+position from the same shower-max signals; the 4D concept.
+
+\section{Module and capillary types}
+\label{sec:module}
+%% TODO: brief apparatus recap (full spec: experimental_setup.md). T-type vs E-type capillaries;
+%% TENERGY = 3 DSB1 T-type + 1 E-type. Reuse the Paper 1 setup figure/table as needed.
+
+\section{Energy at shower maximum}
+\label{sec:energy}
+%% TODO: per-build sigma_E/E vs E (configResolutionFull.C -> config_sigmaE_vs_E). ~14% @150 GeV,
+%% WLS-species-independent. Leakage-limited localized measurement; consistency with 52%/sqrt(E).
+
+\section{Transverse position from the corner capillaries}
+\label{sec:position}
+%% TODO: 4-corner light center-of-gravity vs wire chamber (showerLocalization.C, transverseMaps.C).
+%% Residual ~1.5 mm (1.52 x, 1.44 y) @150 GeV; module-ID concept.
+
+\section{The E-type (full-length) energy capillary}
+\label{sec:etype}
+%% TODO: E-type vs T-type response & linearity (etypeEnergy.C, etypeChar.C). ~4-5x dimmer at
+%% shower max, linear in energy; why it is excluded from the corner timing estimator.
+
+\section{Simultaneous time, energy and position}
+\label{sec:fourd}
+%% TODO: the 4D demo in one TENERGY module (fourDdemo.C). sigma_t ~57 ps (best-bin ~35),
+%% sigma_E/E ~11.9%, sigma_x ~0.9 mm from one event sample.
+
+\section{Discussion and outlook}
+\label{sec:discuss}
+%% TODO: depth as the bridge between timing floor (Paper 1) and position signal; depth-corrected
+%% estimator; enhanced modular design / 3x3 array (published §7.3/7.4).
+
+\section{Conclusions}
+\label{sec:conclusions}
+%% TODO.
+
+\section*{Acknowledgements}
+We thank the CERN SPS staff for the test-beam operation. %% TODO: funding/agency text.
+
+\begin{thebibliography}{9}
+\bibitem{radical} C.~Perez-Lara, J.~Wetzel, U.~Akgun, et al. (RADiCAL Collaboration),
+Nucl. Instrum. Methods A \textbf{1068} (2024) 169737.
+%% TODO: complete references.
+\end{thebibliography}
+
+\end{document}

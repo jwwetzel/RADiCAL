@@ -1,4 +1,7 @@
-# RADiCAL timing paper (NIM A / elsarticle)
+# Paper 1 — Timing (RADiCAL, NIM A / elsarticle)
+
+Paper 1 of 2 from the May-2023 dataset (overview: `../README.md`; sibling: `../energy_position/`).
+Thesis: **light yield, not WLS species, sets the time resolution**; configs DSB1 / LuAG / MIXED.
 
 Build:  `tectonic radical_timing.tex`  (first run fetches the elsarticle class online)
 

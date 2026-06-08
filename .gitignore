@@ -38,3 +38,6 @@ Analysis/Output/
 archive/**/Output_old/
 archive/**/*.root
 archive/**/*.pdf
+
+# LaTeX build artifacts
+papers/**/*.log
