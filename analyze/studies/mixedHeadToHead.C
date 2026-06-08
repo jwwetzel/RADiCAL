@@ -1,6 +1,7 @@
-// mixedHeadToHead.C — the clean DSB1-vs-LuAG crystal comparison, IN-EVENT.
+// mixedHeadToHead.C — the clean DSB1-vs-LuAG:Ce WLS comparison, IN-EVENT.
 // ----------------------------------------------------------------------------
-// The MIXED module ("2xDSB1, 2xLuAG") has both crystals reading the SAME showers.
+// The MIXED module ("2xDSB1, 2xLuAG") has both WLS capillary types reading the
+// SAME showers (the LYSO:Ce scintillator and W absorber are common to all builds).
 // Timing slots 0-6 all live in DRS0 Group 0 (one time axis), so the pairwise
 // difference of any two of their CFD-5% times cancels EVERYTHING common to the
 // event -- arrival time, the group/run timebase offset, the MCP reference --
@@ -8,9 +9,9 @@
 // intrinsic jitters.  Restricting to SAME-LAYER pairs (Down: 0,1,2,3 ; Up:
 // 4,5,6) also removes the longitudinal shower-time spread.  Solving the pairwise
 // system per layer gives each capillary's intrinsic sigma_t with no proxy, no
-// saturation confound, no run-offset -- the definitive crystal comparison.
+// saturation confound, no run-offset -- the definitive WLS comparison.
 //
-// Crystal id is read from the data (bright caps = DSB1, dim = LuAG).
+// WLS id is read from the data (bright caps = DSB1 organic, dim = LuAG:Ce ceramic).
 //   root -l 'Analysis/mixedHeadToHead.C+'
 #include "PlotUtils.h"
 #include "TFile.h"
@@ -91,16 +92,16 @@ void mixedHeadToHead(){
     TGraphErrors* gL=new TGraphErrors(ED.size(),ED.data(),sL.data(),ze.data(),eL.data()); gL->SetLineColor(kRGreen+1);gL->SetMarkerColor(kRGreen+1);gL->SetMarkerStyle(21);gL->SetMarkerSize(1.6);gL->SetLineWidth(3);
     gD->Draw("PL");gL->Draw("PL");
     TLegend* L=new TLegend(0.50,0.76,0.93,0.89);L->SetBorderSize(0);L->SetFillStyle(0);L->SetTextSize(0.036);
-    L->AddEntry(gD,"DSB1 (LYSO) capillaries","pl");L->AddEntry(gL,"LuAG capillaries","pl");L->Draw();
+    L->AddEntry(gD,"DSB1 (organic WLS) capillaries","pl");L->AddEntry(gL,"LuAG:Ce (ceramic WLS) capillaries","pl");L->Draw();
     double chi=0; int nn=0; double rsum=0;
     for(size_t i=0;i<ED.size();++i){ double d=sD[i]-sL[i], e=std::sqrt(eD[i]*eD[i]+eL[i]*eL[i]); if(e>0){chi+=d*d/(e*e);++nn;} rsum+=sD[i]/sL[i]; }
     double meanRatio=rsum/ED.size();
     {TLatex t;t.SetNDC();t.SetTextSize(0.030);t.SetTextColor(kGray+3);
-     t.DrawLatex(0.16,0.32,"Same module, same showers, same MCP, same DRS group #minus only the crystal differs.");
+     t.DrawLatex(0.16,0.32,"Same LYSO scintillator, same showers, same MCP, same DRS group #minus only the WLS capillary differs.");
      t.DrawLatex(0.16,0.275,"Pairwise CFD-difference solve #Rightarrow offset / MCP / shower-time cancel exactly.");
      t.SetTextColor(kBlack); t.SetTextSize(0.034);
      t.DrawLatex(0.16,0.215,Form("DSB1/LuAG = %.2f,  #chi^{2}/ndf = %.1f/%d  #Rightarrow consistent",meanRatio,chi,nn));}
-    DrawPageTitle("MIXED in-event head-to-head: a LYSO and a LuAG capillary time the same");
+    DrawPageTitle("MIXED in-event head-to-head: a DSB1 and a LuAG:Ce WLS capillary time the same");
     gSystem->mkdir("figures/narrative",kTRUE);
     c->Print("figures/narrative/mixed_h2h.png");
     printf("\n  DSB1/LuAG mean ratio=%.2f  chi2/ndf=%.1f/%d (consistency of 'equal')\n",meanRatio,chi,nn);

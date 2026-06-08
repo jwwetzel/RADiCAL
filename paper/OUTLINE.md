@@ -18,11 +18,11 @@ A calorimeter that times a shower to tens of ps lives or dies by the steepness o
 edge — and here that edge is the part the readout throws away, clipped flat at 820 mV. We
 **recover the discarded edge** event-by-event from the low-gain copy meant only for energy;
 then, timing every build on that same recovered edge, we show four WLS materials separate
-**almost entirely by how much light they collect, not which crystal they are** — proven
-cleanest **inside one MIXED module where LYSO and LuAG capillaries see the same showers and
-time identically.** The residual ~20–25 ps floor is shared and consistent with the shower's
-own depth fluctuation (~1 X₀) — where a depth-corrected Paper 2 begins.
-- Nested architecture: **edge recovery is the engine; "light, not material" is the destination.**
+**almost entirely by how much light they collect, not which WLS species they are** — proven
+cleanest **inside one MIXED module where DSB1 and LuAG:Ce capillaries see the same showers in
+the same LYSO:Ce scintillator and time identically.** The residual ~20–25 ps floor is shared
+and consistent with the shower's own depth fluctuation (~1 X₀) — where a depth-corrected Paper 2 begins.
+- Nested architecture: **edge recovery is the engine; "light, not WLS species" is the destination.**
 - Two bookend images: the **recovered edge (3.7× steeper)** and the **shared floor (~20 ps ≈ 1 X₀)**.
 
 ## (c) WHAT'S NEW vs NIM A 1068 (honest box, in the intro)
@@ -105,9 +105,10 @@ brightest amplitude bins already reach 24–27 ps @150. We **confirm**, not revi
   consistent within the large extrapolation uncertainty AND is independently argued to be shower-depth
   physics (§VI) — making material-independence a *prediction*, not a coincidence."
 ### V.C In-module head-to-head (NEW — THE KILL SHOT, currently absent)
-- **Purpose:** confound-free proof that ordering is light, not crystal — every systematic cancelled.
-- Inside MIXED: 2 corners DSB1(LYSO), 2 LuAG, same showers, same MCP, same DRS group → per-capillary
-  σ_t(E) curves lie on top of each other 50–150 GeV. Only difference is the crystal — and it doesn't matter.
+- **Purpose:** confound-free proof that ordering is light, not WLS species — every systematic cancelled.
+- Inside MIXED: 2 corners DSB1 (organic WLS), 2 LuAG:Ce (ceramic WLS), same LYSO:Ce scintillator, same
+  showers, same MCP, same DRS group → per-capillary σ_t(E) curves lie on top of each other 50–150 GeV.
+  Only difference is the WLS capillary — and it doesn't matter.
 - **Figure [HAVE→PROMOTE] mixed_h2h.png.** Caption: "With every systematic held fixed by construction
   — same shower, same reference, same digitiser — a DSB1 and a LuAG capillary time the same."
 - **Reviewer-proofing:** uses TIMING ONLY (no LG) → MIXED's compromised LG does NOT contaminate it (this

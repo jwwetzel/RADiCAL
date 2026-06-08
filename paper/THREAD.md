@@ -50,21 +50,22 @@ with central-peak fits, **all four builds**. *(pubFig.C.)*
 **Plots:** `pub_res_<BUILD>.png` — σ_t in 1000-event brightness slices, per energy, **all builds**.
 → Brightness — light — is the lever. Now lay the four builds side by side.
 
-### ★ Bead 7 — THE MONEY PLOT: light yield, not material, sets the resolution
+### ★ Bead 7 — THE MONEY PLOT: light yield, not WLS species, sets the resolution
 **Claim:** σ_t = a/√E ⊕ b. The **stochastic term a tracks light yield** (DSB1 201 → TENERGY 240
 → MIXED 233 → LuAG 455 ps√GeV, ×2.3); the **floor b is shared** (~20 ps across the LYSO builds).
 **Plot:** `light_yield_thesis.png` — all four builds, a/√E ⊕ b fits, one figure.
 **Reads:** the builds order by light; the difference between DSB1 and LuAG lives *entirely* in
 the light-driven term. At infinite light, all materials approach the same floor.
-→ But a between-build comparison cannot, by itself, separate "less light" from "slower crystal."
-Kill that confound.
+→ But a between-build comparison cannot, by itself, separate "less light" from "intrinsically
+slower WLS" (e.g. LuAG:Ce decay kinetics). Kill that confound.
 
-### Bead 8 — The clean proof: same module, same showers, only the crystal differs
-**Claim:** inside MIXED, a LYSO and a LuAG capillary read the *same showers* — and time identically.
+### Bead 8 — The clean proof: same module, same showers, only the WLS capillary differs
+**Claim:** inside MIXED, a DSB1 (organic WLS) and a LuAG:Ce (ceramic WLS) capillary read the
+*same showers in the same LYSO:Ce scintillator* — and time identically.
 **Plot:** `mixed_h2h.png` — DSB1-vs-LuAG capillary σ_t(E), pairwise-CFD solve. **DSB1/LuAG = 0.99,
 χ²/ndf = 0.4/5.** *(mixedHeadToHead.C.)*
-**Reads:** every systematic (offset, MCP, shower-time) cancelled by construction; the crystals
-time the same. The build ordering in Bead 7 is light, not species — proven.
+**Reads:** every systematic (offset, MCP, shower-time) cancelled by construction; the two WLS
+capillaries time the same. The build ordering in Bead 7 is light, not WLS species — proven.
 
 ### Bead 9 — The floor is the shower, and it confirms the published result
 **Claim:** the energy dependence is 1/√E (photostatistics), giving b ≈ 20 ps — consistent with

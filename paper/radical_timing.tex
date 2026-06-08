@@ -34,11 +34,12 @@ of RADiCAL sampling-calorimeter modules}
 %% ---------------------------------------------------------------------------
 
 \begin{abstract}
-We compare the precision-timing performance of four wavelength-shifting (WLS)
-scintillator builds of the RADiCAL tungsten/LYSO:Ce sampling electromagnetic
-calorimeter module, exposed to $25$--$150$~GeV electrons at the CERN SPS: a
-high-light DSB1 (LYSO) build, a low-light LuAG:Ce build, a mixed LYSO/LuAG build,
-and a multi-segment LYSO build. The high-gain channels used for timing saturate,
+We compare the precision-timing performance of four builds of the RADiCAL
+tungsten/LYSO:Ce sampling electromagnetic calorimeter module that differ primarily
+in their wavelength-shifter (WLS) capillaries -- the common LYSO:Ce scintillator and
+tungsten absorber are unchanged -- exposed to $25$--$150$~GeV electrons at the CERN
+SPS: a high-light DSB1 (organic WLS) build, a low-light LuAG:Ce (ceramic WLS) build,
+a mixed DSB1/LuAG:Ce build, and a multi-segment build. The high-gain channels used for timing saturate,
 clipping at $820$~mV; we recover the unclipped rising edge event by event from a
 linear low-gain copy of each pulse, timing a constant fraction of the
 low-gain-predicted true peak on an edge a factor $\sim3.7$ steeper than the
@@ -113,11 +114,13 @@ label the four downstream ends collectively DW and the four upstream ends UP. Th
 transverse position of each incident electron is measured by a wire chamber and used to
 define a fiducial region on the beam spot.
 
-Four builds were exposed, differing in the WLS/scintillator content of the capillaries
-and hence in light yield (Table~\ref{tab:builds}): \textbf{DSB1}, high-light organic WLS
-(LYSO);  \textbf{LUAG}, low-light ceramic LuAG:Ce; \textbf{MIXED}, a module combining
-LYSO and LuAG capillaries; and \textbf{TENERGY}, a multi-segment LYSO build. DSB1, the
-brightest, is the build of Ref.~\cite{radical}.
+Four builds were exposed, differing primarily in the WLS material of the capillaries --
+and hence in light yield -- while sharing the same LYSO:Ce scintillator and tungsten
+absorber (Table~\ref{tab:builds}): \textbf{DSB1}, high-light organic WLS;
+\textbf{LUAG}, low-light ceramic LuAG:Ce WLS; \textbf{MIXED}, a single module combining
+DSB1 and LuAG:Ce capillaries on opposite diagonals; and \textbf{TENERGY}, a
+multi-segment high-light build with an added longitudinal energy-readout section. DSB1,
+the brightest, is the build of Ref.~\cite{radical}.
 
 \subsection{Readout, beam, and reference}
 Each SiPM signal is split into a high-gain (HG) copy, optimised for timing, and a
@@ -277,19 +280,21 @@ compromised low-gain readout, excepted).}
 \centering
 \caption{Per-build fit of $\sigma_t=a/\sqrt{E}\oplus b$ to the brightest-shower
 resolution, the timing source used, and the best resolution measured at $150$~GeV. The
-published DSB1 values (cfd05) are shown for comparison.}
+WLS column gives the wavelength-shifter material of the capillaries; the LYSO:Ce
+scintillator and tungsten absorber are common to every build. The published DSB1 values
+(cfd05) are shown for comparison.}
 \label{tab:builds}
 \small
 \begin{tabular}{lccccc}
 \toprule
 Build & WLS & src & $a$ & $b$ (ps) & $\sigma_t^{150}$ \\
 \midrule
-DSB1     & LYSO (hi)   & lgcfd & $201$ & $20\pm1$ & $25.4$ \\
-TENERGY  & $3\times$LYSO & led & $240$ & $22\pm3$ & $28.7$ \\
-MIXED    & LYSO+LuAG   & lgcfd & $233$ & $35\pm2$ & $40.0$ \\
-LUAG     & LuAG (lo)   & led   & $455$ & $20\pm6$ & $41.2$ \\
+DSB1     & organic, hi   & lgcfd & $201$ & $20\pm1$ & $25.4$ \\
+TENERGY  & organic, seg  & led   & $240$ & $22\pm3$ & $28.7$ \\
+MIXED    & org.+cer.     & lgcfd & $233$ & $35\pm2$ & $40.0$ \\
+LUAG     & ceramic, lo   & led   & $455$ & $20\pm6$ & $41.2$ \\
 \midrule
-DSB1\,\cite{radical} & LYSO & cfd05 & $256$ & $17.5$ & $27$ \\
+DSB1\,\cite{radical} & organic & cfd05 & $256$ & $17.5$ & $27$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -328,6 +333,35 @@ at $150$~GeV and lowers the floor.}
 \label{fig:method}
 \end{figure}
 
+\subsection{Systematic uncertainties}
+\label{sec:syst}
+The headline brightest-$1000$ $(\mathrm{DW}-\mathrm{UP})/2$ resolution was recomputed
+under deliberate variations of every selection knob, on the adopted timing source:
+the brightness selection ($K=500$ and $2000$ versus the nominal $1000$), the timing
+fiducial radius ($2.5$ and $3.5$ versus $3.0$~mm), the MCP saturation window (upper cut
+$700$ versus $750$~mV), the per-channel HG threshold ($30$ versus $20$~mV), and the
+fit energy range ($50$--$150$ versus $25$--$150$~GeV). The shifts are collected in
+Table~\ref{tab:syst}, with the total systematic taken as their RMS. The selection
+values themselves were fixed by the scans of Appendix~\ref{app:opt}
+(Fig.~\ref{fig:opt}); the timing-method choice (cfd05 versus the recovered edge) is the
+subject of Sec.~\ref{sec:method-gain} and is not folded into this budget.
+
+The headline is robust: the total selection systematic on $\sigma_t(150)$ is
+$\le\!1$~ps for the high-light builds (DSB1, TENERGY) and $\sim\!1.5$~ps for MIXED and
+LUAG. The dominant single variation is loosening the brightness selection to $K=2000$,
+which admits dimmer showers and genuinely degrades the resolution by $2$--$2.4$~ps --- a
+manifestation of the same light--resolution dependence that is the paper's subject,
+not an analysis artefact. Crucially, the floor is stable: for DSB1,
+$b=19.5\pm1.1\,(\mathrm{stat})\pm1.2\,(\mathrm{syst})$~ps, and across the LYSO builds
+$b$ stays near $20$~ps (TENERGY $21.6$, LUAG $19.8$) within the combined uncertainty, so
+the agreement with the published $17.5$~ps survives the systematic variations. The
+elevated floor of the MIXED build ($34.6$~ps) is a distinct feature of that compromised
+configuration and carries the largest systematic, but does not affect the shared-floor
+conclusion drawn from the uniform builds.
+
+%======================================================================
+\input{tab_systematics}
+
 %======================================================================
 \section{Discussion}
 \label{sec:discuss}
@@ -364,6 +398,48 @@ materials. The high-light build reaches $25.4$~ps for the brightest $150$~GeV sh
 Light yield is therefore the design lever for fast-timing calorimetry with these
 modules, and the residual floor --- consistent with shower-depth fluctuation --- is the
 target of a depth-corrected analysis to follow.
+
+%======================================================================
+\appendix
+\section{Selection optimization and systematic stability}
+\label{app:opt}
+The four choices that define the headline estimator were each fixed by a scan at the
+headline energy ($150$~GeV), shown for all builds in Fig.~\ref{fig:opt}.
+Panel~(a) compares timing sources: a constant-fraction time on the \emph{clipped} peak,
+swept over fractions $3$--$50\%$ (solid), against the recovered-edge source we adopt
+(\texttt{lgcfd}/\texttt{led}, dashed). The adopted source lies below the entire
+clipped-peak family for every build --- dramatically so for the low-light LUAG --- which
+is the quantitative basis for the method of Sec.~\ref{sec:method}. Panel~(b) shows the
+brightness selection: $\sigma_t$ falls steeply as the dimmest showers are removed and
+flattens near $K\!\sim\!1000$, beyond which admitting dimmer showers degrades it again;
+$K=1000$ sits at the knee. Panel~(c) shows the resolution is flat across the timing
+fiducial radius out to the chosen $3.0$~mm, rising only as off-axis showers leak in.
+Panel~(d) shows insensitivity to the per-channel HG threshold, confirming the $20$~mV
+working point is well clear of the noise floor. The corresponding systematic stability of
+$\sigma_t(150)$ under these variations is summarised in Fig.~\ref{fig:syststab} and
+Table~\ref{tab:syst}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{optimization.png}
+\caption{Selection optimization at $150$~GeV for all four builds: (a) timing source as a
+function of CFD fraction on the clipped peak (solid) with the adopted recovered-edge
+source overlaid (dashed); (b) resolution versus the brightest-$N$ selection $K$;
+(c) versus timing fiducial radius; (d) versus the per-channel HG threshold. Dashed grey
+lines mark the adopted working points.}
+\label{fig:opt}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{systematics.png}
+\caption{Systematic stability of the brightest-$1000$ $\sigma_t(150)$ for each build: the
+nominal value (star) with its total-systematic band, and each selection variation as a
+point. The fitted floor $b$ with its statistical and systematic errors is annotated per
+build. All variations lie within the band except the deliberate $K=2000$ loosening of
+the brightness selection.}
+\label{fig:syststab}
+\end{figure}
 
 %======================================================================
 \section*{Acknowledgements}
