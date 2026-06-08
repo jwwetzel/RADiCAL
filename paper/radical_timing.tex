@@ -42,7 +42,8 @@ and a multi-segment LYSO build. The high-gain channels used for timing saturate,
 clipping at $820$~mV; we recover the unclipped rising edge event by event from a
 linear low-gain copy of each pulse, timing a constant fraction of the
 low-gain-predicted true peak on an edge a factor $\sim3.7$ steeper than the
-clipped-peak foot. Using a microchannel-plate-free differential estimator,
+clipped-peak foot, which improves the resolution by a few picoseconds over timing the
+clipped pulse. Using a microchannel-plate-free differential estimator,
 $(\mathrm{DW}-\mathrm{UP})/2$, formed from the four upstream and four downstream
 silicon-photomultiplier readouts, we measure the time resolution of every build and
 parametrise it as $\sigma_t = a/\sqrt{E}\oplus b$. The stochastic term $a$ scales
@@ -299,13 +300,33 @@ limit.} A lower-light material times worse only in proportion to its reduced lig
 sufficient light any of these materials approaches the same $\sim\!20$~ps floor. The
 choice of WLS species per se is not a timing penalty.
 
-\subsection{Method improvement and best resolution}
-Recovering the saturated edge with \texttt{hg\_lgcfd} lowers the stochastic term of the
-high-light build relative to the published clipped-peak result
-($a\!=\!201$ vs $256$~ps$\sqrt{\mathrm{GeV}}$), while leaving the floor unchanged within
-errors --- consistent with a steeper, better-measured edge improving the light-driven
-term but not the irreducible floor. The best single-event resolution measured, for the
-brightest $150$~GeV DSB1 showers, is $25.4$~ps.
+\subsection{The gain from recovering the edge}
+\label{sec:method-gain}
+The benefit of the HG/LG-ratio method is isolated by a direct comparison on
+\emph{identical} showers (Fig.~\ref{fig:method}): the brightest-$1000$ DSB1 resolution
+is computed with cfd05 (a CFD on the clipped measured peak, as in Ref.~\cite{radical})
+and with \texttt{hg\_lgcfd} (the recovered edge), the selection and estimator held fixed
+so that only the per-channel time differs. Timing the recovered edge improves the
+resolution by $3.1$~ps at $150$~GeV and lowers the floor from $22.1\pm1.8$ to
+$19.5\pm1.1$~ps. The gain is energy-dependent, largest where the timing is hardest: at
+high energy, where saturation is most severe, and at the lowest energy, where the $5\%$
+foot of a small pulse sits in noise; it is negligible at $50$--$75$~GeV. The stochastic
+term is essentially unchanged ($a=205\to201$~ps$\sqrt{\mathrm{GeV}}$), so the method acts
+chiefly on the high-energy/floor regime. (The cfd05 value here, $a=205$, reflects the
+brightest-shower selection of this controlled comparison and differs from the $256$ of
+Ref.~\cite{radical} in Table~\ref{tab:builds}, which used a different selection; holding
+the selection fixed isolates the timing method.) The best single-event resolution
+measured, for the brightest $150$~GeV DSB1 showers, is $25.4$~ps.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{method.png}
+\caption{Time resolution of the brightest-$1000$ DSB1 showers timed with cfd05 (CFD on
+the clipped foot, open) and \texttt{hg\_lgcfd} (CFD on the LG-recovered edge, filled),
+identical events and selection. Recovering the edge improves the resolution by $\sim3$~ps
+at $150$~GeV and lowers the floor.}
+\label{fig:method}
+\end{figure}
 
 %======================================================================
 \section{Discussion}
