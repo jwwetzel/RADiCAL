@@ -36,6 +36,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -187,7 +188,7 @@ void pubFig(const char* build="DSB1"){
     lg1->AddEntry(gd,"(DW#minusUP)/2  (MCP-free)","lp"); lg1->AddEntry(gs,"(DW+UP)/2  (absolute)","lp"); lg1->Draw();
     c1->cd(); TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.024);
     tt.DrawLatex(0.05,0.967,Form("%s (%s): per-amplitude-bin (DW-UP)/2 [top] and (DW+UP)/2 [middle] distributions, with their fitted #sigma_{t} [bottom]",build,srcName(SRC)));
-    gSystem->mkdir("figures/narrative",kTRUE); c1->Print(Form("figures/narrative/pub_dist_%s.png",build));
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c1->Print(radFigP(Form("figures/narrative/pub_dist_%s.png",build)));
     printf("  wrote figures/narrative/pub_dist_%s.png\n",build);
 
     // ========================================================================
@@ -247,6 +248,6 @@ void pubFig(const char* build="DSB1"){
     lg2->Draw();
     TLatex t2; t2.SetNDC(); t2.SetTextFont(62); t2.SetTextSize(0.032);
     t2.DrawLatex(0.10,0.945,Form("%s (%s): 1000-event brightness slices per energy  #rightarrow  one #sigma(amplitude) law + slew floor",build,srcName(SRC)));
-    c2->Print(Form("figures/narrative/pub_res_%s.png",build));
+    c2->Print(radFigP(Form("figures/narrative/pub_res_%s.png",build)));
     printf("  wrote figures/narrative/pub_res_%s.png\n",build);
 }

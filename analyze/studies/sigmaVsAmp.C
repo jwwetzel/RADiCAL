@@ -23,6 +23,7 @@
 #include "TLatex.h"
 #include "TLine.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -140,7 +141,7 @@ void sigmaVsAmp() {
     tl.DrawLatex(0.50,0.72,"=> energy enters ONLY via amplitude");
 
     gSystem->mkdir("figures",kTRUE);
-    cv->Print("figures/sigma_vs_amplitude.png");
+    cv->Print(radFigP("figures/sigma_vs_amplitude.png"));
     printf("\nmeanA[mV] by E: "); for(int e=0;e<6;++e) printf("%.0f ",meanA[e]); printf(" (rail 950, sat-frac=0)\n");
     printf("POOLED FIT  sigma_t(A) = sqrt((k/A)^2 + c^2):  k = %.0f mV*ps,  all-event FLOOR c = %.1f ps\n", k, c);
     printf("wrote figures/sigma_vs_amplitude.png\n");

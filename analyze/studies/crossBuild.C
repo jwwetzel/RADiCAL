@@ -22,6 +22,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -106,6 +107,6 @@ void crossBuild(){
         lg->AddEntry(g,Form("%s  #color[920]{%s}  (%s)  %.0f ps",B,matS[bi],sname[best],s150b),"lp");
     }
     lg->Draw();
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/cross_build.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/cross_build.png"));
     printf("wrote figures/narrative/cross_build.png\n");
 }

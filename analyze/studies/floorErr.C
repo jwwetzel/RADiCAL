@@ -24,6 +24,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -95,6 +96,6 @@ void floorErr(const char* build="DSB1"){
     lg->Draw();
     TLatex tx; tx.SetNDC(); tx.SetTextSize(0.027); tx.SetTextColor(kGray+3); tx.SetTextAngle(90);
     tx.DrawLatex(0.90,0.30,"floor b #pm #sigma(b)");
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/floor_err.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/floor_err.png"));
     printf("  wrote figures/narrative/floor_err.png\n");
 }

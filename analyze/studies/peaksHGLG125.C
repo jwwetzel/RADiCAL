@@ -8,6 +8,7 @@
 #include "TH2F.h"
 #include "TF1.h"
 #include "TLatex.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <vector>
 #include <cmath>
@@ -36,6 +37,6 @@ void peaksHGLG125(){
     TCanvas* c=new TCanvas("c_pk","",1500,760);c->Divide(4,2,0.004,0.03);
     for(int i=0;i<8;++i){c->cd(i+1);gPad->SetRightMargin(0.02);h[i]->Draw("COL");
         DrawPadTitle(Form("%s  HG vs LG peak (125 GeV)",nm[i]),0.07);}
-    c->Print("Analysis/capillary_figs/peaks_hglg_125.png");
-    printf("\nwrote Analysis/capillary_figs/peaks_hglg_125.png\n");
+    c->Print(radFigP("figures/narrative/peaks_hglg_125.png"));
+    printf("\nwrote figures/narrative/peaks_hglg_125.png\n");
 }

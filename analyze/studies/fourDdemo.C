@@ -14,6 +14,7 @@
 #include "TLinearFitter.h"
 #include "TCanvas.h"
 #include "TLatex.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <vector>
 #include <algorithm>
@@ -88,6 +89,6 @@ void fourDdemo(double E=150){
         TLatex l; l.SetNDC(); l.SetTextSize(0.05); l.SetTextColor(kGreen+3); l.DrawLatex(0.16,0.80,Form("#sigma_{x} = %.1f mm",sP)); }
     c->cd(0); TLatex tl; tl.SetNDC(); tl.SetTextSize(0.030); tl.SetTextFont(62);
     tl.DrawLatex(0.10,0.955,Form("One RADiCAL module, %.0f GeV e^{-}: simultaneous TIME + ENERGY + POSITION (TENERGY: 3 T-type timing + 1 E-type energy)",E));
-    c->Print("Analysis/capillary_figs/fourD_demo.png");
-    printf("wrote Analysis/capillary_figs/fourD_demo.png\n");
+    c->Print(radFigP("figures/narrative/fourD_demo.png"));
+    printf("wrote figures/narrative/fourD_demo.png\n");
 }

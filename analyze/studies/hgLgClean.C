@@ -21,6 +21,7 @@
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -82,7 +83,7 @@ void hgLgClean(const char* build, double E, int ch){
 
     TCanvas* c=new TCanvas("c_hl","",900,680); c->SetLogz(); c->SetRightMargin(0.13);
     h2->Draw("COLZ");
-    gSystem->mkdir("figures",kTRUE); c->Print(Form("figures/hglg_%s_ch%d_%.0f.png",build,ch,E));
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP(Form("figures/hglg_%s_ch%d_%.0f.png",build,ch,E)));
     printf("wrote figures/hglg_%s_ch%d_%.0f.png\n",build,ch,E);
     fp->Close();
 }

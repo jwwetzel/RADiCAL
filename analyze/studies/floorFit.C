@@ -20,6 +20,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <cmath>
 #include <cstdio>
@@ -71,6 +72,6 @@ void floorFit(const char* build="DSB1", int K=1000){
     lg->AddEntry(gb,Form("brightest slice: a=%.0f",abAt),"p"); lg->Draw();
     TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.034);
     tt.DrawLatex(0.12,0.94,Form("Both selections share ONE depth floor (~%.0f ps); they differ only in light/slew (a)",bestB));
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/floor_fit.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/floor_fit.png"));
     printf("  wrote figures/narrative/floor_fit.png\n");
 }

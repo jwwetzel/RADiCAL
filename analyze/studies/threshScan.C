@@ -22,6 +22,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -80,6 +81,6 @@ void threshScan(){
     TLegend* lg=new TLegend(0.40,0.72,0.88,0.88); lg->SetBorderSize(0);
     lg->AddEntry(g0,"cfd05 (foot, where we time now)","pl");
     lg->AddEntry(g5,"cfd50 (steep part of the edge)","pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/thresh_scan.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/thresh_scan.png"));
     printf("wrote figures/thresh_scan.png\n");
 }

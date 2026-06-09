@@ -19,6 +19,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -65,6 +66,6 @@ void optLadder(const char* build="DSB1"){
     lg->Draw();
     TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.036);
     tt.DrawLatex(0.12,0.94,"With a consistent bright slice, #sigma_{t}(E) is monotonic — 150 #leq 125");
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/opt_ladder.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/opt_ladder.png"));
     printf("  wrote figures/narrative/opt_ladder.png\n");
 }

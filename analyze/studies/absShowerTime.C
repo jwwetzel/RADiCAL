@@ -23,6 +23,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -101,6 +102,6 @@ void absShowerTime(){
     lg->AddEntry(gA,"(DW#minusUP)/2 depth (headline)","pl");
     lg->AddEntry(gT,"absolute shower time mean(hg_led)","pl");
     lg->AddEntry(gW,"absolute, LED-walk corrected","pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/abs_shower_time.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/abs_shower_time.png"));
     printf("wrote figures/abs_shower_time.png\n");
 }

@@ -15,6 +15,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TLatex.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <vector>
 #include <algorithm>
@@ -166,7 +167,7 @@ void configResolutionFull(){
     }
     lg->Draw();
     TLatex tl; tl.SetNDC(); tl.SetTextSize(0.03); tl.DrawLatex(0.13,0.16,"OOS best-bin (DW-UP)/2, CFD-5%, r<3mm; fit #sigma_{t}=a/#sqrt{E}#oplus b");
-    c1->Print("Analysis/capillary_figs/config_sigmat_vs_E.png");
+    c1->Print(radFigP("figures/narrative/config_sigmat_vs_E.png"));
 
     // ---- sigma_E/E(E) figure with 52%/sqrtE+...  fits ----
     TCanvas* c2=new TCanvas("c_se","",900,640); c2->SetGridx(); c2->SetGridy();
@@ -185,6 +186,6 @@ void configResolutionFull(){
         lg2->AddEntry(g,lab[c],"p");
     }
     lg2->Draw();
-    c2->Print("Analysis/capillary_figs/config_sigmaE_vs_E.png");
-    printf("\nwrote Analysis/capillary_figs/config_sigmat_vs_E.png, config_sigmaE_vs_E.png\n");
+    c2->Print(radFigP("figures/narrative/config_sigmaE_vs_E.png"));
+    printf("\nwrote figures/narrative/config_sigmat_vs_E.png, config_sigmaE_vs_E.png\n");
 }

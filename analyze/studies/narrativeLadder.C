@@ -22,6 +22,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <cstdio>
 #include <cmath>
@@ -62,7 +63,7 @@ void narrativeLadder(const char* build="DSB1", int K=1000){
       lg->AddEntry(gLq,Form("hg_lgcfd (true-peak edge): floor %.0f ps",bL),"pl"); lg->Draw();
       TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.036);
       tt.DrawLatex(0.13,0.94,Form("%s: equal-population best-bin (OOS-robust) -- lgcfd ~11%% below cfd05",build));
-      gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/narrative_ladder.png"); }
+      gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/narrative_ladder.png")); }
     // ---- Figure B: lgcfd two selections (quantile robust vs brightest-K best-case) ----
     { TCanvas* c=new TCanvas("cB","",880,640); c->SetLeftMargin(0.13); c->SetRightMargin(0.05); c->SetGridy();
       gLq->SetTitle(""); gLq->SetMarkerStyle(21); gLq->SetMarkerColor(kViolet+1); gLq->SetMarkerSize(1.5);
@@ -76,6 +77,6 @@ void narrativeLadder(const char* build="DSB1", int K=1000){
       lg->AddEntry(gLk,Form("brightest slice -- best-contained showers: floor %.0f ps",bk),"pl"); lg->Draw();
       TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.034);
       tt.DrawLatex(0.13,0.94,"hg_lgcfd: both selections OOS-stable -- 26 ps (brightest) to 30 ps (typical)");
-      c->Print("figures/narrative/narrative_methods.png"); }
+      c->Print(radFigP("figures/narrative/narrative_methods.png")); }
     printf("  wrote narrative_ladder.png + narrative_methods.png\n");
 }

@@ -21,6 +21,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <cmath>
 #include <cstdio>
@@ -65,6 +66,6 @@ void lightYieldThesis(){
         printf("%-8s  %-5s   %8.1f          %5.1f +- %.1f  (chi2/ndf=%.1f)\n",B,srcName(SRC),a,b,be,cn);
     }
     lg->Draw();
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/light_yield_thesis.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/light_yield_thesis.png"));
     printf("  wrote figures/narrative/light_yield_thesis.png\n");
 }

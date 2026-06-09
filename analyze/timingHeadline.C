@@ -24,6 +24,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -116,6 +117,6 @@ void timingHeadline(const char* build, const char* dirArg=nullptr){
     TLegend* lg=new TLegend(0.40,0.74,0.88,0.88); lg->SetBorderSize(0);
     lg->AddEntry(g0,"cfd05 (published headline)","pl");
     if(g1) lg->AddEntry(g1,Form("%s (best)",RadView::srcName(sBest)),"pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print(Form("figures/timing_headline_%s.png",build));
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP(Form("figures/timing_headline_%s.png",build)));
     printf("wrote figures/timing_headline_%s.png\n", build);
 }

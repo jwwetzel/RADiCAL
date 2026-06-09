@@ -23,6 +23,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <cmath>
 
@@ -80,7 +81,7 @@ void edgeSlope() {
     t2.DrawLatex(0.16,0.22,"(DRS4 sampling + scint/SiPM time spread), not the slope or clip.");
 
     gSystem->mkdir("figures",kTRUE);
-    c->Print("figures/edge_slope.png");
+    c->Print(radFigP("figures/edge_slope.png"));
     printf("\npeak[mV]: "); for(int e=0;e<6;++e) printf("%.0f ",peak[e]);
     printf("\nrise(cfd30-cfd05)[ns]: "); for(int e=0;e<6;++e) printf("%.3f ",rt[e]);
     printf("\ndV/dt[mV/ns]: "); for(int e=0;e<6;++e) printf("%.0f ",slope[e]); printf("\n");

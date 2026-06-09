@@ -20,6 +20,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -84,6 +85,6 @@ void headlineLG(const char* dir="/tmp/radlg/DSB1"){
     lg->AddEntry(&g05,Form("cfd05 (clipped): %.0f/#sqrt{E} #oplus %.0f ps", f05.GetParameter(0),f05.GetParameter(1)),"pl");
     lg->AddEntry(&gLG,Form("lgcfd (true peak): %.0f/#sqrt{E} #oplus %.0f ps", fLG.GetParameter(0),fLG.GetParameter(1)),"pl");
     lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/headline_lgcfd.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/headline_lgcfd.png"));
     printf("wrote figures/headline_lgcfd.png\n");
 }

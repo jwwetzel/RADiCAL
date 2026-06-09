@@ -17,6 +17,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <cmath>
 
@@ -88,6 +89,6 @@ void pbLeakage() {
     lg2->AddEntry(one,"linear","l"); lg2->Draw();
 
     gSystem->mkdir("figures",kTRUE);
-    c->Print("figures/pb_leakage.png");
+    c->Print(radFigP("figures/pb_leakage.png"));
     printf("wrote figures/pb_leakage.png\n");
 }

@@ -20,6 +20,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -85,6 +86,6 @@ void cfdScan() {
     tl.DrawLatex(0.14,0.20,"At 75-150 GeV the scan is flat (28-30 ps) and 5% is best: timing is");
     tl.DrawLatex(0.14,0.16,"FLOOR-limited, not threshold-limited. Fraction matters only at 25 GeV.");
     gSystem->mkdir("figures",kTRUE);
-    c->Print("figures/cfd_scan.png");
+    c->Print(radFigP("figures/cfd_scan.png"));
     printf("wrote figures/cfd_scan.png\n");
 }

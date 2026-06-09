@@ -28,6 +28,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -106,6 +107,6 @@ void fixCFD() {
     TLegend* lg=new TLegend(0.45,0.72,0.88,0.88); lg->SetBorderSize(0);
     lg->AddEntry(gS,"standard CFD-5% (of clipped peak)","pl");
     lg->AddEntry(gC,Form("CFD-%.0f%% of LG-predicted TRUE peak",frac*100),"pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/fix_cfd.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/fix_cfd.png"));
     printf("wrote figures/fix_cfd.png\n");
 }

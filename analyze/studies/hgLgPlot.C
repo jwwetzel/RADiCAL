@@ -18,6 +18,7 @@
 #include "TStyle.h"
 #include "TSystem.h"
 #include "DataPaths.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -74,7 +75,7 @@ void hgLgPlot(const char* build, const char* rawPath, double E=50, long maxev=12
     c->cd(0); TLatex t0; t0.SetNDC(); t0.SetTextFont(62); t0.SetTextSize(0.028);
     t0.DrawLatex(0.30,0.985,Form("%s  HG vs LG  (%.0f GeV, %s)  -- red = spike-cut robust fit", build, E, gSystem->BaseName(rawPath)));
     gSystem->mkdir("figures",kTRUE);
-    c->Print(Form("figures/hglg_panel_%s.png",build));
+    c->Print(radFigP(Form("figures/hglg_panel_%s.png",build)));
     printf("[%s] ", build); for(int i=0;i<cfg.nend;++i) printf("%s:%.2f ",cfg.end[i].name.c_str(),B8[i]); printf("\n");
     printf("wrote figures/hglg_panel_%s.png\n",build);
 }

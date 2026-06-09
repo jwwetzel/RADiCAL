@@ -27,6 +27,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -116,6 +117,6 @@ void trSync(){
     lg->AddEntry(gM,"SiPM #minus MCP (current reference)","pl");
     lg->AddEntry(gT,"SiPM #minus TR0 (scintillator reference)","pl");
     lg->AddEntry(gI,"inter-group sync: TR0(G0) #minus TR0(G1)","pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/tr0_sync.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/tr0_sync.png"));
     printf("wrote figures/tr0_sync.png\n");
 }

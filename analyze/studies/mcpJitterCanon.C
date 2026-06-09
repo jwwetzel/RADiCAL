@@ -29,6 +29,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -106,6 +107,6 @@ void mcpJitterCanon(){
     tx.DrawLatex(0.16,0.20,"MCP1/MCP2 = one split signal: the MCP's own ~10 ps jitter is common-mode and cancels here.");
     tx.DrawLatex(0.16,0.16,"What remains is the per-group DRS4 stop-cell / domino-wave phase -- correctable, and");
     tx.DrawLatex(0.16,0.12,"cancelled exactly in same-group estimators (the headline (DW#minusUP)/2 corners).");
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/mcp_jitter_canon.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/mcp_jitter_canon.png"));
     printf("wrote figures/mcp_jitter_canon.png\n");
 }

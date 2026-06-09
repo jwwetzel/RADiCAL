@@ -22,6 +22,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -77,7 +78,7 @@ void narrativeFigs(const char* build="DSB1", const char* rawPath="data/2023/raw/
       t.SetTextFont(42); t.SetTextSize(0.038); t.SetTextColor(kRed+1);
       t.DrawLatex(0.60,0.78,"clip @ 820 mV"); t.SetTextColor(kGray+3);
       t.DrawLatex(0.60,0.72,"#rightarrow true peak unknown");
-      gSystem->mkdir("figures/narrative",kTRUE); c1->Print("figures/narrative/narrative_clip.png");
+      gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c1->Print(radFigP("figures/narrative/narrative_clip.png"));
       printf("  wrote figures/narrative/narrative_clip.png\n"); }
 
     if(!got) return;
@@ -112,7 +113,7 @@ void narrativeFigs(const char* build="DSB1", const char* rawPath="data/2023/raw/
     t.SetTextColor(kAzure+2); t.DrawLatex(tlo+0.2,thrLG+14,Form("hg_lgcfd @ %.0f mV  (edge: %.0f mV/ns)",thrLG,std::fabs(slope(tLG))));
     TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.040);
     tt.DrawLatex(0.13,0.94,Form("%s %s @ %.0f GeV: time the steep edge, not the clipped foot", build, c.name.c_str(), E));
-    c2->Print("figures/narrative/narrative_pulse.png");
+    c2->Print(radFigP("figures/narrative/narrative_pulse.png"));
     printf("  wrote figures/narrative/narrative_pulse.png  (cfd05 t=%.3f slope=%.0f | lgcfd t=%.3f slope=%.0f mV/ns)\n",
            t05,std::fabs(slope(t05)),tLG,std::fabs(slope(tLG)));
 }

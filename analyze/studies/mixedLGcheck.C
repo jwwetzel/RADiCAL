@@ -22,6 +22,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <cmath>
 #include <cstdio>
@@ -71,6 +72,6 @@ void mixedLGcheck(const char* build="MIXED", double E=150){
     }
     cv->cd(0); TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.028);
     tt.DrawLatex(0.04,0.965,Form("%s @%.0f GeV: HG peak vs LG peak per channel  (#rho = correlation; working LG #Rightarrow tight linear band)  [blue=DSB1/LYSO, green=LuAG]",build,E));
-    gSystem->mkdir("figures/narrative",kTRUE); cv->Print(Form("figures/narrative/lgcheck_%s.png",build));
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); cv->Print(radFigP(Form("figures/narrative/lgcheck_%s.png",build)));
     printf("  wrote figures/narrative/lgcheck_%s.png\n",build);
 }

@@ -26,6 +26,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -115,6 +116,6 @@ void absTime(){
     lg->AddEntry(gA,"(DW#minusUP)/2 depth (led)","pl");
     lg->AddEntry(gB,"(DW+UP)/2 #minus MCP (led, raw)","pl");
     lg->AddEntry(gW,"(DW+UP)/2 #minus MCP (led + walk)","pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/abs_time.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/abs_time.png"));
     printf("wrote figures/abs_time.png\n");
 }

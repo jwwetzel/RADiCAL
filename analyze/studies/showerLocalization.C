@@ -17,6 +17,7 @@
 #include "TLinearFitter.h"
 #include "TCanvas.h"
 #include "TLatex.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <cmath>
 
@@ -74,6 +75,6 @@ void showerLocalization(double E=150){
     c->cd(2); gPad->SetRightMargin(0.13); hy->Draw("COLZ"); { TProfile* p=hy->ProfileX("py"); p->SetMarkerStyle(20); p->SetLineColor(kBlack); p->Draw("SAME"); }
     c->cd(0); TLatex tl; tl.SetNDC(); tl.SetTextSize(0.026);
     tl.DrawLatex(0.06,0.955,Form("Shower position from 4-capillary light vs wire chamber (DSB1, %.0f GeV): residual %.1f / %.1f mm (x/y); spot spread %.1f mm",E,resx,resy,spread));
-    c->Print("Analysis/capillary_figs/shower_localization.png");
-    printf("wrote Analysis/capillary_figs/shower_localization.png\n");
+    c->Print(radFigP("figures/narrative/shower_localization.png"));
+    printf("wrote figures/narrative/shower_localization.png\n");
 }

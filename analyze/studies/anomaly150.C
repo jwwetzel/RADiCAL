@@ -21,6 +21,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -90,7 +91,7 @@ void anomaly150(const char* build="DSB1", double E=150){
     gO->SetTitle("run-to-run drift;run number;mean (DW#minusUP)/2 (ps)  [#bullet]  &  beam x (mm) [#circ]");
     gO->Draw("AP");
     TGraph* gC=new TGraph(rN.size(),&rN[0],&rCx[0]); gC->SetMarkerStyle(24); gC->SetMarkerColor(kViolet+1); gC->SetMarkerSize(1.0); gC->Draw("P SAME");
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/anomaly150_perrun.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/anomaly150_perrun.png"));
     printf("  wrote figures/narrative/anomaly150_perrun.png\n");
     fp->Close();
 }

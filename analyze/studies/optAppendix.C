@@ -37,6 +37,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -172,7 +173,7 @@ void optAppendix(){
 
     c->cd(0); TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.026);
     tt.DrawLatex(0.06,0.965,"Selection optimization at 150 GeV: the four choices behind the headline estimator");
-    gSystem->mkdir("figures/narrative",kTRUE);
-    c->Print("figures/narrative/optimization.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE);
+    c->Print(radFigP("figures/narrative/optimization.png"));
     printf("  wrote figures/narrative/optimization.png\n");
 }

@@ -17,6 +17,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TLatex.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <vector>
 #include <algorithm>
@@ -81,6 +82,6 @@ void etypeEnergy(){
     tl.DrawLatex(0.56,0.255,"the a/#sqrt{E} stochastic term is small over");
     tl.DrawLatex(0.56,0.205,"50-150 GeV; the large sampling / position");
     tl.DrawLatex(0.56,0.155,"constant term c sets #sigma_{E}/E (dashed fit).");
-    c->Print("Analysis/capillary_figs/etype_energy_resolution.png");
-    printf("wrote Analysis/capillary_figs/etype_energy_resolution.png\n");
+    c->Print(radFigP("figures/narrative/etype_energy_resolution.png"));
+    printf("wrote figures/narrative/etype_energy_resolution.png\n");
 }

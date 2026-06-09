@@ -15,6 +15,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TLatex.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <vector>
 #include <algorithm>
@@ -89,6 +90,6 @@ void etypeChar(){
     c->cd(0); TLatex tl; tl.SetNDC(); tl.SetTextSize(0.025);
     tl.DrawLatex(0.06,0.955,"E-type (full-length WLS): ~4-5x dimmer at shower max but LINEAR in energy - a uniform energy element. Single-channel timing is comparable;");
     tl.DrawLatex(0.06,0.925,"the T/E division of labour is by light-collection geometry and role (E-type is still excluded from the (DW-UP)/2 corner estimator - see Paper 1).");
-    c->Print("Analysis/capillary_figs/etype_vs_ttype.png");
-    printf("wrote Analysis/capillary_figs/etype_vs_ttype.png\n");
+    c->Print(radFigP("figures/narrative/etype_vs_ttype.png"));
+    printf("wrote figures/narrative/etype_vs_ttype.png\n");
 }

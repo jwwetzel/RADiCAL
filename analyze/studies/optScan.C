@@ -22,6 +22,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -81,6 +82,6 @@ void optScan(const char* build="DSB1"){
     }
     c->cd(0); TLatex t0; t0.SetNDC(); t0.SetTextFont(62); t0.SetTextSize(0.022);
     t0.DrawLatex(0.18,0.985,Form("%s  (DW#minusUP)/2 #sigma_{t} per sum_lg bin, every energy   (#circ cfd05  #bullet lgcfd, #star = selected best bin)",build));
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/opt_scan.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/opt_scan.png"));
     printf("  wrote figures/narrative/opt_scan.png\n");
 }

@@ -17,6 +17,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TLatex.h"
+#include "FigPaths.h"
 #include <cstdio>
 #include <vector>
 #include <algorithm>
@@ -114,7 +115,7 @@ void lightYieldTiming(){
     tl.DrawLatex(0.14,0.151,"light yield. (At equal LY a DSB1 cap sits at lower beam energy than a LuAG one,");
     tl.DrawLatex(0.14,0.109,"since DSB1 is brighter, so this cross-config view is confounded; the in-event");
     tl.DrawLatex(0.14,0.067,"head-to-head is the clean, confound-free test - and shows DSB1 = LuAG.)");
-    c->Print("Analysis/capillary_figs/sigmat_vs_lightyield.png");
+    c->Print(radFigP("figures/narrative/sigmat_vs_lightyield.png"));
     printf("joint fit (intrinsic): p0=%.0f ps*sqrt(mV)  floor p1=%.0f ps\n", f->GetParameter(0), fabs(f->GetParameter(1)));
-    printf("wrote Analysis/capillary_figs/sigmat_vs_lightyield.png\n");
+    printf("wrote figures/narrative/sigmat_vs_lightyield.png\n");
 }

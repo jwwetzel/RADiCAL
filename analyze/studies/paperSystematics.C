@@ -40,6 +40,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -245,7 +246,7 @@ void paperSystematics(){
     }
     c->cd(0); TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.026);
     tt.DrawLatex(0.06,0.965,"Systematic stability of #sigma_{t}(150): nominal #pm band, each selection variation as a point");
-    gSystem->mkdir("figures/narrative",kTRUE);
-    c->Print("figures/narrative/systematics.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE);
+    c->Print(radFigP("figures/narrative/systematics.png"));
     printf("  wrote figures/narrative/systematics.png\n");
 }

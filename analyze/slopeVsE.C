@@ -20,6 +20,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -125,6 +126,6 @@ void slopeVsE(const char* build){
         printf("  %-5s nominal db/dE=%+.4f (%.1f%% over 25-150, %.1f-sigma)   unsat db/dE=%+.4f\n",
                cfg.end[i].name.c_str(), dbdE, pct, edb>0?std::fabs(dbdE/edb):0, dbu);
     }
-    gSystem->mkdir("figures",kTRUE); c->Print(Form("figures/slope_vs_E_%s.png",build));
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP(Form("figures/slope_vs_E_%s.png",build)));
     printf("wrote figures/slope_vs_E_%s.png\n",build);
 }

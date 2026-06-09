@@ -19,6 +19,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -74,6 +75,6 @@ void luagDiag(const char* build="LUAG"){
     }
     c->cd(0); TLatex t0; t0.SetNDC(); t0.SetTextFont(62); t0.SetTextSize(0.030);
     t0.DrawLatex(0.20,0.965,Form("%s: #sigma_{t} vs sum_lg quantile bin, per energy  (#circ cfd05  #bullet lgcfd, #star=best cfd05)",build));
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/luag_diag.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/luag_diag.png"));
     printf("wrote figures/narrative/luag_diag.png\n");
 }

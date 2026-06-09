@@ -43,6 +43,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -138,6 +139,6 @@ void depthCorr(){
     lg->AddEntry(gA,"(DW#minusUP)/2  depth-pinned (headline)","pl");
     lg->AddEntry(gB,"(DW+UP)/2 #minus MCP1  depth-independent","pl");
     lg->AddEntry(gC,"depth-corrected  B #minus k#upointA","pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/depth_corr.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/depth_corr.png"));
     printf("wrote figures/depth_corr.png\n");
 }

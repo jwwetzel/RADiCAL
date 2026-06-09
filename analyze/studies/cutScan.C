@@ -24,6 +24,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -116,6 +117,6 @@ void cutScan(const char* build="DSB1"){
     for(int si=0;si<nShow;++si){int e=showE[si]; if(gC[e]) lg->AddEntry(gC[e],Form("%.0f GeV",Es[e]),"l");} lg->Draw();
     TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.038);
     tt.DrawLatex(0.10,0.945,Form("%s (%s): resolution vs amplitude THRESHOLD  #SigmaLG > X",build,srcName(SRC)));
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print(Form("figures/narrative/pub_thresh_%s.png",build));
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP(Form("figures/narrative/pub_thresh_%s.png",build)));
     printf("  wrote figures/narrative/pub_thresh_%s.png\n",build);
 }

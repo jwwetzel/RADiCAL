@@ -25,6 +25,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -79,6 +80,6 @@ void sigmaVsBrightness(const char* build="DSB1"){
     lg->Draw();
     TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.036);
     tt.DrawLatex(0.12,0.94,"Do the energies share ONE #sigma_{t}(brightness) curve? Then it's window placement, not physics.");
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print("figures/narrative/anomaly150_brightness.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP("figures/narrative/anomaly150_brightness.png"));
     printf("  wrote figures/narrative/anomaly150_brightness.png\n");
 }

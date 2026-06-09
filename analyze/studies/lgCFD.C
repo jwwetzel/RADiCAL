@@ -25,6 +25,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -133,6 +134,6 @@ void lgCFD(){
     TLegend* lg=new TLegend(0.36,0.66,0.88,0.88); lg->SetBorderSize(0);
     lg->AddEntry(gB,"DEPTH cfd05 (clipped)","pl"); lg->AddEntry(gL,"DEPTH lgCFD 20% (true peak)","pl");
     lg->AddEntry(gBa,"ABS cfd05 (clipped)","pl"); lg->AddEntry(gLa,"ABS lgCFD 20% (true peak)","pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/lg_cfd.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/lg_cfd.png"));
     printf("wrote figures/lg_cfd.png\n");
 }

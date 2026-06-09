@@ -19,6 +19,7 @@
 #include "TLatex.h"
 #include "TLine.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <cstdio>
 
 void satLinearity() {
@@ -87,7 +88,7 @@ void satLinearity() {
     TLatex ts; ts.SetTextColor(kRed); ts.SetTextSize(0.030); ts.DrawLatex(120,cfg.hg_sat_mV+22,Form("DT5742 HG-channel clip ~%.0f mV",cfg.hg_sat_mV));
 
     gSystem->mkdir("figures",kTRUE);
-    c->Print("figures/hg_lg_saturation.png");
+    c->Print(radFigP("figures/hg_lg_saturation.png"));
     printf("\nnormalized @150: HG=%.2fx, LG=%.2fx (ideal linear=%.1fx)  -> HG saturates, LG linear\n", nhg[5], nlg[5], ideal[5]);
     printf("wrote figures/hg_lg_saturation.png\n");
 }

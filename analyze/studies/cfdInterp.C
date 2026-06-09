@@ -22,6 +22,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -96,6 +97,6 @@ void cfdInterp() {
     TLegend* lg=new TLegend(0.40,0.74,0.88,0.88); lg->SetBorderSize(0);
     lg->AddEntry(g5,"standard CFD-5% (of clipped peak)","pl");
     lg->AddEntry(gB,"best fixed-absolute threshold (per E)","pl"); lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/cfd_interp.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/cfd_interp.png"));
     printf("wrote figures/cfd_interp.png\n");
 }

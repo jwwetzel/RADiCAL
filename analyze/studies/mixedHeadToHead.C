@@ -21,6 +21,7 @@
 #include "TH1F.h"
 #include "TLegend.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -102,8 +103,8 @@ void mixedHeadToHead(){
      t.SetTextColor(kBlack); t.SetTextSize(0.034);
      t.DrawLatex(0.16,0.215,Form("DSB1/LuAG = %.2f,  #chi^{2}/ndf = %.1f/%d  #Rightarrow consistent",meanRatio,chi,nn));}
     DrawPageTitle("MIXED in-event head-to-head: a DSB1 and a LuAG:Ce WLS capillary time the same");
-    gSystem->mkdir("figures/narrative",kTRUE);
-    c->Print("figures/narrative/mixed_h2h.png");
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE);
+    c->Print(radFigP("figures/narrative/mixed_h2h.png"));
     printf("\n  DSB1/LuAG mean ratio=%.2f  chi2/ndf=%.1f/%d (consistency of 'equal')\n",meanRatio,chi,nn);
     printf("  wrote figures/narrative/mixed_h2h.png\n");
 }

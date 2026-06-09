@@ -22,6 +22,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <cmath>
 #include <cstdio>
@@ -81,6 +82,6 @@ void floorModel(const char* build="DSB1"){
     lg->Draw();
     TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.036);
     tt.DrawLatex(0.12,0.945,Form("%s (%s): the floor is the FIT FORM -- 1/#sqrt{E} gives ~%.0f ps, 1/light gives ~%.0f ps",build,srcName(SRC),ph.b,sl.b));
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print(Form("figures/narrative/floor_model_%s.png",build));
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP(Form("figures/narrative/floor_model_%s.png",build)));
     printf("  wrote figures/narrative/floor_model_%s.png\n",build);
 }

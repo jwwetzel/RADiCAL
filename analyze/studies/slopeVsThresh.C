@@ -23,6 +23,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "FigPaths.h"
 #include <vector>
 #include <cmath>
 #include <cstdio>
@@ -82,6 +83,6 @@ void slopeVsThresh(){
     for(int k=0;k<3;++k){ TGraph* gg=new TGraph(); gg->SetMarkerStyle(20+k); gg->SetMarkerColor(col[k]); gg->SetLineColor(col[k]);
         lg->AddEntry(gg,Form("%.0f mV %s",LV[Ls[k]], k==0?"(where we time now)":""),"pl"); }
     lg->Draw();
-    gSystem->mkdir("figures",kTRUE); c->Print("figures/slope_vs_thresh.png");
+    gSystem->mkdir("figures",kTRUE); c->Print(radFigP("figures/slope_vs_thresh.png"));
     printf("wrote figures/slope_vs_thresh.png\n");
 }

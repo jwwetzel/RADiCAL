@@ -19,6 +19,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "FigPaths.h"
 #include <vector>
 #include <cmath>
 #include <cstdio>
@@ -69,6 +70,6 @@ void methodCompare(const char* build="DSB1"){
     lg->AddEntry(gc,Form("cfd05 (clipped foot):  a=%.0f, b=%.0f#pm%.0f ps",ac,bc,bec),"lp");
     lg->AddEntry(gl,Form("hg_lgcfd (recovered edge):  a=%.0f, b=%.0f#pm%.0f ps",al,bl,bel),"lp");
     lg->Draw();
-    gSystem->mkdir("figures/narrative",kTRUE); c->Print(Form("figures/narrative/method_compare_%s.png",build));
+    gSystem->mkdir(Form("figures/%d/narrative",radYear()),kTRUE); c->Print(radFigP(Form("figures/narrative/method_compare_%s.png",build)));
     printf("  wrote figures/narrative/method_compare_%s.png\n",build);
 }
