@@ -27,7 +27,7 @@ using namespace rad;
 
 void floorFit(const char* build="DSB1", int K=1000){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={25,50,75,100,125,150};
     TGraph* gq=new TGraph; TGraph* gb=new TGraph;
     for(double E:Es){ TFile* fp=TFile::Open(radReduced(build,E)); if(!fp||fp->IsZombie())continue;

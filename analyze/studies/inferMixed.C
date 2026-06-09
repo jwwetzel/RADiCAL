@@ -31,7 +31,7 @@ static void cornerBright(const char* build, double E, const rad::BuildConfig& ma
 }
 
 void inferMixed() {
-    rad::BuildConfig map = rad::BuildConfig::Load("data/2023/configs/DSB1.json");
+    rad::BuildConfig map = rad::BuildConfig::Load(radConfig("DSB1").Data());
     double dsb1[4], luag[4], mix[4];
     cornerBright("DSB1", 150, map, dsb1);
     cornerBright("LUAG", 150, map, luag);

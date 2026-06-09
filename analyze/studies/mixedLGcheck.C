@@ -30,7 +30,7 @@ using namespace rad;
 
 void mixedLGcheck(const char* build="MIXED", double E=150){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const char* end[8]={"NW-D","NE-D","SE-D","SW-D","NW-U","NE-U","SE-U","SW-U"};
     // MIXED material per canonical end (NW/SE=LuAG, NE/SW=DSB1); DSB1 = all LYSO
     std::string b=build; bool isMix=(b=="MIXED");

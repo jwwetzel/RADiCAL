@@ -33,7 +33,7 @@ struct Acc{ double s=0,ss=0; long n=0; void add(double x){s+=x;ss+=x*x;++n;}
 
 void hgLgClean(const char* build, double E, int ch){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg = BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg = BuildConfig::Load(radConfig(build).Data());
     TFile* fp=TFile::Open(radReduced(build,E)); TTree* t=(TTree*)fp->Get("rad");
     RadView v; v.attach(t,&cfg);
     double xc,yc; v.beamCenter(xc,yc);

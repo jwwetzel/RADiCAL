@@ -40,7 +40,7 @@ static bool depthVal(RadView& v, double xc, double yc, double r2, float& out){
 
 void anomaly150(const char* build="DSB1", double E=150){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg = BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg = BuildConfig::Load(radConfig(build).Data());
     TFile* fp=TFile::Open(radReduced(build,E)); if(!fp||fp->IsZombie()){printf("no file\n");return;}
     TTree* t=(TTree*)fp->Get("rad"); RadView v; v.attach(t,&cfg);
     double xcg,ycg; v.beamCenter(xcg,ycg); double r2=3.0*3.0;

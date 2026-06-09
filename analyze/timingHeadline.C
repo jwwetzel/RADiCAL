@@ -52,7 +52,7 @@ static double bestBinOrBright(std::vector<float>& slg, std::vector<float>& t){
 
 void timingHeadline(const char* build, const char* dirArg=nullptr){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg = BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg = BuildConfig::Load(radConfig(build).Data());
     if(!cfg.valid()){ printf("config load failed: %s\n", cfg.error()); return; }
     // default the reduced dir from the build name -> data/2023/reduced/<BUILD>
     TString dir = (dirArg && dirArg[0]) ? TString(dirArg)

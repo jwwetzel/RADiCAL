@@ -42,7 +42,7 @@ static FitOut fitForm(TGraphErrors* g, const char* form, double b0){
 
 void floorModel(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     int SRC=robustSrc(build);
     const double Es[]={25,50,75,100,125,150};
     std::vector<double> E,S,Se,ze;

@@ -36,7 +36,7 @@ static bool depth(RadView& v,double xc,double yc,double r2,int src,float& out){
 
 void optLadder(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={25,50,75,100,125,150}; int nE=6;
     const int Ks[]={1000,2000,4000}; int nK=3; int col[3]={kGreen+2,kOrange+8,kAzure+2};
     std::vector<std::vector<double>> sig(nK, std::vector<double>(nE,-1)); std::vector<double> Ev(Es,Es+nE);

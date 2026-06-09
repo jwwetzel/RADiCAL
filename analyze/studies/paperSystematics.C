@@ -144,7 +144,7 @@ void paperSystematics(){
 
     printf("\n========== Paper 1 systematic budget (brightest-1000 (DW-UP)/2) ==========\n");
     for(int bi=0;bi<4;++bi){ const char* B=builds[bi]; int srcR=robustSrc(B);
-        BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",B)); if(!cfg.valid()){printf("%s: no config\n",B);continue;}
+        BuildConfig cfg=BuildConfig::Load(radConfig(B).Data()); if(!cfg.valid()){printf("%s: no config\n",B);continue;}
         printf("\n--- %s (nominal src=%s) ---\n",B,srcName(srcR));
 
         // sigma(E) for every variation, energy by energy (cache once per energy)

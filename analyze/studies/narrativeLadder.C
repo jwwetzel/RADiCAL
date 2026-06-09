@@ -35,7 +35,7 @@ static double fitFloor(TGraph* g, int col, int sty, int wid){
 
 void narrativeLadder(const char* build="DSB1", int K=1000){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={25,50,75,100,125,150};
     TGraph *g5q=new TGraph,*gLq=new TGraph,*gLk=new TGraph; // cfd05-quantile, lgcfd-quantile, lgcfd-K
     printf("\n%s  (DW-UP)/2 sigma_t [ps]:  E | cfd05(quant) lgcfd(quant) | lgcfd(brightest-%d)\n",build,K);

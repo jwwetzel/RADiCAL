@@ -37,7 +37,7 @@ static const char* srcName(int s){ return s==RadView::kLED?"led":(s==RadView::kL
 
 void cutScan(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     int SRC=robustSrc(build);
     const double Es[]={25,50,75,100,125,150}; int nE=6;
     const double cutFrac=0.40;

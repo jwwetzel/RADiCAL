@@ -32,7 +32,7 @@ static double sigBrightest(std::vector<Ev>& S, double f, bool lg){
 }
 
 void oosFraction(const char* build="DSB1"){
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={100,125,150}; const double Fs[]={0.005,0.01,0.02};
     printf("\n%s lgcfd (DW-UP)/2 brightest-FRACTION, full vs held-out folds (matched f):\n",build);
     for(double E:Es){

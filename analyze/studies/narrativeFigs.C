@@ -31,7 +31,7 @@ using namespace rad;
 void narrativeFigs(const char* build="DSB1", const char* rawPath="data/2023/raw/RUN1034_125_GeV.root",
                    double E=125, int ch=1){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg = BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg = BuildConfig::Load(radConfig(build).Data());
     if(!cfg.valid()){ printf("config load failed\n"); return; }
     const EndMap& c = cfg.end[ch];
     double a = cfg.hg_lg_a[ch], b = cfg.hg_lg_b[ch];

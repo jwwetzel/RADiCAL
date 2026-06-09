@@ -102,7 +102,7 @@ void optAppendix(){
     const double E=150;
 
     std::vector<Ev> cache[4]; double XC[4],YC[4]; double rNom=TimingFiducialR(E);
-    for(int bi=0;bi<4;++bi){ BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",builds[bi]));
+    for(int bi=0;bi<4;++bi){ BuildConfig cfg=BuildConfig::Load(radConfig(builds[bi]).Data());
         if(!cfg.valid()){printf("%s: no config\n",builds[bi]);continue;}
         TString p=radReduced(builds[bi],E); if(gSystem->AccessPathName(p.Data())){printf("%s: no 150 file\n",builds[bi]);continue;}
         loadFile(p.Data(),cfg,cache[bi],XC[bi],YC[bi]);

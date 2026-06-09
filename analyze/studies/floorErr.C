@@ -48,7 +48,7 @@ struct Curve { const char* name; int src; bool bright; int col; TGraphErrors* g;
 
 void floorErr(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={25,50,75,100,125,150};
     std::vector<Curve> C={
         {"lgcfd quantile (typical)",RadView::kLGCFD,false,kViolet+1,new TGraphErrors,0,0,0},

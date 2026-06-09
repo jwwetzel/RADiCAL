@@ -55,7 +55,7 @@ static void curveFor(RadView& v, int kSrc, std::vector<double>& bx, std::vector<
 
 void sigmaVsBrightness(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={100,125,150}; const int kSrc=RadView::kLGCFD;
     int col[3]={kGreen+2,kOrange+8,kRed+1};
     TCanvas* c=new TCanvas("c_sb","",1000,640); c->SetLeftMargin(0.11); c->SetRightMargin(0.04); c->SetGridy();

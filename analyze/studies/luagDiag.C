@@ -29,7 +29,7 @@ struct E4 { float slg, d5, dL, hgmax; };
 
 void luagDiag(const char* build="LUAG"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={50,75,100,125,150}; int nE=5;
     TCanvas* c=new TCanvas("cl","",1500,560); c->Divide(5,1,0.006,0.02);
     printf("\n=== %s diagnostic: per-energy build of each sigma_t point ===\n",build);

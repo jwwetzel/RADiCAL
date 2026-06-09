@@ -80,7 +80,7 @@ static TF1* coreFit(TH1F* h,const char* nm,double mu0,double sg0,double& sigma_p
 
 void pubFig(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0); gStyle->SetOptFit(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     int SRC=robustSrc(build);
     const double Es[]={25,50,75,100,125,150}; int nE=6;
     const double cutFrac=0.40;     // containment cut: keep sum_lg > 0.40 * median_E

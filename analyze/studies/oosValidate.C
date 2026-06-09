@@ -37,7 +37,7 @@ static bool depthOf(RadView& v,double xc,double yc,double r2,float& out){
 static double sigOf(std::vector<float>& v){ return v.size()>=300 ? tebSigma(v) : -1; }
 
 void oosValidate(const char* build="DSB1", int K=1000){
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={25,50,75,100,125,150};
     printf("\n%s lgcfd (DW-UP)/2 OOS validation (fold-by-run):\n",build);
     printf("  E  | quantile best-bin: in-samp -> OOS | brightest-%d: foldA  foldB\n",K);

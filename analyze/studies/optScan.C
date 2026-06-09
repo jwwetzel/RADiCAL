@@ -39,7 +39,7 @@ static bool depth(RadView& v,double xc,double yc,double r2,int src,float& out){
 
 void optScan(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     const double Es[]={25,50,75,100,125,150}; int nE=6;
     TCanvas* c=new TCanvas("c_opt","",1500,900); c->Divide(3,2,0.008,0.03);
     printf("\n%s  best-bin optimization landscape (9 sum_lg bins, mu_E +- 2 sigma_E):\n",build);

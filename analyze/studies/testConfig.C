@@ -10,6 +10,7 @@
 // ============================================================================
 #include "BuildConfig.h"        // radcore
 #include "ChannelConfig.h"      // Analysis (legacy hardcoded map)
+#include "DataPaths.h"
 #include <cstdio>
 
 static int g_fail = 0;
@@ -20,7 +21,7 @@ static void CK(const char* what, long got, long exp) {
 }
 
 void testConfig() {
-    rad::BuildConfig cfg = rad::BuildConfig::Load("data/2023/configs/DSB1.json");
+    rad::BuildConfig cfg = rad::BuildConfig::Load(radConfig("DSB1").Data());
     if (!cfg.valid()) { printf("CONFIG LOAD FAILED: %s\n", cfg.error()); return; }
 
     printf("Loaded build '%s' (year %s): %s\n", cfg.build.c_str(), cfg.year.c_str(), cfg.description.c_str());

@@ -24,7 +24,7 @@ void timingLadder() {
     printf("   method = rad::timingBestBin (== timingEnergyBins.C Method A)\n");
 
     for (int b = 0; b < 4; ++b) {
-        rad::BuildConfig cfg = rad::BuildConfig::Load(Form("data/2023/configs/%s.json", builds[b]));
+        rad::BuildConfig cfg = rad::BuildConfig::Load(radConfig(builds[b]).Data());
         printf("%-9s", builds[b]);
         for (double E : Es) {
             TString f = radReduced(builds[b], E);

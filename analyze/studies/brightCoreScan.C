@@ -45,7 +45,7 @@ static double bestBinSigma(RadView& v, int src, double rFid, double& bestE, size
 }
 
 void brightCoreScan(const char* build="DSB1"){
-    BuildConfig cfg = BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg = BuildConfig::Load(radConfig(build).Data());
     const double Es[]={100,125,150}; const double Rs[]={3.0,2.5,2.0,1.5,1.0};
     printf("\n%s  (DW-UP)/2 best-bin sigma_t [ps] vs fiducial radius — cfd05 -> lgcfd\n", build);
     printf("  E\\R     3.0        2.5        2.0        1.5        1.0\n");

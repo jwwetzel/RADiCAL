@@ -40,7 +40,7 @@ static void fitAB(TGraphErrors* g,double&a,double&b,double&be,double&chi){
 
 void methodCompare(const char* build="DSB1"){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     std::vector<double> Ec,Sc,Sec,zc, El,Sl,Sel,zl;
     ladder(cfg,RadView::kCFD05,Ec,Sc,Sec,zc);
     ladder(cfg,RadView::kLGCFD,El,Sl,Sel,zl);

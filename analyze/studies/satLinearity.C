@@ -23,7 +23,7 @@
 
 void satLinearity() {
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    rad::BuildConfig cfg = rad::BuildConfig::Load("data/2023/configs/DSB1.json");
+    rad::BuildConfig cfg = rad::BuildConfig::Load(radConfig("DSB1").Data());
     double Es[6]={25,50,75,100,125,150};
     double mHG[6]={0}, mLG[6]={0};
     long   nCapHit[6]={0}, nCapSat[6]={0};        // HG timing-cap hits + those at/above the clip

@@ -61,7 +61,7 @@ void crossBuild(){
     printf("\n=== CROSS-BUILD full spectrum (brightest slice = best achievable) ===\n");
     printf("build    material              best src  sigma@150[bright]  [typical]  floor b\n");
     for(int bi=0;bi<4;++bi){ const char* B=builds[bi];
-        BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",B)); if(!cfg.valid())continue;
+        BuildConfig cfg=BuildConfig::Load(radConfig(B).Data()); if(!cfg.valid())continue;
         // per source: quantile (typical) ladder + brightest (best) ladder + errors
         std::vector<std::vector<double>> q(nS),br(nS),Ev(nS),eq(nS),ebr(nS);
         for(double E:Es){ TFile* fp=TFile::Open(radReduced(B,E)); if(!fp||fp->IsZombie())continue;

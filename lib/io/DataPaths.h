@@ -23,7 +23,14 @@
 #include "TString.h"
 #include "TSystem.h"
 
-static const int kRadYear = 2023;   // default campaign under data/
+// Default campaign under data/. Override per-shell with `export RAD_YEAR=2024`
+// so a new dataset is analyzed without recompiling — the year flows as a
+// parameter through every radReduced()/radConfig()/radRaw() call.
+inline int radYear(){
+    const char* e = gSystem->Getenv("RAD_YEAR");
+    if (e && *e){ TString s(e); if (s.IsDigit()){ int y = s.Atoi(); if (y > 2000) return y; } }
+    return 2023;
+}
 
 inline TString radDataBase(){
     const char* e = gSystem->Getenv("RAD_DATA");
@@ -34,23 +41,23 @@ inline TString radDataBase(){
 inline TString radRaw(const char* basename, int year){
     return radDataBase() + Form("/data/%d/raw/%s", year, basename);
 }
-inline TString radRaw(const char* basename){ return radRaw(basename, kRadYear); }
+inline TString radRaw(const char* basename){ return radRaw(basename, radYear()); }
 
 // ---- reduced ntuple for a build + energy ----------------------------------
 inline TString radReduced(const char* build, double E, int year){
     return radDataBase() + Form("/data/%d/reduced/%s/%.0fGeV.root", year, build, E);
 }
-inline TString radReduced(const char* build, double E){ return radReduced(build, E, kRadYear); }
+inline TString radReduced(const char* build, double E){ return radReduced(build, E, radYear()); }
 
 // ---- build config JSON + its HG/LG calibration sidecar --------------------
 inline TString radConfig(const char* build, int year){
     return radDataBase() + Form("/data/%d/configs/%s.json", year, build);
 }
-inline TString radConfig(const char* build){ return radConfig(build, kRadYear); }
+inline TString radConfig(const char* build){ return radConfig(build, radYear()); }
 
 inline TString radHglg(const char* build, int year){
     return radDataBase() + Form("/data/%d/configs/%s.hglg", year, build);
 }
-inline TString radHglg(const char* build){ return radHglg(build, kRadYear); }
+inline TString radHglg(const char* build){ return radHglg(build, radYear()); }
 
 #endif // DATAPATHS_H

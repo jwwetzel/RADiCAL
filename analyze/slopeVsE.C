@@ -47,7 +47,7 @@ static bool fitSlope(const std::vector<P>& raw, double shapeCut, double hgmax, d
 
 void slopeVsE(const char* build){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0);
-    rad::BuildConfig cfg = rad::BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    rad::BuildConfig cfg = rad::BuildConfig::Load(radConfig(build).Data());
     // energy -> raw path (local files)
     std::vector<std::pair<double,std::string>> runs;
     if (std::string(build)=="DSB1"){

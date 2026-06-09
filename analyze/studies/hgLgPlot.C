@@ -17,6 +17,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "DataPaths.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -26,7 +27,7 @@ struct P { float lg, hg, shp; };
 
 void hgLgPlot(const char* build, const char* rawPath, double E=50, long maxev=120000){
     ApplyRADiCALStyle(); gStyle->SetOptStat(0); gStyle->SetPalette(kBird);
-    rad::BuildConfig cfg = rad::BuildConfig::Load(Form("data/2023/configs/%s.json",build));
+    rad::BuildConfig cfg = rad::BuildConfig::Load(radConfig(build).Data());
     if(!cfg.valid()){ printf("config load failed\n"); return; }
 
     TH2F* h[8]; std::vector<P> pts[8];

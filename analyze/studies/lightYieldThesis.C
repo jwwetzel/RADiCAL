@@ -46,7 +46,7 @@ void lightYieldThesis(){
     printf("\n=== Paper 1 thesis: sigma_t = a/sqrt(E) (+) b per build ===\n");
     printf("build     src     a [ps.sqrt(GeV)]   floor b [ps]\n");
     for(int bi=0;bi<4;++bi){ const char* B=builds[bi]; int SRC=robustSrc(B);
-        BuildConfig cfg=BuildConfig::Load(Form("data/2023/configs/%s.json",B)); if(!cfg.valid())continue;
+        BuildConfig cfg=BuildConfig::Load(radConfig(B).Data()); if(!cfg.valid())continue;
         std::vector<double> E,S,Se,ze;
         for(double e:Es){ TFile* fp=TFile::Open(radReduced(B,e)); if(!fp||fp->IsZombie())continue;
             TTree* t=(TTree*)fp->Get("rad"); RadView v; v.attach(t,&cfg);

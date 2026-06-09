@@ -10,7 +10,7 @@ void checkCenter() {
     TTree* t = (TTree*)fp->Get("rad");
     double xc,yc,to,tr; ScanRunCenters(t, xc, yc, to, tr);
     printf("ScanRunCenters    : (%.3f, %.3f) mm   CFD off %.2f\n", xc, yc, to);
-    rad::BuildConfig cfg = rad::BuildConfig::Load("data/2023/configs/DSB1.json");
+    rad::BuildConfig cfg = rad::BuildConfig::Load(radConfig("DSB1").Data());
     rad::RadView v; v.attach(t, &cfg);
     double mx,my; v.beamCenter(mx,my);
     printf("RadView.beamCenter: (%.3f, %.3f) mm\n", mx, my);
