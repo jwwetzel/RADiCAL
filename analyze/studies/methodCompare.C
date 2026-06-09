@@ -68,21 +68,24 @@ static void drawBuild(const char* build, Ladder L[3]){
     BuildConfig cfg=BuildConfig::Load(radConfig(build).Data());
     int adopt=adoptedSrc(build);
     int col[3]={kRed+1,kGreen+3,kAzure+2}; int mk[3]={24,25,26};
-    double ymax=55;
+    double ymin=1e9, ymax=0;
     for(int i=0;i<3;++i){ L[i]=ladder(build,cfg,SRCS[i]);
-        for(double s:L[i].S) ymax=std::max(ymax,s); }
-    ymax=std::min(ymax*1.12, 110.0);
-    TH1F* fr=gPad->DrawFrame(0,0,165,ymax);
+        for(double s:L[i].S){ ymin=std::min(ymin,s); ymax=std::max(ymax,s); } }
+    if(ymin>ymax){ ymin=20; ymax=60; }                     // no-data fallback
+    double rng=ymax-ymin; if(rng<5) rng=5;
+    double lo=std::max(0.0, ymin-0.12*rng), hi=ymax+0.45*rng;  // tight bottom, legend headroom on top
+    TH1F* fr=gPad->DrawFrame(0,lo,165,hi);
     fr->SetTitle(Form("%s;beam energy E (GeV);brightest-1000  (DW#minusUP)/2  #sigma_{t} (ps)",build));
     fr->GetYaxis()->SetTitleSize(0.045); fr->GetYaxis()->SetTitleOffset(1.2); fr->GetXaxis()->SetTitleSize(0.045);
-    TLegend* lg=new TLegend(0.40,0.70,0.96,0.92); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.032);
+    TLegend* lg=new TLegend(0.15,0.74,0.62,0.93); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.029);
     for(int i=0;i<3;++i){ if(L[i].E.empty())continue; bool A=(SRCS[i]==adopt);
         TGraphErrors* g=new TGraphErrors(L[i].E.size(),&L[i].E[0],&L[i].S[0],&L[i].ze[0],&L[i].Se[0]);
         g->SetMarkerStyle(A?(20+i):mk[i]); g->SetMarkerColor(col[i]); g->SetLineColor(col[i]); g->SetMarkerSize(A?1.7:1.2);
         if(L[i].a>0){ TF1* f=new TF1(Form("f%s%d",build,i),"sqrt([0]*[0]/x+[1]*[1])",20,160);
             f->SetParameters(L[i].a,L[i].b); f->SetLineColor(col[i]); f->SetLineWidth(A?3:1); f->SetLineStyle(A?1:2); f->Draw("SAME"); }
         g->Draw("P SAME");
-        lg->AddEntry(g,Form("%s%s:  a=%.0f, b=%.0f#pm%.0f ps",SLAB[i],A?" (adopted)":"",L[i].a,L[i].b,L[i].be),"lp");
+        const char* leglab = (i==2)?"lgcfd":SLAB[i];   // short form for the narrow panel
+        lg->AddEntry(g,Form("%s%s: a=%.0f, b=%.0f#pm%.0f",leglab,A?" (adopt.)":"",L[i].a,L[i].b,L[i].be),"lp");
     }
     lg->Draw();
 }
