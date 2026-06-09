@@ -1,86 +1,72 @@
 # RADiCAL datasets — multi-year, one repository
 
 This directory holds **one subdirectory per test-beam campaign** (`2023/`, `2024/`,
-`2025/`, `2026/`, …). The experimental setup and DAQ are largely the same across
-years; what differs between campaigns is mostly the **channel map** and a few
-per-dataset tweaks. Those differences live here as *configuration*; the analysis
-*code* stays shared in the repo-root `Analysis/`.
+`2025/`, `2026/`, …). The detector and DAQ are largely the same across years; what
+differs is mostly the **channel map / build configs** and a few per-dataset tweaks.
+Those differences live here as *configuration*; the analysis *code* stays shared in the
+repo-root `lib/`, `analyze/`, and `reduce/`. The organizing principle and the full
+new-dataset / new-paper playbooks are in **`docs/PUBLICATION_ENGINE.md`**.
 
 ## Why one repo (not one per year/run/report)
 
-- **Shared framework, fixed once.** One `Analysis/` serves every year; a fix or a
-  method improvement propagates everywhere instead of being copy-pasted N times.
-- **Reduction is already config-agnostic.** `Analysis/reduceRaw.C` stores all 36
-  DRS slots `(peak, CFD-5% time, charge)` plus the wire-chamber track and both
-  MCPs — *no channel map needed at reduction time*. The map only matters when you
-  interpret slots as capillaries (analysis), so a new year is a new **config**,
-  not a code fork.
-- **Cross-year synthesis is trivial here, painful across many repos.** Comparing
-  campaigns apples-to-apples (as the 2023 capillary study did within one year)
-  wants a single tree. The synthesis report draws from every `data/<year>/`.
-- **Data size is irrelevant to topology.** Raw/reduced data is gitignored and
-  never enters git either way (see `.gitignore`).
-- **Per-run / per-report isolation** = a subdirectory, a branch, or a git tag —
-  not a separate repository.
+- **Shared framework, fixed once.** One `lib/` + `analyze/` + `reduce/` serves every
+  year; a fix or method improvement propagates everywhere instead of being copy-pasted.
+- **Reduction is config-agnostic.** `reduce/reduceRaw.C` stores all 36 DRS slots
+  `(peak, CFD-5% time, charge)` plus the wire-chamber track and both MCPs — *no channel
+  map needed at reduction time*. The map only matters when you interpret slots as
+  capillaries (analysis), so a new year is a new **config**, not a code fork.
+- **Cross-year synthesis is trivial here.** Comparing campaigns apples-to-apples wants a
+  single tree; the analysis reads any campaign via `RAD_YEAR`.
+- **Data size is irrelevant to topology.** Raw/reduced data is gitignored.
 
 ## Layout
 
 ```
 data/
   <year>/
-    config/
-      channel_map.yaml   # slot -> capillary wiring for THIS campaign (the thing that differs)
-      dataset.yaml       # campaign metadata + any per-dataset analysis overrides
-      runs.csv           # run manifest / logbook (run, energy, config, bias, status, ...)
-    raw/                 # drop sample raw .root files here              (gitignored)
-    reduced/             # reduceRaw.C output, ~12 MB/run                (gitignored)
-    output/              # analysis ntuples / scratch                   (gitignored)
-    figures/             # committed key figures for this campaign
+    configs/             # the ONLY files the code reads (tracked)
+      <BUILD>.json       #   per-build: DRS4 [drs,grp,ch] map, materials/roles, geometry, run list
+      <BUILD>.hglg       #   per-build HG/LG calibration sidecar (optional)
+    metadata/            # human logbook, decorative — not read by code (tracked)
+      dataset.yaml       #   campaign metadata + any per-dataset overrides
+      channel_map.yaml   #   slot -> capillary wiring, mirror of the JSON
+      runs.csv           #   run manifest / logbook (run, energy, build, bias, status)
+    raw/                 # raw 'pulse' .root files, ~2 GB/run                (gitignored)
+    reduced/<BUILD>/     # reduceRaw.C output 'rad' tree, ~12 MB/run         (gitignored)
   _TEMPLATE/             # copy this to start a new campaign
 ```
 
-Only `config/` and `figures/` are tracked in git; `raw/`, `reduced/`, `output/`
-are data payloads and are ignored (each keeps a `.gitkeep` so the empty dir
-persists).
+`configs/` and `metadata/` are tracked; `raw/` and `reduced/` are gitignored payloads.
 
-## Add a new campaign
+## Switching campaigns — `RAD_YEAR`
+
+Every macro resolves data through `lib/io/DataPaths.h` (the single resolver — no legacy
+fallbacks). Two env vars parameterize it:
+
+- **`RAD_YEAR`** picks the campaign: `export RAD_YEAR=2024` makes every `radReduced()` /
+  `radConfig()` / `radRaw()` point at `data/2024/` — **no recompile**. Default is 2023.
+- **`RAD_DATA`** overrides the base directory (defaults to the repo root) if your data
+  payloads live elsewhere.
+
+## Add a new campaign (summary; full steps in `docs/PUBLICATION_ENGINE.md`)
 
 ```
 cp -r data/_TEMPLATE data/2027
-# 1. edit data/2027/config/dataset.yaml      (year, energies, beam, overrides)
-# 2. edit data/2027/config/channel_map.yaml  (VERIFY every (drs,grp,ch) vs this year's wiring)
-# 3. fill data/2027/config/runs.csv          (the run logbook)
-# 4. drop a few sample runs into data/2027/raw/ to smoke-test before the cluster
+# 1. fill data/2027/metadata/{dataset.yaml,channel_map.yaml,runs.csv}  (the logbook)
+# 2. write data/2027/configs/<BUILD>.json per build  (copy a 2023 one;
+#    VERIFY every [drs,grp,ch] vs this year's wiring + hg_sat_mV vs its DC offset)
+# 3. drop a few sample runs into data/2027/raw/ and smoke-test:
+#    RAD_YEAR=2027 root -l -b -q 'analyze/sigmaT.C+("DSB1",150)'
+# 4. reduce on the cluster, then run the standard analysis with RAD_YEAR=2027
 ```
 
-The shared framework reads the campaign by name (planned: a `--dataset <year>`
-argument / `RAD_DATASET` env that points the macros at `data/<year>/config/`;
-today the 2023 map is compiled into `Analysis/ChannelConfig.h` — see *Status* below).
+The per-build JSON (`BuildConfig`) is authoritative: it fully describes a build (DRS4
+`[drs,grp,ch]` map, per-corner material/role, geometry, run list). The universal flat
+index math lives in `lib/waveform/ChannelConfig.h`; the per-campaign wiring is what you
+verify in each `configs/<BUILD>.json`.
 
 ## Cluster (HPC) workflow
 
-Per campaign: build the task list from `runs.csv`, `reduceRaw.C` each raw run on
-the cluster into `reduced/`, merge, then run the shared analysis. The existing
-`reduce/hpc/` scripts already parameterize by manifest — point them at the
-campaign's `runs.csv`. (See `reduce/hpc/PRESCRIPTION.md`.)
-
-## Data centralization (2023)
-
-All 2023 data now resolves through **one** place — `Analysis/DataPaths.h`:
-
-- **Canonical layout:** `data/2023/{raw, reduced/<BUILD>}` (mirrored on CERNBox).
-- **`data/2023/MANIFEST.csv`** maps every file to its canonical and legacy path.
-- **`Analysis/organize_data.sh`** consolidates local data into the canonical tree
-  (link / copy / move), or — for a newcomer who downloaded `data/2023/` from
-  CERNBox — bridges the old in-repo paths with `--legacy-links`.
-- The resolver tries the canonical path first and **falls back** to the legacy
-  locations (`Data/`, `reduced/`, `output/`), so existing checkouts and the
-  live site keep working during the transition.
-
-See `data/2023/README.md` to get started. The 2023 channel map is still compiled
-into `Analysis/ChannelConfig.h` (mirrored in `config/channel_map.yaml`); teaching the
-framework to load `channel_map.yaml` per campaign is the remaining multi-year step.
-
-**Code-migration status:** the data-reading macros are being moved onto
-`DataPaths.h` (`radRaw()` / `radReduced()`). Until all are migrated, the
-`--legacy-links` bridge makes every macro work against a CERNBox download.
+Build the task list from `runs.csv`, `reduceRaw.C` each raw run into `reduced/`, merge,
+then run the shared analysis. `reduce/hpc/` already parameterizes by manifest and respects
+`RAD_YEAR` — point it at the campaign's runs. See `reduce/hpc/PRESCRIPTION.md`.

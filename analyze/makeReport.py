@@ -49,7 +49,10 @@ except ImportError:
 # Paths & constants
 # ---------------------------------------------------------------------------
 REPO_ROOT   = Path(__file__).resolve().parent.parent
-OUTPUT_ROOT = REPO_ROOT / "Analysis" / "Output"
+# Report output lives at the repo-root output/ tree (gitignored payload), then
+# deployReport.sh copies it to site/report/. (Was "Analysis/Output" pre-reorg —
+# both the directory rename Analysis→analyze and the Output→output case were stale.)
+OUTPUT_ROOT = REPO_ROOT / "output"
 REPORT_DIR  = OUTPUT_ROOT
 PNG_DIR     = OUTPUT_ROOT / "report_images"
 REPORT_HTML = REPORT_DIR / "report.html"

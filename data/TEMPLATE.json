@@ -1,9 +1,9 @@
-// TEMPLATE build config — copy to datasets/<year>/configs/<BUILD>.json and edit.
+// TEMPLATE build config — copy to data/<year>/configs/<BUILD>.json and edit.
 // This is the ONLY file you write to add new data (different channel mapping,
-// new year, new module). MiniJson allows // comments. See radcore/README.md.
+// new year, new module). MiniJson allows // comments. See data/README.md.
 {
-  "year": 2024,                      // campaign year -> datasets/<year>/
-  "build": "MYBUILD",                // -> datasets/<year>/reduced/MYBUILD/<E>GeV.root
+  "year": 2024,                      // campaign year -> data/<year>/
+  "build": "MYBUILD",                // -> data/<year>/reduced/MYBUILD/<E>GeV.root
   "description": "one line: what module/fill this is",
 
   "digitizer": {                     // DRS4 geometry (defaults shown)
@@ -51,5 +51,5 @@
   // EITHER inline (local reduction):
   "runs": { "150": ["RUN0000_150_GeV.root"] }
   // OR point at a manifest CSV for full HPC reduction:
-  // "runs_manifest": "Analysis/hpc/manifest_MYBUILD.csv"
+  // "runs_manifest": "reduce/hpc/manifest_MYBUILD.csv"
 }
