@@ -134,7 +134,7 @@ void timingFitSummary(){
     // MIXED drawn first, dashed grey, reference-only
     int ord[4]={2,0,1,3};
     int cols[4]={kRData,kRGreen+1,kGray+2,kOrange+8}; int mks[4]={20,21,24,23};
-    TLegend* lg=new TLegend(0.47,0.66,0.96,0.93); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.031);
+    TLegend* lg=new TLegend(0.44,0.66,0.93,0.93); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.031);
     for(int k=0;k<4;++k){ int i=ord[k]; BRow& r=rows[i]; if(r.E.size()<3) continue;
         bool mixed=(i==2);
         std::vector<double> ze(r.E.size(),0);
@@ -152,7 +152,7 @@ void timingFitSummary(){
             i==2?"*":Form(" (%s)",r.srcName),r.a,r.ae,r.b,r.be),"lp"); }
     lg->Draw();
     TLatex tx; tx.SetNDC(); tx.SetTextSize(0.026); tx.SetTextColor(kGray+3);
-    tx.DrawLatex(0.40,0.585,"*single-estimator timing is ill-posed for MIXED (Sec. 6)");
+    tx.DrawLatex(0.44,0.585,"*single-estimator timing is ill-posed for MIXED (Sec. 6)");
     // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
     c->Print("papers/figures/timing_fit_summary/timing_fit_summary.png");
     c->Print("papers/timing/figs/thesis_postfix.png");
