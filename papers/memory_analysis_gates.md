@@ -90,17 +90,36 @@ single-material modules."
   `mixedSeparate.C` + h2h with swapped indices).
 
 ## GATE 2 — Position arithmetic reconciliation   [RANK 3 — blocks every P3 mm claim]
-STATUS: OPEN.
-- Inputs: DSB1+TENERGY reduced all E. Branches: `lg_peak[8]` (4-corner light division), `x_trk`,`y_trk`,
-  `wc_ok`, `wc_peak[4]`, `in_fiducial`.
-- Script: `papers/scripts/position/positionReconcile.C` (TO CREATE): unbinned event residuals (estimator −
-  WC), quadrature decomposition σ²_resid = σ²_est ⊕ σ²_WC, WC σ re-derivation (3.6 vs 3.3 vs ~1 mm
-  effective?), TLinearFitter train/test run-fold split, tracker-free split-estimator internal σ_x
-  (disjoint corner subsets, per-event difference /√2).
-- Output: reconciliation note + unbinned residual figure + decomposition table.
-- PASS: a self-consistent picture (e.g. residual ≥ WC term, or WC σ re-derived smaller than 3.6).
-- If PASS → S6 written with "comparator-limited upper bound" + the internal split-estimator number.
-- If FAIL (irreconcilable) → drop mm numbers; S6 becomes light-division demonstration only.
+STATUS: **PASSED (RECONCILED) 2026-06-09.** Outcome B′ (joint upper bound) + partial Outcome D
+(the memory's comparator characterization was wrong; the measurement itself is sound).
+Products: `papers/scripts/position_reconciliation/{AUDIT.md, positionReconcile.C,
+position_reconcile_result.txt}`, figure `papers/figures/position_reconciliation/position_reconcile.png`.
+
+### RESULT (2026-06-09)
+- **The "impossible arithmetic" dissolves on inspection of the two source scripts:**
+  (a) the 1.5 mm (`showerLocalization.C`) IS an unbinned event-level residual RMS of a 4-parameter
+  linear light-division estimator vs the wire chamber — a legitimate quantity — but was an IN-SAMPLE
+  (training) residual; (b) the 3.6 mm (`wireChamberResolution.C`) is σ·(t_R+t_L) — the END-TIME-SUM
+  upper bound, explicitly t₀-inflated in the script's own comments; t₀ CANCELS in the position
+  difference, so 3.6 mm was NEVER the event-level comparator term. The memory/blueprint
+  mischaracterized it. (Also: `showerLocalization.C` is schema-rotted — reads `mcp_peak`, now
+  `mcp1_peak` — re-derivation was mandatory.)
+- **Re-derived on the current schema with a train/test split (even/odd events):**
+  DSB1 150 GeV (N=434k): held-out x residual RMS 1.54 mm (Gaussian core 1.26, robust 1.28),
+  y 1.45 (core 1.16). Train-vs-test Δ = 3.5 µm → overfitting negligible, the historical number
+  survives held-out validation. Beam-spot no-info baseline 2.91 mm → real position information.
+- **Tight fiducial (r<2.5 mm): x 0.91, y 0.88 mm** — and nearly energy-independent
+  (0.91/0.93/0.95 at 150/50/25). Full-window residuals 1.54/1.37/1.28 — mild, NOT
+  photostatistics-like scaling.
+- **NEW FINDING — closure slope 0.698 (ideal 1):** the linear estimator saturates beyond |x|≈3 mm
+  (light-sharing S-curve). The wide-window RMS is inflated by this nonlinearity; the core number
+  (~0.9 mm) is the clean localization statement. Paper-3 S6 must either restrict to the linear core
+  or use a nonlinear (log-weighted/S-curve-corrected) estimator.
+- **Unfolding refused (as pre-registered):** 1.54² − 3.6² < 0 — imaginary; the 3.6 is inapplicable.
+  Joint bound established instead: σ_capillary ≤ 0.9 mm (core) AND σ_WC(diff) ≤ 0.9 mm.
+  No intrinsic resolution is quotable from this data.
+- UNLOCK for a real resolution claim: measure σ_WC(diff) directly (CFD sub-sample WC re-derivation
+  on raw, or the tracker-free split-estimator internal σ) → then unfold.
 
 ## GATE 4 — t/z separation for the 4D capstone (T_abs)   [RANK 4]
 STATUS: OPEN.

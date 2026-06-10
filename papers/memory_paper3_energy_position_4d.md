@@ -19,8 +19,14 @@ shower-max migration (the depth dial) and whose spread IS Paper 2's floor.
 - E_SM linearity all builds; parent normalization 29.4 mV/GeV vs our LG-sum convention ~55 mV/GeV —
   RECONCILE IN PRINT (B-list). σ_E_SM/E ≈ 13.5–15% @150 across builds (recorded; re-derive).
 - E-type (TENERGY): slopes ~1.6 vs 6.7 mV/GeV (~4–5× dimmer than T-type), linear 50–150 GeV (recorded).
-- Position: TLinearFitter 4-corner estimator residual ~1.5 mm @150 vs WC σ ~3.6 mm — **arithmetically
-  impossible as stated; GATE 2 blocks every position claim**.
+- Position — **GATE 2 RECONCILED 2026-06-09** (was: "1.5 vs 3.6 impossible" — the 3.6 was the
+  t₀-inflated end-time-SUM bound, never the difference-mode comparator; the memory had it wrong).
+  Re-derived, current schema, train/test held-out: x/y residual RMS **1.54/1.45 mm** (full ±6 mm
+  window, 150 GeV; Gaussian cores 1.26/1.16), **0.91/0.88 mm in the r<2.5 beam core**, roughly
+  energy-independent (25–150 GeV). Closure slope 0.698 → linear estimator saturates beyond |x|≈3 mm;
+  S6 must restrict to the core or use a nonlinear estimator. Quote ONLY as a joint upper bound
+  (capillary AND tracker); no intrinsic resolution. Products:
+  `papers/scripts/position_reconciliation/`, `papers/figures/position_reconciliation/`.
 - Co-registration: module center (6.58, 4.66) mm stable ±0.15; MCP–RADiCAL alignment 0.79 mm; beam spot
   2.9 mm (recorded in report-era memory; re-verify when writing S2).
 - Containment: SumPb < 0.30·SumLG cut, 95.3% eff @150; punch-through 6.2% @150 (recorded).
@@ -44,7 +50,9 @@ multi-energy table). 5. Graphical abstract: the 4D shower passport (one real 150
 recognition (module-ID map + two-shower efficiency). 7. E-type 2-panel + G4 kernel fold.
 
 ## Unresolved gates blocking this paper
-- GATE 2 position arithmetic (1.5 vs 3.6 mm) — blocks S6 and every mm number.
+- GATE 2 — **PASSED/RECONCILED 2026-06-09** (see Known results above + memory_analysis_gates.md).
+  S6 unblocked with the joint-upper-bound language; remaining S6 work: nonlinear/log-weighted
+  estimator for the full window, σ_WC(diff) direct measurement for any future unfolding.
 - GATE 3 depth dial — **PASSED 2026-06-09 at population level**: slope −33.6±2.9 ps/e-fold vs
   predicted −26.3 (DSB1 srCFD, 25–150 GeV); S8 unlocked; depth estimator must be CFD-based (LED
   suppressed, −5.5). Per-event corroboration (t_diff vs ln(A_DW/A_UP), vs Pb-glass leakage) still

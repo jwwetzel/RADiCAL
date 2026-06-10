@@ -1,0 +1,52 @@
+
+===== GATE 2: POSITION ARITHMETIC RECONCILIATION =====
+estimator: x_reco = c0 + c.f (3 corner light fractions), trained on EVEN events,
+evaluated on ODD events (held-out). All residuals are unbinned, event-level.
+
+  --- DSB1 150 GeV (N=434482; train 217241 / test 217241) ---
+  beam-spot spread (no-info baseline):           sigma_x = 2.91 mm (RMS)
+  TRAIN residual x:  RMS=1.53  (the historical in-sample quantity)
+  HELD-OUT residual x: RMS=1.54  Gaus-core=1.26+-0.00  robust=1.28  (N=217241)
+  HELD-OUT residual y: RMS=1.45  Gaus-core=1.16+-0.00  robust=1.17
+  tight fiducial r<2.5: x RMS=0.91  y RMS=0.88
+  overfit check (train vs test RMS): 1.534 vs 1.538 mm  (delta=3.5 um)
+  comparator decomposition (x): measured held-out RMS = 1.54 mm
+    vs 3.6 mm sum-side UB: 1.54^2 - 3.60^2 < 0  -> UNFOLDING IMAGINARY/INVALID:
+    the 3.6 mm sum-side bound CANNOT be the event-level comparator term
+    (it is t0-inflated; t0 cancels in the position difference). The residual
+    itself bounds the applicable term: sigma_WC(diff) <= 1.54 mm.
+    joint bound: sigma_capillary <= 1.54 mm AND sigma_WC(diff) <= 1.54 mm;
+    intrinsic unfolding NOT performed (no measured applicable comparator term).
+
+  --- DSB1 50 GeV (N=244249; train 122125 / test 122124) ---
+  beam-spot spread (no-info baseline):           sigma_x = 2.90 mm (RMS)
+  TRAIN residual x:  RMS=1.37  (the historical in-sample quantity)
+  HELD-OUT residual x: RMS=1.37  Gaus-core=1.09+-0.00  robust=1.14  (N=122124)
+  HELD-OUT residual y: RMS=1.27  Gaus-core=1.01+-0.00  robust=1.04
+  tight fiducial r<2.5: x RMS=0.93  y RMS=0.88
+  overfit check (train vs test RMS): 1.371 vs 1.369 mm  (delta=-1.4 um)
+  comparator decomposition (x): measured held-out RMS = 1.37 mm
+    vs 3.6 mm sum-side UB: 1.37^2 - 3.60^2 < 0  -> UNFOLDING IMAGINARY/INVALID:
+    the 3.6 mm sum-side bound CANNOT be the event-level comparator term
+    (it is t0-inflated; t0 cancels in the position difference). The residual
+    itself bounds the applicable term: sigma_WC(diff) <= 1.37 mm.
+    joint bound: sigma_capillary <= 1.37 mm AND sigma_WC(diff) <= 1.37 mm;
+    intrinsic unfolding NOT performed (no measured applicable comparator term).
+
+  --- DSB1 25 GeV (N=108527; train 54264 / test 54263) ---
+  beam-spot spread (no-info baseline):           sigma_x = 2.76 mm (RMS)
+  TRAIN residual x:  RMS=1.29  (the historical in-sample quantity)
+  HELD-OUT residual x: RMS=1.28  Gaus-core=1.10+-0.01  robust=1.13  (N=54263)
+  HELD-OUT residual y: RMS=1.22  Gaus-core=1.02+-0.01  robust=1.03
+  tight fiducial r<2.5: x RMS=0.95  y RMS=0.89
+  overfit check (train vs test RMS): 1.285 vs 1.280 mm  (delta=-5.2 um)
+  comparator decomposition (x): measured held-out RMS = 1.28 mm
+    vs 3.6 mm sum-side UB: 1.28^2 - 3.60^2 < 0  -> UNFOLDING IMAGINARY/INVALID:
+    the 3.6 mm sum-side bound CANNOT be the event-level comparator term
+    (it is t0-inflated; t0 cancels in the position difference). The residual
+    itself bounds the applicable term: sigma_WC(diff) <= 1.28 mm.
+    joint bound: sigma_capillary <= 1.28 mm AND sigma_WC(diff) <= 1.28 mm;
+    intrinsic unfolding NOT performed (no measured applicable comparator term).
+Info in <TCanvas::Print>: png file papers/figures/position_reconciliation/position_reconcile.png has been created
+
+  wrote papers/figures/position_reconciliation/position_reconcile.png

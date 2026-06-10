@@ -53,7 +53,10 @@ Companion memories: `memory_paper2_timing.md`, `memory_paper3_energy_position_4d
    pulse-shape/decay discriminant. GATE 1 (see memory_analysis_gates.md).
 2. **Kill-shot ratio 0.99 with defensible CI** — needs paired event-bootstrap + run-jackknife + the
    χ²/ndf=0.4/5 error audit. GATE 6.
-3. **Position residual 1.5 mm vs WC σ≈3.6 mm arithmetic** — currently impossible as stated. GATE 2.
+3. ~~Position residual 1.5 mm vs WC σ≈3.6 mm arithmetic~~ **GATE 2 RECONCILED 2026-06-09**: the 3.6
+   was the t₀-inflated sum-side bound (inapplicable); the residual is real, survives train/test
+   (Δ=3.5 µm), and is 0.9 mm in the beam core / 1.5 mm full-window (saturation beyond |x|≈3 mm,
+   closure slope 0.70). Joint-upper-bound language only — see claims memory.
 4. TENERGY floor 240/22±3 and MIXED 233/35±2 — recompute with the POST-FIX estimator before quoting.
 5. srCFD validity on 94%-clipped data — closure test on unclipped events (25 GeV / dim builds).
 6. Satellite-removal (0.2 ns artifact, parent Fig 19) — currently asserted; needs the same-event
@@ -80,8 +83,8 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
    125→150 run-period check.
 2. GATE 1 — **data half CONFIRMED 2026-06-09 (8/8 ends match the map, brightness-independent)**;
    logbook confirmation remains the user-action half (belt and suspenders, no longer blocking).
-3. GATE 2 position arithmetic reconciliation. ← NEXT analysis gate.
-4. GATE 6 kill-shot bootstrap CI.
+3. ~~GATE 2 position arithmetic reconciliation~~ **PASSED/RECONCILED 2026-06-09**.
+4. GATE 6 kill-shot bootstrap CI. ← NEXT analysis gate.
 5. Recompute all four builds' (a,b) with post-fix estimator → single authoritative table.
 6. Reframe `papers/timing/radical_timing.tex` to the materials-comparison center of gravity.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the

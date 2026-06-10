@@ -23,8 +23,16 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 ### Energy / position / 4D (Paper 3)
 - "E_SM — shower-maximum sampled energy (≈3 LYSO tiles ≈ 1 R_M)" — the symbol defined once and attached
   to EVERY energy number including abstract and captions. "σ_E_SM/E ≈ 14% at 150 GeV."
-- "Transverse residual of X mm against a wire-chamber comparator of σ ≈ 3.6 mm — a comparator-limited
-  upper bound" (exact value pending GATE 2) — meets the parent's "few mm" goal AS STATED.
+- Position — GATE 2 RECONCILED 2026-06-09 (`papers/scripts/position_reconciliation/`). ALLOWED:
+  "Transverse shower localization from four-corner light division yields a held-out, event-level
+  residual of 1.5/1.5 mm (x/y) against the beamline wire chamber over the full ±6 mm window at
+  150 GeV, improving to 0.9 mm within the 2.5 mm beam core; these residuals are UPPER BOUNDS on the
+  intrinsic module localization, as they include the unmeasured tracker difference-mode noise
+  (itself ≤ 0.9 mm by this same measurement) and the linear-estimator saturation beyond |x| ≈ 3 mm
+  (closure slope 0.70)." And: "meets the program's 'few mm' localization goal, demonstrated over the
+  ~3 mm beam-spot footprint." The residual is approximately energy-independent (not
+  photostatistics-limited). The OLD "vs a 3.6 mm comparator" framing is RETIRED: 3.6 mm is the
+  t₀-inflated end-time-SUM upper bound and never applied to the position difference.
 - 4D (allowed NOW, scope-locked): "a single ultra-compact module DEMONSTRATES a simultaneous
   four-dimensional (x, y, E_SM, t) measurement of EM showers at shower maximum" — demonstration, from
   one co-registered event sample, scope stated in the same sentence.
@@ -60,8 +68,14 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 2. ✗ "5D calorimeter" / any per-event depth MEASUREMENT or resolution today — no independent depth truth
    exists; spread-matches-1-X₀ is consistency, not validation. UNLOCK: gates 3→4→G4 regression chain;
    even then only "toward 5D" / "5D estimator", never "5D imaging calorimeter".
-3. ✗ 0.9 or 1.5 mm as a calibrated position RESOLUTION — comparator is ~3.6 mm, beam spot 2.9 mm.
-   Only "comparator-limited residual / upper bound". UNLOCK: GATE 2 + intrinsic decomposition.
+3. ✗ 0.9 or 1.5 mm as a calibrated position RESOLUTION — the residual is a JOINT upper bound on
+   capillary and tracker terms whose split is unmeasured. Also forbidden: ✗ "comparator-limited" as
+   an ASSERTION (we cannot show the tracker dominates); ✗ intrinsic unfolding (no measured applicable
+   comparator term — and unfolding against the inapplicable 3.6 mm is imaginary, demonstrated and
+   refused in `position_reconcile_result.txt`); ✗ quoting the wide-window 1.5 mm without the
+   estimator-saturation caveat (closure slope 0.70 beyond |x|≈3 mm). UNLOCK for "resolution":
+   measure σ_WC(diff) directly (CFD sub-sample WC re-derivation or split-estimator internal σ),
+   then unfold.
 4. ✗ 25–27 ps as absolute time-of-arrival or ToF — that is the self-referenced differential; the
    clock-referenced number is ~50 ps class. UNLOCK: GATE 4 (T_abs), and even then quote both with taxonomy.
    Map every physics case (H→γγ vertexing, BIB windows) to the RIGHT observable.
