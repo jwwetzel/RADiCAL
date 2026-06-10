@@ -16,9 +16,9 @@
 
 \begin{frontmatter}
 
-%% TODO-P2: title verb softened per claims law ("sets" -> "governs"); collaboration to confirm.
-\title{Detected light yield governs the time resolution of RADiCAL
-sampling-calorimeter modules: a four-build wavelength-shifter comparison}
+%% Title decision 2026-06-09 (prose pass): same-shower control is the paper's unique asset.
+\title{A same-shower comparison of wavelength shifters and light-yield limits in a
+compact RADiCAL electromagnetic-shower timing module}
 
 %% ---- Author block. Lead author J. Wetzel for Paper 1 (collaboration sets the full
 %% author ORDER). The 39-author RADiCAL roster + 11 affiliations are verified in Ref.~[2]
@@ -35,34 +35,29 @@ sampling-calorimeter modules: a four-build wavelength-shifter comparison}
 %% ---------------------------------------------------------------------------
 
 \begin{abstract}
-We compare the precision-timing performance of four builds of the RADiCAL
-tungsten/LYSO:Ce sampling electromagnetic calorimeter module that differ primarily
-in their wavelength-shifter (WLS) capillaries -- the common LYSO:Ce scintillator and
-tungsten absorber are unchanged -- exposed to $25$--$150$~GeV electrons at the CERN
-SPS: a high-light DSB1 (organic WLS) build, a low-light LuAG:Ce (ceramic WLS) build,
-a mixed DSB1/LuAG:Ce build, and a multi-segment build. The high-gain channels used for timing saturate,
-clipping at $820$~mV; we recover the unclipped rising edge event by event from a
-linear low-gain copy of each pulse, timing a constant fraction of the
-low-gain-predicted true peak on an edge a factor $\sim3.7$ steeper than the
-clipped-peak foot, which improves the resolution by a few picoseconds over timing the
-clipped pulse. Using a microchannel-plate-free differential estimator,
-$(\mathrm{DW}-\mathrm{UP})/2$, formed from the four upstream and four downstream
-silicon-photomultiplier readouts, we measure the time resolution of every build and
-parametrise it as $\sigma_t = a/\sqrt{E}\oplus b$. The stochastic term $a$ tracks the
-collected scintillation light, growing from $203\pm6$ to $440\pm18$~ps$\sqrt{\mathrm{GeV}}$
---- more than a factor of two --- from the high-light to the low-light build, while the
-fitted floors of the LYSO-based builds lie in the $19$--$26$~ps range and are mutually
-consistent once the capillary-count penalty of the segmented build and the extrapolation
-uncertainty of the low-light build are accounted for; the high-light floor,
-$18.8\pm0.8$~ps, confirms the $17.5$~ps previously reported for DSB1
-[NIM A \textbf{1068} (2024) 169737]. Within the mixed module, DSB1 and LuAG:Ce
-capillaries reading the \emph{same showers} give per-capillary timing widths that agree
-at the $10$--$20\%$ level ($\sigma_\mathrm{DSB1}/\sigma_\mathrm{LuAG} = 1.04\pm0.05$
-under the primary estimator), which, set against the factor-of-two cross-build
-difference, disfavors intrinsic wavelength-shifter re-emission kinetics as the dominant
-cause --- within this geometry and at these light levels. The high-light build reaches
-$25.7\pm0.6$~ps for the brightest $150$~GeV showers. We discuss detected light yield as
-the primary design lever for fast-timing calorimetry with these modules.
+Compact calorimeter modules that time electromagnetic showers at shower maximum are
+candidates for the picosecond-level timing layers of future collider detectors. We
+compare four builds of the RADiCAL tungsten/LYSO:Ce sampling module --- identical
+except for their wavelength-shifter (WLS) capillaries --- in $25$--$150$~GeV electron
+beams at the CERN SPS: high-light organic DSB1, low-light ceramic LuAG:Ce, a mixed
+DSB1/LuAG:Ce module, and a multi-segment build. Timing uses a reference-free dual-end
+differential estimator, with the saturated high-gain rising edge recovered event by
+event from a linear low-gain copy (srCFD); on identical events this recovery suppresses
+the non-Gaussian tails that a clipped-peak discriminator develops on saturated pulses.
+Parametrising $\sigma_t = a/\sqrt{E}\oplus b$, the stochastic term tracks the
+detected light, growing from $a = 203\pm6$ to $440\pm18$~ps$\sqrt{\mathrm{GeV}}$ ---
+more than a factor of two --- from the high-light to the low-light build, and the
+high-light floor of $18.8\pm0.8$~ps confirms the previously published $17.5$~ps. The
+mixed module provides a same-shower control: DSB1 and LuAG:Ce capillaries reading the
+same showers give per-capillary timing widths agreeing at the $10$--$20\%$ level
+($\sigma_\mathrm{DSB1}/\sigma_\mathrm{LuAG} = 1.04\pm0.05$, scatter-based, under the
+primary estimator). Set against the cross-build difference, this disfavors intrinsic
+WLS re-emission kinetics as the dominant explanation, within this geometry and at these
+light levels: timing performance is governed primarily by detected light yield, module
+response, and estimator choice. The high-light build reaches $25.7\pm0.6$~ps for the
+brightest $150$~GeV showers, and the mean dual-end asymmetry drifts with energy at
+$-33.6\pm2.9$~ps per $e$-fold, consistent with shower-maximum migration ---
+supporting evidence that the timing floor carries longitudinal shower information.
 \end{abstract}
 
 \begin{keyword}
@@ -79,37 +74,44 @@ Silicon photomultiplier \sep Signal saturation \sep 4D calorimetry
 Future high-luminosity colliders demand electromagnetic (EM) calorimeters that resolve
 the \emph{time} of a shower to a few tens of picoseconds, in addition to its energy,
 to associate deposits with the correct primary vertex and reject out-of-time
-pile-up~\cite{cmsmtd}. The RADiCAL R\&D programme develops ultra-compact,
-radiation-hard sampling EM calorimeter modules toward this goal~\cite{radical}.
-%% TODO-P2: bibliography is a 4-reference skeleton. Required additions (panel must-cite):
-%% Anderson 2015 (LYSO timing prior art), Gundacker/Cates CTR canon, Lucchini LuAG-fiber,
-%% Gedcke-McDonald + Genat (timing methods), Stricker-Shaver (DRS4 calibration),
-%% HGTD/HGCAL/LHCb-SPACAL/Crilin benchmarks, FCC CDRs, DRD6/RDC9, PDG stats, Ruchti 1996.
+pile-up~\cite{cmsmtd,hgtd,hgcal,fcchh,aleksa}. Dedicated timing layers based on
+LYSO:Ce with SiPM readout reach $30$--$60$~ps per minimum-ionising
+track~\cite{cmsmtd}, and LYSO-based calorimetric devices have demonstrated
+$\sim\!30$~ps shower timing~\cite{anderson2015}. The RADiCAL R\&D programme develops
+ultra-compact, radiation-tolerant sampling EM calorimeter modules that time the shower
+at its maximum, where the signal is largest and most
+localised~\cite{radical,radhard2022,instruments2022,wetzel2023}: wavelength-shifting
+(WLS) capillaries sample shower maximum and pipe the light to compact SiPM readout at
+the module ends.
 
 A first RADiCAL test-beam measurement, on a single high-light build, reported a time
 resolution of $\approx\!27$~ps at $150$~GeV and parametrised the energy dependence as
 $\sigma_t = a/\sqrt{E}\oplus b$ with $a=256$~ps$\sqrt{\mathrm{GeV}}$ and a floor
 $b=17.5$~ps~\cite{radical}. That work also identified, as a priority for further study
-(its Section~7), a direct comparison of the timing performance of different
-wavelength-shifter (WLS) scintillator materials in otherwise-identical modules. This
-paper presents that comparison.
+(its Section~7), a direct comparison of the timing performance of different WLS
+materials in otherwise-identical modules. This paper presents that comparison.
 
-The central question is whether a lower-light WLS material such as LuAG:Ce times worse
-than the high-light organic DSB1 because of the \emph{species} of scintillator --- its
-emission spectrum, decay time, or refractive index --- or simply because it collects
-\emph{less light}. The distinction matters for detector design: if light yield is the
-sole driver, the timing of any candidate material is predictable from its light output,
-and the material can be chosen for radiation hardness or mechanical properties without a
-separate timing penalty. We answer it by measuring four builds spanning a factor
-$\sim2$ in light yield with a common analysis, and by separating the light-dependent
-stochastic term from the irreducible floor.
+The question is sharper than ``which wavelength shifter is faster.'' A cross-build
+timing difference convolves at least five effects that must be disentangled before any
+statement about the WLS material is meaningful: the detected light yield; the WLS
+re-emission kinetics (LuAG:Ce is intrinsically slower than the organic
+DSB1~\cite{luag,lucchini2013}); the build-to-build module response; the saturation of
+the timing front end; and the bias of the timing estimator itself on saturated pulses.
+The distinction matters for detector design: if detected light dominates, the timing of
+any candidate material is predictable from its light output, and the material can be
+chosen for radiation hardness or mechanical properties~\cite{luag} without a separate
+timing penalty.
 
-A prerequisite is to time all builds on an equal footing despite saturation of the
-front end. We therefore first describe a high-gain/low-gain (HG/LG) ratio method that
-recovers the saturated rising edge (Section~\ref{sec:method}), then the estimator and
-selection (Section~\ref{sec:estimator}), and finally the results
-(Section~\ref{sec:results}): the four-build time resolution, its decomposition into a
-light-driven stochastic term and a material-independent floor, and the implications.
+This paper contributes, in order: a four-build timing comparison under a single
+analysis chain (Sections~\ref{sec:method}--\ref{sec:results}); an estimator taxonomy
+in which the saturation-recovered constant-fraction time (srCFD) is primary and
+fixed-threshold and clipped-peak discriminators are diagnostic, with the residual
+estimator bias demonstrated on identical events (Section~\ref{sec:method-gain}); a
+same-shower DSB1/LuAG:Ce control in the mixed module that removes all cross-build
+systematics by construction (Section~\ref{sec:mixed}); a conservative treatment of the
+timing floors and selection systematics (Section~\ref{sec:syst}); and an observed
+upstream--downstream timing asymmetry whose energy drift is consistent with
+shower-maximum migration (Section~\ref{sec:depth}).
 
 %======================================================================
 \section{Experimental setup}
@@ -122,8 +124,8 @@ oxyorthosilicate (LYSO:Ce) scintillator, $\approx\!25$ radiation lengths deep, r
 longitudinally by WLS capillaries. Four capillaries traverse the stack and are each read
 out at both ends, giving $4\times2 = 8$ silicon-photomultiplier (SiPM) channels; we
 label the four downstream ends collectively DW and the four upstream ends UP. The
-transverse position of each incident electron is measured by a wire chamber and used to
-define a fiducial region on the beam spot.
+transverse position of each incident electron is measured by a delay-wire
+chamber~\cite{spanggaard} and used to define a fiducial region on the beam spot.
 
 Four builds were exposed, differing primarily in the WLS material of the capillaries --
 and hence in light yield -- while sharing the same LYSO:Ce scintillator and tungsten
@@ -136,8 +138,8 @@ the brightest, is the build of Ref.~\cite{radical}.
 \subsection{Readout, beam, and reference}
 Each SiPM signal is split into a high-gain (HG) copy, optimised for timing, and a
 low-gain (LG) copy, optimised for energy linearity, both digitised by DRS4
-switched-capacitor waveform digitisers (CAEN DT5742)~\cite{drs4} at $5$~GS/s over a
-1024-cell window, with per-cell calibration applied offline. The HG channels clip at
+switched-capacitor waveform digitisers (CAEN DT5742)~\cite{drs4,ritt2014} at $5$~GS/s
+over a 1024-cell window, with per-cell calibration applied offline. The HG channels clip at
 $\approx\!820$~mV; the LG channels remain linear. Measurements used a $25$--$150$~GeV
 electron beam at the CERN SPS (May 2023); DSB1 was run at all six energies in $25$~GeV
 steps, the other builds at $50$--$150$~GeV. A microchannel-plate photomultiplier
@@ -151,9 +153,9 @@ differential estimator below cancels this reference.
 Precision timing of all builds on an equal footing requires the same well-defined edge
 in each, but the HG timing pulses saturate. The recorded HG amplitude piles up at the
 $820$~mV clip (Fig.~\ref{fig:clip}); for all but the smallest showers the waveform is
-flat across its maximum, and a constant-fraction discriminator (CFD) referenced to the
-measured peak is forced onto the shallow foot of the pulse, where the slope --- and the
-timing information --- is poor.
+flat across its maximum, and a constant-fraction discriminator
+(CFD)~\cite{gedcke1967,genat2009} referenced to the measured peak is forced onto the
+shallow foot of the pulse, where the slope --- and the timing information --- is poor.
 
 \begin{figure}[t]
 \centering
@@ -286,8 +288,12 @@ row in Table~\ref{tab:builds} is a reference value only; the physically meaningf
 comparison is the same-shower analysis of Sec.~\ref{sec:mixed}.) The energy dependence
 is well described by the $1/\sqrt{E}$ (photostatistics) form; a $1/E$ (pure-slew) form
 fits markedly worse.
-%% TODO-P2: regenerate the money plot in final style (error bars + collider requirement
-%% bands per the figure blueprint); thesis_postfix.png is the post-fix summary figure.
+%% TODO-P2 (sharpened): final-style money plot. Edit papers/scripts/timing_fit_summary/
+%% timingFitSummary.C to (i) draw per-point statistical error bars (sigma/sqrt(2K), already
+%% computed), (ii) overlay two horizontal requirement bands: 30-60 ps (CMS BTL per-track,
+%% cite cmsmtd) and 35-50 ps (HGTD per-hit, cite hgtd), labelled "per-MIP/track comparators",
+%% (iii) keep the MIXED curve dashed/grey as reference-only. Pure restyling of an existing
+%% gated product; no new analysis. thesis_postfix.png is the current placeholder.
 
 \begin{figure}[t]
 \centering
@@ -374,25 +380,6 @@ fixed-threshold for dim). Method choice is therefore a correction of estimator b
 not a new detector effect, and does not alter the four-build conclusions of
 Sec.~\ref{sec:thesis}.
 
-\begin{figure*}[t]
-\centering
-%% TODO-P2: placement decision -- this figure is a strong candidate for an appendix /
-%% supplement if main-text figure count must shrink; the Sec. 5.3 paragraph stands alone.
-\includegraphics[width=0.98\linewidth]{satellite_removal.png}
-\caption{Tail suppression by the saturation-recovered CFD on identical events (DSB1,
-brightest-$1000$, production selection). (A)~The per-event
-$(\mathrm{DW}-\mathrm{UP})/2$ distribution at $150$~GeV under cfd05 (line) and srCFD
-(filled), median-centred, unit-normalized, logarithmic scale; the common tail window
-$|x-\mathrm{med}|>66$~ps ($2.5\sigma$ of the srCFD core) is marked. (B)~Width and
-tail metrics on the same events: the production widths are $25.6$ (srCFD) vs $26.9$~ps
-(cfd05) while the tail fraction drops from $4.60\%$ to $3.30\%$ (Gaussian expectation
-$1.24\%$; the srCFD remainder reflects genuine shower tails). (C)~At $75$~GeV
-(full-fiducial sample; in the brightest-$1000$ the less-clipped subset is empty), the
-cfd05 tail excess concentrates in the clipped subset, while on dim unclipped pulses
-srCFD's low-gain anchor is noisy and its tail rises --- each estimator is biased
-outside its design regime, the basis of the per-regime source rule.}
-\label{fig:satellite}
-\end{figure*}
 (The stochastic terms in this controlled comparison reflect the identical-event
 selection and differ from Table~\ref{tab:builds}, which uses each build's own validity;
 holding the events fixed isolates the timing method.) The best single-event resolution
@@ -418,7 +405,9 @@ fiducial radius ($2.5$ and $3.5$ versus $3.0$~mm), the MCP saturation window (up
 $700$ versus $750$~mV), the per-channel HG threshold ($30$ versus $20$~mV), and the
 in-event consistency-veto window ($1.5$ and $3.0$ versus $2.0$~ns); the fit-range
 dependence of the floor is reported in the floor block of Table~\ref{tab:syst}. The shifts are collected in
-Table~\ref{tab:syst}, with the total systematic taken as their RMS. The selection
+Table~\ref{tab:syst}, with the total systematic taken as their RMS (fit-parameter
+errors carry the standard $\sqrt{\chi^2/\mathrm{ndf}}$ scale factor~\cite{pdg};
+paired uncertainties use the event bootstrap~\cite{efron}). The selection
 values themselves were fixed by the scans of Appendix~\ref{app:opt}
 (Fig.~\ref{fig:opt}); the timing-method choice (cfd05 versus the recovered edge) is the
 subject of Sec.~\ref{sec:method-gain} and is not folded into this budget.
@@ -469,17 +458,20 @@ $1.16$ (cfd05, whose clip-walk penalises the saturating DSB1 corners), $0.80$ (L
 whose fixed threshold penalises the dimmer LuAG corners) --- so srCFD, the least
 clipping- and walk-sensitive choice, defines the headline, and the others are
 diagnostic. Two caveats apply: the pair widths contain a common transverse
-position-coupling term that dilutes the ratio toward unity, and the comparison is
-specific to this geometry and these light levels.
+position-coupling term that dilutes the ratio toward unity (its magnitude is not yet
+quantified; the strong estimator dependence above shows the widths nonetheless retain
+per-capillary sensitivity), and the comparison is specific to this geometry and these
+light levels.
 
-Set against the more-than-factor-of-two stochastic-term difference between the pure
-builds, this same-shower near-parity \textbf{disfavors intrinsic wavelength-shifter
-re-emission kinetics as the dominant cause of the cross-build timing difference}. It
-does not establish universal material equivalence: at lower light levels or in other
-geometries the kinetics could re-emerge.
-%% TODO-P2: cite Gundacker/Cates CTR photostatistics canon + Hu (LuAG kinetics) here;
-%% quantify the position-coupling dilution (G4 or amplitude-binned pairs) if available
-%% before submission.
+This is the configuration in which kinetics would be expected to show if they
+mattered: LuAG:Ce is intrinsically slower than DSB1~\cite{luag,lucchini2013}, and in
+photostatistics-limited timing the resolution scales with both the photon count and the
+emission time profile~\cite{cates2018,gundacker}. Set against the
+more-than-factor-of-two stochastic-term difference between the pure builds, the
+same-shower near-parity \textbf{disfavors intrinsic wavelength-shifter re-emission
+kinetics as the dominant cause of the cross-build timing difference}. It does not
+establish universal material equivalence: at lower light levels or in other geometries
+the kinetics could re-emerge.
 
 \begin{figure}[t]
 \centering
@@ -495,16 +487,16 @@ cfd05 and LED diagnostic).}
 \end{figure}
 
 %======================================================================
-\section{Longitudinal timing asymmetry: the depth dial}
+\section{Longitudinal timing asymmetry}
 \label{sec:depth}
-%% TODO-P2: decide main text vs appendix for this section (panel recommendation: keep a
-%% short consistency reading here; the mm-calibrated fifth-coordinate reading belongs to
-%% the companion energy/position paper).
+%% Placement decision 2026-06-09: KEPT in main text as a short consistency reading (it closes
+%% the floor argument); the calibrated longitudinal-coordinate reading is deferred to the
+%% companion energy/position paper.
 
 The $(\mathrm{DW}-\mathrm{UP})/2$ estimator is, by construction, sensitive to the
 longitudinal position of the light emission: a deeper shower is closer to the
 downstream ends, shifting the asymmetry negative. Shower maximum migrates downstream as
-$\sim\!X_0\ln E$, predicting a drift of the \emph{mean} asymmetry of
+$\sim\!X_0\ln E$~\cite{longo1975,pdg}, predicting a drift of the \emph{mean} asymmetry of
 $-X_0/v_\mathrm{eff} \approx -26$~ps per $e$-fold of energy for axial light propagation.
 The measured drift, on the full fiducial sample with the amplitude-independent srCFD
 estimator, is monotonic and negative with slope $-33.6\pm2.9$~ps per $e$-fold ---
@@ -517,6 +509,8 @@ samples different shower depths with different efficiency), so we use it here on
 consistency reading: \emph{the event-to-event spread of the same asymmetry is the
 timing floor of Sec.~\ref{sec:thesis}}, and its mean drift confirms that the floor
 carries genuine longitudinal shower information rather than instrumental jitter alone.
+The calibration of this asymmetry as a longitudinal coordinate is deferred to a
+companion paper on the energy and position response of the module.
 
 \begin{figure}[t]
 \centering
@@ -542,10 +536,20 @@ robustness, or cost, with its timing then estimated from its light output. LuAG:
 attractive for its radiation hardness~\cite{luag}, times worse than DSB1 at a level
 commensurate with its lower light yield; the same-shower comparison bounds any
 additional species-specific penalty at the $10$--$20\%$ level under the primary
-estimator.
-%% TODO-P2: add the engineering-projection sentence (x2 LYSO at shower max recovers the
-%% LuAG light deficit; parent Sec. 7.3) with the "engineering extrapolation" label, and
-%% the benchmark/requirements context table (CMS BTL / HGTD / SPACAL / Crilin).
+estimator. As an \emph{engineering extrapolation} (not a measurement): recovering the
+factor $\sim\!2.2$ light deficit --- for example by doubling the LYSO:Ce thickness in
+the shower-maximum region, as already foreseen in Ref.~\cite{radical} (its
+Section~7.3) --- would bring the LuAG:Ce stochastic term to
+$\approx\!300$~ps$\sqrt{\mathrm{GeV}}$ and $\sigma_t(150)$ to $\approx\!31$--$35$~ps
+(depending on the realised floor), i.e.\ the radiation-tolerant configuration would
+enter the regime of the dedicated collider timing layers
+($30$--$60$~ps per track for the CMS barrel timing layer~\cite{cmsmtd};
+$\sim\!35$--$50$~ps per hit for the ATLAS HGTD~\cite{hgtd}) while measuring showers,
+not single tracks --- on $16$ SiPMs in a $14\times14$~mm$^2$ cell.
+%% TODO-P2 (sharpened): full benchmark/requirements TABLE (CMS BTL / HGTD / LHCb SPACAL
+%% W-GAGG / Crilin / this work, with an object-type column: per-MIP vs per-shower) still
+%% to be built; it requires the verified comparator numbers from the placeholder
+%% citations below (spacal, crilin) before a table can be typeset honestly.
 
 The fitted floors of the LYSO builds lie in the $19$--$26$~ps range, consistent within
 their uncertainties and the stated caveats, and the DSB1 floor confirms the previously
@@ -562,24 +566,23 @@ and subtract each shower's depth, which we are pursuing.
 \section{Conclusions}
 \label{sec:conclusions}
 
-Comparing four WLS builds of a tungsten/LYSO:Ce sampling calorimeter on a common
-footing --- enabled by a high-gain/low-gain-ratio method that recovers the saturated
-rising edge --- we find that the time resolution is governed primarily by detected
-scintillation light yield and module response rather than by wavelength-shifter
-identity alone. The stochastic term of $\sigma_t=a/\sqrt{E}\oplus b$ grows from
-$203\pm6$ to $440\pm18$~ps$\sqrt{\mathrm{GeV}}$ --- more than a factor of two --- from
-the high-light to the low-light build, while in the mixed module the two
-wavelength-shifter species reading the same showers give per-capillary timing widths
-agreeing at the $10$--$20\%$ level ($1.04\pm0.05$ under the primary estimator). This
-combination disfavors intrinsic wavelength-shifter re-emission kinetics as the dominant
-explanation for the cross-build difference, within this geometry and at these light
-levels. The fitted floors of the LYSO builds lie in the $19$--$26$~ps range, and the
-high-light floor of $18.8\pm0.8$~ps confirms the previously published $17.5$~ps. The
-high-light build reaches $25.7\pm0.6$~ps for the brightest $150$~GeV showers, and the
-mean dual-end asymmetry drifts with energy in quantitative agreement with shower-maximum
-migration, identifying the floor with longitudinal shower physics. Detected light yield
-is therefore the design lever for fast-timing calorimetry with these modules, and the
-depth-corrected estimator it suggests is the target of the analysis to follow.
+Three results summarise this work. First, the best timing performance of the RADiCAL
+module is $\sigma_t = 25.7\pm0.6$~ps for the brightest $150$~GeV showers of the
+high-light DSB1 build, with $\sigma_t(E) = a/\sqrt{E}\oplus b$, $a = 203\pm6$~ps$\sqrt{\mathrm{GeV}}$
+and $b = 18.8\pm0.8$~ps --- the floor confirming the previously published $17.5$~ps.
+Second, while the cross-build stochastic term grows by more than a factor of two from
+the high-light to the low-light build ($a = 440\pm18$~ps$\sqrt{\mathrm{GeV}}$ for
+LuAG:Ce), the same-shower comparison inside the mixed module gives per-capillary timing
+widths agreeing at the $10$--$20\%$ level ($\sigma_\mathrm{DSB1}/\sigma_\mathrm{LuAG}
+= 1.04\pm0.05$ under the primary estimator): wavelength-shifter re-emission kinetics
+alone are therefore unlikely to dominate the cross-build difference, within this
+geometry and at these light levels. Third, the practical design lessons are to maximise
+detected light, to control saturation and clipping (or recover from them, as the srCFD
+estimator does by suppressing clipping-induced tails), and to choose timing estimators
+by regime rather than universally. Future work will calibrate the upstream--downstream
+timing asymmetry --- whose energy drift is consistent with shower-maximum migration ---
+as a longitudinal coordinate, and will optimise the module geometry to recover the
+light deficit of the radiation-tolerant configuration.
 
 %======================================================================
 \appendix
@@ -623,21 +626,110 @@ the brightness selection.}
 \label{fig:syststab}
 \end{figure}
 
+
+\section{Tail composition of the method gain}
+\label{app:satellite}
+Figure~\ref{fig:satellite} shows the identical-event tail diagnostics supporting
+Sec.~\ref{sec:method-gain}: the median-centred $(\mathrm{DW}-\mathrm{UP})/2$
+distributions at $150$~GeV, the width and tail metrics, and the $75$~GeV
+clipped/less-clipped split including the dim-pulse reversal that motivates the
+per-regime adopted-source rule.
+
+\begin{figure*}[t]
+\centering
+%% Placement decision 2026-06-09: appendix (diagnostic detail; the Sec. 5.3 paragraph stands alone).
+\includegraphics[width=0.98\linewidth]{satellite_removal.png}
+\caption{Tail suppression by the saturation-recovered CFD on identical events (DSB1,
+brightest-$1000$, production selection). (A)~The per-event
+$(\mathrm{DW}-\mathrm{UP})/2$ distribution at $150$~GeV under cfd05 (line) and srCFD
+(filled), median-centred, unit-normalized, logarithmic scale; the common tail window
+$|x-\mathrm{med}|>66$~ps ($2.5\sigma$ of the srCFD core) is marked. (B)~Width and
+tail metrics on the same events: the production widths are $25.6$ (srCFD) vs $26.9$~ps
+(cfd05) while the tail fraction drops from $4.60\%$ to $3.30\%$ (Gaussian expectation
+$1.24\%$; the srCFD remainder reflects genuine shower tails). (C)~At $75$~GeV
+(full-fiducial sample; in the brightest-$1000$ the less-clipped subset is empty), the
+cfd05 tail excess concentrates in the clipped subset, while on dim unclipped pulses
+srCFD's low-gain anchor is noisy and its tail rises --- each estimator is biased
+outside its design regime, the basis of the per-regime source rule.}
+\label{fig:satellite}
+\end{figure*}
 %======================================================================
 \section*{Acknowledgements}
 We thank the CERN SPS staff for the test-beam operation. %% TODO: funding/agency text.
 
-\begin{thebibliography}{9}
-\bibitem{cmsmtd} CMS Collaboration, \textit{A MIP Timing Detector for the CMS Phase-2
-Upgrade}, Technical Design Report CERN-LHCC-2019-003 (2019).
+\begin{thebibliography}{99}
+%% --- parent + RADiCAL programme ---
 \bibitem{radical} C.~Perez-Lara, J.~Wetzel, U.~Akgun, et al. (RADiCAL Collaboration),
 \textit{Study of time resolution measurements and prospects for energy resolution of
 an ultra-compact sampling calorimeter (RADiCAL) module at EM shower maximum over the
 energy range 25~GeV--150~GeV}, Nucl. Instrum. Methods A \textbf{1068} (2024) 169737.
-\bibitem{drs4} S.~Ritt, R.~Dinapoli, U.~Hartmann, \textit{Application of the DRS chip
-for fast waveform digitizing}, Nucl. Instrum. Methods A \textbf{623} (2010) 486--488.
+\bibitem{radhard2022} T.~Anderson, et al., \textit{Precision timing, ultracompact,
+radiation-hard electromagnetic calorimetry}, arXiv:2203.12806 (2022).
+\bibitem{instruments2022} T.~Anderson, et al., \textit{RADiCAL: Precision timing,
+ultracompact, radiation-hard electromagnetic calorimetry}, Instruments \textbf{6}~(3)
+(2022) 27.
+\bibitem{wetzel2023} J.~Wetzel, et al., \textit{Beam test results of the RADiCAL --- a
+radiation-hard innovative EM calorimeter}, IEEE Trans. Nucl. Sci. \textbf{70}~(7)
+(2023) 1296--1300.
+%% --- collider timing requirements / comparators ---
+\bibitem{cmsmtd} CMS Collaboration, \textit{A MIP Timing Detector for the CMS Phase-2
+Upgrade}, Technical Design Report CERN-LHCC-2019-003 (2019).
+\bibitem{hgtd} ATLAS Collaboration, \textit{Technical Design Report: A High-Granularity
+Timing Detector for the ATLAS Phase-II Upgrade}, CERN-LHCC-2020-007 (2020).
+\bibitem{hgcal} CMS Collaboration, \textit{The Phase-2 Upgrade of the CMS Endcap
+Calorimeter}, Technical Design Report CERN-LHCC-2017-023 (2017).
+\bibitem{fcchh} A.~Abada, et al., \textit{FCC-hh: The Hadron Collider. Future Circular
+Collider Conceptual Design Report Volume 3}, Eur. Phys. J. Spec. Top. \textbf{228}
+(2019) 755--1107.
+\bibitem{aleksa} M.~Aleksa, et al., \textit{Calorimeters for the FCC-hh},
+arXiv:1912.09962 (2019).
+%% TODO-P2-CITE: LHCb SPACAL W-GAGG beam-test reference (W-cell SPACAL R&D, ~15-20 ps per
+%% shower; verify exact authors/journal before use) -- needed for the benchmark table.
+%% \bibitem{spacal} [PLACEHOLDER -- verify before citing]
+%% TODO-P2-CITE: Crilin crystal calorimeter (muon collider) timing reference -- verify.
+%% \bibitem{crilin} [PLACEHOLDER -- verify before citing]
+%% --- LYSO timing prior art + photostatistics canon ---
+\bibitem{anderson2015} D.~Anderson, et al., \textit{On timing properties of LYSO-based
+calorimeters}, Nucl. Instrum. Methods A \textbf{794} (2015) 7--14.
+\bibitem{cates2018} J.W.~Cates, et al., \textit{Improved single photon time resolution
+for analog SiPMs with front end readout that reduces influence of electronic noise},
+Phys. Med. Biol. \textbf{63}~(18) (2018) 185022.
+%% TODO-P2-CITE: Gundacker et al. coincidence-time-resolution / photostatistics review
+%% (Phys. Med. Biol.; verify the exact paper -- several candidates) for the sigma_t vs
+%% (photon count, emission profile) scaling invoked in Sec. \ref{sec:mixed}.
+\bibitem{gundacker} S.~Gundacker, et al., \textit{[TODO-P2-CITE: verify exact CTR
+review reference]}, Phys. Med. Biol. (to be completed).
+%% --- WLS materials ---
 \bibitem{luag} C.~Hu, et al., \textit{LuAG ceramic scintillators for future HEP
 experiments}, Nucl. Instrum. Methods A \textbf{954} (2020) 161723.
+\bibitem{lucchini2013} M.T.~Lucchini, et al., \textit{Test beam results with LuAG
+fibers for next-generation calorimeters}, JINST \textbf{8} (2013) P10017.
+%% TODO-P2-CITE: verify the lucchini2013 entry (journal/volume believed correct; confirm
+%% authors/title before submission).
+\bibitem{ruchti1996} R.C.~Ruchti, \textit{The use of scintillating fibers for
+charged-particle tracking}, Annu. Rev. Nucl. Part. Sci. \textbf{46} (1996) 281.
+%% --- timing methods + digitiser ---
+\bibitem{gedcke1967} D.A.~Gedcke, W.J.~McDonald, \textit{A constant fraction of pulse
+height trigger for optimum time resolution}, Nucl. Instrum. Methods \textbf{55} (1967)
+377--380.
+\bibitem{genat2009} J.-F.~Genat, G.~Varner, F.~Tang, H.~Frisch, \textit{Signal
+processing for picosecond resolution timing measurements}, Nucl. Instrum. Methods A
+\textbf{607} (2009) 387--393.
+\bibitem{drs4} S.~Ritt, R.~Dinapoli, U.~Hartmann, \textit{Application of the DRS chip
+for fast waveform digitizing}, Nucl. Instrum. Methods A \textbf{623} (2010) 486--488.
+\bibitem{ritt2014} D.~Stricker-Shaver, S.~Ritt, B.J.~Pichler, \textit{Novel calibration
+method for switched capacitor arrays enables time measurements with sub-picosecond
+resolution}, IEEE Trans. Nucl. Sci. \textbf{61}~(6) (2014) 3607--3617.
+%% --- beamline / shower physics / statistics ---
+\bibitem{spanggaard} J.~Spanggaard, \textit{Delay Wire Chambers --- A Users Guide},
+CERN SL-Note-98-023-BI (1998).
+\bibitem{longo1975} E.~Longo, I.~Sestili, \textit{Monte Carlo calculation of
+photon-initiated electromagnetic showers in lead glass}, Nucl. Instrum. Methods
+\textbf{128} (1975) 283--307.
+\bibitem{pdg} S.~Navas, et al. (Particle Data Group), \textit{Review of Particle
+Physics}, Phys. Rev. D \textbf{110} (2024) 030001.
+\bibitem{efron} B.~Efron, R.J.~Tibshirani, \textit{An Introduction to the Bootstrap},
+Chapman \& Hall, New York (1993).
 \end{thebibliography}
 
 \end{document}

@@ -106,7 +106,14 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
 6c. ~~Satellite-removal demonstration~~ **DONE 2026-06-09** (`papers/scripts/satellite_removal/`):
    f_tail 4.60→3.30% identical events @150 (Gaussian 1.24%); clipped-concentration + the dim-pulse
    reversal (srCFD 7.15% unclipped) → per-regime source rule demonstrated; §5.3 + fig installed.
-   7 TODO-P2 remain, ALL writing/citation/placement. ← NEXT: the full prose + bibliography pass.
+   7 TODO-P2 remain, ALL writing/citation/placement.
+6d. ~~Full prose + bibliography pass~~ **DONE 2026-06-09**: title decided (same-shower framing),
+   abstract/intro/conclusions rewritten, satellite→appendix, depth kept (decisions recorded),
+   engineering extrapolation + benchmark sentence added, bibliography 24 entries (4 marked
+   TODO-P2-CITE). Manuscript builds; compliance greps clean. Remaining: money-plot restyle,
+   benchmark table (cite-blocked), 4 citation verifications, author/funding blocks.
+   ← NEXT: citation verification sweep (the 4 TODO-P2-CITE) + money-plot restyle, then circulate
+   the draft to coauthors.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).

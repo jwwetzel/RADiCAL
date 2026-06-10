@@ -119,4 +119,25 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   §mixed citations (+ optional dilution quantification via G4, can remain a stated caveat);
   depth-dial main-vs-appendix; satellite figure main-vs-appendix; engineering-projection +
   benchmark table. Author block + funding placeholders.
-- Next: the full prose + bibliography pass (no analysis prerequisites remain).
+- **FULL PROSE + BIBLIOGRAPHY PASS DONE (2026-06-09).**
+  TITLE DECISION: "A same-shower comparison of wavelength shifters and light-yield limits in a
+  compact RADiCAL electromagnetic-shower timing module" (candidate (a); the same-shower control is
+  the paper's unique asset; series naming "RADiCAL II" left to collaboration). Abstract rewritten
+  (context → four-build scan → post-fix numbers → same-shower 1.04±0.05 → tail suppression →
+  depth drift as supporting evidence → conservative conclusion). Introduction rewritten around the
+  five-way disentanglement (light / kinetics / module response / saturation / estimator bias) +
+  contributions list. §mixed now carries the kinetics citations (luag, lucchini2013, cates2018,
+  gundacker-placeholder) and the sharpened dilution caveat. Depth section KEPT in main text
+  (decision recorded in-file); satellite figure MOVED to Appendix B (app:satellite). Discussion
+  gained the labeled engineering extrapolation (LuAG → a≈300, σ(150)≈31–35 ps) + textual benchmark
+  sentence (BTL 30–60 per track, HGTD 35–50 per hit). Conclusions rewritten to the three-point
+  landing (25.7±0.6 / near-parity disfavors kinetics / design lessons + future work). Bibliography:
+  24 entries — 20 verified (parent-paper cross-checked or canonical), 4 marked TODO-P2-CITE
+  (spacal, crilin, gundacker, lucchini2013-verify). Builds clean (557 KB PDF).
+- **Remaining TODO-P2 (all sharp):** money-plot final restyle (exact spec in-file: error bars +
+  BTL/HGTD bands via timingFitSummary.C — pure restyling); benchmark TABLE (blocked on the two
+  comparator citations); 4 × TODO-P2-CITE verifications. Author block + funding text placeholders.
+- **Risks before coauthor circulation:** placeholder citations render as marked TODO text in the
+  PDF (intentional); the money plot is the summary-style figure, not final style; tab_methods.tex
+  is generated but not \input (decide drop-or-include); collaboration must confirm title + author
+  list + funding text; GATE-1 logbook half still recommended before submission (not blocking).

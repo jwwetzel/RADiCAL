@@ -159,3 +159,16 @@ energy/position paper (the fifth coordinate).
   adopted-source rule, reported in figure, caption, and §5.3. Manuscript builds clean.
   All remaining TODO-P2 items (7) are writing/citation/placement; no pre-fix or ungated number
   remains anywhere in the active manuscript.
+
+
+## UPDATE 7 (later 2026-06-09): full prose + bibliography pass
+- Working tree was clean at `b51eef1` before this pass.
+- Title decided: "A same-shower comparison of wavelength shifters and light-yield limits in a
+  compact RADiCAL electromagnetic-shower timing module". Abstract, introduction (five-way
+  disentanglement framing), and conclusions (three-point landing) rewritten claims-law-compliant.
+  Satellite figure moved to Appendix B; depth section kept in main text (decisions recorded
+  in-file). Engineering extrapolation (labeled) + per-track-vs-per-shower benchmark sentence added.
+  Bibliography: 24 entries, 20 verified, 4 TODO-P2-CITE placeholders (spacal, crilin, gundacker,
+  lucchini-verify). Builds clean (557 KB). Compliance greps: no retired language or pre-fix numbers
+  anywhere in active prose. Remaining work is citation verification, one figure restyle, the
+  cite-blocked benchmark table, and collaboration items (title/authors/funding).
