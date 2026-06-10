@@ -121,3 +121,13 @@ energy/position paper (the fifth coordinate).
   discriminant queued (`papers/scripts/mixed_corner_map/`).
 - GATE 2 (position arithmetic), GATE 4 (T_abs), GATE 6 (bootstrap CI) open — see
   `papers/memory_analysis_gates.md`.
+
+## UPDATE 4 (later 2026-06-09): manuscript reframe (structural pass)
+- Working tree was clean at `56dda6d` before this pass. `radical_timing.tex` reframed around the
+  gated story (audit: `papers/timing/MANUSCRIPT_REFRAME_AUDIT_2026-06-09.md`): new title
+  ("Detected light yield governs…"), GATE-compliant abstract/conclusions, post-fix numbers
+  (203±6/440±18, floors 19–26 qualified, 25.7±0.6, "more than a factor of two"), corrected MIXED
+  mechanism, NEW same-shower-control section (§sec:mixed, fig mixed_h2h_corrected) and NEW depth-dial
+  section (§sec:depth, acceptance-conditional), srCFD named at definition. Pre-fix method-gain and
+  systematics numbers softened/quarantined behind TODO-P2 markers pending post-fix recompute.
+  Builds clean under tectonic (PDF regenerated). 11 TODO-P2 markers tracked in memory_paper2_timing.

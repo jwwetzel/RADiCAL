@@ -1,5 +1,9 @@
 # Claims & Forbidden Language — the wording law for Papers 2 & 3
 
+> Manuscript compliance: `papers/timing/radical_timing.tex` was audited against this law and reframed
+> 2026-06-09 (audit: `papers/timing/MANUSCRIPT_REFRAME_AUDIT_2026-06-09.md`); abstract, results,
+> discussion, and conclusions now use only post-fix/GATE-compliant numbers and verbs.
+
 Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 (`papers/radical_expert_panel_synthesis_2026-06-09.json` → `fourD_consensus`, `referee_defense`).
 

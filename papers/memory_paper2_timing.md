@@ -83,6 +83,20 @@ Ritt DRS4 + Stricker-Shaver IEEE TNS 61 (2014) · CMS MTD/HGCAL TDRs, ATLAS HGTD
 FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996).
 
 ## Manuscript state + next actions
-- `radical_timing.tex` currently centers DSB1-method-improvement; MUST be reframed to the materials
-  comparison (panel worklist #14). Existing sections to keep: systematics table, optimization appendix.
-- Next: close GATES 1/6/3 → post-fix (a,b) table → reframe tex → satellite + closure analyses → S10 tables.
+- **REFRAMED 2026-06-09** (audit: `papers/timing/MANUSCRIPT_REFRAME_AUDIT_2026-06-09.md`).
+  `radical_timing.tex` now: new title ("Detected light yield governs…"), GATE-compliant abstract,
+  post-fix numbers everywhere (Table tab:builds = the authoritative table), corrected MIXED
+  mechanism (ill-posed module-wide estimator, NOT "compromised LG readout"), **NEW §sec:mixed**
+  (same-shower control: corrected map, per-E ratios, 1.04±0.05, method dependence, dilution caveat,
+  fig mixed_h2h_corrected) and **NEW §sec:depth** (depth dial, acceptance-conditional, consistency
+  reading only), rewritten Discussion/Conclusions (disfavors form). srCFD named at definition.
+  Builds clean under tectonic. Figures copied into figs/: thesis_postfix, mixed_h2h_corrected,
+  depth_dial.
+- **Open TODO-P2 markers in the tex** (grep "TODO-P2"): title confirmation; money-plot final style
+  (bands+error bars); method-gain post-fix recompute (§5.3 numbers softened pending);
+  tab_systematics post-fix regeneration (pre-fix values quarantined); satellite-removal
+  demonstration; depth-dial main-vs-appendix decision; bibliography build-out (4-ref skeleton →
+  panel must-cite list); engineering-projection + benchmark table in Discussion; tab_methods.tex
+  regeneration (unused, pre-fix). Author block + funding placeholders.
+- Next: method-gain recompute + systematics regeneration (clears 2 TODOs and re-arms §5.3/§5.4),
+  then bibliography build-out, then full prose pass.

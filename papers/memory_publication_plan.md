@@ -96,8 +96,13 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
    penalty), MIXED 253±29/34.3±2.4 (ill-posed ref). a-ratio 2.16; floor narrative SOFTENED (19–26 ps
    span, see table addendum). Corrected kill-shot figure shipped: `mixed_h2h_corrected.{png,pdf}`;
    old figure deprecated. ← Paper-2 numbers are now internally consistent.
-6. Reframe `papers/timing/radical_timing.tex` to the materials-comparison center of gravity,
-   using ONLY the post-fix table + GATE-6 language. ← NEXT.
+6. ~~Reframe `papers/timing/radical_timing.tex`~~ **DONE 2026-06-09** (structural pass; audit:
+   `papers/timing/MANUSCRIPT_REFRAME_AUDIT_2026-06-09.md`): post-fix numbers throughout, new
+   §mixed (same-shower control) + §depth (acceptance-conditional), corrected MIXED mechanism,
+   disfavors-form claims, builds under tectonic. 11 TODO-P2 markers remain for the prose pass
+   (method-gain recompute, systematics regen, bibliography, money-plot final style, satellite demo,
+   depth placement, title confirm). ← NEXT: clear the two analysis TODOs (method-gain post-fix +
+   tab_systematics regen), then bibliography, then full prose pass.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).
