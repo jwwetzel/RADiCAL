@@ -59,7 +59,8 @@ S10 benchmark+requirements table + deployability box · S11 systematics/OOS vali
   misassigned). S8 must be REWRITTEN around the replacement result: same-shower per-capillary width
   parity within ~10–20% (srCFD paired 1.04±0.05 scatter-based; methods 0.80–1.16) vs the ×2.3
   cross-build a-ratio → kinetics DISFAVORED as dominant, with the position-coupling dilution caveat.
-  `mixed_h2h.png` and its 0.99/χ² annotation must be regenerated before any draft circulates.
+  Corrected figure SHIPPED 2026-06-09: `mixed_h2h_corrected.{png,pdf}` (old figure DEPRECATED with
+  warning README; generator `mixedHeadToHead.C` carries a DEPRECATED header).
   Remaining: bootstrap CI on the srCFD-vs-cfd05 method-gain claims (separate, smaller task).
 - GATE 3 depth dial — **PASSED 2026-06-09**: the S9 drift-consistency panel is now MEASURED
   (−33.6±2.9 ps/e-fold vs −X₀/v_g = −26.3; `papers/figures/depth_dial/depth_dial.png`). S9 can write

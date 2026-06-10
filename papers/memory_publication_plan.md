@@ -22,8 +22,9 @@ Companion memories: `memory_paper2_timing.md`, `memory_paper3_energy_position_4d
   `figures/2023/narrative/monotonicity_fix.png`, `monotonicity_evidence.png`, `analyze/studies/timingRegression.C`.
 - Full chain-of-evidence per build (waveforms → reduction → fits → σ_t(E)): `chain_of_evidence.html`.
 - 8-source × 4-build timing survey runs in production: `analyze/studies/timingAllMethods.C`.
-- MIXED resolved: per-material diagonals (no single module-wide method); kill-shot ratio ≈ 0.99
-  (`figures/2023/narrative/mixed_h2h.png`, `mixed_separate.png`).
+- MIXED resolved: per-material diagonals (no single module-wide method); same-shower width parity
+  10–20% (srCFD 1.04±0.05, GATE 6 — the old 0.99 is retired; figure:
+  `papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.png`, plus `mixed_separate.png`).
 - Manuscript skeletons exist: `papers/timing/radical_timing.tex` (NEEDS reframe: currently DSB1-solo-method
   center of gravity; must become the materials comparison), `papers/energy_position/radical_energy_position.tex`.
 - NOTHING from this campaign is committed to git yet (lib fix + macros + figures all uncommitted).
@@ -87,9 +88,9 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
 3. ~~GATE 2 position arithmetic reconciliation~~ **PASSED/RECONCILED 2026-06-09**.
 4. ~~GATE 6 kill-shot bootstrap CI~~ **CONDITIONAL 2026-06-09 — the 0.99 is RETIRED** (brightness-label
    artifact; SE-D misassigned). Kill-shot rewritten as within-~20% same-shower width parity
-   (srCFD 1.04±0.05 scatter; methods 0.80–1.16) vs ×2.3 cross-build. Follow-ups: regenerate
-   `mixed_h2h.png` (drop 0.99/χ² annotation), method-gain bootstrap CIs, position-coupling
-   dilution bound (G4 or amplitude-binned pairs).
+   (srCFD 1.04±0.05 scatter; methods 0.80–1.16) vs the >×2 cross-build a-ratio. Corrected figure
+   SHIPPED 2026-06-09 (`mixed_h2h_corrected.{png,pdf}`); old figure DEPRECATED. Remaining
+   follow-ups: method-gain bootstrap CIs, position-coupling dilution bound (G4 or amp-binned pairs).
 5. ~~Recompute all four builds' (a,b)~~ **DONE 2026-06-09**: `papers/tables/timing_fit_summary_2026-06-09.md`
    — DSB1 203±6/18.8±0.8 (σ150=25.7±0.6), LuAG 440±18/24.6±3.3, TENERGY 198±21/26.0±1.8 (√(4/3)
    penalty), MIXED 253±29/34.3±2.4 (ill-posed ref). a-ratio 2.16; floor narrative SOFTENED (19–26 ps
