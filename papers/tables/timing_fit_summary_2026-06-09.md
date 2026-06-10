@@ -23,14 +23,3 @@ THIS TABLE SUPERSEDES all pre-fix (a,b) values (201/19.5, 455/19.8, 233/34.6, 24
 - floor language: REMAINS "consistent with / confirms the published 17.5 ps" — never "measures"
 - MIXED module-wide row: reference only; the publishable MIXED results are the per-material
   GATE-6 paired comparison (1.04 ± 0.05) and the per-material diagonals.
-
-## Manual addendum (review honesty, 2026-06-09)
-The automated "shared ~20 ps" check above is too generous. Post-fix floors span **18.8–26.0 ps**:
-DSB1 18.8±0.8 (confirms the published 17.5), LuAG 24.6±3.3 (1.4σ above 20; best measured point is
-44.4 ps — the floor is an extrapolation), TENERGY 26.0±1.8 (carries the 3-capillary √(4/3)≈1.15
-statistical penalty → ≈22.5 ps 4-cap-equivalent, plus one non-monotonic point), MIXED 34.3±2.4
-(module-wide, ill-posed). SOFTENED narrative for Paper 2: "the fitted floors of the LYSO builds lie
-in the 19–26 ps range and are mutually consistent once the TENERGY capillary-count penalty and the
-LuAG extrapolation uncertainty are accounted for; the DSB1 floor of 18.8 ± 0.8 ps confirms the
-published 17.5 ps." The strong form "b ≈ 20 ps shared across builds" should no longer be used
-without these qualifiers.

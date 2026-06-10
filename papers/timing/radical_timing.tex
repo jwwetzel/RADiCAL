@@ -545,11 +545,13 @@ $\approx\!300$~ps$\sqrt{\mathrm{GeV}}$ and $\sigma_t(150)$ to $\approx\!31$--$35
 enter the regime of the dedicated collider timing layers
 ($30$--$60$~ps per track for the CMS barrel timing layer~\cite{cmsmtd};
 $\sim\!35$--$50$~ps per hit for the ATLAS HGTD~\cite{hgtd}) while measuring showers,
-not single tracks --- on $16$ SiPMs in a $14\times14$~mm$^2$ cell.
-%% TODO-P2 (sharpened): full benchmark/requirements TABLE (CMS BTL / HGTD / LHCb SPACAL
-%% W-GAGG / Crilin / this work, with an object-type column: per-MIP vs per-shower) still
-%% to be built; it requires the verified comparator numbers from the placeholder
-%% citations below (spacal, crilin) before a table can be typeset honestly.
+not single tracks --- on $16$ SiPMs in a $14\times14$~mm$^2$ cell. Among per-shower
+devices, the W+garnet-fibre SPACAL prototype reaches $(18.5\pm0.2)$~ps at
+$5$~GeV~\cite{spacal} and the Crilin crystal cells reach $<25$~ps above $3$~GeV of
+deposited energy~\cite{crilin,cantone2023}; Table~\ref{tab:bench} situates these
+systems, which differ in timed object, energy range, and scale, without ranking them.
+
+\input{tab_benchmarks}
 
 The fitted floors of the LYSO builds lie in the $19$--$26$~ps range, consistent within
 their uncertainties and the stated caveats, and the DSB1 floor confirms the previously
@@ -683,29 +685,28 @@ Collider Conceptual Design Report Volume 3}, Eur. Phys. J. Spec. Top. \textbf{22
 (2019) 755--1107.
 \bibitem{aleksa} M.~Aleksa, et al., \textit{Calorimeters for the FCC-hh},
 arXiv:1912.09962 (2019).
-%% TODO-P2-CITE: LHCb SPACAL W-GAGG beam-test reference (W-cell SPACAL R&D, ~15-20 ps per
-%% shower; verify exact authors/journal before use) -- needed for the benchmark table.
-%% \bibitem{spacal} [PLACEHOLDER -- verify before citing]
-%% TODO-P2-CITE: Crilin crystal calorimeter (muon collider) timing reference -- verify.
-%% \bibitem{crilin} [PLACEHOLDER -- verify before citing]
+\bibitem{spacal} L.~An, et al., \textit{Performance of a spaghetti calorimeter prototype
+with tungsten absorber and garnet crystal fibres}, Nucl. Instrum. Methods A \textbf{1045}
+(2023) 167629; arXiv:2205.02500.
+\bibitem{crilin} S.~Ceravolo, et al., \textit{Crilin: A CRystal calorImeter with
+Longitudinal InformatioN for a future Muon Collider}, JINST \textbf{17} (2022) P09033;
+arXiv:2206.05838.
+\bibitem{cantone2023} C.~Cantone, et al., \textit{Crilin beam-test results}, Front. Phys.
+\textbf{11} (2023) 1223183; arXiv:2308.01148.
 %% --- LYSO timing prior art + photostatistics canon ---
 \bibitem{anderson2015} D.~Anderson, et al., \textit{On timing properties of LYSO-based
 calorimeters}, Nucl. Instrum. Methods A \textbf{794} (2015) 7--14.
 \bibitem{cates2018} J.W.~Cates, et al., \textit{Improved single photon time resolution
 for analog SiPMs with front end readout that reduces influence of electronic noise},
 Phys. Med. Biol. \textbf{63}~(18) (2018) 185022.
-%% TODO-P2-CITE: Gundacker et al. coincidence-time-resolution / photostatistics review
-%% (Phys. Med. Biol.; verify the exact paper -- several candidates) for the sigma_t vs
-%% (photon count, emission profile) scaling invoked in Sec. \ref{sec:mixed}.
-\bibitem{gundacker} S.~Gundacker, et al., \textit{[TODO-P2-CITE: verify exact CTR
-review reference]}, Phys. Med. Biol. (to be completed).
+\bibitem{gundacker} S.~Gundacker, R.~Martinez Turtos, E.~Auffray, M.~Paganoni, P.~Lecoq,
+\textit{High-frequency SiPM readout advances measured coincidence time resolution limits
+in TOF-PET}, Phys. Med. Biol. \textbf{64} (2019) 055012.
 %% --- WLS materials ---
 \bibitem{luag} C.~Hu, et al., \textit{LuAG ceramic scintillators for future HEP
 experiments}, Nucl. Instrum. Methods A \textbf{954} (2020) 161723.
-\bibitem{lucchini2013} M.T.~Lucchini, et al., \textit{Test beam results with LuAG
+\bibitem{lucchini2013} M.~Lucchini, et al., \textit{Test beam results with LuAG
 fibers for next-generation calorimeters}, JINST \textbf{8} (2013) P10017.
-%% TODO-P2-CITE: verify the lucchini2013 entry (journal/volume believed correct; confirm
-%% authors/title before submission).
 \bibitem{ruchti1996} R.C.~Ruchti, \textit{The use of scintillating fibers for
 charged-particle tracking}, Annu. Rev. Nucl. Part. Sci. \textbf{46} (1996) 281.
 %% --- timing methods + digitiser ---

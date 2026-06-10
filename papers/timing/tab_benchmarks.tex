@@ -1,0 +1,31 @@
+% tab_benchmarks.tex -- conservative cross-system context table (verified citations only).
+% Values are representative/published numbers; per-MIP, per-hit, per-cell, and per-shower
+% timing are NOT directly interchangeable -- see the comparability column and caption.
+\begin{table*}[t]
+\centering
+\caption{Representative fast-timing systems for context. Design values are from technical
+design reports; prototype values are published beam-test results. Per-track (MIP), per-hit,
+per-cell, and per-EM-shower timing are distinct objects and are not directly interchangeable;
+energies and selections also differ. This table situates the present result; it does not rank.}
+\label{tab:bench}
+\small
+\begin{tabular}{llllll}
+\toprule
+System & Timing element & Object timed & Characteristic result & Scale & Comparability \\
+\midrule
+This work (RADiCAL, DSB1) & W/LYSO:Ce + WLS capillaries, SiPM & EM shower at shower max &
+$25.7\pm0.6$~ps ($150$~GeV, brightest sel.); floor $18.8\pm0.8$~ps & $16$ SiPMs / $14{\times}14$~mm$^2$ cell &
+per shower; self-referenced differential \\
+CMS BTL~\cite{cmsmtd} & LYSO:Ce bars + SiPM & MIP track & $30$--$60$~ps per track (begin--end of life, design) &
+barrel layer, $\mathcal{O}(10^5)$ channels & per MIP; design values \\
+ATLAS HGTD~\cite{hgtd} & LGAD silicon & MIP hit & $\approx\!35$--$50$~ps per hit (design) &
+$\mathcal{O}(10^6)$ channels & per hit; silicon, design values \\
+LHCb SPACAL R\&D~\cite{spacal} & W + garnet crystal fibres, PMT & EM shower &
+$(18.5\pm0.2)$~ps at $5$~GeV (direct coupling; $\sim\!30$~ps with light guides) & prototype cell &
+per shower; $1$--$5$~GeV beam \\
+Crilin~\cite{crilin,cantone2023} & PbF$_2$ crystals + SiPM & per-cell deposit &
+$<100$~ps for $>1$~GeV (Proto-0); $<25$~ps for $>3$~GeV (follow-up) & two-crystal prototype &
+per cell deposit \\
+\bottomrule
+\end{tabular}
+\end{table*}

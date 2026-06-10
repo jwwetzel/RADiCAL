@@ -112,8 +112,13 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
    engineering extrapolation + benchmark sentence added, bibliography 24 entries (4 marked
    TODO-P2-CITE). Manuscript builds; compliance greps clean. Remaining: money-plot restyle,
    benchmark table (cite-blocked), 4 citation verifications, author/funding blocks.
-   ← NEXT: citation verification sweep (the 4 TODO-P2-CITE) + money-plot restyle, then circulate
-   the draft to coauthors.
+6e. ~~Circulation prep~~ **DONE 2026-06-09**: all 4 citations web-verified and installed
+   (spacal/crilin/cantone2023/gundacker/lucchini fixed); benchmark table built + \input;
+   money plot restyled (bands, MIXED-as-reference) → figs/thesis_postfix.{png,pdf};
+   coauthor note + referee-risk memo written. **Manuscript is READY FOR INTERNAL COAUTHOR
+   CIRCULATION.** ← NEXT: send to coauthors; in parallel (optional pre-submission): GATE-1
+   logbook confirmation, Stage-1 G4 campaign, author/funding blocks, then Paper-3 gates
+   (GATE 4 T_abs, GATE 7 energy backbone).
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).

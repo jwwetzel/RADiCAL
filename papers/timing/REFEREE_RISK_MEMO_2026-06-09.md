@@ -1,0 +1,22 @@
+# Referee Risk Memo — RADiCAL timing paper (2026-06-09)
+
+Top likely objections, the manuscript's current defense, and readiness status.
+Companion: the wording law (`papers/memory_claims_and_forbidden_language.md`) and the gate record
+(`papers/memory_analysis_gates.md`).
+
+| # | Objection | Risk | Current defense | Location | More work before circulation? |
+|---|---|---|---|---|---|
+| 1 | "LuAG is intrinsically slower — your conclusion is obvious / or wrong." | MED | The kinetics confound is NAMED as the central question; the same-shower control is exactly the configuration where kinetics would show; near-parity 1.04±0.05 vs >×2 cross-build difference; claim verb is "disfavors as dominant", scope-limited; kinetics citations (Hu, Lucchini, Cates/Gundacker) anchor the expectation. | §1, §6 | No — but the Gundacker placeholder citation must be resolved before external eyes. |
+| 2 | "The MIXED ratio is not exactly unity (1.04±0.05; per-E up to 1.19; estimator spread 0.80–1.16)." | MED | Never claimed unity: "near-parity at 10–20%", scatter-based uncertainty quoted, estimator dependence shown in the figure with physical explanations per estimator, position-coupling dilution caveat stated. | §6 + fig | No. The dilution magnitude is unquantified — held as a stated caveat; quantification (G4/amplitude-binned) is post-circulation work. |
+| 3 | "srCFD is analysis magic / method shopping." | HIGH→LOW | Mechanism shown on a single waveform (×3.7 slope); identical-event comparison with both width conventions + paired bootstrap CI; tail decomposition in Appendix B INCLUDING the dim-pulse reversal (srCFD is not universally better — the per-regime rule is empirical and stated); closure at 50–75 GeV where clipping is benign; method excluded from the systematics budget and treated separately. | §3, §5.3, App B | No. |
+| 4 | "Your floors are not all 20 ps (18.8 / 24.6 / 26.0 / 34.3)." | MED | The unqualified shared-floor claim was deliberately retired; floors quoted as 19–26 ps with the TENERGY √(4/3) penalty and LuAG-extrapolation caveats; DSB1 18.8±0.8 "confirms" (never "revises") the published 17.5; MIXED module-wide excluded as ill-posed. | §5.2, Table tab:builds, §8 | No. |
+| 5 | "MIXED module-wide timing is ill-posed — why is it in the table at all?" | LOW | Labeled reference-only in table caption + text, with the mechanism (half the corners clip, half do not); the physically meaningful MIXED result is §6. | §5.2, §6 | No. |
+| 6 | "The depth drift is not a calibrated z measurement." | LOW | Never claimed: presented as an acceptance-conditional ensemble consistency reading; the ~30% v_eff scale uncertainty stated; calibration explicitly deferred to the companion paper; CFD-only readout caveat included. | §7 | No. |
+| 7 | "The same-shower comparison is geometry-dependent (diagonal corners, fixed filament, one module)." | MED | Scope limiter in every claim sentence ("within this geometry and at these light levels"); corner-map provenance documented (pulse-shape discriminants validated on pure builds); the comparison's cancellations (arrival, timebase, MCP) are by construction. | §6 | Logbook confirmation of the corner map remains belt-and-suspenders (user action); not blocking. |
+| 8 | "Why is the satellite/tail demonstration in an appendix?" | LOW | §5.3 carries the quantitative summary (f_tail 4.60→3.30%, robust widths nearly equal); the appendix holds the diagnostic detail; placement decision recorded in-file. If a referee wants it promoted, it is a one-line move. | §5.3, App B | No. |
+| 9 | (anticipated) "Bibliography gaps / benchmark numbers unverified." | MED | 20 verified entries; 4 placeholders clearly marked; benchmark table deliberately deferred/conditioned on verified comparator numbers (Task A/B of circulation prep). | bibliography | YES — resolve the 4 TODO-P2-CITE before circulating externally. |
+| 10 | (anticipated) "Electrons only, single module, normal incidence." | LOW | Stated in limitations; no array/hadron/pileup claims anywhere; engineering extrapolation explicitly labeled. | §8, Conclusions | No. |
+
+**Bottom line:** risks 1–8 are defended in-text at circulation quality. Risk 9 is the only
+pre-circulation blocker (citation verification). Risk 7's logbook half is recommended before
+journal submission but not before internal circulation.

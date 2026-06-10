@@ -172,3 +172,16 @@ energy/position paper (the fifth coordinate).
   lucchini-verify). Builds clean (557 KB). Compliance greps: no retired language or pre-fix numbers
   anywhere in active prose. Remaining work is citation verification, one figure restyle, the
   cite-blocked benchmark table, and collaboration items (title/authors/funding).
+
+
+## UPDATE 8 (later 2026-06-09): coauthor-circulation prep complete
+- Working tree was clean at `7cd8e1f` before this pass.
+- All 4 TODO-P2-CITE placeholders RESOLVED with web-verified bibliography (An NIM A 1045 (2023)
+  167629; Ceravolo JINST 17 (2022) P09033 + Cantone Front. Phys. 11 (2023) 1223183; Gundacker PMB
+  64 (2019) 055012; Lucchini JINST 8 (2013) P10017, byline corrected). Benchmark table built
+  (tab_benchmarks.tex, object-type column, no-ranking caption) and \input in Discussion with a
+  per-shower comparator sentence. Money plot restyled (comparator bands, MIXED grey-dashed
+  reference) → papers/timing/figs/thesis_postfix.{png,pdf}; numbers unchanged. Circulation note +
+  referee-risk memo written. Manuscript builds clean; zero citation placeholders; compliance greps
+  clean. STATUS: ready for internal coauthor circulation. Outstanding for external submission:
+  author/funding blocks, title sign-off, GATE-1 logbook half (recommended), optional G4 campaign.

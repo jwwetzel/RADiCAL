@@ -134,10 +134,17 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   landing (25.7±0.6 / near-parity disfavors kinetics / design lessons + future work). Bibliography:
   24 entries — 20 verified (parent-paper cross-checked or canonical), 4 marked TODO-P2-CITE
   (spacal, crilin, gundacker, lucchini2013-verify). Builds clean (557 KB PDF).
-- **Remaining TODO-P2 (all sharp):** money-plot final restyle (exact spec in-file: error bars +
-  BTL/HGTD bands via timingFitSummary.C — pure restyling); benchmark TABLE (blocked on the two
-  comparator citations); 4 × TODO-P2-CITE verifications. Author block + funding text placeholders.
-- **Risks before coauthor circulation:** placeholder citations render as marked TODO text in the
-  PDF (intentional); the money plot is the summary-style figure, not final style; tab_methods.tex
-  is generated but not \input (decide drop-or-include); collaboration must confirm title + author
-  list + funding text; GATE-1 logbook half still recommended before submission (not blocking).
+- **CIRCULATION PREP DONE (2026-06-09):** all 4 TODO-P2-CITE RESOLVED with web-verified entries —
+  spacal = An et al., NIM A 1045 (2023) 167629 (18.5±0.2 ps per EM shower @5 GeV, W+garnet SPACAL);
+  crilin = Ceravolo et al., JINST 17 (2022) P09033 (+ cantone2023 = Cantone et al., Front. Phys. 11
+  (2023) 1223183, <25 ps PbF2 >3 GeV); gundacker = Gundacker et al., PMB 64 (2019) 055012 (contains
+  the CTR ∝ √(τ_r·τ_d/n′) equation verbatim); lucchini2013 confirmed (byline corrected M.T.→M.).
+  Benchmark table BUILT (`papers/timing/tab_benchmarks.tex`, \input in Discussion): 5 systems,
+  object-type column, no-ranking caption. Money plot RESTYLED (timingFitSummary.C → figs/
+  thesis_postfix.{png,pdf}): BTL/HGTD per-track/per-hit bands, MIXED grey-dashed reference,
+  fit values in legend; numbers untouched. Circulation materials:
+  `papers/timing/COAUTHOR_CIRCULATION_NOTE_2026-06-09.md` + `REFEREE_RISK_MEMO_2026-06-09.md`.
+- **Remaining before EXTERNAL submission (none block internal circulation):** author block +
+  funding text (collaboration); title sign-off; GATE-1 logbook half (recommended);
+  tab_methods.tex generated-not-input (decide drop/include); optional G4 campaign (floor
+  decomposition + dilution quantification) per the panel plan.

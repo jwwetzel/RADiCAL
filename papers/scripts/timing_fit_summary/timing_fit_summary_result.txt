@@ -1,3 +1,32 @@
+Info in <TMacOSXSystem::ACLiC>: creating shared library /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary_C.so
+In file included from /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary_C_ACLiC_dict.cxx:41:
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:44:67: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   44 |         {"DSB1","DSB1 organic (4x T-type)",RadView::kLGCFD,"srCFD"},
+      |                                                                   ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:45:66: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   45 |         {"LUAG","LuAG:Ce ceramic (4x T-type)",RadView::kLED,"LED"},
+      |                                                                  ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:46:99: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   46 |         {"MIXED","2x DSB1 + 2x LuAG:Ce",RadView::kLGCFD,"srCFD (module-wide; ill-posed, see note)"},
+      |                                                                                                   ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:47:68: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   47 |         {"TENERGY","3x DSB1 T-type + 1x E-type",RadView::kLED,"LED"}};
+      |                                                                    ^
+4 warnings generated.
+In file included from /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary_C_ACLiC_dict.cxx:41:
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:44:67: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   44 |         {"DSB1","DSB1 organic (4x T-type)",RadView::kLGCFD,"srCFD"},
+      |                                                                   ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:45:66: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   45 |         {"LUAG","LuAG:Ce ceramic (4x T-type)",RadView::kLED,"LED"},
+      |                                                                  ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:46:99: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   46 |         {"MIXED","2x DSB1 + 2x LuAG:Ce",RadView::kLGCFD,"srCFD (module-wide; ill-posed, see note)"},
+      |                                                                                                   ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/timing_fit_summary/timingFitSummary.C:47:68: warning: missing field 'E' initializer [-Wmissing-field-initializers]
+   47 |         {"TENERGY","3x DSB1 T-type + 1x E-type",RadView::kLED,"LED"}};
+      |                                                                    ^
+4 warnings generated.
 
 ===== POST-FIX four-build timing fit summary (production estimator) =====
   DSB1     srCFD  :  45.0  34.2  30.7  27.1  25.7  25.7  | a=203+-6 b=18.8+-0.8 chi2/ndf=3.5/4 MONO L150=5185
@@ -10,4 +39,6 @@
   best measured sigma(150): DSB1 25.7+-0.6 ps (floor verb stays 'confirms 17.5')
   wrote papers/tables/timing_fit_summary_2026-06-09.md
 Info in <TCanvas::Print>: png file papers/figures/timing_fit_summary/timing_fit_summary.png has been created
-  wrote papers/figures/timing_fit_summary/timing_fit_summary.png
+Info in <TCanvas::Print>: png file papers/timing/figs/thesis_postfix.png has been created
+Info in <TCanvas::Print>: pdf file papers/timing/figs/thesis_postfix.pdf has been created
+  wrote timing_fit_summary.png + papers/timing/figs/thesis_postfix.{png,pdf}

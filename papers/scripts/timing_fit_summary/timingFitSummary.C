@@ -17,6 +17,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TGraphErrors.h"
+#include "TBox.h"
 #include "TF1.h"
 #include "TCanvas.h"
 #include "TLegend.h"
@@ -119,27 +120,42 @@ void timingFitSummary(){
     md.close();
     printf("  wrote papers/tables/timing_fit_summary_2026-06-09.md\n");
 
-    // ---- figure ----
+    // ---- figure (publication style: requirement bands, MIXED as grey reference) ----
     TCanvas* c=new TCanvas("tfs","",1000,760);
     c->SetLeftMargin(0.12);c->SetRightMargin(0.04);c->SetTopMargin(0.07);c->SetBottomMargin(0.13);c->SetGridy();
-    TH1F* fr=c->DrawFrame(15,15,165,80);
+    TH1F* fr=c->DrawFrame(15,12,165,80);
     fr->SetTitle(";beam energy E (GeV);brightest-1000 (DW#minusUP)/2  #sigma_{t} (ps)");
     fr->GetYaxis()->SetTitleSize(0.045);fr->GetYaxis()->SetTitleOffset(1.25);fr->GetXaxis()->SetTitleSize(0.045);
-    int cols[4]={kRData,kRGreen+1,kAzure+2,kOrange+8}; int mks[4]={20,21,22,23};
-    TLegend* lg=new TLegend(0.42,0.62,0.96,0.92); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.032);
-    for(int i=0;i<4;++i){ BRow& r=rows[i]; if(r.E.size()<3) continue;
+    // per-MIP/track comparator bands (context only; cited in the text): BTL 30-60, HGTD 35-50
+    TBox* bBTL=new TBox(15,30,165,60); bBTL->SetFillColorAlpha(kOrange+1,0.10); bBTL->Draw();
+    TBox* bHGTD=new TBox(15,35,165,50); bHGTD->SetFillColorAlpha(kOrange+1,0.10); bHGTD->Draw();
+    TLatex bt; bt.SetTextSize(0.026); bt.SetTextColor(kOrange+3);
+    bt.DrawLatex(18,57,"CMS BTL 30#minus60 ps (per track)"); bt.DrawLatex(18,46.5,"ATLAS HGTD 35#minus50 ps (per hit)");
+    // MIXED drawn first, dashed grey, reference-only
+    int ord[4]={2,0,1,3};
+    int cols[4]={kRData,kRGreen+1,kGray+2,kOrange+8}; int mks[4]={20,21,24,23};
+    TLegend* lg=new TLegend(0.40,0.62,0.96,0.92); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.031);
+    for(int k=0;k<4;++k){ int i=ord[k]; BRow& r=rows[i]; if(r.E.size()<3) continue;
+        bool mixed=(i==2);
         std::vector<double> ze(r.E.size(),0);
         TGraphErrors* g=new TGraphErrors(r.E.size(),&r.E[0],&r.S[0],&ze[0],&r.Se[0]);
-        g->SetMarkerStyle(mks[i]);g->SetMarkerColor(cols[i]);g->SetLineColor(cols[i]);g->SetMarkerSize(1.5);
+        g->SetMarkerStyle(mks[i]);g->SetMarkerColor(cols[i]);g->SetLineColor(cols[i]);g->SetMarkerSize(mixed?1.2:1.5);
         TF1* f=new TF1(Form("ff%d",i),"sqrt([0]*[0]/x+[1]*[1])",r.E.front(),r.E.back());
-        f->SetParameters(r.a,r.b); f->SetLineColor(cols[i]); f->SetLineWidth(2); f->Draw("SAME");
-        g->Draw("P SAME");
-        lg->AddEntry(g,Form("%s (%s): a=%.0f, b=%.1f#pm%.1f",r.build,
-            i==2?"srCFD, module-wide*":r.srcName,r.a,r.b,r.be),"lp"); }
+        f->SetParameters(r.a,r.b); f->SetLineColor(cols[i]); f->SetLineWidth(mixed?2:3);
+        f->SetLineStyle(mixed?7:1); f->Draw("SAME");
+        g->Draw("P SAME"); }
+    // legend in physical order
+    for(int i=0;i<4;++i){ BRow& r=rows[i];
+        TGraphErrors* gl=new TGraphErrors(); gl->SetMarkerStyle(mks[i]);gl->SetMarkerColor(cols[i]);gl->SetLineColor(cols[i]);
+        gl->SetLineStyle(i==2?7:1); gl->SetLineWidth(i==2?2:3);
+        lg->AddEntry(gl,Form("%s%s: a=%.0f#pm%.0f, b=%.1f#pm%.1f",r.build,
+            i==2?"*":Form(" (%s)",r.srcName),r.a,r.ae,r.b,r.be),"lp"); }
     lg->Draw();
-    TLatex tx; tx.SetNDC(); tx.SetTextSize(0.027); tx.SetTextColor(kGray+3);
-    tx.DrawLatex(0.42,0.585,"*MIXED module-wide is ill-posed; see GATE-6 per-material result");
-    DrawSuperTitle("Four-build #sigma_{t}(E), post-fix production estimator (adopted sources), a/#sqrt{E} #oplus b fits",0.020f);
+    TLatex tx; tx.SetNDC(); tx.SetTextSize(0.026); tx.SetTextColor(kGray+3);
+    tx.DrawLatex(0.40,0.585,"*single-estimator timing is ill-posed for MIXED (Sec. 6)");
+    DrawSuperTitle("Four-build #sigma_{t}(E), production estimator (adopted sources), a/#sqrt{E} #oplus b fits; shaded: per-MIP/track comparators",0.019f);
     c->Print("papers/figures/timing_fit_summary/timing_fit_summary.png");
-    printf("  wrote papers/figures/timing_fit_summary/timing_fit_summary.png\n");
+    c->Print("papers/timing/figs/thesis_postfix.png");
+    c->Print("papers/timing/figs/thesis_postfix.pdf");
+    printf("  wrote timing_fit_summary.png + papers/timing/figs/thesis_postfix.{png,pdf}\n");
 }
