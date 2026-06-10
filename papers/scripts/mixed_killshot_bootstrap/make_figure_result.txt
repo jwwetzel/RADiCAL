@@ -1,0 +1,11 @@
+
+===== corrected MIXED head-to-head figure (GATE-6 language) =====
+   50 GeV: sigma_DSB1=  361+-1 ps  sigma_LuAG=  384+-1 ps  R=0.940+-0.004 (N=45456)
+   75 GeV: sigma_DSB1=  395+-1 ps  sigma_LuAG=  373+-1 ps  R=1.058+-0.005 (N=41953)
+  100 GeV: sigma_DSB1=  295+-2 ps  sigma_LuAG=  318+-2 ps  R=0.929+-0.007 (N=17223)
+  125 GeV: sigma_DSB1=  347+-2 ps  sigma_LuAG=  324+-2 ps  R=1.072+-0.007 (N=22050)
+  150 GeV: sigma_DSB1=  405+-2 ps  sigma_LuAG=  339+-2 ps  R=1.194+-0.009 (N=16209)
+  summary: mean R=1.038, scatter-based err=0.049; methods srCFD/cfd05/LED = 1.038/1.161/0.795
+Info in <TCanvas::Print>: png file papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.png has been created
+Info in <TCanvas::Print>: pdf file papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.pdf has been created
+  wrote papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.{png,pdf}

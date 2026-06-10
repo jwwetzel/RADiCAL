@@ -1,3 +1,12 @@
+// *** DEPRECATED (2026-06-09, GATE 6) — DO NOT USE FOR PUBLICATION FIGURES ***
+// The brightness-threshold corner classification below (amp > 0.65*max) misassigns SE-D
+// (LuAG by the GATE-1 pulse-shape confirmation) into the DSB1 group at mid/high energy,
+// and the printed "DSB1/LuAG = 0.99, chi2/ndf = 0.4" is a label-mixing artifact with
+// over-conservative errors. The corrected analysis and figure:
+//   papers/scripts/mixed_killshot_bootstrap/{mixedKillshotBootstrap.C, makeMixedKillshotFigure.C}
+//   papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.{png,pdf}
+// Kept for provenance only. Claims law: papers/memory_claims_and_forbidden_language.md.
+// ****************************************************************************
 // mixedHeadToHead.C — the clean DSB1-vs-LuAG:Ce WLS comparison, IN-EVENT.
 // ----------------------------------------------------------------------------
 // The MIXED module ("2xDSB1, 2xLuAG") has both WLS capillary types reading the

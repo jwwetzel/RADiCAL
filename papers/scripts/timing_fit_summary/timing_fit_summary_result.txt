@@ -1,0 +1,13 @@
+
+===== POST-FIX four-build timing fit summary (production estimator) =====
+  DSB1     srCFD  :  45.0  34.2  30.7  27.1  25.7  25.7  | a=203+-6 b=18.8+-0.8 chi2/ndf=3.5/4 MONO L150=5185
+  LUAG     LED    :  66.5  57.2  51.0  44.8  44.4  | a=440+-18 b=24.6+-3.3 chi2/ndf=3.8/3 MONO L150=1800
+  MIXED    srCFD (module-wide; ill-posed, see note):  48.5  47.5  41.5  41.5  39.6  | a=253+-29 b=34.3+-2.4 chi2/ndf=8.3/3 MONO L150=3230
+  TENERGY  LED    :  37.9  35.6  31.3  32.4  30.3  | a=198+-21 b=26.0+-1.8 chi2/ndf=7.7/3 (NM) L150=4045
+
+  narrative checks: a_DSB1=203 (target ~200)  a_LuAG=440 (~455)  ratio=2.16 (~2.3)
+  b: DSB1 18.8+-0.8, LuAG 24.6+-3.3, TENERGY 26.0+-1.8 (shared ~20?)
+  best measured sigma(150): DSB1 25.7+-0.6 ps (floor verb stays 'confirms 17.5')
+  wrote papers/tables/timing_fit_summary_2026-06-09.md
+Info in <TCanvas::Print>: png file papers/figures/timing_fit_summary/timing_fit_summary.png has been created
+  wrote papers/figures/timing_fit_summary/timing_fit_summary.png

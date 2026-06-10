@@ -1,0 +1,18 @@
+Figure caption (GATE-6 compliant; the only approved caption for mixed_h2h_corrected):
+
+"Same-module, same-shower comparison of the two wavelength-shifter species in the MIXED RADiCAL
+module (corner map confirmed by amplitude-independent pulse-shape discriminants). (A) Per-capillary
+timing widths versus beam energy for the DSB1 (NE, SW) and LuAG:Ce (NW, SE) capillary pairs under
+the saturation-recovered CFD (srCFD) estimator; widths are same-layer in-event pair differences
+divided by sqrt(2), so beam arrival time, DRS4 group timebase, and the MCP reference cancel by
+construction. (B) The width ratio sigma_DSB1/sigma_LuAG per energy. Same-shower DSB1/LuAG timing
+widths agree at the 10-20% level under the primary srCFD estimator; the observed spread across
+energies dominates the statistical bootstrap uncertainty, giving 1.04 +/- 0.05. (C) Estimator
+dependence: srCFD is the headline because it is least sensitive to clipping and fixed-threshold
+walk; cfd05 (clip-walk penalizes the saturating DSB1 corners) and LED (noise penalizes the dim
+LuAG corners) are diagnostic estimators. Set against the x2.3 cross-build stochastic-term ratio,
+this same-shower near-parity disfavors intrinsic WLS re-emission kinetics as the dominant cause of
+the cross-build timing difference, within this geometry and at these light levels."
+
+FORBIDDEN in any version of this caption: "0.99", "chi2/ndf = 0.4", "consistent with unity",
+"statistically indistinguishable", "proves", "identical".

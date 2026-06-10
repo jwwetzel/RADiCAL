@@ -11,21 +11,26 @@ in an ultra-compact W/LYSO:Ce sampling calorimeter (RADiCAL), 25–150 GeV"
 ## Thesis (one sentence, locked)
 **Light yield — not WLS species — governs shower-max timing**: the stochastic term tracks detected light
 (DSB1 a≈201 → LuAG a≈455 ps·√GeV, ×2.3) while the ~20 ps floor is shared among LYSO builds; the MIXED
-in-module comparison (same showers, per-capillary ratio ≈0.99) resolves the LuAG-kinetics confound with
-zero cross-build systematics; srCFD (né lgcfd) is the ENABLING method, and the floor CONFIRMS the
+in-module comparison (same showers, paired per-capillary widths agreeing at the 10–20% level —
+σ_DSB1/σ_LuAG = 1.04 ± 0.05 srCFD, GATE-6 corrected) DISFAVORS the LuAG-kinetics confound as dominant
+with zero cross-build systematics; srCFD (né lgcfd) is the ENABLING method, and the floor CONFIRMS the
 published 17.5 ps as shower-depth geometry.
 
-## Known results (with provenance)
+## Known results — POST-FIX AUTHORITATIVE TABLE (2026-06-09)
+Single source of truth: `papers/tables/timing_fit_summary_2026-06-09.md` (+ figure
+`papers/figures/timing_fit_summary/timing_fit_summary.png`). Supersedes ALL pre-fix (a,b).
 | result | value | support |
 |---|---|---|
-| DSB1 lgcfd brightest-1000 | a≈201, b=19.5±1.1 (pre-fix) / 18.8±0.8 (post-fix) | `methodCompare.C`, `timingRegression.C` |
-| LuAG led | a≈455, b=19.8±5.6 (best measured point 42 ps) | same |
-| MIXED lgcfd (post-fix, monotonic) | b≈34.3 (module-wide; ill-posed — use per-material) | `timingRegression.C` |
-| TENERGY led | 240/22±3 (RECORDED — recompute post-fix before quoting) | report/memory |
-| Kill-shot in-event ratio | **0.99 RETIRED (GATE 6)**: label artifact. Replacement: width parity within ~10–20%; srCFD paired ratio 1.04±0.05 (scatter); methods 0.80–1.16 | `papers/figures/mixed_killshot_bootstrap/` |
-| Published baseline | 256/√E ⊕ 17.5 ps; 27 ps @150 (BestMinus, cfd05) | parent Eq. 2 |
+| DSB1 srCFD brightest-1000 | **a=203±6, b=18.8±0.8**, MONO; **σ(150)=25.7±0.6 ps**; L150=5185 mV | `timingFitSummary.C` |
+| LuAG LED | **a=440±18, b=24.6±3.3**, MONO; best measured 44.4 ps @150; floor = extrapolation | same |
+| MIXED srCFD module-wide | a=253±29, b=34.3±2.4 (ILL-POSED ref row; paper uses per-material) | same |
+| TENERGY LED | **a=198±21, b=26.0±1.8**, one NM point; √(4/3) 3-cap penalty → ~22.5 4-cap-equiv | same |
+| cross-build a-ratio | **2.16** (was "~2.3"; narrative updated to "more than a factor of 2") | same |
+| floors | span 18.8–26.0 — "shared ~20" SOFTENED, see table addendum | table addendum |
+| Kill-shot | **0.99 RETIRED (GATE 6)**. Same-shower width parity 10–20%; srCFD paired 1.04±0.05 (scatter); methods 0.80–1.16 | `mixed_h2h_corrected.{png,pdf}` |
+| Published baseline | 256/√E ⊕ 17.5 ps; 27 ps @150 (BestMinus, cfd05) — confirm, never revise | parent Eq. 2 |
 | Estimator fix | adopted methods monotonic; cfd05 Δ≤0.4 ps | `monotonicity_fix.png` |
-| MIXED clip fractions | DSB1 corners 33–55%, LuAG corners 0–24% (E-dependent) | session log, `mixedSeparate.C` |
+| MIXED clip fractions | DSB1 corners 33–55%, LuAG corners 0–24% (E-dependent) | `mixedSeparate.C` |
 | MCP1−MCP2 | 71–74 ps flat vs E (inter-group domino phase; ~15 ps stop-cell-corrected — VERIFY) | memory dataset_2023 |
 
 ## Section outline (panel S1–S12, condensed)
@@ -42,7 +47,8 @@ S10 benchmark+requirements table + deployability box · S11 systematics/OOS vali
 ## Money figures
 1. `light_yield_thesis.png` UPGRADED: 4-build σ_t(E), **error bars restored (FATAL fix)**, (a,b) inset
    table, collider requirement bands. 2. Universal collapse: σ_t vs sum_lg, all builds/energies, one law,
-   floor asymptote, 0.99 inset (graphical abstract). 3. `mixed_h2h.png` + ratio panel with bootstrap CI.
+   floor asymptote, same-shower parity inset (graphical abstract). 3. `mixed_h2h_corrected.png`
+   (GATE-6: widths + ratio panel with the 1.04±0.05 scatter band — never the retired 0.99).
 4. method mechanism (pulse slopes 102 vs 381 mV/ns) + Δσ(E). 5. satellite before/after. 6. floor figure
 (dual-form fits + plateau + G4 band + **mean-t_diff-vs-lnE drift panel ← GATE 3 feeds this**).
 7. MCP-jitter forensics. Tables: nomenclature; 8×4 survey (a,b,χ²); benchmark; OOS; ps-budget.

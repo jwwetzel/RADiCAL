@@ -59,13 +59,17 @@ the light-driven term. At infinite light, all materials approach the same floor.
 → But a between-build comparison cannot, by itself, separate "less light" from "intrinsically
 slower WLS" (e.g. LuAG:Ce decay kinetics). Kill that confound.
 
-### Bead 8 — The clean proof: same module, same showers, only the WLS capillary differs
-**Claim:** inside MIXED, a DSB1 (organic WLS) and a LuAG:Ce (ceramic WLS) capillary read the
-*same showers in the same LYSO:Ce scintillator* — and time identically.
-**Plot:** `mixed_h2h.png` — DSB1-vs-LuAG capillary σ_t(E), pairwise-CFD solve. **DSB1/LuAG = 0.99,
-χ²/ndf = 0.4/5.** *(mixedHeadToHead.C.)*
-**Reads:** every systematic (offset, MCP, shower-time) cancelled by construction; the two WLS
-capillaries time the same. The build ordering in Bead 7 is light, not WLS species — proven.
+### Bead 8 — The clean comparison: same module, same showers, only the WLS capillary differs
+**Claim (GATE-6 corrected, 2026-06-09):** inside MIXED, DSB1 (organic) and LuAG:Ce (ceramic)
+capillaries read the *same showers in the same LYSO:Ce scintillator* — and their per-capillary
+timing widths agree at the **10–20% level** (paired same-layer comparison: ratio 0.93–1.19 across
+energies, 0.80–1.16 across estimators; **σ_DSB1/σ_LuAG = 1.04 ± 0.05** under srCFD, scatter-based).
+**Plot:** `papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.png`
+*(makeMixedKillshotFigure.C. The old mixed_h2h.png "0.99, χ²/ndf=0.4" is RETIRED — its
+brightness-threshold labels misassigned SE-D; see GATE 6 in papers/memory_analysis_gates.md.)*
+**Reads:** arrival time, group timebase, and MCP cancel by construction; against the ×2.3
+cross-build stochastic ratio, the same-shower near-parity **disfavors WLS kinetics as the dominant
+cause** — within this geometry, at these light levels. Not "identical", not "proven": near-parity.
 
 ### Bead 9 — The floor is the shower, and it confirms the published result
 **Claim:** the energy dependence is 1/√E (photostatistics), giving b ≈ 20 ps — consistent with
@@ -86,7 +90,7 @@ the published 17.5 ps, not a revision. The floor is shared shower-depth physics.
 | 5 distributions | pub_dist | 4 | ✅ |
 | 6 brightness | pub_res | 4 | ✅ |
 | **7 MONEY PLOT** | light_yield_thesis | 4-in-1 | ✅ |
-| 8 kill-shot | mixed_h2h | MIXED | ✅ |
+| 8 kill-shot | mixed_h2h_corrected (GATE 6) | MIXED | ✅ rebuilt 2026-06-09 |
 | 9 floor | floor_model | 4 | ✅ |
 | + systematics | tab_systematics + systematics | 4 | ✅ (paperSystematics.C, §5.4) |
 | + optimization | optimization (+ opt_scan per build) | 4 | ✅ (optAppendix.C + optScan.C, App. A) |
@@ -104,7 +108,7 @@ the published 17.5 ps, not a revision. The floor is shared shower-depth physics.
 
 ## Still open (minor Paper-1 polish + Paper 2)
 - **Paper 1 polish:** extend `clip` and `method_compare` to all LYSO builds (DSB1-only today);
-  integrate the kill-shot (mixed_h2h) into the paper body as §5.x (currently in OUTLINE only).
+  integrate the kill-shot (mixed_h2h_corrected, GATE-6 language) into the paper body as §5.x.
 - **Paper 2 (deferred plots, DSB1-only → extend):** energy resolution (configResolution),
   shower localization (showerLocalization, transverseMaps, positionCorrection), E-type response
   (etypeEnergy, etypeChar), the 4D demo (fourDdemo) — all on TENERGY + per-build.

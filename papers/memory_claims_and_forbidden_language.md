@@ -5,12 +5,18 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 
 ## ALLOWED claim language (exact formulations)
 
-### Timing (Paper 2)
-- "σ_t = 25.3 ps at 150 GeV (brightest-1000 selection), 27–29 ps over the full fiducial sample" —
-  the MEASURED number always leads; full-fiducial always quoted beside any selection.
-- "The data are **consistent with / confirm** the published floor of 17.5 ps" — the ONLY floor verbs.
+### Timing (Paper 2) — numbers updated to the POST-FIX authoritative table (2026-06-09)
+- "σ_t = **25.7 ± 0.6 ps** at 150 GeV (brightest-1000 selection), 27–29 ps over the full fiducial
+  sample" — the MEASURED number always leads; full-fiducial always quoted beside any selection.
+  (25.3 was the pre-fix value; do not quote it.)
+- "The DSB1 floor of **18.8 ± 0.8 ps** is consistent with / **confirms** the published 17.5 ps" —
+  the ONLY floor verbs. Floors across builds: "the fitted floors of the LYSO builds lie in the
+  19–26 ps range, mutually consistent once the TENERGY capillary-count penalty (√(4/3)) and the
+  LuAG extrapolation uncertainty are accounted for." The bare "b ≈ 20 ps shared across builds" is
+  RETIRED without those qualifiers.
 - "Light yield, not WLS species, governs the timing" — the thesis sentence.
-- "The stochastic term tracks detected light: a = 201 → 455 ps·√GeV from DSB1 to LuAG:Ce."
+- "The stochastic term tracks detected light: a = **203 ± 6 → 440 ± 18** ps·√GeV from DSB1 to
+  LuAG:Ce — **more than a factor of two** (2.2)." (The old 201/455/"×2.3" are pre-fix; use these.)
 - MIXED kill-shot — GATE 6 CONDITIONAL 2026-06-09; the 0.99 is RETIRED. ALLOWED (exact form):
   "In the MIXED module, DSB1 and LuAG:Ce capillaries reading the same showers give per-capillary
   timing widths that agree within ~10–20% (same-layer paired comparison: width ratio 0.93–1.19

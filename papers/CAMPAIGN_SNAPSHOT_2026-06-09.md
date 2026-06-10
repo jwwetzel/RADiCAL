@@ -98,6 +98,22 @@ energy/position paper (the fifth coordinate).
   any draft circulates. Products: `papers/scripts/mixed_killshot_bootstrap/`,
   `papers/figures/mixed_killshot_bootstrap/`.
 
+## UPDATE 3 (later 2026-06-09): stale-claim purge + corrected kill-shot figure + post-fix (a,b) table
+- Working tree was clean at `4c49888` before this pass.
+- Stale 0.99/χ² language removed from all ACTIVE Paper-2 files (`papers/timing/THREAD.md`,
+  `papers/memory_paper2_timing.md`); the panel blueprint + JSONs marked HISTORICAL with a
+  supersession banner; `analyze/studies/mixedHeadToHead.C` carries a DEPRECATED header; the old
+  figure renamed `figures/2023/narrative/mixed_h2h_DEPRECATED.png` + warning README.
+- Official corrected figure: `papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.{png,pdf}`
+  (3 panels: widths / ratio with 1.04±0.05 scatter band / method dependence; approved caption in
+  `makeMixedKillshotFigure_CAPTION.txt`).
+- **POST-FIX authoritative four-build table:** `papers/tables/timing_fit_summary_2026-06-09.md` —
+  DSB1 srCFD a=203±6, b=18.8±0.8, σ(150)=25.7±0.6 (HOLDS vs old 201/19.5; headline becomes 25.7);
+  LuAG LED a=440±18, b=24.6±3.3 (a HOLDS; floor up from 19.8); TENERGY LED a=198±21, b=26.0±1.8
+  (√(4/3) penalty); MIXED module-wide 253±29/34.3±2.4 (ill-posed ref). a-ratio 2.16 ("more than a
+  factor of two"). **Floor narrative SOFTENED:** floors span 18.8–26.0 ps; "shared ~20 ps" retired
+  without qualifiers; DSB1's 18.8±0.8 still CONFIRMS the published 17.5.
+
 ## Open flags at snapshot time
 - 125→150 GeV local re-steepening of the dial (−56 ps/e-fold locally) — run-period check pending
   (addressed in DEPTH_DIAL_REVIEW.md diagnostics).

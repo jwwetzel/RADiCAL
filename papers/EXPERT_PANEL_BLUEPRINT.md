@@ -1,5 +1,14 @@
 # RADiCAL Papers 2 & 3 — Ten-Expert Panel Blueprint
 
+> **HISTORICAL RECORD — superseded in places by the gate program.** This blueprint predates the
+> analysis gates. Where it conflicts with `papers/memory_analysis_gates.md` and
+> `papers/memory_claims_and_forbidden_language.md`, the gate results win. Known supersessions:
+> the MIXED "ratio 0.99, chi2/ndf=0.4" is **RETIRED** (GATE 6: brightness-label artifact; replaced
+> by within-10-20% same-shower parity, srCFD 1.04+-0.05); the "1.5 mm vs 3.6 mm comparator" framing
+> is **RETIRED** (GATE 2: 3.6 mm was the t0-inflated sum-side bound, and the 1.5 mm survives
+> train/test as a joint upper bound); the depth dial is now MEASURED (GATE 3: -33.6+-2.9 ps/e-fold).
+> Do not quote numbers from this file without checking the gates.
+
 Generated 2026-06-09 from a 10-expert panel analysis (figures, references, language, HEP-pheno,
 calorimetry, future colliders, multi-channel timing, digitization, GEANT4, data-analysis) of the
 published parent paper (NIM A 1068 (2024) 169737) against the available 2023 dataset
