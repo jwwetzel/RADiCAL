@@ -3,7 +3,7 @@
 # pull_argon_data.sh — parallel mirror of the RADiCAL data tree from Argon.
 #
 #   Source : argon.hpc.uiowa.edu:/Shared/lss_yonel/jwwetzel/   (ssh port 40, Duo 2FA)
-#   Dest   : $DEST (default ~/RADiCAL_DATA), tree structure preserved
+#   Dest   : $DEST (default "/Volumes/OWC StudioStack HDD/DATA"), tree preserved
 #
 # 2FA strategy: SSH connection multiplexing (ControlMaster). You authenticate
 # once per master connection (MASTERS Duo prompts total, sequential, at the
@@ -28,7 +28,18 @@ ARGON_USER="${ARGON_USER:-jwwetzel}"
 ARGON_HOST="${ARGON_HOST:-argon.hpc.uiowa.edu}"
 ARGON_PORT="${ARGON_PORT:-40}"
 SRC="${SRC:-/Shared/lss_yonel/jwwetzel}"
-DEST="${DEST:-$HOME/RADiCAL_DATA}"
+DEST="${DEST:-/Volumes/OWC StudioStack HDD/DATA}"
+
+# guard the classic macOS trap: if the external volume is not mounted, mkdir -p
+# would silently create a plain folder on the boot drive and fill it instead
+case "$DEST" in
+  /Volumes/*)
+    VOL="/Volumes/$(echo "$DEST" | cut -d/ -f3)"
+    if [ ! -d "$VOL" ]; then
+      echo "ERROR: volume '$VOL' is not mounted — connect the drive and re-run."
+      exit 1
+    fi ;;
+esac
 PARALLEL="${PARALLEL:-24}"   # total concurrent rsync streams
 MASTERS="${MASTERS:-3}"      # ssh master connections = number of Duo prompts
 
