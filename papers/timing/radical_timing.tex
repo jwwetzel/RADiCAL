@@ -227,9 +227,8 @@ single-channel noise. The single-event resolution quoted throughout is the stand
 deviation of a Gaussian fit to the \emph{central peak} of the $t_{\mathrm{DW-UP}}$
 distribution; a small non-Gaussian shoulder (the $\sim\!0.2$~ns satellite also noted in
 Ref.~\cite{radical}) is excluded from the fit and has negligible effect on the quoted
-width.
-%% TODO-P2: add the satellite-removal demonstration (same-event cfd05 vs srCFD
-%% distributions, before/after) -- panel-mandatory; currently asserted only.
+width. The suppression of this structure by srCFD is demonstrated quantitatively in
+Sec.~\ref{sec:method-gain} (Fig.~\ref{fig:satellite}).
 
 Events are required to lie in the wire-chamber fiducial region and to have a valid MCP
 signal. Because shower fluctuations spread the collected light at fixed beam energy, the
@@ -357,9 +356,43 @@ concentrated in saturated events at $150$~GeV (fully clipped subset:
 $27.4\rightarrow25.3$~ps). The fitted floor moves from $21.8\pm2.7$~ps (cfd05, a poor,
 non-monotonic fit) to $19.9\pm0.8$~ps (srCFD, well behaved) --- consistent within
 errors; the method's value is as much the \emph{quality} of the fit as its central
-value. Method choice is a correction of estimator bias on saturated pulses, not a new
-detector effect, and does not alter the four-build conclusions of
+value.
+
+The tail character of the gain is shown directly in Fig.~\ref{fig:satellite}. In a
+common window $|x-\mathrm{med}|>66$~ps ($2.5\sigma$ of the srCFD core), the tail
+fraction of the same $1000$ events drops from $4.60\%$ (cfd05) to $3.30\%$ (srCFD;
+$46\rightarrow33$ events; Gaussian expectation $1.24\%$), while the robust IQR widths
+are nearly identical ($28.7$ vs $28.3$~ps): the cfd05 excess lives in the non-Gaussian
+tails, and the srCFD remainder above the Gaussian expectation reflects genuine shower
+tails that no estimator removes. At $75$~GeV, where clipped and less-clipped
+populations coexist, the cfd05 tail excess concentrates in clipped events ($3.39\%$
+vs $1.95\%$ for srCFD) and largely vanishes in unclipped ones --- where, conversely,
+srCFD's low-gain amplitude anchor is noisy on dim pulses and its own tail fraction
+rises ($7.15\%$). Each estimator is biased in the regime it was not designed for;
+this is the basis of the per-regime adopted-source rule (srCFD for bright/clipped,
+fixed-threshold for dim). Method choice is therefore a correction of estimator bias,
+not a new detector effect, and does not alter the four-build conclusions of
 Sec.~\ref{sec:thesis}.
+
+\begin{figure*}[t]
+\centering
+%% TODO-P2: placement decision -- this figure is a strong candidate for an appendix /
+%% supplement if main-text figure count must shrink; the Sec. 5.3 paragraph stands alone.
+\includegraphics[width=0.98\linewidth]{satellite_removal.png}
+\caption{Tail suppression by the saturation-recovered CFD on identical events (DSB1,
+brightest-$1000$, production selection). (A)~The per-event
+$(\mathrm{DW}-\mathrm{UP})/2$ distribution at $150$~GeV under cfd05 (line) and srCFD
+(filled), median-centred, unit-normalized, logarithmic scale; the common tail window
+$|x-\mathrm{med}|>66$~ps ($2.5\sigma$ of the srCFD core) is marked. (B)~Width and
+tail metrics on the same events: the production widths are $25.6$ (srCFD) vs $26.9$~ps
+(cfd05) while the tail fraction drops from $4.60\%$ to $3.30\%$ (Gaussian expectation
+$1.24\%$; the srCFD remainder reflects genuine shower tails). (C)~At $75$~GeV
+(full-fiducial sample; in the brightest-$1000$ the less-clipped subset is empty), the
+cfd05 tail excess concentrates in the clipped subset, while on dim unclipped pulses
+srCFD's low-gain anchor is noisy and its tail rises --- each estimator is biased
+outside its design regime, the basis of the per-regime source rule.}
+\label{fig:satellite}
+\end{figure*}
 (The stochastic terms in this controlled comparison reflect the identical-event
 selection and differ from Table~\ref{tab:builds}, which uses each build's own validity;
 holding the events fixed isolates the timing method.) The best single-event resolution

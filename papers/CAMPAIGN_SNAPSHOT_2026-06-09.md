@@ -146,3 +146,16 @@ energy/position paper (the fifth coordinate).
   18.8±0.8 (stat) with +0.2 fit-range shift. tab_methods.tex regenerated post-fix.
 - tectonic build clean. Every active number in the manuscript now traces to a post-fix/gated product.
   TODO-P2 count 10 → 7 (remaining are prose-pass items, no pre-fix numbers behind any of them).
+
+
+## UPDATE 6 (later 2026-06-09): satellite-removal demonstration — last analysis TODO cleared
+- Working tree was clean at `ae850ee` before this pass.
+- `papers/scripts/satellite_removal/` (pre-registered AUDIT + satelliteRemoval.C): on the §5.3
+  identical-event sample @150 GeV, the tail fraction in a common 66 ps window drops 4.60%→3.30%
+  (46→33 of 1000; Gaussian expectation 1.24%) while robust IQR widths are nearly identical —
+  the cfd05 excess is non-Gaussian tail, supporting the estimator-bias interpretation. 75 GeV
+  full-fiducial split: excess concentrates in clipped events (3.39 vs 1.95%); honest REVERSAL on
+  dim unclipped pulses (srCFD 7.15%, noisy LG anchor) — the empirical basis of the per-regime
+  adopted-source rule, reported in figure, caption, and §5.3. Manuscript builds clean.
+  All remaining TODO-P2 items (7) are writing/citation/placement; no pre-fix or ungated number
+  remains anywhere in the active manuscript.

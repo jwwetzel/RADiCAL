@@ -102,10 +102,11 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
    (`papers/scripts/{method_gain_postfix,systematics_postfix}/`): §5.3 = core 1.3 ps / tail 4.0 ps
    [3.4,4.7] split; tab_systematics regenerated (nominals cross-validate the authoritative table;
    veto-window rows added; DSB1 floor 18.8±0.8, fit-range +0.2); tab_methods regenerated.
-   **Every active manuscript number is now post-fix/gated.** 7 TODO-P2 remain (prose-pass items:
-   bibliography, satellite demo, money-plot style, §mixed citations+dilution, depth placement,
-   title confirm, engineering projection). ← NEXT: bibliography build-out + satellite demo, then
-   the full prose pass.
+   **Every active manuscript number is now post-fix/gated.**
+6c. ~~Satellite-removal demonstration~~ **DONE 2026-06-09** (`papers/scripts/satellite_removal/`):
+   f_tail 4.60→3.30% identical events @150 (Gaussian 1.24%); clipped-concentration + the dim-pulse
+   reversal (srCFD 7.15% unclipped) → per-regime source rule demonstrated; §5.3 + fig installed.
+   7 TODO-P2 remain, ALL writing/citation/placement. ← NEXT: the full prose + bibliography pass.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).

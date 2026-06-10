@@ -1,0 +1,12 @@
+Approved caption (satellite/tail-removal demonstration):
+
+"Tail suppression by the saturation-recovered CFD on identical events (DSB1, brightest-1000,
+production selection). (A) The per-event (DW-UP)/2 distribution -- the quantity whose width is
+the time resolution -- at 150 GeV under cfd05 (line) and srCFD (filled), unit-normalized,
+logarithmic scale; the common tail window |x-median| > 66 ps (2.5 sigma of the srCFD core) is
+marked. (B) Width and tail metrics on the same events: the Gaussian-core widths differ by
+25.6 ps while the tail fraction drops from 26.88% to 4.60% (Gaussian expectation 1.24%) --
+the improvement from srCFD is concentrated in the non-Gaussian tail component, supporting its
+interpretation as recovery from estimator bias on clipped pulses rather than a change in
+detector response. (C) At 75 GeV (full-fiducial sample; in the brightest-1000 the
+less-clipped subset is empty, N=2, since bright showers clip by construction): th

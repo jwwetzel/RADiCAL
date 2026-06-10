@@ -106,8 +106,17 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   totals ±1.0/±1.1/±0.9/±1.9; NEW veto-window rows (largest: TENERGY −2.3 @1.5 ns); DSB1 floor
   block b=18.8±0.8, fit-range shift +0.2. `tab_methods.tex` regenerated post-fix.
 - **Every active number in the manuscript is now post-fix/gated.**
-- **Open TODO-P2 markers (7):** title confirmation; bibliography build-out; satellite-removal
-  demonstration figure; money-plot final style (bands+error bars); §mixed citations + dilution
-  quantification; depth-dial main-vs-appendix decision; engineering-projection + benchmark table.
-  Author block + funding placeholders.
-- Next: bibliography build-out + satellite demonstration, then the full prose pass.
+- **SATELLITE-REMOVAL DEMONSTRATION DONE (2026-06-09)** (`papers/scripts/satellite_removal/`,
+  figure `papers/figures/satellite_removal/satellite_removal.{png,pdf}` + approved caption):
+  identical events @150: f_tail (common 66 ps window) 4.60%→3.30% (46→33 of 1000; Gaussian 1.24%),
+  robust IQR nearly identical (28.7 vs 28.3) → the cfd05 excess lives in the tails; production
+  widths reproduce §5.3 exactly (26.9/25.6). 75 GeV full-fiducial split: cfd05 tail excess
+  concentrates in clipped events (3.39 vs 1.95%); REVERSAL on dim unclipped pulses (srCFD 7.15% —
+  noisy LG anchor) → each estimator biased outside its design regime = the adopted-source rule's
+  basis. §5.3 paragraph + Fig fig:satellite installed; §4 TODO replaced with a pointer.
+- **Open TODO-P2 markers (7, ALL writing/citation/placement — no analysis left):**
+  title confirmation; bibliography build-out; money-plot final style (bands+error bars);
+  §mixed citations (+ optional dilution quantification via G4, can remain a stated caveat);
+  depth-dial main-vs-appendix; satellite figure main-vs-appendix; engineering-projection +
+  benchmark table. Author block + funding placeholders.
+- Next: the full prose + bibliography pass (no analysis prerequisites remain).

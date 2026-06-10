@@ -1,0 +1,101 @@
+Info in <TMacOSXSystem::ACLiC>: creating shared library /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/satellite_removal/satelliteRemoval_C.so
+In file included from input_line_9:6:
+././papers/scripts/satellite_removal/satelliteRemoval.C:213:54: warning: data argument not used by format string [-Wformat-extra-args]
+      W*1000,m150[0].prod,m150[1].prod,m150[1].ftail,m150[0].ftail);
+                                                     ^
+././papers/scripts/satellite_removal/satelliteRemoval.C:196:5: warning: 'snprintf' will always be truncated; specified size is 900, but format string expands to at least 1464 [-Wformat-truncation]
+    snprintf(b,sizeof(b),
+    ^
+In file included from /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/satellite_removal/satelliteRemoval_C_ACLiC_dict.cxx:41:
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/satellite_removal/satelliteRemoval.C:213:54: warning: data argument not used by format string [-Wformat-extra-args]
+  197 |       "production selection). (A) The per-event (DW-UP)/2 distribution -- the quantity whose width is\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  198 |       "the time resolution -- at 150 GeV under cfd05 (line) and srCFD (filled), unit-normalized,\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  199 |       "logarithmic scale; the common tail window |x-median| > %.0f ps (2.5 sigma of the srCFD core) is\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  200 |       "marked. (B) Width and tail metrics on the same events: the Gaussian-core widths differ by\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  201 |       "%.1f ps while the tail fraction drops from %.2f%% to %.2f%% (Gaussian expectation 1.24%%) --\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  202 |       "the improvement from srCFD is concentrated in the non-Gaussian tail component, supporting its\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  203 |       "interpretation as recovery from estimator bias on clipped pulses rather than a change in\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  204 |       "detector response. (C) At 75 GeV (full-fiducial sample; in the brightest-1000 the\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  205 |       "less-clipped subset is empty, N=2, since bright showers clip by construction): the cfd05\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  206 |       "tail excess concentrates in the clipped subset and largely vanishes in the less-clipped\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  207 |       "subset, while srCFD shows the OPPOSITE pattern -- on dim, unclipped pulses its low-gain\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  208 |       "amplitude anchor is noisy and its tail fraction rises. Each estimator is biased in the\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  209 |       "regime it was not designed for, which is the basis of the per-regime adopted-source rule\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  210 |       "(srCFD for bright/clipped, fixed-threshold for dim).\"\n\nFORBIDDEN in any version: 'improves intrinsic detector timing',\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  211 |       "'saturation fully corrected', 'all method dependence eliminated', universal CFD claims.\n",
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  212 |       W*1000,m150[0].prod,m150[1].prod,m150[1].ftail,m150[0].ftail);
+      |                                                      ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/satellite_removal/satelliteRemoval.C:196:5: warning: 'snprintf' will always be truncated; specified size is 900, but format string expands to at least 1464 [-Wformat-truncation]
+  196 |     snprintf(b,sizeof(b),
+      |     ^
+2 warnings generated.
+In file included from /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/satellite_removal/satelliteRemoval_C_ACLiC_dict.cxx:41:
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/satellite_removal/satelliteRemoval.C:213:54: warning: data argument not used by format string [-Wformat-extra-args]
+  197 |       "production selection). (A) The per-event (DW-UP)/2 distribution -- the quantity whose width is\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  198 |       "the time resolution -- at 150 GeV under cfd05 (line) and srCFD (filled), unit-normalized,\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  199 |       "logarithmic scale; the common tail window |x-median| > %.0f ps (2.5 sigma of the srCFD core) is\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  200 |       "marked. (B) Width and tail metrics on the same events: the Gaussian-core widths differ by\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  201 |       "%.1f ps while the tail fraction drops from %.2f%% to %.2f%% (Gaussian expectation 1.24%%) --\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  202 |       "the improvement from srCFD is concentrated in the non-Gaussian tail component, supporting its\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  203 |       "interpretation as recovery from estimator bias on clipped pulses rather than a change in\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  204 |       "detector response. (C) At 75 GeV (full-fiducial sample; in the brightest-1000 the\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  205 |       "less-clipped subset is empty, N=2, since bright showers clip by construction): the cfd05\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  206 |       "tail excess concentrates in the clipped subset and largely vanishes in the less-clipped\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  207 |       "subset, while srCFD shows the OPPOSITE pattern -- on dim, unclipped pulses its low-gain\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  208 |       "amplitude anchor is noisy and its tail fraction rises. Each estimator is biased in the\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  209 |       "regime it was not designed for, which is the basis of the per-regime adopted-source rule\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  210 |       "(srCFD for bright/clipped, fixed-threshold for dim).\"\n\nFORBIDDEN in any version: 'improves intrinsic detector timing',\n"
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  211 |       "'saturation fully corrected', 'all method dependence eliminated', universal CFD claims.\n",
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  212 |       W*1000,m150[0].prod,m150[1].prod,m150[1].ftail,m150[0].ftail);
+      |                                                      ^
+/Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/satellite_removal/satelliteRemoval.C:196:5: warning: 'snprintf' will always be truncated; specified size is 900, but format string expands to at least 1464 [-Wformat-truncation]
+  196 |     snprintf(b,sizeof(b),
+      |     ^
+2 warnings generated.
+
+===== SATELLITE / TAIL REMOVAL DEMONSTRATION (identical events) =====
+  150 GeV, N=1000 identical; common tail window |x-med| > 2.5*sigma_core(srCFD) = 65.6 ps
+         core(ps) prod(ps) robust(ps) f_tail(%) n_tail
+  srCFD     26.2     25.6      28.3     3.30     33
+  cfd05     28.6     26.9      28.7     4.60     46
+  LED       28.9     28.2      30.7     4.50     45
+  Gaussian expectation for f_tail: ~1.24%
+
+  75 GeV split (FULL FIDUCIAL; brightest-1000 left N=2 unclipped): clipped nsat>=7 N=38675, less-clipped nsat<=2 N=2924
+  f_tail clipped:      srCFD 1.95%  cfd05 3.39%  LED 3.68%
+  f_tail less-clipped: srCFD 7.15%  cfd05 2.05%  LED 2.91%
+Info in <TCanvas::Print>: png file papers/figures/satellite_removal/satellite_removal.png has been created
+Info in <TCanvas::Print>: pdf file papers/figures/satellite_removal/satellite_removal.pdf has been created
+
+  wrote papers/figures/satellite_removal/satellite_removal.{png,pdf}
+  wrote papers/figures/satellite_removal/satellite_removal_CAPTION.txt
