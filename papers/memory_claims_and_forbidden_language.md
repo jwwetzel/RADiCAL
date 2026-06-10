@@ -10,9 +10,14 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 ## ALLOWED claim language (exact formulations)
 
 ### Timing (Paper 2) — numbers updated to the POST-FIX authoritative table (2026-06-09)
-- "σ_t = **25.7 ± 0.6 ps** at 150 GeV (brightest-1000 selection), 27–29 ps over the full fiducial
-  sample" — the MEASURED number always leads; full-fiducial always quoted beside any selection.
-  (25.3 was the pre-fix value; do not quote it.)
+- "σ_t = **25.7 ± 0.6 ps** at 150 GeV (brightest-1000 selection), **≈50 ps over the full fiducial
+  sample**" — the brightest-1000 number may lead PROVIDED the full-fiducial companion appears with
+  the selection named (operative ruling 2026-06-10, resolving the tension with forbidden #9; the
+  allowed exact formulation governs). The full-fiducial value was VERIFIED 2026-06-10 on the locked
+  production chain (`papers/scripts/full_fiducial_check/fullFiducialCheck.C`: 50.5 ps at 150 GeV,
+  1.45×10⁵ events; K=1000 reproduces 25.7 exactly). The earlier "27–29 ps full fiducial" in this
+  law was pre-fix-era/unverified and is RETIRED — do not quote it.
+  (25.3 was the pre-fix headline; do not quote it.)
 - "The DSB1 floor of **18.8 ± 0.8 ps** is consistent with / **confirms** the published 17.5 ps" —
   the ONLY floor verbs. Floors across builds: "the fitted floors of the LYSO builds lie in the
   19–26 ps range, mutually consistent once the TENERGY capillary-count penalty (√(4/3)) and the
@@ -32,8 +37,10 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
   position-coupling dilution caveat, and the corner-map provenance (pulse-shape confirmed, GATE 1).
 - "srCFD (saturation-recovered CFD): a constant-fraction discriminator applied at f of the LG-predicted
   true amplitude, recovering the edge of clipped pulses."
-- "Sub-30 ps EM-shower timing from a 14×14 mm², 16-SiPM module" — compactness + channel economy framing;
-  NEVER "fastest"/"best" (LHCb SPACAL W-GAGG is faster).
+- "Sub-30 ps EM-shower timing from a 14×14 mm² module with eight SiPMs (sixteen readout channels)" —
+  compactness + channel economy framing; NEVER "fastest"/"best" (LHCb SPACAL W-GAGG is faster).
+  (Amended 2026-06-10: the old "16-SiPM" form conflated SiPMs with gain channels — parent record:
+  2 cards × 4 HDR2 = 8 SiPMs, each split HG+LG. Pending coauthor hardware confirmation, Q8.)
 - "t_diff = (t_DW − t_UP)/2 is reference-free (MCP jitter, DRS4 inter-group phase, and common-mode edge
   cancel); t_sum is MCP-referenced" — both numbers always labeled by taxonomy.
 - LuAG positioning: "the radiation-tolerant configuration, timing-viable at equal conditions" + the ×2
@@ -98,8 +105,9 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 4. ✗ 25–27 ps as absolute time-of-arrival or ToF — that is the self-referenced differential; the
    clock-referenced number is ~50 ps class. UNLOCK: GATE 4 (T_abs), and even then quote both with taxonomy.
    Map every physics case (H→γγ vertexing, BIB windows) to the RIGHT observable.
-5. ✗ "Material-independent ~20 ps floor" as a measurement — LuAG's best measured point is 42 ps;
-   b=19.8±5.6 is a form-dependent extrapolation. Allowed: "the fitted floors are consistent" + caveat.
+5. ✗ "Material-independent ~20 ps floor" as a measurement — LuAG's best measured point is 44.4 ps
+   (post-fix); its floor b=24.6±3.3 is a form-dependent extrapolation. Allowed: "the fitted floors
+   are consistent" + caveat. (Numbers updated 2026-06-10; the 42 ps / 19.8±5.6 were pre-fix.)
 6. ✗ ANY wording that reads as a revision of the published 17.5 ps / 27 ps — verbs locked to
    "confirms / consistent with". (Permanent.)
 7. ✗ HGCAL-style "imaging" language — one longitudinal sample at shower max is not imaging. No
@@ -108,8 +116,9 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 8. ✗ "Radiation hardness demonstrated here" — zero irradiation data in this dataset; the best-timing
    build is organic DSB1. Allowed: component-level tolerance BY CITATION (parent refs 14–16) + measured
    timing-viability of the LuAG configuration + honest SiPM-fluence paragraph.
-9. ✗ Quoting best-selection numbers first — full-fiducial/all-event numbers always lead; brightest-1000
-   or best-bin always second with the selection named.
+9. ✗ Quoting best-selection numbers WITHOUT the full-fiducial companion — operative ruling
+   2026-06-10: brightest-1000 may lead provided the ≈50 ps full-fiducial companion appears with the
+   selection named (see the allowed Timing bullet, which governs).
 10. ✗ "crystal differs between builds" — INVARIANT WORDING RULE: LYSO:Ce + W are common to all builds;
     the WLS capillary is the variable. (House rule, predates panel.)
 11. ✗ "DSB1/LuAG ratio 0.99, χ²/ndf = 0.4 ⇒ consistent" — RETIRED 2026-06-09 (GATE 6): produced by
@@ -122,7 +131,7 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 ## Referee-defense pairs (abbreviated; full list in synthesis JSON)
 - "1.5 mm vs 3.6 mm impossible" → reconciliation shipped in-paper (GATE 2 outputs).
 - "(DW−UP)/2 cancels arrival time" → two-end algebra section + both numbers with taxonomy.
-- "Floor is an extrapolation" → measured 25.3 headlined; dual-form fits with χ²; LuAG 42 ps stated plainly.
+- "Floor is an extrapolation" → measured 25.7 headlined; dual-form fits with χ²; LuAG 44.4 ps stated plainly.
 - "Method shopping" → ex-ante algorithmic regime rule + full 8-source survey published.
 - "MIXED map circular (brightness-inferred)" → logbook + pulse-shape discriminant (GATE 1).
 - "No competitive context" → merged benchmark table with object-type column (per-MIP vs per-shower).
@@ -130,3 +139,27 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 - "Saturated-pulse timing on a SCA digitizer" → digitizer-forensics figure (stop-cell, cell-width, satellite cure).
 - "Garden of forking paths" → locked-pipeline OOS table; deterministic brightest-fraction selection.
 - "4D/5D inflation" → locked wording above; HGCAL/SCEPCAL cited wherever adjacency is implied.
+
+## Prior-record rules (added 2026-06-10, prior-record audit — `papers/timing/PRIOR_RECORD_AUDIT_2026-06-09.md`)
+1. **Published-estimator attribution:** Ref. [1]'s published estimator is described in its own text
+   as a per-channel fixed threshold on the HG leading edge. Never write "cfd05, as in Ref. [1]"
+   unless the legacy-chain identity is confirmed by a Ref. [1] author; pending confirmation (Q7),
+   the allowed form is "the clipped-peak discriminator class of Ref. [1]".
+2. **Satellite provenance:** the parent's ~0.2 ns satellite lives in the MCP-referenced SUM and is
+   attributed to a digitiser sampling shift; the parent states it is ABSENT from (DW−UP)/2. The
+   clipping-induced differential shoulder of this paper is a different object; any cross-reference
+   must carry the sum-vs-differential / digitiser-vs-clipping qualification.
+3. **Talk quarantine:** CPAD/SLAC 2023 and FCC-US/MIT 2024 slides are never citable for numbers or
+   claims. Quarantined: "module is radiation hard (demonstrated)", "<10 ps potential at >150 GeV",
+   "meets FCC EndCap needs", the preliminary "25 ps / ~18 ps" and "17.52/255.58" fit values,
+   "45 ps @ 28 GeV" rounding (published TNS values: 42–49.5 ps).
+4. **Light-deficit arithmetic:** ×2.2 is the stochastic-term ratio (440/203) ONLY. The measured
+   LuAG light deficit is ~3× (mixed-module LG amplitudes 66–85 vs 171–231 mV). Light-recovery
+   projections must state the photostatistics assumption (a ∝ 1/√N; ×2 light → a/√2 ≈ 310
+   ps·√GeV); never call the a-ratio a light ratio.
+5. **Apparatus facts:** HG timing channels (and MCP) digitised at 5 GS/s (DRS0); LG channels at
+   1 GS/s (DRS1), amplitude-only — never repeat the parent's loose "all signals at 5 GS/s".
+   Eight SiPMs, sixteen readout channels (pending Q8). The Pb-glass containment veto
+   (sum_pb < 0.30·sum_lg) exists in SelectionCuts.h but is NOT part of the timing production
+   chain (verified 2026-06-10: no consumer in RadTiming.h/RadView; used by uniformityScan.C) —
+   the manuscript's selection list correctly omits it; coauthor Q8 confirms intent.

@@ -52,7 +52,34 @@ cross-build difference, within this geometry and at these light levels.
 4. **New:** the upstream–downstream mean-asymmetry drift (−33.6 ± 2.9 ps/e-fold), consistent with
    shower-maximum migration — supporting evidence that the floor is longitudinal shower physics.
 
+## What changed vs. the public talks (CPAD/SLAC 2023, FCC-US/MIT 2024)
+A prior-record audit (six independent auditors; `papers/timing/PRIOR_RECORD_AUDIT_2026-06-09.md`)
+compared this draft against the published papers and the two public talks. If your memory of the
+results is anchored on the talks, read the draft against this mapping:
+1. The talks' preliminary DSB1 fit (a≈255.6, b≈17.5, "25 ps @ 150 GeV, ~18 ps limit") became the
+   PUBLISHED result of Ref. [1] (27 ps / 17.5 ps, threshold-on-clipped-edge estimator), reproduced
+   UNCHANGED as the control row of Table 1. The new a=203±6 / σ=25.7±0.6 come from a different
+   estimator (srCFD) and a named selection (brightest-1000) — a re-derivation, not a revision; the
+   floor verb remains "confirms". The full-fiducial companion (≈50 ps at 150 GeV, no brightness
+   selection) is now quoted alongside the headline everywhere (newly verified on the locked chain,
+   `papers/scripts/full_fiducial_check/`).
+2. srCFD did not exist at talk time; Sec. 5.3 + Appendix B isolate its gain on identical events.
+3. The MIXED same-shower comparison was never shown publicly; it is new analysis of the same
+   May-2023 campaign data. The four-build comparison is likewise public for the first time.
+4. The DSB1 sample is the Ref. [1] dataset re-analysed under the unified post-fix chain (stated in
+   Sec. 2.1) — a reuse the parent itself pre-registered ("compared with the data presented here",
+   its Sec. 7, item 2).
+5. The ~0.2 ns satellite attribution differs from Ref. [1] by design: theirs is in the
+   MCP-referenced SUM (digitiser mechanism, absent from the differential); ours is a
+   clipping-induced shoulder in the DIFFERENTIAL (Sec. 4 carries the qualification).
+
 ## Intentionally conservative claims (please don't strengthen)
+Three claims from our own talks are deliberately absent and must not be reintroduced:
+"module is radiation hard / demonstrated" (zero irradiated-module beam data here; hardness is
+component-level by citation); "potential to reach <10 ps at >150 GeV" (the measured floors and
+their depth-fluctuation reading imply the route below ~19 ps is a depth-corrected estimator, not
+more light alone — Sec. 8); "meets needs of FCC EndCap" (replaced by labeled per-track/per-hit
+comparator bands and the situate-without-ranking benchmark table).
 "Disfavors … as the dominant cause, within this geometry and at these light levels" (never
 "identical"/"proves"); floors as a qualified range (never unqualified "shared 20 ps"); "confirms
 the published 17.5 ps" (never "revises"); the depth drift is an acceptance-conditional ensemble
@@ -83,6 +110,14 @@ simulation-validated).
 5. Engineering extrapolation (LuAG light recovery → ~31–35 ps): include at this strength?
 6. Anyone able to confirm the MIXED corner map from the 2023 logbook (belt-and-suspenders; the
    pulse-shape confirmation is in §6)?
+7. **(C. Perez-Lara / Ref. [1] authors)** The manuscript describes the published timing method as
+   a "threshold discriminator on the clipped high-gain leading edge" (Ref. [1]'s own wording) and
+   labels our closest reproduction "cfd05". Which estimator produced the published 27 ps / 17.5 ps,
+   and does the cfd05 row represent it correctly?
+8. **(hardware)** Confirm the SiPM count — eight SiPMs, sixteen readout channels (HG+LG per SiPM)?
+   And confirm the Pb-glass containment veto (sum_pb < 0.30·sum_lg) is intentionally NOT part of
+   the timing selection (verified absent from the timing production chain; it is used by the
+   uniformity scan).
 
 ## Please don't relitigate (unless you find a concrete error)
 The estimator-fix and its validation (committed audit trail); the retirement of the 0.99 ratio

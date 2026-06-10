@@ -128,6 +128,14 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
    hglg.png regenerated (margins fixed, identical content); depth/method legends inside frames.
    **Manuscript circulates from this state.** Pre-submission figure item: verify A.9 curves
    post-fix.
+6h. ~~Prior-record continuity audit~~ **DONE 2026-06-10** (6 auditors + synthesis over the parent
+   paper, 2 publications, 2 talks): verdict "circulate after minor edits" — 7 MUST-FIX + 3 cheap
+   SHOULD edits landed (full-fiducial ≈50 ps companion verified on the locked chain; cfd05
+   attribution hedged; satellite qualified; digitiser/SiPM facts fixed; light-deficit arithmetic
+   corrected; same-dataset disclosed); claims law gained 5 prior-record rules + the 27–29
+   retirement; circulation note gained the talk-facing section + Q7/Q8; referee memo risks 11–13.
+   Remaining SHOULD tier is pre-submission work (apparatus figure, money-plot reference curve,
+   citation verifications). **READY FOR COAUTHOR CIRCULATION.**
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).

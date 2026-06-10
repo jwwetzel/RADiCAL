@@ -17,6 +17,11 @@ Companion: the wording law (`papers/memory_claims_and_forbidden_language.md`) an
 | 9 | (anticipated) "Bibliography gaps / benchmark numbers unverified." | MED | 20 verified entries; 4 placeholders clearly marked; benchmark table deliberately deferred/conditioned on verified comparator numbers (Task A/B of circulation prep). | bibliography | YES — resolve the 4 TODO-P2-CITE before circulating externally. |
 | 10 | (anticipated) "Electrons only, single module, normal incidence." | LOW | Stated in limitations; no array/hadron/pileup claims anywhere; engineering extrapolation explicitly labeled. | §8, Conclusions | No. |
 
-**Bottom line:** risks 1–8 are defended in-text at circulation quality. Risk 9 is the only
-pre-circulation blocker (citation verification). Risk 7's logbook half is recommended before
-journal submission but not before internal circulation.
+| 11 | "The DSB1 results were already published — what is new?" (added 2026-06-10, prior-record audit) | MED | The parent's Sec. 7 item 2 pre-registered exactly this comparison "with the data presented here"; Sec. 2.1 now states the same-dataset reuse and unified-chain re-derivation explicitly; the published row sits in Table 1 as the control; everything else (LuAG/TENERGY/MIXED, srCFD, same-shower control, systematics budget, depth drift) is new. | §1, §2.1, Table 1 | No. |
+| 12 | "Your cfd05 row misattributes Ref. [1]'s method" (added 2026-06-10) | MED→LOW | Reworded to "the clipped-peak discriminator class of Ref. [1]" + Table-1 caption describes the parent's method in the parent's own terms (threshold on the clipped HG leading edge); definitive identity delegated to coauthor Q7. | §5.3, Table 1 caption | Q7 answer folds in at circulation. |
+| 13 | "25.7 ps is a best-selection number" (added 2026-06-10) | MED→LOW | The full-fiducial companion (≈50 ps at 150 GeV, verified on the locked chain 2026-06-10) now appears in the abstract, §4, §5.3, and Conclusions with the selection named; the K-dependence is mapped in Fig. A.9(b) and budgeted in Table 2. | abstract, §4, §5.3, Conclusions | No. |
+
+**Bottom line:** risks 1–8 are defended in-text at circulation quality. Risk 9 (citation
+verification) was resolved in circulation prep; risks 11–13 (prior-record audit) are defended
+in-text as of 2026-06-10, with Q7/Q8 delegated to coauthors. Risk 7's logbook half is recommended
+before journal submission but not before internal circulation.

@@ -1,7 +1,7 @@
 %% RADiCAL Paper 1 (timing) -- NIM A (Elsevier elsarticle) two-column style.
 %% Compile: tectonic radical_timing.tex
 %% NOTE: the author block is a PLACEHOLDER; complete it with the full RADiCAL author
-%% list (as in Ref.~[2], NIM A 1068 (2024) 169737, p.1) before submission.
+%% list (as in Ref.~[1], NIM A 1068 (2024) 169737, p.1) before submission.
 \documentclass[final,5p,times,twocolumn]{elsarticle}
 
 \usepackage{graphicx}
@@ -22,7 +22,7 @@
 compact RADiCAL electromagnetic-shower timing module}
 
 %% ---- Author block. Lead author J. Wetzel for Paper 1 (collaboration sets the full
-%% author ORDER). The 39-author RADiCAL roster + 11 affiliations are verified in Ref.~[2]
+%% author ORDER). The 39-author RADiCAL roster + 11 affiliations are verified in Ref.~[1]
 %% (NIM A 1068 (2024) 169737). Affiliations there: a Adiyaman U.; b Caltech; c Coe College;
 %% d Hofstra U.; e U. Iowa; f Istanbul U.; g Istanbul U.-Cerrahpasa; h Istanbul Technical U.;
 %% i U. Notre Dame; j U. Virginia; k Yildiz Technical U.
@@ -56,7 +56,8 @@ primary estimator). Set against the cross-build difference, this disfavors intri
 WLS re-emission kinetics as the dominant explanation, within this geometry and at these
 light levels: timing performance is governed primarily by detected light yield, module
 response, and estimator choice. The high-light build reaches $25.7\pm0.6$~ps for the
-brightest $150$~GeV showers, and the mean dual-end asymmetry drifts with energy at
+brightest $150$~GeV showers ($\approx\!50$~ps over the full fiducial sample), and the
+mean dual-end asymmetry drifts with energy at
 $-33.6\pm2.9$~ps per $e$-fold, consistent with shower-maximum migration ---
 supporting evidence that the timing floor carries longitudinal shower information.
 \end{abstract}
@@ -76,7 +77,7 @@ Future high-luminosity colliders demand electromagnetic (EM) calorimeters that r
 the \emph{time} of a shower to a few tens of picoseconds, in addition to its energy,
 to associate deposits with the correct primary vertex and reject out-of-time
 pile-up~\cite{cmsmtd,hgtd,hgcal,fcchh,aleksa}. Dedicated timing layers based on
-LYSO:Ce with SiPM readout reach $30$--$60$~ps per minimum-ionising
+LYSO:Ce with SiPM readout are designed to achieve $30$--$60$~ps per minimum-ionising
 track~\cite{cmsmtd}, and LYSO-based calorimetric devices have demonstrated
 $\sim\!30$~ps shower timing~\cite{anderson2015}. The RADiCAL R\&D programme develops
 ultra-compact, radiation-tolerant sampling EM calorimeter modules that time the shower
@@ -89,7 +90,7 @@ A first RADiCAL test-beam measurement, on a single high-light build, reported a 
 resolution of $\approx\!27$~ps at $150$~GeV and parametrised the energy dependence as
 $\sigma_t = a/\sqrt{E}\oplus b$ with $a=256$~ps$\sqrt{\mathrm{GeV}}$ and a floor
 $b=17.5$~ps~\cite{radical}. That work also identified, as a priority for further study
-(its Section~7), a direct comparison of the timing performance of different WLS
+(its Section~7, item~2), a direct comparison of the timing performance of different WLS
 materials in otherwise-identical modules. This paper presents that comparison.
 
 The question is sharper than ``which wavelength shifter is faster.'' A cross-build
@@ -134,13 +135,18 @@ absorber (Table~\ref{tab:builds}): \textbf{DSB1}, high-light organic WLS;
 \textbf{LUAG}, low-light ceramic LuAG:Ce WLS; \textbf{MIXED}, a single module combining
 DSB1 and LuAG:Ce capillaries on opposite diagonals; and \textbf{TENERGY}, a
 multi-segment high-light build with an added longitudinal energy-readout section. DSB1,
-the brightest, is the build of Ref.~\cite{radical}.
+the brightest, is the build --- and the dataset --- of Ref.~\cite{radical}; its timing
+is re-derived here under the unified analysis chain so that all four builds are compared
+on an equal footing, and the published results are reproduced for reference
+(Table~\ref{tab:builds}, Sec.~\ref{sec:method-gain}).
 
 \subsection{Readout, beam, and reference}
 Each SiPM signal is split into a high-gain (HG) copy, optimised for timing, and a
-low-gain (LG) copy, optimised for energy linearity, both digitised by DRS4
-switched-capacitor waveform digitisers (CAEN DT5742)~\cite{drs4,ritt2014} at $5$~GS/s
-over a 1024-cell window, with per-cell calibration applied offline. The HG channels clip at
+low-gain (LG) copy, optimised for energy linearity, digitised by DRS4
+switched-capacitor waveform digitisers (CAEN DT5742)~\cite{drs4,ritt2014} over
+1024-cell windows with per-cell calibration applied offline: the HG timing channels
+(and the MCP reference) at $5$~GS/s, the LG copies on a second digitiser at $1$~GS/s,
+where they serve as amplitude (not edge-timing) measurements. The HG channels clip at
 $\approx\!820$~mV; the LG channels remain linear. Measurements used a $25$--$150$~GeV
 electron beam at the CERN SPS (May 2023); DSB1 was run at all six energies in $25$~GeV
 steps, the other builds at $50$--$150$~GeV. A microchannel-plate photomultiplier
@@ -207,11 +213,11 @@ must sit --- a factor $3.7$ steeper.}
 The recovered edge is a factor $\sim\!3.7$ steeper than the clipped-peak foot
 (Fig.~\ref{fig:pulse}: $381$ vs $102$~mV/ns). Since the slew contribution to the time
 resolution scales as $\sigma_t \simeq \sigma_V/(\mathrm{d}V/\mathrm{d}t)$ with
-$\sigma_V$ the voltage noise, a steeper edge directly improves timing. The method is
-applied uniformly to every build. For the low-light builds (LuAG, TENERGY), whose small
-pulses can defeat the fractional-threshold reconstruction, a robust fixed-threshold
-leading-edge time (LED) is used instead; the choice of per-build timing source is noted
-in Table~\ref{tab:builds}.
+$\sigma_V$ the voltage noise, a steeper edge directly improves timing. The recovery is
+attempted uniformly for every build; where the small pulses of the low-light builds
+(LuAG, TENERGY) defeat the fractional-threshold reconstruction, the per-regime rule of
+Sec.~\ref{sec:method-gain} selects a robust fixed-threshold leading-edge time (LED)
+instead. The choice of per-build timing source is noted in Table~\ref{tab:builds}.
 
 %======================================================================
 \section{Timing estimator and event selection}
@@ -228,9 +234,12 @@ time common to both ends --- in particular the MCP start --- so $t_{\mathrm{DW-U
 free of the reference jitter; averaging four channels per end suppresses uncorrelated
 single-channel noise. The single-event resolution quoted throughout is the standard
 deviation of a Gaussian fit to the \emph{central peak} of the $t_{\mathrm{DW-UP}}$
-distribution; a small non-Gaussian shoulder (the $\sim\!0.2$~ns satellite also noted in
-Ref.~\cite{radical}) is excluded from the fit and has negligible effect on the quoted
-width. The suppression of this structure by srCFD is demonstrated quantitatively in
+distribution; a small non-Gaussian shoulder is excluded from the fit and has negligible
+effect on the quoted width. (Ref.~\cite{radical} noted a satellite of similar
+$\sim\!0.2$~ns offset in its MCP-referenced \emph{sum} distribution and attributed it to
+a digitiser sampling effect, absent from the differential; the shoulder discussed here
+appears in the \emph{differential} under the clipped-peak discriminator and is
+suppressed by the recovered edge, Sec.~\ref{sec:method-gain}.) The suppression of this structure by srCFD is demonstrated quantitatively in
 Sec.~\ref{sec:method-gain} (Fig.~\ref{fig:satellite}).
 
 Events are required to lie in the wire-chamber fiducial region and to have a valid MCP
@@ -239,6 +248,10 @@ resolution depends on shower brightness; for a uniform, well-measured comparison
 builds we quote the resolution of the $1000$ brightest showers (by total low-gain signal)
 at each energy, which fixes the statistical precision of every point. Within each build,
 the resolution improves with shower brightness, as expected from the slew argument.
+For reference, the full fiducial sample at $150$~GeV ($1.5\times10^{5}$ events, no
+brightness selection) gives $\approx\!50$~ps under the same estimator, dominated by its
+dimmest showers; the dependence on the brightness selection is mapped in
+Fig.~\ref{fig:opt}(b) and budgeted in Table~\ref{tab:syst}.
 
 %======================================================================
 \section{Results}
@@ -313,8 +326,10 @@ reference only (see text and Sec.~\ref{sec:mixed}).}
 resolution, the timing source used, and the resolution measured at $150$~GeV
 (statistical errors; selection systematics in Table~\ref{tab:syst}). The WLS column
 gives the wavelength-shifter material of the capillaries; the LYSO:Ce scintillator and
-tungsten absorber are common to every build. The published DSB1 values (cfd05) are
-shown for comparison. TENERGY carries a $\sqrt{4/3}$ capillary-count penalty; the MIXED
+tungsten absorber are common to every build. The final row reproduces the published
+DSB1 result of Ref.~\cite{radical}, obtained there with a threshold discriminator on
+the clipped high-gain leading edge; cfd05 is the present chain's closest member of that
+estimator class and reproduces the published values on this dataset. TENERGY carries a $\sqrt{4/3}$ capillary-count penalty; the MIXED
 module-wide row is a reference value (single-estimator timing is ill-posed there,
 Sec.~\ref{sec:mixed}).}
 \label{tab:builds}
@@ -337,7 +352,9 @@ DSB1\,\cite{radical} & organic & cfd05 & $256$ & $17.5$ & $27$ \\
 The interpretation: \textbf{detected light yield governs the dominant,
 material-dependent (stochastic) part of the time resolution}, while the fitted floors
 are consistent within their uncertainties and caveats. A lower-light configuration times
-worse in proportion to its reduced light. Whether the residual cross-build difference
+worse in proportion to its reduced light --- the behaviour anticipated by the
+programme's GEANT4 studies, which set the expected single-module time resolution by the
+detected light level~\cite{radical,instruments2022}. Whether the residual cross-build difference
 reflects the wavelength-shifter \emph{species} (its re-emission kinetics) or only its
 light output cannot, however, be decided from the energy scan alone --- a between-build
 comparison cannot separate the two. The mixed module provides the controlled,
@@ -347,7 +364,8 @@ same-shower test (Sec.~\ref{sec:mixed}).
 \label{sec:method-gain}
 The benefit of the HG/LG-ratio method is isolated by a direct comparison on
 \emph{identical} showers (Fig.~\ref{fig:method}): the brightest-$1000$ DSB1 resolution
-is computed with cfd05 (a CFD on the clipped measured peak, as in Ref.~\cite{radical})
+is computed with cfd05 (a CFD on the clipped measured peak, the clipped-peak
+discriminator class of Ref.~\cite{radical})
 and with \texttt{srCFD} (the recovered edge; \texttt{hg\_lgcfd}), on an
 \emph{identical-event} design: events enter only if valid under every estimator, and
 the brightest $1000$ are selected once, so all estimators time the same showers. Two
@@ -385,7 +403,9 @@ Sec.~\ref{sec:thesis}.
 (The stochastic terms in this controlled comparison reflect the identical-event
 selection and differ from Table~\ref{tab:builds}, which uses each build's own validity;
 holding the events fixed isolates the timing method.) The best single-event resolution
-measured, for the brightest $150$~GeV DSB1 showers, is $25.7\pm0.6$~ps.
+measured, for the brightest $150$~GeV DSB1 showers, is $25.7\pm0.6$~ps; over the full
+fiducial sample, without the brightness selection, the same estimator gives
+$\approx\!50$~ps at $150$~GeV (Sec.~\ref{sec:estimator}).
 
 \begin{figure}[t]
 \centering
@@ -538,16 +558,19 @@ robustness, or cost, with its timing then estimated from its light output. LuAG:
 attractive for its radiation hardness~\cite{luag}, times worse than DSB1 at a level
 commensurate with its lower light yield; the same-shower comparison bounds any
 additional species-specific penalty at the $10$--$20\%$ level under the primary
-estimator. As an \emph{engineering extrapolation} (not a measurement): recovering the
-factor $\sim\!2.2$ light deficit --- for example by doubling the LYSO:Ce thickness in
-the shower-maximum region, as already foreseen in Ref.~\cite{radical} (its
-Section~7.3) --- would bring the LuAG:Ce stochastic term to
-$\approx\!300$~ps$\sqrt{\mathrm{GeV}}$ and $\sigma_t(150)$ to $\approx\!31$--$35$~ps
+estimator. As an \emph{engineering extrapolation} (not a measurement): recovering part
+of the measured factor-of-$\sim\!3$ light deficit (LuAG:Ce capillary amplitudes are
+roughly one-third of DSB1's in the mixed module) --- for example by doubling the
+LYSO:Ce thickness in the shower-maximum region, as already foreseen in
+Ref.~\cite{radical} (its Section~7, item~3), which doubles the detected light and, with
+$a\propto1/\sqrt{N_{\mathrm{phot}}}$, gives $a\rightarrow
+a/\sqrt{2}\approx310$~ps$\sqrt{\mathrm{GeV}}$ --- would bring $\sigma_t(150)$ to $\approx\!31$--$35$~ps
 (depending on the realised floor), i.e.\ the radiation-tolerant configuration would
 enter the regime of the dedicated collider timing layers
 ($30$--$60$~ps per track for the CMS barrel timing layer~\cite{cmsmtd};
 $\sim\!35$--$50$~ps per hit for the ATLAS HGTD~\cite{hgtd}) while measuring showers,
-not single tracks --- on $16$ SiPMs in a $14\times14$~mm$^2$ cell. Among per-shower
+not single tracks --- on eight SiPMs (sixteen readout channels) in a
+$14\times14$~mm$^2$ cell. Among per-shower
 devices, the W+garnet-fibre SPACAL prototype reaches $(18.5\pm0.2)$~ps at
 $5$~GeV~\cite{spacal} and the Crilin crystal cells reach $<25$~ps above $3$~GeV of
 deposited energy~\cite{crilin,cantone2023}; Table~\ref{tab:bench} situates these
@@ -572,7 +595,8 @@ and subtract each shower's depth, which we are pursuing.
 
 Three results summarise this work. First, the best timing performance of the RADiCAL
 module is $\sigma_t = 25.7\pm0.6$~ps for the brightest $150$~GeV showers of the
-high-light DSB1 build, with $\sigma_t(E) = a/\sqrt{E}\oplus b$, $a = 203\pm6$~ps$\sqrt{\mathrm{GeV}}$
+high-light DSB1 build ($\approx\!50$~ps over the full fiducial sample without the
+brightness selection), with $\sigma_t(E) = a/\sqrt{E}\oplus b$, $a = 203\pm6$~ps$\sqrt{\mathrm{GeV}}$
 and $b = 18.8\pm0.8$~ps --- the floor confirming the previously published $17.5$~ps.
 Second, while the cross-build stochastic term grows by more than a factor of two from
 the high-light to the low-light build ($a = 440\pm18$~ps$\sqrt{\mathrm{GeV}}$ for

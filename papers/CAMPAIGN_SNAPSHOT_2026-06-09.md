@@ -238,3 +238,35 @@ energy/position paper (the fifth coordinate).
   about Fig. A.10 is replaced by the consistency note. PDF IS CLEAN FOR COAUTHOR CIRCULATION.
 - Remaining pre-submission figure item: verify Fig. A.9 (optimization.png) scan curves against
   the post-fix chain (working points consistent; curves from the older macro).
+
+
+## UPDATE 11 (2026-06-10): prior-record continuity audit (6 auditors + synthesis)
+- Working tree was clean at `cb19f51`. Sources: parent NIM A 1068 (2024) 169737; Instruments 6(3)
+  27 (2022); IEEE TNS 70(7) 1296 (2023); CPAD/SLAC 2023 talk; FCC/MIT 2024 talk. Multi-agent
+  workflow (Agents 1–6 parallel + coordinating editor). Outputs:
+  `papers/timing/PRIOR_RECORD_{AUDIT,CONTINUITY_MATRIX,ACTION_PLAN}_2026-06-09.md`.
+- VERDICT: "circulate after minor edits." Thesis, MIXED control, headline numbers, and the
+  confirms-never-revises posture survived all six audits. Duplicate-publication risk LOW: the
+  parent's Sec. 7 item 2 pre-registered both the WLS comparison and the DSB1 dataset reuse.
+- KEY DISCOVERY: the claims-law "27–29 ps full fiducial" was pre-fix-era/unverified. Verified on
+  the locked production chain (`papers/scripts/full_fiducial_check/fullFiducialCheck.C`): the
+  full-fiducial σ_t(150) is ≈50 ps (50.5 ps, 1.45×10⁵ events; K=1000 reproduces 25.7 exactly).
+  Law amended (27–29 RETIRED); companion now quoted in abstract, §4, §5.3, Conclusions.
+- MUST-FIX edits landed (wording-level; no gated number changed): cfd05 → "clipped-peak
+  discriminator class of Ref. [1]" + Table-1 caption rewrite (Q7 delegated); satellite
+  sum-vs-differential/digitiser-vs-clipping qualification; LG digitised at 1 GS/s (DRS1) split
+  from the 5 GS/s HG statement; "16 SiPMs" → "eight SiPMs (sixteen readout channels)" (+benchmark
+  table); light-deficit ≈3× measured (not the a-ratio 2.2) with a∝1/√N → a/√2≈310 arithmetic and
+  the Section-7-item-3 pointer fix. Pb-glass veto verified NOT in the timing chain → documented,
+  no manuscript edit (Q8). Cheap SHOULD edits folded in: same-dataset disclosure (S1), GEANT4
+  expectation citation (S2), per-regime "attempted uniformly" fix (S4), "designed to achieve"
+  benchmark verb, Section-7-item-2 pointer, header [2]→[1].
+- Claims law: +5 prior-record rules (estimator attribution, satellite provenance, talk quarantine,
+  light-deficit arithmetic, apparatus facts); stale in-law numbers fixed (42→44.4, 19.8±5.6→
+  24.6±3.3, 25.3→25.7). Circulation note: talk-facing mapping section + don't-reinstate bullets +
+  Q7/Q8. Referee memo: risks 11–13 added, defended in-text. Stale figs/thesis.png + method.png
+  deleted (pre-fix, unreferenced).
+- Build exit 0; overfulls still 1 (2.22 pt cosmetic); compliance grep clean. SHOULD tier deferred
+  to pre-submission: apparatus figure (parent Fig. 1 adaptation), money-plot published-fit
+  reference curve + per-point errors, TNS lineage, T/E-type vocabulary, depth Tier-2 wording,
+  HGTD/cantone2023/OSTI/byline verifications, A.9 post-fix curve check.

@@ -161,6 +161,23 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   workaround obsolete); depth_dial + method-gain legends brought fully inside their frames.
   Remaining pre-submission figure item: verify Fig. A.9 (optimization.png) curves against the
   post-fix chain.
+- **PRIOR-RECORD AUDIT DONE (2026-06-10; 6-auditor + synthesis workflow):** draft compared against
+  the parent NIM A 1068 (2024) 169737, Instruments 6 (2022), IEEE TNS 70 (2023), CPAD-2023 and
+  FCC-MIT-2024 talks. VERDICT: circulate after minor edits — thesis, MIXED control, headline, and
+  confirms-posture survived intact; duplicate-publication risk LOW (parent Sec. 7 item 2
+  pre-registered the comparison AND the dataset reuse). Landed: full-fiducial companion (≈50 ps
+  @150, VERIFIED on the locked chain — `papers/scripts/full_fiducial_check/`; the claims-law
+  "27–29" was pre-fix-era, now RETIRED in the law), cfd05→"clipped-peak discriminator class of
+  Ref. [1]" hedge (Q7 to coauthors), satellite sum-vs-differential qualification, LG=1 GS/s
+  digitiser split, 8-SiPM/16-channel fix, light-deficit ≈3× (not the a-ratio 2.2) + a/√2≈310
+  arithmetic + Section-7-item-3 pointer, same-dataset disclosure, GEANT4-expectation citation,
+  uniformly/instead per-regime fix, talk-facing subsection + Q7/Q8 in the circulation note,
+  3 new referee risks (11–13) in the memo, 5 prior-record rules in the claims law. Pb-glass veto
+  verified NOT in the timing chain (documented; Q8). Stale pre-fix figs/thesis.png+method.png
+  deleted. Outputs: `papers/timing/PRIOR_RECORD_{AUDIT,CONTINUITY_MATRIX,ACTION_PLAN}_2026-06-09.md`.
+  SHOULD-tier (pre-submission): apparatus figure adapted from parent Fig. 1, money-plot published-fit
+  reference curve + error bars, TNS lineage sentence, T-type/E-type vocabulary, depth Tier-2 wording,
+  HGTD/cantone2023/OSTI/byline citation verifications, A.9 post-fix curve verification.
 - **Remaining before EXTERNAL submission (none block internal circulation):** author block +
   funding text (collaboration); title sign-off; GATE-1 logbook half (recommended);
   tab_methods.tex generated-not-input (decide drop/include); optional G4 campaign (floor
