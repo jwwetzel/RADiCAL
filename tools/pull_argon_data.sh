@@ -59,7 +59,20 @@ for (( i=0; i<MASTERS; i++ )); do
   fi
 done
 
-mssh() { ssh -o ControlPath="$(sock 0)" "$ARGON_USER@$ARGON_HOST" "$@"; }
+mssh() { ssh -p "$ARGON_PORT" -o ControlPath="$(sock 0)" -o BatchMode=yes \
+             "$ARGON_USER@$ARGON_HOST" "$@"; }
+
+# ----- 1b. pre-flight: prove each master carries traffic WITHOUT prompting -----
+for (( i=0; i<MASTERS; i++ )); do
+  if ! ssh -p "$ARGON_PORT" -o ControlPath="$(sock $i)" -o ControlMaster=no \
+           -o BatchMode=yes "$ARGON_USER@$ARGON_HOST" true 2>/dev/null; then
+    echo "master $i: socket exists but cannot run commands — aborting before any"
+    echo "transfer can fall back to password prompts. Remove stale sockets with:"
+    echo "  rm -f $CTL_DIR/*.sock   and re-run."
+    exit 1
+  fi
+done
+echo "all $MASTERS masters verified (no further authentication will be requested)"
 
 # ----- 2. manifest: every file under SRC, NUL-delimited (safe for spaces) -----
 echo "building file manifest from $SRC ..."
@@ -81,14 +94,20 @@ EOF
 
 # ----- 4. parallel pull: PER streams per master, each file with 3 retries -----
 echo "pulling with $PARALLEL streams across $MASTERS connections -> $DEST"
-export ARGON_USER ARGON_HOST SRC DEST FAIL
+export ARGON_USER ARGON_HOST ARGON_PORT SRC DEST FAIL
 transfer_one() {  # $1 = control socket, $2 = ./relative/path
-  local rel="${2#./}"
-  for try in 1 2 3; do
-    rsync -aR --partial -e "ssh -o ControlPath=$1 -o Compression=no" \
+  # BatchMode=yes + ControlMaster=no: this ssh can ONLY use the existing
+  # authenticated master — it can never fall back to a fresh connection and
+  # password-prompt. If the master's session slots are full (sshd MaxSessions),
+  # it fails instantly and we retry until a slot frees: the effective
+  # parallelism self-adapts to the server's real per-connection cap.
+  local rel="${2#./}" try
+  for try in $(seq 1 12); do
+    rsync -aR --partial \
+      -e "ssh -p $ARGON_PORT -o ControlPath=$1 -o ControlMaster=no -o BatchMode=yes -o Compression=no" \
       "$ARGON_USER@$ARGON_HOST:$SRC/./$rel" "$DEST/" 2>/dev/null \
       && { echo "done: $rel"; return 0; }
-    sleep $(( try * 5 ))
+    sleep $(( try < 6 ? try * 5 : 30 ))
   done
   echo "FAILED: $rel" | tee -a "$FAIL" >&2
 }
