@@ -178,6 +178,19 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   SHOULD-tier (pre-submission): apparatus figure adapted from parent Fig. 1, money-plot published-fit
   reference curve + error bars, TNS lineage sentence, T-type/E-type vocabulary, depth Tier-2 wording,
   HGTD/cantone2023/OSTI/byline citation verifications, A.9 post-fix curve verification.
+- **APPARATUS COMPOSITE INSERTED (2026-06-10; reuse-report insertion #1):** new Fig. 1
+  (`fig:apparatus`, figure*, Sec. 2.1) = parent Fig. 1 + Fig. 6 (embedded as-is, minimal
+  overlays: beam arrow, UP/DW, capillary/WLS/SiPM callouts) + REDRAWN beam's-eye corner map
+  (parent Fig. 2 engineering numbers; channel-map corner names; GATE-1 MIXED diagonals
+  NE+SW=DSB1 / NW+SE=LuAG, grayscale only). N-up/E-right = DECLARED drawing convention —
+  absolute orientation NOT pinned by the repo record (channel map is electronics-only; position
+  estimator is trained); only the diagonal pairing carries claims; physical orientation folded
+  into coauthor Q6. Caption states the assignment comes from the pulse-shape audit, NOT the
+  schematic. Generator: `papers/scripts/apparatus_composite/apparatus_composite.tex` (standalone
+  TikZ → vector PDF used by the manuscript). Audit:
+  `papers/timing/PARENT_APPARATUS_FIGURE_INSERTION_AUDIT_2026-06-10.md`. GEANT4 profile
+  insertion (#2) DEFERRED to pre-submission. AUTHOR BLOCK COMPLETE (39-author roster, 11 ORCIDs,
+  Wetzel first, Perez-Lara at P); manuscript now 12 pages.
 - **Remaining before EXTERNAL submission (none block internal circulation):** author block +
   funding text (collaboration); title sign-off; GATE-1 logbook half (recommended);
   tab_methods.tex generated-not-input (decide drop/include); optional G4 campaign (floor

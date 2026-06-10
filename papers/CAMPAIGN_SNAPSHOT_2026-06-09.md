@@ -270,3 +270,32 @@ energy/position paper (the fifth coordinate).
   to pre-submission: apparatus figure (parent Fig. 1 adaptation), money-plot published-fit
   reference curve + per-point errors, TNS lineage, T/E-type vocabulary, depth Tier-2 wording,
   HGTD/cantone2023/OSTI/byline verifications, A.9 post-fix curve check.
+
+
+## UPDATE 12 (2026-06-10): apparatus composite inserted (reuse-report insertion #1)
+- Working tree was clean at `6ee4634` (only the user-added NIM_A_Figures/ untracked).
+- NEW FIG. 1 (`fig:apparatus`, figure*, Sec. 2.1): (a) parent Fig. 1 module schematic +
+  (b) parent Fig. 6 T-type schematic, both embedded as-is with minimal overlays (beam arrow,
+  UP/DW tags, capillary/WLS-filament/SiPM callouts); (c) beam's-eye corner map REDRAWN from the
+  parent Fig. 2 engineering numbers with the author-confirmed channel-map names and the GATE-1
+  MIXED diagonals (NE+SW=DSB1 filled, NW+SE=LuAG open; grayscale only). Caption: defines
+  geometry, previews the (DW−UP)/2 construction and the same-shower logic, carries "adapted
+  from Ref. [1]" + the the-schematic-is-not-the-source caveat for the material map.
+- ORIENTATION HONESTY: the absolute beam's-eye compass orientation is NOT pinned by the repo
+  record (channel map = electronics-only; position estimator = trained fit) → drawn as a
+  DECLARED convention (N up, E right, looking downstream), stated in panel, caption, and audit;
+  no claim depends on it (diagonal pairing is what carries Sec. 6); physical confirmation folded
+  into coauthor Q6. UP/DW left-right assignment anchored by the filament position (shower max
+  is upstream) in the parent drawing.
+- Sec. 2.1 text: 4 sentences added (parent remains the detailed apparatus reference; figure
+  defines geometry + corner convention; MIXED logic rests on the pulse-shape-confirmed map).
+  No numerical claims added.
+- Generator: papers/scripts/apparatus_composite/apparatus_composite.tex (standalone TikZ →
+  vector PDF; PNG preview via sips). Assets: papers/timing/figs/radical_apparatus_composite.{pdf,png}.
+  Audit: papers/timing/PARENT_APPARATUS_FIGURE_INSERTION_AUDIT_2026-06-10.md. Build exit 0,
+  12 pages, overfulls still 1 (2.22 pt cosmetic); figures auto-renumbered (clip→Fig 2,
+  satellite→B.12); compliance grep clean.
+- GEANT4 longitudinal-profile insertion (#2) DEFERRED to pre-submission (pending Sec.-7 support
+  needs after coauthor review). Earlier this session: author block completed from the parent
+  roster (39 authors, 11 ORCIDs verified against the parent PDF link annotations; Wetzel first,
+  Perez-Lara alphabetical at P) and the parent-figure reuse report committed.

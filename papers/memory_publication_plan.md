@@ -136,6 +136,11 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
    retirement; circulation note gained the talk-facing section + Q7/Q8; referee memo risks 11–13.
    Remaining SHOULD tier is pre-submission work (apparatus figure, money-plot reference curve,
    citation verifications). **READY FOR COAUTHOR CIRCULATION.**
+6i. ~~Apparatus composite (reuse-report #1)~~ **DONE 2026-06-10**: new Fig. 1 in Sec. 2.1
+   (parent Figs. 1+6 as-is + redrawn corner map; declared-convention orientation; audit file
+   committed). Author block also complete (39 authors + 11 ORCIDs, Wetzel first). GEANT4
+   profile (#2) deferred to pre-submission. Remaining pre-submission figure items: money-plot
+   reference curve + error bars, A.9 post-fix curve check, optional sim_v0 insertion.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).

@@ -86,6 +86,16 @@ the published 17.5 ps" (never "revises"); the depth drift is an acceptance-condi
 statement (never a per-event z measurement); position/4D claims are reserved for the companion
 paper. The wording law lives in `papers/memory_claims_and_forbidden_language.md`.
 
+**Apparatus figure (added 2026-06-10):** the manuscript now opens Sec. 2.1 with a three-panel
+geometry composite (new Fig. 1) adapted from the parent paper — module schematic (parent Fig. 1),
+T-type capillary concept (parent Fig. 6), and a redrawn beam's-eye corner map with the MIXED
+diagonal assignment (NE+SW = DSB1, NW+SE = LuAG:Ce, pulse-shape-confirmed). The corner names are
+the author-confirmed 2023 channel-map names; the N-up/E-right orientation is a DECLARED drawing
+convention (the absolute orientation is not pinned by the analysis record and nothing in the
+paper depends on it — only the diagonal pairing matters; physical-orientation confirmation is
+part of Q6). The GEANT4 longitudinal-profile figure (parent Fig. 7) is deliberately NOT inserted
+yet — held as a pre-submission option pending whether Sec. 7 needs more support.
+
 ## Please inspect first
 1. Fig. money plot (four-build σ_t(E)) + Table tab:builds — the paper's numerical spine.
 2. Fig. mixed_h2h_corrected + §6 — the same-shower control (the paper's unique asset).

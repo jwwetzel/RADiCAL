@@ -166,14 +166,46 @@ shower-maximum migration (Section~\ref{sec:depth}).
 \label{sec:setup}
 
 \subsection{Module and builds}
-The module is a tungsten/LYSO:Ce sampling calorimeter of the ``shashlik'' type:
-alternating plates of tungsten absorber and cerium-doped lutetium--yttrium
-oxyorthosilicate (LYSO:Ce) scintillator, $\approx\!25$ radiation lengths deep, read out
-longitudinally by WLS capillaries. Four capillaries traverse the stack and are each read
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.96\textwidth]{radical_apparatus_composite.pdf}
+\caption{Schematic geometry used by the timing analysis (adapted from
+Ref.~\cite{radical}, the detailed apparatus reference). (a)~The compact RADiCAL
+shower-maximum module: alternating tungsten absorber and LYSO:Ce scintillator plates,
+traversed by quartz capillaries read out by SiPMs at both the upstream (UP) and
+downstream (DW) faces; the timing observable of this paper is built from the difference
+of the two ends (Sec.~\ref{sec:estimator}). (b)~The wavelength-shifting readout
+concept: a short WLS filament positioned at shower-maximum depth inside each quartz
+capillary converts the local scintillation light and pipes it to both SiPMs.
+(c)~Beam's-eye corner convention used throughout (looking downstream; N up, E right by
+drawing convention): four capillaries at $(\pm3.5,\pm3.5)$~mm in the
+$14.0\times14.0$~mm$^2$ cell. In the MIXED module the two materials occupy opposite
+diagonals --- NE${}+{}$SW${}={}$DSB1, NW${}+{}$SE${}={}$LuAG:Ce --- so the same event
+provides DSB1 and LuAG:Ce timing observables in a common module and beam exposure
+(Sec.~\ref{sec:mixed}). This material assignment is the pulse-shape-confirmed map used
+in the same-shower control; it is not inferred from this schematic.}
+\label{fig:apparatus}
+\end{figure*}
+
+The module is a tungsten/LYSO:Ce sampling calorimeter of the ``shashlik'' type
+(Fig.~\ref{fig:apparatus}a): alternating plates of tungsten absorber and cerium-doped
+lutetium--yttrium oxyorthosilicate (LYSO:Ce) scintillator, $\approx\!25$ radiation
+lengths deep, read out longitudinally by WLS capillaries
+(Fig.~\ref{fig:apparatus}b). Four capillaries traverse the stack and are each read
 out at both ends, giving $4\times2 = 8$ silicon-photomultiplier (SiPM) channels; we
-label the four downstream ends collectively DW and the four upstream ends UP. The
+label the four downstream ends collectively DW and the four upstream ends UP, and name
+the four corners NE/NW/SE/SW in the beam's-eye convention of
+Fig.~\ref{fig:apparatus}c. The
 transverse position of each incident electron is measured by a delay-wire
 chamber~\cite{spanggaard} and used to define a fiducial region on the beam spot.
+This paper does not republish the full apparatus description: Ref.~\cite{radical}
+remains the detailed reference for the mechanical construction, materials, and beam
+instrumentation. Figure~\ref{fig:apparatus} is included to define the geometry and
+corner convention that the timing analysis depends on --- in particular, the
+same-shower logic of Sec.~\ref{sec:mixed} rests on the corner material map of
+Fig.~\ref{fig:apparatus}c, which is fixed by the pulse-shape audit rather than by
+construction records alone.
 
 Four builds were exposed, differing primarily in the WLS material of the capillaries --
 and hence in light yield -- while sharing the same LYSO:Ce scintillator and tungsten

@@ -1,0 +1,91 @@
+% apparatus_composite.tex — three-panel apparatus/geometry composite for Sec. 2.1.
+% Sources + verification: papers/timing/PARENT_APPARATUS_FIGURE_INSERTION_AUDIT_2026-06-10.md
+% (a) parent Fig. 1 (lyso_w_cell_15.pdf, as-is + beam/UP/DW overlays)
+% (b) parent Fig. 6 (lyso_w_cell_16.pdf, as-is + capillary/WLS/SiPM overlays)
+% (c) REDRAWN beam's-eye corner map (dimensions from parent Fig. 2; names from the
+%     author-confirmed 2023 channel map; MIXED diagonals = GATE-1 pulse-shape map;
+%     N-up/E-right is a DECLARED drawing convention)
+% Build: tectonic apparatus_composite.tex  (run from this directory)
+\documentclass[margin=4pt]{standalone}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows.meta}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\graphicspath{{../../timing/NIM_A_Figures/}}
+\begin{document}
+\begin{tikzpicture}[
+  lbl/.style={font=\footnotesize\bfseries},
+  ann/.style={font=\scriptsize},
+  callout/.style={-{Stealth[length=2mm]}, line width=0.5pt},
+  beamarrow/.style={-{Stealth[length=3.2mm]}, line width=1.6pt, blue!60!black}]
+
+% ---------------- panel (a): module schematic (parent Fig. 1) ----------------
+\node[anchor=south west, inner sep=0] (a) at (0,0) {\includegraphics[width=6.3cm]{lyso_w_cell_15.pdf}};
+\node[lbl, anchor=north west] at ($(a.north west)+(0.05,0.45)$) {(a)};
+\begin{scope}[shift={(a.south west)}, x={($(a.south east)-(a.south west)$)}, y={($(a.north west)-(a.south west)$)}]
+  % beam enters the upstream (left) face along the module axis
+  \draw[beamarrow] (-0.055,0.475) -- (0.055,0.535);
+  \node[ann, blue!60!black, anchor=east] at (-0.055,0.475) {$e^-$ beam};
+  % end tags: left card = UP (upstream), right card = DW (downstream)
+  \node[ann, anchor=south] (upl) at (0.075,0.93) {UP (upstream) readout};
+  \draw[callout] (upl.south) -- (0.065,0.815);
+  % label the right card directly beneath the parent's own "Readout card" text
+  \node[ann, anchor=north] at (0.79,0.040) {= DW (downstream)};
+\end{scope}
+
+% ---------------- panel (b): T-type capillary (parent Fig. 6) ----------------
+\node[anchor=south west, inner sep=0] (b) at (6.8cm,0) {\includegraphics[width=6.3cm]{lyso_w_cell_16.pdf}};
+\node[lbl, anchor=north west] at ($(b.north west)+(0.05,0.45)$) {(b)};
+\begin{scope}[shift={(b.south west)}, x={($(b.south east)-(b.south west)$)}, y={($(b.north west)-(b.south west)$)}]
+  \node[ann, anchor=south west] (qc) at (0.66,0.88) {quartz capillary};
+  \draw[callout] ($(qc.south)+(-0.02,0)$) -- (0.61,0.75);
+  \node[ann, anchor=south west] (wf) at (0.02,0.88) {WLS filament (shower max)};
+  \draw[callout] ($(wf.south)+(-0.03,0)$) -- (0.275,0.665);
+  \node[ann, anchor=south west] (sd) at (0.84,0.72) {to DW SiPM};
+  \draw[callout] ($(sd.south west)+(0.05,0)$) -- (0.935,0.47);
+  \node[ann, anchor=south west] (su) at (0.005,0.44) {to UP SiPM};
+  \draw[callout] ($(su.north)+(0.0,0)$) -- (0.038,0.645);
+\end{scope}
+
+% ---------------- panel (c): beam's-eye corner map (REDRAWN) ----------------
+% scale: 0.28 cm per mm; tile 14 mm; holes d1.3 at (+-3.5,+-3.5); centre d0.9
+\begin{scope}[shift={(15.6cm,2.55cm)}, scale=0.28]
+  \node[lbl, anchor=north west] at (-7.0,9.6) {(c)};
+  \draw[line width=0.8pt] (-7,-7) rectangle (7,7);
+  % corner holes: filled = DSB1 (NE,SW), open = LuAG:Ce (NW,SE)  [GATE-1 map]
+  \fill[black!65] (3.5,3.5) circle (0.65);   \draw[line width=0.6pt] (3.5,3.5) circle (0.65);
+  \fill[black!65] (-3.5,-3.5) circle (0.65); \draw[line width=0.6pt] (-3.5,-3.5) circle (0.65);
+  \draw[line width=0.9pt] (-3.5,3.5) circle (0.65);
+  \draw[line width=0.9pt] (3.5,-3.5) circle (0.65);
+  % central monitoring-fibre hole
+  \draw[line width=0.6pt] (0,0) circle (0.45);
+  % corner names (channel-map names)
+  \node[font=\small\bfseries] at (-3.5,5.1) {NW};
+  \node[font=\small\bfseries] at (3.5,5.1)  {NE};
+  \node[font=\small\bfseries] at (-3.5,-5.15) {SW};
+  \node[font=\small\bfseries] at (3.5,-5.15)  {SE};
+  % dimensions (from the parent Fig. 2 engineering drawing)
+  \draw[{Stealth[length=1.6mm]}-{Stealth[length=1.6mm]}, line width=0.5pt] (-7,7.9) -- (7,7.9);
+  \node[ann, fill=white, inner sep=1pt] at (0,7.9) {14.0 mm};
+  \node[ann, anchor=west] at (8.0,2.6) {holes $\varnothing$1.3 mm};
+  \node[ann, anchor=west] at (8.0,1.55) {at $(\pm3.5,\pm3.5)$ mm};
+  \draw[callout] (8.0,2.2) -- (4.2,3.2);
+  \node[ann, anchor=west] at (8.0,-0.9) {monitoring fibre};
+  \node[ann, anchor=west] at (8.0,-1.95) {$\varnothing$0.9 mm (central)};
+  \draw[callout] (8.0,-1.4) -- (0.6,-0.3);
+  % declared convention compass
+  \draw[-{Stealth[length=1.8mm]}, line width=0.7pt] (-9.3,-5.0) -- (-9.3,-2.8) node[ann, anchor=south]{N};
+  \draw[-{Stealth[length=1.8mm]}, line width=0.7pt] (-9.3,-5.0) -- (-7.1,-5.0) node[ann, anchor=west]{E};
+  \node[ann, align=center, anchor=north] at (0,-7.9)
+    {beam's-eye view, looking downstream;\\ N up, E right (drawing convention)};
+  % MIXED legend
+  \fill[black!65] (-6.6,-11.9) circle (0.55); \draw[line width=0.5pt] (-6.6,-11.9) circle (0.55);
+  \node[ann, anchor=west] at (-5.7,-11.9) {DSB1 (NE, SW)};
+  \draw[line width=0.8pt] (3.2,-11.9) circle (0.55);
+  \node[ann, anchor=west] at (4.1,-11.9) {LuAG:Ce (NW, SE)};
+  \node[ann, anchor=north, align=center] at (0,-13.2) {MIXED assignment (pulse-shape confirmed)};
+\end{scope}
+\end{tikzpicture}
+\end{document}

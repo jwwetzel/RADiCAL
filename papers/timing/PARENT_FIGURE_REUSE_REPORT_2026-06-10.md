@@ -81,6 +81,14 @@ Every file in the folder is accounted for; no unidentified files.
 ## 2. INSERT recommendations (ranked)
 
 ### #1 — Apparatus + corner-map composite → new Fig. 1, Sec. 2.1  (MUST; highest value)
+> **DONE 2026-06-10.** Built as `papers/timing/figs/radical_apparatus_composite.{pdf,png}` from
+> `papers/scripts/apparatus_composite/apparatus_composite.tex`; inserted as Fig.~1
+> (`fig:apparatus`, figure*, Sec. 2.1; downstream figures renumbered automatically). N-up/E-right
+> is a DECLARED drawing convention (absolute orientation not pinned by the repo record — folded
+> into coauthor Q6). Provenance + verification:
+> `PARENT_APPARATUS_FIGURE_INSERTION_AUDIT_2026-06-10.md`. Insertion #2 (GEANT4 profile)
+> remains DEFERRED to pre-submission pending Sec.-7 support needs.
+
 **Sources:** `lyso_w_cell_15.pdf` (parent Fig. 1) + `lyso_w_cell_16.pdf` (parent Fig. 6) +
 `lyso_plate_12.pdf` (parent Fig. 2, as the geometric basis for a redrawn beam's-eye corner map).
 **Target:** Sec. 2.1 "Module and builds", placed at the top of Sec. 2 before the current
