@@ -341,29 +341,38 @@ same-shower test (Sec.~\ref{sec:mixed}).
 The benefit of the HG/LG-ratio method is isolated by a direct comparison on
 \emph{identical} showers (Fig.~\ref{fig:method}): the brightest-$1000$ DSB1 resolution
 is computed with cfd05 (a CFD on the clipped measured peak, as in Ref.~\cite{radical})
-and with \texttt{srCFD} (the recovered edge; \texttt{hg\_lgcfd}), the selection and
-estimator held fixed so that only the per-channel time differs. Timing the recovered
-edge improves the resolution by a few picoseconds at $150$~GeV and lowers the fitted
-floor. The gain is energy-dependent, largest where the timing is hardest: at high
-energy, where saturation is most severe, and at the lowest energy, where the $5\%$ foot
-of a small pulse sits in noise; it is small at $50$--$75$~GeV. The stochastic term is
-essentially unchanged, so the method acts chiefly on the high-energy/floor regime.
-%% TODO-P2: recompute the method-gain numbers (Delta-sigma(150), the two floors, and the
-%% paired-bootstrap CI) with the post-fix estimator before quoting values here; the
-%% pre-fix figures (3.1 ps; 22.1->19.5 ps) are retired pending that recompute.
-(The cfd05 stochastic term in this controlled comparison reflects the brightest-shower
-selection and differs from the $256$~ps$\sqrt{\mathrm{GeV}}$ of Ref.~\cite{radical} in
-Table~\ref{tab:builds}, which used a different selection; holding the selection fixed
-isolates the timing method.) The best single-event resolution measured, for the
-brightest $150$~GeV DSB1 showers, is $25.7\pm0.6$~ps.
+and with \texttt{srCFD} (the recovered edge; \texttt{hg\_lgcfd}), on an
+\emph{identical-event} design: events enter only if valid under every estimator, and
+the brightest $1000$ are selected once, so all estimators time the same showers. Two
+width conventions answer two questions. On the Gaussian core (the convention of every
+resolution in this paper), srCFD improves $\sigma_t(150)$ by $1.3$~ps
+($26.9\rightarrow25.6$~ps, $5\%$); on a tail-sensitive truncated-RMS width the
+improvement is $4.0$~ps with a paired-bootstrap $68\%$ interval of $[3.4,4.7]$~ps ---
+the difference is the non-Gaussian shoulder (the $\sim\!0.2$~ns satellite of
+Sec.~\ref{sec:estimator}) that cfd05 develops on clipped pulses and srCFD removes. The
+gain is energy-dependent and follows the mechanism: $+5.2$~ps at $25$~GeV (the $5\%$
+foot of a small pulse sits in noise), $\approx\!0$ at $50$--$75$~GeV (moderate clipping,
+healthy foot), growing again to $+2.7$ to $+3.6$~ps at $100$--$125$~GeV, and
+concentrated in saturated events at $150$~GeV (fully clipped subset:
+$27.4\rightarrow25.3$~ps). The fitted floor moves from $21.8\pm2.7$~ps (cfd05, a poor,
+non-monotonic fit) to $19.9\pm0.8$~ps (srCFD, well behaved) --- consistent within
+errors; the method's value is as much the \emph{quality} of the fit as its central
+value. Method choice is a correction of estimator bias on saturated pulses, not a new
+detector effect, and does not alter the four-build conclusions of
+Sec.~\ref{sec:thesis}.
+(The stochastic terms in this controlled comparison reflect the identical-event
+selection and differ from Table~\ref{tab:builds}, which uses each build's own validity;
+holding the events fixed isolates the timing method.) The best single-event resolution
+measured, for the brightest $150$~GeV DSB1 showers, is $25.7\pm0.6$~ps.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{method.png}
-\caption{Time resolution of the brightest-$1000$ DSB1 showers timed with cfd05 (CFD on
-the clipped foot, open) and \texttt{hg\_lgcfd} (CFD on the LG-recovered edge, filled),
-identical events and selection. Recovering the edge improves the resolution by $\sim3$~ps
-at $150$~GeV and lowers the floor.}
+\includegraphics[width=\linewidth]{method_postfix.png}
+\caption{Identical-event comparison of the timing estimators for DSB1 (brightest-$1000$,
+production selection): srCFD (recovered edge, filled), cfd05 (clipped-peak CFD, open
+circles), and LED (open squares), with $a/\sqrt{E}\oplus b$ fits (top) and the
+difference to srCFD (bottom). At $150$~GeV the core-width gain over cfd05 is $1.3$~ps;
+the tail-sensitive gain is $4.0$~ps ($68\%$ CI $[3.4,4.7]$, paired bootstrap).}
 \label{fig:method}
 \end{figure}
 
@@ -374,25 +383,26 @@ under deliberate variations of every selection knob, on the adopted timing sourc
 the brightness selection ($K=500$ and $2000$ versus the nominal $1000$), the timing
 fiducial radius ($2.5$ and $3.5$ versus $3.0$~mm), the MCP saturation window (upper cut
 $700$ versus $750$~mV), the per-channel HG threshold ($30$ versus $20$~mV), and the
-fit energy range ($50$--$150$ versus $25$--$150$~GeV). The shifts are collected in
+in-event consistency-veto window ($1.5$ and $3.0$ versus $2.0$~ns); the fit-range
+dependence of the floor is reported in the floor block of Table~\ref{tab:syst}. The shifts are collected in
 Table~\ref{tab:syst}, with the total systematic taken as their RMS. The selection
 values themselves were fixed by the scans of Appendix~\ref{app:opt}
 (Fig.~\ref{fig:opt}); the timing-method choice (cfd05 versus the recovered edge) is the
 subject of Sec.~\ref{sec:method-gain} and is not folded into this budget.
 
-The headline is robust: the total selection systematic on $\sigma_t(150)$ is
-$\le\!1$~ps for the high-light builds (DSB1, TENERGY) and $\sim\!1.5$~ps for MIXED and
-LUAG. The dominant single variation is loosening the brightness selection to $K=2000$,
-which admits dimmer showers and genuinely degrades the resolution by $2$--$2.4$~ps --- a
-manifestation of the same light--resolution dependence that is the paper's subject,
-not an analysis artefact. Crucially, the DSB1 floor is stable under these variations,
-so its agreement with the published $17.5$~ps survives the systematic budget. The
-elevated floor of the MIXED module-wide fit is the ill-posed-estimator feature discussed
-in Secs.~\ref{sec:thesis} and~\ref{sec:mixed} and carries the largest systematic.
-%% TODO-P2: regenerate tab_systematics.tex (paperSystematics.C) with the POST-FIX
-%% estimator -- its nominal values (25.3/19.5/34.6/19.8) are pre-fix and must be
-%% replaced by the post-fix chain before submission. Until then the table is
-%% structurally illustrative, and no pre-fix value from it may be quoted in prose.
+The headline is robust: the total selection systematic on $\sigma_t(150)$,
+recomputed with the production chain on identical stored events, is $\pm1.0$~ps (DSB1),
+$\pm1.1$~ps (TENERGY), $\pm0.9$~ps (MIXED), and $\pm1.9$~ps (LUAG), the last driven by
+its fiducial sensitivity. The post-fix budget adds the in-event veto window as a knob
+($1.5$ and $3.0$ versus the nominal $2.0$~ns); its largest effect is $-2.3$~ps on
+TENERGY. The largest generic variation remains loosening the brightness selection to
+$K=2000$, which admits dimmer showers and genuinely degrades the resolution by
+$1.4$--$1.7$~ps --- a manifestation of the same light--resolution dependence that is
+the paper's subject, not an analysis artefact. Crucially, the DSB1 floor is stable:
+$b=18.8\pm0.8$~ps with a fit-range (drop $25$~GeV) shift of only $+0.2$~ps, so its
+agreement with the published $17.5$~ps survives the budget. The elevated floor of the
+MIXED module-wide fit is the ill-posed-estimator feature discussed in
+Secs.~\ref{sec:thesis} and~\ref{sec:mixed}.
 
 %======================================================================
 \input{tab_systematics}

@@ -1,0 +1,9 @@
+
+===== POST-FIX systematics @150 GeV (production chain; post-hoc variants) =====
+  DSB1     nominal 25.7 ps | shifts: -1.7 +1.7 +1.2 -0.5 -0.3 +0.0 -0.5 -0.2 | total RMS 1.0
+  TENERGY  nominal 30.3 ps | shifts: -1.4 +1.7 -0.6 +0.4 -0.2 +0.0 -2.3 +0.0 | total RMS 1.1
+  MIXED    nominal 39.6 ps | shifts: -0.2 +1.4 -0.0 +0.7 +1.1 +0.0 +0.1 +1.5 | total RMS 0.9
+  LUAG     nominal 44.4 ps | shifts: +2.4 -1.0 -2.8 +3.9 -0.3 +0.0 +0.0 +0.0 | total RMS 1.9
+  DSB1 floor: b(25-150)=18.8+-0.8, b(50-150)=19.0  (fit-range shift +0.2)
+  regenerated papers/timing/tab_systematics.tex
+  wrote papers/tables/systematics_postfix_2026-06-09.md

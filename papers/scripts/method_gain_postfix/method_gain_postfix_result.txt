@@ -1,0 +1,19 @@
+
+===== METHOD GAIN, POST-FIX (DSB1, identical events, production chain) =====
+   25 GeV (N=1000 identical): srCFD 43.7  cfd05 48.9  LED 50.5 ps  | Delta(cfd05-srCFD)=5.2
+   50 GeV (N=1000 identical): srCFD 33.7  cfd05 32.0  LED 33.8 ps  | Delta(cfd05-srCFD)=-1.7
+   75 GeV (N=1000 identical): srCFD 30.6  cfd05 29.9  LED 32.9 ps  | Delta(cfd05-srCFD)=-0.7
+  100 GeV (N=1000 identical): srCFD 27.0  cfd05 29.8  LED 29.9 ps  | Delta(cfd05-srCFD)=2.7
+  125 GeV (N=1000 identical): srCFD 26.5  cfd05 30.1  LED 27.0 ps  | Delta(cfd05-srCFD)=3.6
+  150 GeV (N=1000 identical): srCFD 25.6  cfd05 26.9  LED 28.2 ps  | Delta(cfd05-srCFD)=1.3
+    paired bootstrap @150: Delta(cfd05-srCFD) 68% [3.4, 4.7] ps; Delta(LED-srCFD) 68% [3.6, 4.9] ps
+    saturation split @150: nsat>=7 (N=892): srCFD 25.3 cfd05 27.4 | nsat<=5 (N=46): srCFD -1.0 cfd05 -1.0
+  floor srCFD : a=194+-6  b=19.9+-0.8  chi2/ndf=2.7/4
+  floor cfd05 : a=195+-23  b=21.8+-2.7  chi2/ndf=50.3/4
+  floor LED   : a=216+-17  b=20.3+-2.3  chi2/ndf=29.2/4
+
+  HEADLINE: srCFD improves identical-event sigma(150) by 1.3 ps (5%) vs cfd05; floor 21.8->19.9 ps
+  wrote papers/tables/method_gain_postfix_2026-06-09.md
+  regenerated papers/timing/tab_methods.tex (post-fix)
+Info in <TCanvas::Print>: png file papers/figures/method_gain_postfix/method_gain_postfix.png has been created
+  wrote papers/figures/method_gain_postfix/method_gain_postfix.png

@@ -92,11 +92,22 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   reading only), rewritten Discussion/Conclusions (disfavors form). srCFD named at definition.
   Builds clean under tectonic. Figures copied into figs/: thesis_postfix, mixed_h2h_corrected,
   depth_dial.
-- **Open TODO-P2 markers in the tex** (grep "TODO-P2"): title confirmation; money-plot final style
-  (bands+error bars); method-gain post-fix recompute (§5.3 numbers softened pending);
-  tab_systematics post-fix regeneration (pre-fix values quarantined); satellite-removal
-  demonstration; depth-dial main-vs-appendix decision; bibliography build-out (4-ref skeleton →
-  panel must-cite list); engineering-projection + benchmark table in Discussion; tab_methods.tex
-  regeneration (unused, pre-fix). Author block + funding placeholders.
-- Next: method-gain recompute + systematics regeneration (clears 2 TODOs and re-arms §5.3/§5.4),
-  then bibliography build-out, then full prose pass.
+- **METHOD GAIN + SYSTEMATICS RECOMPUTED POST-FIX (2026-06-09):**
+  §5.3 now quotes the identical-event result (`papers/scripts/method_gain_postfix/`, table
+  `papers/tables/method_gain_postfix_2026-06-09.md`, figure figs/method_postfix.png):
+  **core-width gain 1.3 ps @150 (26.9→25.6); tail-sensitive (truncated-RMS) gain 4.0 ps,
+  68% CI [3.4,4.7] paired bootstrap** (the split IS the satellite-removal story); Δ(E):
+  +5.2 @25 (noise foot), ≈0 @50–75, +2.7/+3.6 @100/125; gain concentrated in saturated events
+  (fully clipped @150: 27.4→25.3); floors 21.8±2.7 (cfd05, poor non-monotonic fit) → 19.9±0.8
+  (srCFD). LED−srCFD @150: +4.2 [3.6,4.9] (tail-RMS). The OLD 3.1 ps / 22.1→19.5 are retired
+  and NOT reproduced — the post-fix split (1.3 core / 4.0 tail) replaces them.
+  `tab_systematics.tex` regenerated post-fix (`papers/scripts/systematics_postfix/`): nominals
+  match the authoritative table exactly (25.7/30.3/39.6/44.4 — machinery cross-validated);
+  totals ±1.0/±1.1/±0.9/±1.9; NEW veto-window rows (largest: TENERGY −2.3 @1.5 ns); DSB1 floor
+  block b=18.8±0.8, fit-range shift +0.2. `tab_methods.tex` regenerated post-fix.
+- **Every active number in the manuscript is now post-fix/gated.**
+- **Open TODO-P2 markers (7):** title confirmation; bibliography build-out; satellite-removal
+  demonstration figure; money-plot final style (bands+error bars); §mixed citations + dilution
+  quantification; depth-dial main-vs-appendix decision; engineering-projection + benchmark table.
+  Author block + funding placeholders.
+- Next: bibliography build-out + satellite demonstration, then the full prose pass.

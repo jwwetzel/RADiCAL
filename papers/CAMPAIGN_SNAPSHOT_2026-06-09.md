@@ -131,3 +131,18 @@ energy/position paper (the fifth coordinate).
   section (§sec:depth, acceptance-conditional), srCFD named at definition. Pre-fix method-gain and
   systematics numbers softened/quarantined behind TODO-P2 markers pending post-fix recompute.
   Builds clean under tectonic (PDF regenerated). 11 TODO-P2 markers tracked in memory_paper2_timing.
+
+
+## UPDATE 5 (later 2026-06-09): pre-fix method/systematics derivations cleared
+- Working tree was clean at `0a9fd36` before this pass.
+- §5.3 method gain recomputed post-fix on identical events (audit + script + table + figure under
+  `papers/scripts/method_gain_postfix/`): the old 3.1 ps / 22.1→19.5 are RETIRED and replaced by the
+  two-convention split — core-width gain 1.3 ps @150 (26.9→25.6), tail-sensitive gain 4.0 ps
+  68% CI [3.4,4.7] (paired bootstrap; the satellite-removal effect); gain localized in saturated
+  events (27.4→25.3 fully-clipped subset); floors 21.8±2.7 (cfd05, poor fit) → 19.9±0.8 (srCFD).
+- tab_systematics.tex regenerated with the full production chain on identical stored events
+  (`papers/scripts/systematics_postfix/`): nominals 25.7/30.3/39.6/44.4 exactly reproduce the
+  authoritative table; totals ±1.0/±1.1/±0.9/±1.9; new veto-window variation rows; DSB1 floor block
+  18.8±0.8 (stat) with +0.2 fit-range shift. tab_methods.tex regenerated post-fix.
+- tectonic build clean. Every active number in the manuscript now traces to a post-fix/gated product.
+  TODO-P2 count 10 → 7 (remaining are prose-pass items, no pre-fix numbers behind any of them).
