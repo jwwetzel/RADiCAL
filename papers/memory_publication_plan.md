@@ -122,7 +122,12 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
 6f. ~~Production-formatting pass~~ **DONE 2026-06-09** (layout only, zero content change): 3 table
    overflows fixed; no-internal-super-title figure convention adopted (5 scripts re-run, values
    identical); legacy title strips cropped; overfulls 4→1 (cosmetic). Audit:
-   `papers/timing/FORMAT_AUDIT_2026-06-09.md`. Manuscript circulates from this state.
+   `papers/timing/FORMAT_AUDIT_2026-06-09.md`.
+6g. ~~Appendix-figure consistency fix~~ **DONE 2026-06-10**: Fig. A.10 regenerated post-fix from
+   systematicsPostfix.C (figure = Table 2 by construction; stale 19.8±5.6/±1.5 annotations gone);
+   hglg.png regenerated (margins fixed, identical content); depth/method legends inside frames.
+   **Manuscript circulates from this state.** Pre-submission figure item: verify A.9 curves
+   post-fix.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).

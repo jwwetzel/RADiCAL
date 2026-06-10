@@ -19,12 +19,13 @@ illegible at single-column width) and several annotation collisions were fixed i
 and its numbers-integrity check confirmed every authoritative value unchanged. Full issue
 inventory + dispositions: `papers/timing/FORMAT_AUDIT_2026-06-09.md`.
 
-**⚠ One discovery to be aware of: Fig. A.10's baked-in annotations are PRE-FIX** (e.g. LuAG floor
-19.8 ± 5.6 vs the post-fix 24.6 ± 3.3 of Tables 1–2; MIXED syst ±1.5 vs ±0.9) — the stability
-figure escaped the stale-number purge. **Table 2 is authoritative**; the figure's *qualitative*
-message (all variations inside the band except K = 2000) is unchanged. Regeneration from the
-post-fix chain is queued as the first pre-submission item; it does not affect any claim, table,
-or text number.
+**Appendix figure consistency (resolved 2026-06-10):** the verification fan-out had caught that
+Fig. A.10's baked annotations were pre-fix (stale floor/systematics numbers from the retired
+paperSystematics era). The figure has been **regenerated from the post-fix chain**
+(`systematicsPostfix.C` now emits it from the same arrays that produce Table 2, so figure and
+table agree by construction): nominals 25.7/30.3/39.6/44.4 ps, totals ±1.0/±1.1/±0.9/±1.9 ps,
+in-event veto variations included, and no baked floor numbers — the caption points to Tables 1–2
+as authoritative. No claim, table, or text number changed.
 
 ## Thesis (one paragraph)
 The timing performance of the RADiCAL shower-maximum module is governed primarily by detected light

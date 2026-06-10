@@ -144,7 +144,7 @@ ACCEPTED / RECORDED (not fixed this pass):
 - Raster resolutions (~230–315 ppi) meet circulation needs; Elsevier ≥500 ppi line-art export is a
   submission-time item (vector PDF export already exists for thesis_postfix).
 
-## CONTENT-CONSISTENCY DISCOVERY (out of this pass's scope — flagged, NOT fixed here)
+## CONTENT-CONSISTENCY DISCOVERY — **RESOLVED 2026-06-10** (see resolution block below)
 
 **Fig. A.10's baked annotations are PRE-FIX.** The enlarged (figure*) rendering made them readable
 enough to compare against Table 2: the figure annotates LuAG floor b = 19.8 ± 5.6 (the retired
@@ -156,3 +156,20 @@ text, tables, and the kill-shot figure. The fix — extending `systematicsPostfi
 A.10 stability figure from the post-fix shift table — changes figure numbers and therefore
 belongs to a dedicated follow-up, not a formatting pass. Flagged in the circulation note so
 coauthors read Table 2 (not Fig. A.10's annotations) as authoritative.
+
+**RESOLUTION (2026-06-10, pre-circulation consistency pass):** `systematicsPostfix.C` extended to
+emit the stability figure from the same nom/shift/tot arrays that generate Table 2 — agreement by
+construction (re-run reproduced nominals 25.7/30.3/39.6/44.4, totals ±1.0/±1.1/±0.9/±1.9, DSB1
+floor 18.8 ± 0.8 identically). The new figure: 2×2 per-build pads, nominal star + RMS band + all
+9 labeled variants (veto rows included), the only annotated number is the computed total, NO baked
+floor numbers, no internal super-title. Caption rewritten to point to Tables 1–2 and to drop the
+no-longer-true "all variations lie within the band except K=2000" sentence (post-fix, several
+single excursions exceed the RMS band — correctly visible in the figure). The old
+`analyze/studies/paperSystematics.C` figure is superseded for paper use. Same pass: hglg.png
+regenerated from `hgLgPlot.C` (panel headers into the top-margin strip, y-title offset inside the
+pad, stats stamp below the 820 mV band, super-title removed — per-channel slopes/counts
+reproduced identically, so the earlier crop workaround is obsolete); depth_dial legend brought
+fully inside the frame (0.30–0.84); method-gain top-panel legend nudged left (0.52–0.92).
+Remaining pre-submission figure item: verify optimization.png (Fig. A.9) curves against the
+post-fix chain (working points are consistent; the panel curves still come from the older scan
+macro).

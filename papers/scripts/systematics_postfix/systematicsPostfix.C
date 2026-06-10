@@ -20,8 +20,14 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TGraphErrors.h"
+#include "TGraph.h"
 #include "TF1.h"
 #include "TSystem.h"
+#include "TCanvas.h"
+#include "TH1F.h"
+#include "TBox.h"
+#include "TLine.h"
+#include "TLatex.h"
 #include <vector>
 #include <fstream>
 #include <algorithm>
@@ -162,4 +168,39 @@ void systematicsPostfix(){
     snprintf(b,sizeof(b),"\nDSB1 floor b = %.1f ± %.1f ps (25–150); fit-range (50–150) shift %+0.1f ps.\n",bAll,beAll,bDrop-bAll); md<<b;
     md.close();
     printf("  wrote papers/tables/systematics_postfix_2026-06-09.md\n");
+
+    // ---- stability figure: POST-FIX replacement for the pre-fix paperSystematics.C A.10 ----
+    // Paper convention: no internal super-title (the LaTeX caption carries it). No baked floor
+    // numbers — Tables 1-2 are authoritative; the only annotated number is tot[] computed above,
+    // so the figure agrees with tab_systematics.tex by construction.
+    { const char* XL[9]={"nominal","K=500","K=2000","r_{fid}=2.5","r_{fid}=3.5","MCP<700","HG#geq30","veto 1.5","veto 3.0"};
+      const char* PT[4]={"DSB1 (srCFD)","TENERGY (LED)","MIXED (module-wide ref)","LUAG (LED)"};
+      int cols[4]={kRData,kOrange+8,kGray+2,kRGreen+1};
+      TCanvas* c=new TCanvas("syst","",1400,1000); c->Divide(2,2,0.004,0.004);
+      for(int ib=0;ib<4;++ib){ c->cd(ib+1);
+          gPad->SetLeftMargin(0.13); gPad->SetRightMargin(0.04); gPad->SetTopMargin(0.09); gPad->SetBottomMargin(0.22); gPad->SetGridy();
+          double mx=0; for(int k=0;k<8;++k) mx=std::max(mx,std::fabs(shift[ib][k]));
+          double pad=std::max(2.2*tot[ib],1.25*mx)+0.6;
+          TH1F* fr=gPad->DrawFrame(-0.7,nom[ib]-pad,8.7,nom[ib]+pad);
+          fr->SetTitle(";;brightest-1000 #sigma_{t}(150)  (ps)");
+          fr->GetYaxis()->SetTitleSize(0.055); fr->GetYaxis()->SetTitleOffset(1.15); fr->GetYaxis()->SetLabelSize(0.05);
+          fr->GetYaxis()->SetNdivisions(506);
+          for(int k=0;k<9;++k) fr->GetXaxis()->SetBinLabel(fr->GetXaxis()->FindBin((double)k),XL[k]);
+          fr->GetXaxis()->LabelsOption("v"); fr->GetXaxis()->SetLabelSize(0.055);
+          TBox* bx=new TBox(-0.7,nom[ib]-tot[ib],8.7,nom[ib]+tot[ib]);
+          bx->SetFillColorAlpha(cols[ib],0.18); bx->Draw();
+          TLine* ln=new TLine(-0.7,nom[ib],8.7,nom[ib]); ln->SetLineColor(cols[ib]); ln->SetLineWidth(2); ln->Draw();
+          double xs[8],ys[8];
+          for(int k=0;k<8;++k){ xs[k]=k+1; ys[k]=nom[ib]+shift[ib][k]; }
+          TGraph* g=new TGraph(8,xs,ys); g->SetMarkerStyle(20); g->SetMarkerColor(cols[ib]); g->SetMarkerSize(1.5); g->Draw("P SAME");
+          TGraph* gn=new TGraph(1); gn->SetPoint(0,0,nom[ib]); gn->SetMarkerStyle(29); gn->SetMarkerSize(2.6); gn->SetMarkerColor(kBlack); gn->Draw("P SAME");
+          TLatex tl; tl.SetNDC(); tl.SetTextSize(0.055); tl.SetTextColor(cols[ib]);
+          tl.DrawLatex(0.58,0.84,Form("total syst #pm%.1f ps",tot[ib]));
+          DrawPadTitle(PT[ib]);
+      }
+      gSystem->mkdir("papers/figures/systematics_postfix",kTRUE);
+      c->Print("papers/figures/systematics_postfix/systematics_stability.png");
+      c->Print("papers/timing/figs/systematics.png");
+      printf("  wrote POST-FIX stability figure -> papers/timing/figs/systematics.png (replaces pre-fix A.10)\n");
+    }
 }

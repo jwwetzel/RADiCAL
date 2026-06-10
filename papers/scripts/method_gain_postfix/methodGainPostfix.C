@@ -200,7 +200,7 @@ void methodGainPostfix(){
       fr->GetYaxis()->SetTitle("identical-event #sigma_{t} (ps)"); fr->GetYaxis()->SetTitleSize(0.055); fr->GetYaxis()->SetTitleOffset(1.1);
       fr->GetXaxis()->SetLabelSize(0);
       int cols[NS]={kAzure+2,kBlack,kRed+1}; int mks[NS]={20,24,25};
-      TLegend* lg=new TLegend(0.55,0.62,0.95,0.90); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.045);
+      TLegend* lg=new TLegend(0.52,0.62,0.92,0.90); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.045);
       for(int s=0;s<NS;++s){ std::vector<double> E,Y,Yer,z;
           for(int ie=0;ie<6;++ie) if(ok[ie]){E.push_back(Es[ie]);Y.push_back(S[s][ie]);Yer.push_back(Se[s][ie]);z.push_back(0);}
           TGraphErrors* g=new TGraphErrors(E.size(),&E[0],&Y[0],&z[0],&Yer[0]);

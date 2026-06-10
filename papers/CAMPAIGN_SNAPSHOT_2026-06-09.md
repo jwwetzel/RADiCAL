@@ -216,3 +216,25 @@ energy/position paper (the fifth coordinate).
   ±1.5 vs ±0.9) — the stability figure escaped the stale-number purge. Table 2 is authoritative;
   regeneration from systematicsPostfix.C is the first pre-submission item (follow-up task spawned;
   flagged in the circulation note).
+
+
+## UPDATE 10 (2026-06-10): appendix-figure consistency fix (pre-circulation)
+- Working tree was clean at `9081d76` before this pass. Consistency correction only — the gated
+  numbers did not change anywhere; the appendix figure was brought into agreement with them.
+- Fig. A.10 REGENERATED POST-FIX: `systematicsPostfix.C` extended to emit the stability figure
+  from the same nom/shift/tot arrays as tab_systematics.tex (agreement by construction; the rerun
+  reproduced nominals 25.7/30.3/39.6/44.4, totals ±1.0/±1.1/±0.9/±1.9, DSB1 floor 18.8±0.8
+  identically). New figure: per-build pads, nominal star + RMS band + 9 labeled variants (veto
+  rows included), only the computed total annotated, NO baked floor numbers, no super-title.
+  Caption rewritten (points to Tables 1–2; drops the no-longer-true "all within band except
+  K=2000"). The stale pre-fix annotations (LuAG 19.8±5.6, MIXED ±1.5, DSB1 19.5±1.1) are gone;
+  paperSystematics.C superseded for paper use.
+- Same pass: hglg.png regenerated from hgLgPlot.C on local RUN1075 raw (identical slopes/counts;
+  panel headers into the top-margin strip, y-title inside the pad, stats stamp below the 820 mV
+  band, super-title removed — the 06-09 crop workaround is obsolete); depth_dial legend fully
+  inside the frame; method-gain legend nudged left.
+- Build exit 0; overfulls still 1 (2.22 pt page head, cosmetic); stale-annotation grep clean
+  (hits only in audit/history files); pages 3/5/7/10 re-inspected. The circulation-note warning
+  about Fig. A.10 is replaced by the consistency note. PDF IS CLEAN FOR COAUTHOR CIRCULATION.
+- Remaining pre-submission figure item: verify Fig. A.9 (optimization.png) scan curves against
+  the post-fix chain (working points consistent; curves from the older macro).

@@ -59,21 +59,22 @@ void hgLgPlot(const char* build, const char* rawPath, double E=50, long maxev=12
         A8[i]=a;B8[i]=b;N8[i]=n; }
 
     TCanvas* c=new TCanvas("c_hl","",1400,720); c->Divide(4,2,0.001,0.001);
-    for(int i=0;i<cfg.nend;++i){ c->cd(i+1); gPad->SetLogz(); gPad->SetRightMargin(0.12); gPad->SetLeftMargin(0.12);
+    for(int i=0;i<cfg.nend;++i){ c->cd(i+1); gPad->SetLogz();
+        gPad->SetRightMargin(0.06); gPad->SetLeftMargin(0.15); gPad->SetTopMargin(0.12);
         h[i]->GetXaxis()->SetTitle("LG peak (mV)"); h[i]->GetYaxis()->SetTitle("HG peak (mV)");
         h[i]->GetXaxis()->SetTitleSize(0.05); h[i]->GetYaxis()->SetTitleSize(0.05);
+        h[i]->GetYaxis()->SetTitleOffset(1.35);   // keep the rotated title inside the pad
         h[i]->Draw("COL");
         TF1* f=new TF1(Form("f%d",i),"[0]+[1]*x",0,800); f->SetParameters(A8[i],B8[i]);
         f->SetLineColor(kRed+1); f->SetLineWidth(2); f->Draw("SAME");
         bool bad = (B8[i]<1.0||B8[i]>8.0);
         TLatex tx; tx.SetNDC(); tx.SetTextFont(42); tx.SetTextSize(0.058);
         tx.SetTextColor(bad?kRed+1:kBlack);
-        tx.DrawLatex(0.15,0.90,Form("%s  HG=%.0f+%.2f#upointLG", cfg.end[i].name.c_str(), A8[i], B8[i]));
-        tx.SetTextSize(0.05); tx.SetTextColor(kGray+3);
-        tx.DrawLatex(0.15,0.84,Form("n=%ld  spikes=%ld%s", N8[i], Spk[i], bad?"  DEGENERATE":""));
+        tx.DrawLatex(0.16,0.905,Form("%s  HG=%.0f+%.2f#upointLG", cfg.end[i].name.c_str(), A8[i], B8[i]));   // in the top-margin strip, clear of the frame
+        tx.SetTextSize(0.045); tx.SetTextColor(kGray+3);
+        tx.DrawLatex(0.18,0.72,Form("n=%ld  spikes=%ld%s", N8[i], Spk[i], bad?"  DEGENERATE":""));           // below the 820 mV saturation band
     }
-    c->cd(0); TLatex t0; t0.SetNDC(); t0.SetTextFont(62); t0.SetTextSize(0.028);
-    t0.DrawLatex(0.30,0.985,Form("%s  HG vs LG  (%.0f GeV, %s)  -- red = spike-cut robust fit", build, E, gSystem->BaseName(rawPath)));
+    // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
     gSystem->mkdir("figures",kTRUE);
     c->Print(radFigP(Form("figures/hglg_panel_%s.png",build)));
     printf("[%s] ", build); for(int i=0;i<cfg.nend;++i) printf("%s:%.2f ",cfg.end[i].name.c_str(),B8[i]); printf("\n");

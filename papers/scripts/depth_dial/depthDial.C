@@ -148,7 +148,7 @@ void depthDial(){
         TF1* fit=new TF1("fitp",Form("[0]*log(x/%.1f)",dP.E.front()),dP.E.front(),155);
         fit->SetParameter(0,dP.slope); fit->SetLineColor(kAzure+2); fit->SetLineWidth(3);
         fit->Draw("SAME"); g->Draw("P SAME");
-        TLegend* lg=new TLegend(0.40,0.70,0.94,0.92); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.034);
+        TLegend* lg=new TLegend(0.30,0.70,0.84,0.92); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.034);
         lg->AddEntry(g,"DSB1, srCFD (lgcfd), full fiducial r=2.5 mm","lp");
         lg->AddEntry(fit,Form("fit: %+.1f #pm %.1f ps per e-fold",dP.slope,dP.slopeErr),"l");
         lg->AddEntry((TObject*)nullptr,Form("prediction #minusX_{0}/v_{g} = %.1f ps per e-fold (dashed)",kPredSlope_ps),"");

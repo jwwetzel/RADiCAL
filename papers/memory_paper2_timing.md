@@ -152,6 +152,15 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   fixed; hglg/dist garbled title strips cropped; "Appendix Appendix" fixed; mixed_h2h → figure*.
   Overfulls 4 → 1 (2.22 pt page-head, cosmetic). Inventory + outcome:
   `papers/timing/FORMAT_AUDIT_2026-06-09.md`.
+- **APPENDIX-FIGURE CONSISTENCY FIX DONE (2026-06-10):** Fig. A.10 regenerated POST-FIX —
+  `systematicsPostfix.C` now emits the stability figure from the same arrays as Table 2 (agreement
+  by construction; totals ±1.0/±1.1/±0.9/±1.9, veto variants included, NO baked floor numbers,
+  caption points to Tables 1–2; the stale 19.8±5.6 / ±1.5 pre-fix annotations are gone and the
+  old paperSystematics.C figure is superseded for paper use). Same pass: hglg.png regenerated via
+  `hgLgPlot.C` (identical calibration content; headers/y-titles now inside margins; crop
+  workaround obsolete); depth_dial + method-gain legends brought fully inside their frames.
+  Remaining pre-submission figure item: verify Fig. A.9 (optimization.png) curves against the
+  post-fix chain.
 - **Remaining before EXTERNAL submission (none block internal circulation):** author block +
   funding text (collaboration); title sign-off; GATE-1 logbook half (recommended);
   tab_methods.tex generated-not-input (decide drop/include); optional G4 campaign (floor
