@@ -1,7 +1,8 @@
 %% RADiCAL Paper 1 (timing) -- NIM A (Elsevier elsarticle) two-column style.
 %% Compile: tectonic radical_timing.tex
-%% NOTE: the author block is a PLACEHOLDER; complete it with the full RADiCAL author
-%% list (as in Ref.~[1], NIM A 1068 (2024) 169737, p.1) before submission.
+%% NOTE: author block completed 2026-06-10 with the full 39-author RADiCAL roster +
+%% 11 affiliations + 11 ORCIDs, exactly as printed in Ref.~[1] (NIM A 1068 (2024) 169737,
+%% p.1; ORCIDs extracted from its link annotations). Collaboration sets the final ORDER.
 \documentclass[final,5p,times,twocolumn]{elsarticle}
 
 \usepackage{graphicx}
@@ -9,6 +10,8 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{orcidlink}
 \graphicspath{{figs/}}
 
 \journal{Nuclear Instruments and Methods in Physics Research A}
@@ -21,18 +24,61 @@
 \title{A same-shower comparison of wavelength shifters and light-yield limits in a
 compact RADiCAL electromagnetic-shower timing module}
 
-%% ---- Author block. Lead author J. Wetzel for Paper 1 (collaboration sets the full
-%% author ORDER). The 39-author RADiCAL roster + 11 affiliations are verified in Ref.~[1]
-%% (NIM A 1068 (2024) 169737). Affiliations there: a Adiyaman U.; b Caltech; c Coe College;
-%% d Hofstra U.; e U. Iowa; f Istanbul U.; g Istanbul U.-Cerrahpasa; h Istanbul Technical U.;
-%% i U. Notre Dame; j U. Virginia; k Yildiz Technical U.
-\author[uiowa]{J.~Wetzel\corref{cor}}
+%% ---- Author block: the 39-author roster of Ref.~[1], same order, same affiliation
+%% lettering (a-k by declaration order), same 11 ORCIDs (from Ref.~[1]'s link annotations).
+%% Corresponding author for THIS paper: J. Wetzel.
+\author[d]{Carlos~Perez-Lara\,\orcidlink{0000-0003-0199-8864}}
+\author[c,e]{James~Wetzel\,\orcidlink{0000-0003-4687-7302}\corref{cor}}
 \ead{james@animal-lamps.com}
 \cortext[cor]{Corresponding author.}
-\author[radical]{\textit{for the RADiCAL Collaboration}}
-\affiliation[uiowa]{organization={University of Iowa},
-            city={Iowa City}, state={IA}, country={USA}}
-\affiliation[radical]{organization={RADiCAL Collaboration}}
+\author[c,e]{Ugur~Akgun}
+\author[j]{Thomas~Anderson}
+\author[i]{Thomas~Barbera}
+\author[e]{Dylan~Blend}
+\author[h]{Kerem~Cankocak}
+\author[a,k]{Salim~Cerci\,\orcidlink{0000-0002-8702-6152}}
+\author[j]{Nehal~Chigurupati}
+\author[j]{Bradley~Cox}
+\author[e]{Paul~Debbins}
+\author[j]{Max~Dubnowski}
+\author[f]{Buse~Duran\,\orcidlink{0009-0006-6014-1544}}
+\author[h]{Gizem~Gul~Dincer\,\orcidlink{0009-0001-1997-2841}}
+\author[f]{Selbi~Hatipoglu}
+\author[g]{Ilknur~Hos}
+\author[k]{Bora~Isildak\,\orcidlink{0000-0002-0283-5234}}
+\author[i]{Colin~Jessop}
+\author[d]{Ohannes~Kamer~Koseyan\,\orcidlink{0000-0001-9040-3468}}
+\author[k]{Ayben~Karasu~Uysal\,\orcidlink{0000-0001-6297-2532}}
+\author[k]{Reyhan~Kurt}
+\author[f]{Berkan~Kaynak}
+\author[j]{Alexander~Ledovskoy}
+\author[e]{Alexi~Mestvirishvili}
+\author[e]{Yasar~Onel}
+\author[f]{Suat~Ozkorucuklu}
+\author[e]{Aldo~Penzo\,\orcidlink{0000-0003-3436-047X}}
+\author[f]{Onur~Potok}
+\author[i]{Daniel~Ruggiero}
+\author[i]{Randal~Ruchti\,\orcidlink{0000-0002-3151-1386}}
+\author[a,k]{Deniz~Sunar~Cerci}
+\author[f]{Ali~Tosun}
+\author[i]{Mark~Vigneault}
+\author[i]{Yuyi~Wan}
+\author[i]{Mitchell~Wayne\,\orcidlink{0000-0001-8204-6157}}
+\author[k]{Taylan~Yetkin}
+\author[b]{Liyuan~Zhang}
+\author[b]{Renyuan~Zhu}
+\author[f]{Caglar~Zorbilmez}
+\affiliation[a]{organization={Adiyaman University}, city={Adiyaman}, country={Turkiye}}
+\affiliation[b]{organization={California Institute of Technology}, city={Pasadena}, state={CA}, country={USA}}
+\affiliation[c]{organization={Coe College}, city={Cedar Rapids}, state={IA}, country={USA}}
+\affiliation[d]{organization={Hofstra University}, city={Hempstead}, state={NY}, country={USA}}
+\affiliation[e]{organization={University of Iowa}, city={Iowa City}, state={IA}, country={USA}}
+\affiliation[f]{organization={Istanbul University}, city={Istanbul}, country={Turkiye}}
+\affiliation[g]{organization={Istanbul University - Cerrahpasa}, city={Istanbul}, country={Turkiye}}
+\affiliation[h]{organization={Istanbul Technical University}, city={Istanbul}, country={Turkiye}}
+\affiliation[i]{organization={University of Notre Dame}, city={Notre Dame}, state={IN}, country={USA}}
+\affiliation[j]{organization={University of Virginia}, city={Charlottesville}, state={VA}, country={USA}}
+\affiliation[k]{organization={Yildiz Technical University}, city={Istanbul}, country={Turkiye}}
 %% ---------------------------------------------------------------------------
 
 \begin{abstract}
