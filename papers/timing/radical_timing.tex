@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{xcolor}
 \graphicspath{{figs/}}
 
@@ -317,8 +318,9 @@ shown for comparison. TENERGY carries a $\sqrt{4/3}$ capillary-count penalty; th
 module-wide row is a reference value (single-estimator timing is ill-posed there,
 Sec.~\ref{sec:mixed}).}
 \label{tab:builds}
-\small
-\begin{tabular}{lccccc}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
 Build & WLS & src & $a$ (ps$\sqrt{\mathrm{GeV}}$) & $b$ (ps) & $\sigma_t^{150}$ (ps) \\
 \midrule
@@ -408,7 +410,7 @@ dependence of the floor is reported in the floor block of Table~\ref{tab:syst}. 
 Table~\ref{tab:syst}, with the total systematic taken as their RMS (fit-parameter
 errors carry the standard $\sqrt{\chi^2/\mathrm{ndf}}$ scale factor~\cite{pdg};
 paired uncertainties use the event bootstrap~\cite{efron}). The selection
-values themselves were fixed by the scans of Appendix~\ref{app:opt}
+values themselves were fixed by the scans of \ref{app:opt}
 (Fig.~\ref{fig:opt}); the timing-method choice (cfd05 versus the recovered edge) is the
 subject of Sec.~\ref{sec:method-gain} and is not folded into this budget.
 
@@ -473,18 +475,18 @@ kinetics as the dominant cause of the cross-build timing difference}. It does no
 establish universal material equivalence: at lower light levels or in other geometries
 the kinetics could re-emerge.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\linewidth]{mixed_h2h_corrected.png}
+\includegraphics[width=0.9\textwidth]{mixed_h2h_corrected.png}
 \caption{Same-shower comparison in the MIXED module (corner map confirmed by
-pulse-shape discriminants). Left: per-capillary timing widths versus energy for the
+pulse-shape discriminants). (A) Per-capillary timing widths versus energy for the
 DSB1 (NE, SW) and LuAG:Ce (NW, SE) capillary pairs under srCFD; widths are same-layer
-in-event pair differences divided by $\sqrt{2}$, so common-mode terms cancel. Centre:
-the width ratio per energy with the $\pm1$~RMS energy-scatter band; the scatter
-dominates the statistical uncertainty. Right: estimator dependence (srCFD headline;
+in-event pair differences divided by $\sqrt{2}$, so common-mode terms cancel. (B) The
+width ratio per energy with the $\pm1$~RMS energy-scatter band; the scatter
+dominates the statistical uncertainty. (C) Estimator dependence (srCFD headline;
 cfd05 and LED diagnostic).}
 \label{fig:mixedh2h}
-\end{figure}
+\end{figure*}
 
 %======================================================================
 \section{Longitudinal timing asymmetry}
@@ -606,27 +608,27 @@ working point is well clear of the noise floor. The corresponding systematic sta
 $\sigma_t(150)$ under these variations is summarised in Fig.~\ref{fig:syststab} and
 Table~\ref{tab:syst}.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\linewidth]{optimization.png}
+\includegraphics[width=0.8\textwidth]{optimization.png}
 \caption{Selection optimization at $150$~GeV for all four builds: (a) timing source as a
 function of CFD fraction on the clipped peak (solid) with the adopted recovered-edge
 source overlaid (dashed); (b) resolution versus the brightest-$N$ selection $K$;
 (c) versus timing fiducial radius; (d) versus the per-channel HG threshold. Dashed grey
 lines mark the adopted working points.}
 \label{fig:opt}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\linewidth]{systematics.png}
+\includegraphics[width=0.8\textwidth]{systematics.png}
 \caption{Systematic stability of the brightest-$1000$ $\sigma_t(150)$ for each build: the
 nominal value (star) with its total-systematic band, and each selection variation as a
 point. The fitted floor $b$ with its statistical and systematic errors is annotated per
 build. All variations lie within the band except the deliberate $K=2000$ loosening of
 the brightness selection.}
 \label{fig:syststab}
-\end{figure}
+\end{figure*}
 
 
 \section{Tail composition of the method gain}

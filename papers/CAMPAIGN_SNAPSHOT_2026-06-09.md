@@ -185,3 +185,34 @@ energy/position paper (the fifth coordinate).
   referee-risk memo written. Manuscript builds clean; zero citation placeholders; compliance greps
   clean. STATUS: ready for internal coauthor circulation. Outstanding for external submission:
   author/funding blocks, title sign-off, GATE-1 logbook half (recommended), optional G4 campaign.
+
+
+## UPDATE 9 (2026-06-09/10): production-formatting pass (layout only)
+- Working tree was clean at `8a44b35` before this pass. NO claim, number, selection, or
+  interpretation changed — layout/readability only (pre-registered inventory + dispositions in
+  `papers/timing/FORMAT_AUDIT_2026-06-09.md`).
+- Tables: benchmark table* was 472 pt over the page edge (Scale/Comparability columns invisible)
+  → six wrapped p{} columns, footnotesize, all caveats retained; Table 1 (tab:builds) 63 pt
+  column overflow (σ_t^150 clipped) and Table 2 (tab_systematics) 33 pt text-overprint → both fit
+  via footnotesize + tabcolsep + @{} trim. The systematics GENERATOR (systematicsPostfix.C)
+  patched identically so regeneration preserves the format. `\usepackage{array}` added.
+- Figures: paper convention adopted — no internal ROOT super-titles on paper-bound canvases; the
+  LaTeX caption carries the title. All five campaign scripts edited + re-run; values reproduced
+  identically (MIXED 1.038±0.049 & 1.038/1.161/0.795; depth −33.6±2.9 PASS; method floors
+  19.9/21.8/20.3). method_postfix bottom-panel y-title/label collision fixed; depth-dial &
+  method-gain 90/100 log-label collisions fixed; satellite panel-C label shortened.
+  Legacy hglg.png + dist.png garbled title strips cropped (panels untouched); clip/pulse/
+  optimization/systematics recorded as acceptable this pass.
+- Text: "Appendix Appendix A" (elsarticle \ref duplication) fixed; mixed_h2h figure promoted to
+  figure* (3 panels were illegible at single-column width).
+- Build: tectonic exit 0; overfulls 4 → 1 (the 2.22 pt page-head box, cosmetic). Compliance greps
+  clean. Independent page-pair verification fan-out + table-numbers integrity check run on the
+  rebuilt PDF before commit.
+- Round 2: the verification fan-out (5 page-pair reviewers + integrity checker) confirmed ALL
+  authoritative numbers unchanged; its 2 serious findings (Fig. 7 panel-title clip; appendix
+  figures illegible at column width) + annotation collisions were fixed and re-verified (PDF now
+  11 pages; B.11 on its own float page, clean). DISCOVERY (flagged, not fixed — out of scope):
+  Fig. A.10's baked annotations are PRE-FIX (LuAG b=19.8±5.6 vs post-fix 24.6±3.3; MIXED syst
+  ±1.5 vs ±0.9) — the stability figure escaped the stale-number purge. Table 2 is authoritative;
+  regeneration from systematicsPostfix.C is the first pre-submission item (follow-up task spawned;
+  flagged in the circulation note).

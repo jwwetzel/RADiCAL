@@ -135,7 +135,7 @@ void systematicsPostfix(){
     tx << "energy-period scatter and $<0.01$ run-jackknife spread); TENERGY times with three\n";
     tx << "capillaries ($\\sqrt{4/3}$ statistical penalty); LuAG and TENERGY floors are extrapolations\n";
     tx << "(Sec.~\\ref{sec:thesis}).}\n";
-    tx << "\\label{tab:syst}\n\\small\n\\begin{tabular}{lcccc}\n\\toprule\n";
+    tx << "\\label{tab:syst}\n\\footnotesize\n\\setlength{\\tabcolsep}{4pt}\n\\begin{tabular}{@{}lcccc@{}}\n\\toprule\n";
     tx << "Variation & DSB1 & TENERGY & MIXED & LUAG \\\\\n\\midrule\n";
     tx << "\\multicolumn{5}{l}{\\emph{shift in }$\\sigma_t(150)$\\emph{ [ps]}}\\\\\n";
     char b[256];

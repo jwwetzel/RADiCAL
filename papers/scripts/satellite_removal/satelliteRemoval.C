@@ -146,10 +146,10 @@ void satelliteRemoval(){
       hA->Draw("HIST"); hB->Draw("HIST SAME");
       TLine* l1=new TLine(-W,2e-5,-W,ym*0.25); TLine* l2=new TLine(W,2e-5,W,ym*0.25);
       for(TLine* l:{l1,l2}){ l->SetLineColor(kRed+1);l->SetLineStyle(2);l->SetLineWidth(2);l->Draw(); }
-      TLegend* lg=new TLegend(0.16,0.74,0.62,0.90); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.038);
+      TLegend* lg=new TLegend(0.52,0.74,0.96,0.90); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.032);
       lg->AddEntry(hA,"cfd05 (clipped-peak CFD)","l"); lg->AddEntry(hB,"srCFD (recovered edge)","f"); lg->Draw();
       TLatex tx; tx.SetNDC(); tx.SetTextSize(0.032); tx.SetTextColor(kRed+2);
-      tx.DrawLatex(0.16,0.69,Form("tail window: |x#minusmed| > %.0f ps",W*1000));
+      tx.DrawLatex(0.17,0.84,Form("tail window: #pm%.0f ps",W*1000));
       DrawPadTitle("A  identical events, 150 GeV (log)"); }
     // B: metrics @150
     c->cd(2); gPad->SetLeftMargin(0.14);gPad->SetRightMargin(0.03);gPad->SetTopMargin(0.085);gPad->SetBottomMargin(0.13);
@@ -167,8 +167,8 @@ void satelliteRemoval(){
       DrawPadTitle("B  width and tail metrics"); }
     // C: clip split @75
     c->cd(3); gPad->SetLeftMargin(0.14);gPad->SetRightMargin(0.03);gPad->SetTopMargin(0.085);gPad->SetBottomMargin(0.13);gPad->SetGridy();
-    { TH1F* fr=gPad->DrawFrame(-0.5,0,1.5,1.35*std::max({mc[0].ftail,mc[1].ftail,mu75[0].ftail,mu75[1].ftail})+1);
-      fr->SetTitle(";event subset;f_{tail} (%)");
+    { TH1F* fr=gPad->DrawFrame(-0.5,0,1.5,1.75*std::max({mc[0].ftail,mc[1].ftail,mu75[0].ftail,mu75[1].ftail})+1);
+      fr->SetTitle(";;f_{tail} (%)");   // bin labels self-identify the subsets; no x title (was colliding)
       fr->GetXaxis()->SetBinLabel(fr->GetXaxis()->FindBin(0.0),"clipped (nsat#geq7)");
       fr->GetXaxis()->SetBinLabel(fr->GetXaxis()->FindBin(1.0),"less-clipped (nsat#leq2)");
       fr->GetXaxis()->SetLabelSize(0.055); fr->GetXaxis()->SetNdivisions(2);
@@ -177,14 +177,15 @@ void satelliteRemoval(){
       double yc[2]={mc[1].ftail,mu75[1].ftail}, ys[2]={mc[0].ftail,mu75[0].ftail};
       TGraph* g1=new TGraph(2,xs,yc); g1->SetMarkerStyle(24);g1->SetMarkerColor(kBlack);g1->SetMarkerSize(2.0);g1->Draw("P SAME");
       TGraph* g2=new TGraph(2,xs,ys); g2->SetMarkerStyle(20);g2->SetMarkerColor(kAzure+2);g2->SetMarkerSize(2.0);g2->Draw("P SAME");
-      TLegend* lg=new TLegend(0.45,0.74,0.95,0.90); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.04);
+      TLegend* lg=new TLegend(0.45,0.78,0.95,0.92); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.04);
       lg->AddEntry(g1,"cfd05","p"); lg->AddEntry(g2,"srCFD","p"); lg->Draw();
       TLatex tx; tx.SetNDC(); tx.SetTextSize(0.034); tx.SetTextColor(kGray+3);
-      tx.DrawLatex(0.18,0.26,Form("75 GeV, full fiducial: N=%ld / %ld",nC,nU));
-      tx.DrawLatex(0.18,0.20,"less-clipped (dim) events: srCFD tail RISES");
-      tx.DrawLatex(0.18,0.15,"(noisy LG anchor) #rightarrow srCFD is for bright/clipped");
-      DrawPadTitle("C  tail excess concentrates in clipped events"); }
-    c->cd(0); DrawSuperTitle("Satellite/tail removal: srCFD vs cfd05 on identical events #minus the method gain is the suppression of clipping-induced tails",0.019f);
+      tx.DrawLatex(0.18,0.72,Form("75 GeV, full fiducial: N=%ld / %ld",nC,nU));
+      tx.DrawLatex(0.18,0.665,"less-clipped (dim) events: srCFD tail RISES");
+      tx.DrawLatex(0.18,0.61,"(noisy LG anchor) #rightarrow srCFD is for bright/clipped");
+      DrawPadTitle("C  tail excess in clipped events"); }
+    // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
+    c->cd(0);
     c->Print("papers/figures/satellite_removal/satellite_removal.png");
     c->Print("papers/figures/satellite_removal/satellite_removal.pdf");
     printf("\n  wrote papers/figures/satellite_removal/satellite_removal.{png,pdf}\n");

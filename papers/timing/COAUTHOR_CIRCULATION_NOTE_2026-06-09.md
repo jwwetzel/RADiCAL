@@ -2,10 +2,29 @@
 
 **Title:** *A same-shower comparison of wavelength shifters and light-yield limits in a compact
 RADiCAL electromagnetic-shower timing module*
-**PDF:** `papers/timing/radical_timing.pdf` · **Commit:** see git log (`7cd8e1f` prose pass + the
-circulation-prep commit following it). Every number traces to a committed, audited analysis product
-(scripts under `papers/scripts/`, audits pre-registered, gate history in
-`papers/memory_analysis_gates.md`).
+**PDF:** `papers/timing/radical_timing.pdf` · **Commit:** see git log (`7cd8e1f` prose pass,
+`8a44b35` circulation prep, + the formatting-polish commit following it). Every number traces to a
+committed, audited analysis product (scripts under `papers/scripts/`, audits pre-registered, gate
+history in `papers/memory_analysis_gates.md`).
+
+**Production-formatting pass (2026-06-09, after `8a44b35`):** layout/readability only — no claim,
+number, selection, or interpretation changed. All three table overflows fixed (the benchmark table
+was running off the page; Table 1's last column was clipped; Table 2 was overprinting body text);
+internal ROOT super-titles removed from the five campaign figures (the LaTeX captions carry the
+titles — regeneration reproduced identical values, e.g. the MIXED ratio re-emitted 1.04±0.05);
+the method-gain figure's axis-label collisions fixed; the two legacy figures' garbled title strips
+cropped; "Appendix Appendix" typo fixed. An independent page-by-page verification fan-out was run
+on the rebuilt PDF; its two serious findings (a clipped panel title in Fig. 7; appendix figures
+illegible at single-column width) and several annotation collisions were fixed in a second round,
+and its numbers-integrity check confirmed every authoritative value unchanged. Full issue
+inventory + dispositions: `papers/timing/FORMAT_AUDIT_2026-06-09.md`.
+
+**⚠ One discovery to be aware of: Fig. A.10's baked-in annotations are PRE-FIX** (e.g. LuAG floor
+19.8 ± 5.6 vs the post-fix 24.6 ± 3.3 of Tables 1–2; MIXED syst ±1.5 vs ±0.9) — the stability
+figure escaped the stale-number purge. **Table 2 is authoritative**; the figure's *qualitative*
+message (all variations inside the band except K = 2000) is unchanged. Regeneration from the
+post-fix chain is queued as the first pre-submission item; it does not affect any claim, table,
+or text number.
 
 ## Thesis (one paragraph)
 The timing performance of the RADiCAL shower-maximum module is governed primarily by detected light

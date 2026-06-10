@@ -192,7 +192,7 @@ void methodGainPostfix(){
     // ---- figure ----
     TCanvas* c=new TCanvas("mg","",900,860);
     TPad* p1=new TPad("p1","",0,0.34,1,1); TPad* p2=new TPad("p2","",0,0,1,0.34);
-    p1->SetBottomMargin(0.02); p1->SetLeftMargin(0.13); p1->SetRightMargin(0.04); p1->SetTopMargin(0.09); p1->SetGridy(); p1->SetLogx();
+    p1->SetBottomMargin(0.02); p1->SetLeftMargin(0.13); p1->SetRightMargin(0.04); p1->SetTopMargin(0.05); p1->SetGridy(); p1->SetLogx();
     p2->SetTopMargin(0.04); p2->SetBottomMargin(0.32); p2->SetLeftMargin(0.13); p2->SetRightMargin(0.04); p2->SetGridy(); p2->SetLogx();
     p1->Draw(); p2->Draw();
     p1->cd();
@@ -213,19 +213,22 @@ void methodGainPostfix(){
       TLatex tx; tx.SetNDC(); tx.SetTextSize(0.040); tx.SetTextColor(kGray+3);
       tx.DrawLatex(0.16,0.16,"DSB1, brightest-1000, SAME events for all estimators"); }
     p2->cd();
-    { TH1F* fr=gPad->DrawFrame(20,-1.5,200,8);
-      fr->GetYaxis()->SetTitle("#Delta#sigma vs srCFD (ps)"); fr->GetYaxis()->SetTitleSize(0.10); fr->GetYaxis()->SetTitleOffset(0.58);
-      fr->GetYaxis()->SetLabelSize(0.09);
-      fr->GetXaxis()->SetTitle("beam energy E (GeV)"); fr->GetXaxis()->SetTitleSize(0.12); fr->GetXaxis()->SetLabelSize(0.10);
+    { TH1F* fr=gPad->DrawFrame(20,-3,200,8);
+      fr->GetYaxis()->SetTitle("#Delta#sigma vs srCFD (ps)"); fr->GetYaxis()->SetTitleSize(0.085); fr->GetYaxis()->SetTitleOffset(0.70);
+      fr->GetYaxis()->SetLabelSize(0.075); fr->GetYaxis()->SetNdivisions(505);
+      fr->GetXaxis()->SetTitle("beam energy E (GeV)"); fr->GetXaxis()->SetTitleSize(0.11); fr->GetXaxis()->SetLabelSize(0.075);
       fr->GetXaxis()->SetMoreLogLabels(); fr->GetXaxis()->SetNoExponent();
       TLine* l0=new TLine(20,0,200,0); l0->SetLineColor(kGray+2); l0->SetLineStyle(2); l0->Draw();
       std::vector<double> E,D1,D2,z;
       for(int ie=0;ie<6;++ie) if(ok[ie]){E.push_back(Es[ie]);D1.push_back(S[1][ie]-S[0][ie]);D2.push_back(S[2][ie]-S[0][ie]);z.push_back(0);}
       TGraph* g1=new TGraph(E.size(),&E[0],&D1[0]); g1->SetMarkerStyle(24);g1->SetMarkerColor(kBlack);g1->SetLineColor(kBlack);g1->SetMarkerSize(1.3);g1->Draw("PL SAME");
       TGraph* g2=new TGraph(E.size(),&E[0],&D2[0]); g2->SetMarkerStyle(25);g2->SetMarkerColor(kRed+1);g2->SetLineColor(kRed+1);g2->SetMarkerSize(1.3);g2->Draw("PL SAME");
-      TLatex tx; tx.SetNDC(); tx.SetTextSize(0.085);
-      tx.DrawLatex(0.16,0.86,Form("@150: cfd05#minussrCFD = %+.1f ps, 68%% CI [%.1f, %.1f]",S[1][5]-S[0][5],d150_lo,d150_hi)); }
-    c->cd(0); DrawSuperTitle("Method gain, post-fix: saturation-recovered CFD vs clipped-peak CFD and LED on identical events (DSB1)",0.020f);
+      TLatex tx; tx.SetNDC(); tx.SetTextSize(0.075);
+      // core-width gain only; the tail-sensitive gain + its bootstrap CI live in Sec. 5.3 (pairing
+      // the core central value with the tail-convention CI in one stamp read as self-contradictory)
+      tx.DrawLatex(0.33,0.88,Form("@150: cfd05#minussrCFD = %+.1f ps (core width)",S[1][5]-S[0][5])); }
+    // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
+    c->cd(0);
     c->Print("papers/figures/method_gain_postfix/method_gain_postfix.png");
     printf("  wrote papers/figures/method_gain_postfix/method_gain_postfix.png\n");
 }

@@ -119,6 +119,10 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
    CIRCULATION.** ← NEXT: send to coauthors; in parallel (optional pre-submission): GATE-1
    logbook confirmation, Stage-1 G4 campaign, author/funding blocks, then Paper-3 gates
    (GATE 4 T_abs, GATE 7 energy backbone).
+6f. ~~Production-formatting pass~~ **DONE 2026-06-09** (layout only, zero content change): 3 table
+   overflows fixed; no-internal-super-title figure convention adopted (5 scripts re-run, values
+   identical); legacy title strips cropped; overfulls 4→1 (cosmetic). Audit:
+   `papers/timing/FORMAT_AUDIT_2026-06-09.md`. Manuscript circulates from this state.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
 8. Commit the whole campaign to git (lib fix + macros + figures + papers/memory_*).

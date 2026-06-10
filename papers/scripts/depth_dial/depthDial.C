@@ -125,12 +125,13 @@ void depthDial(){
 
     // ---------- publication figure: DSB1 lgcfd, Delta vs E (log x) ----------
     TCanvas* c=new TCanvas("dd","",900,680);
-    c->SetLeftMargin(0.13); c->SetRightMargin(0.05); c->SetTopMargin(0.07); c->SetBottomMargin(0.13);
+    c->SetLeftMargin(0.13); c->SetRightMargin(0.05); c->SetTopMargin(0.04); c->SetBottomMargin(0.13);
     c->SetLogx(); c->SetGridy();
     TH1F* fr=c->DrawFrame(20,-70,200,25);
     fr->SetTitle(";beam energy E (GeV);#Delta#LT(t_{DW}#minust_{UP})/2#GT  (ps)");
     fr->GetYaxis()->SetTitleSize(0.045); fr->GetYaxis()->SetTitleOffset(1.3);
     fr->GetXaxis()->SetTitleSize(0.045); fr->GetXaxis()->SetMoreLogLabels(); fr->GetXaxis()->SetNoExponent();
+    fr->GetXaxis()->SetLabelSize(0.033);   // keep the 90 and 100 log labels from colliding
     // prediction band: slope -26.3 +- (v_g 205+-5 & X0 uncertainty ~ +-2 ps/efold band)
     { double e0=dP.E.empty()?25:dP.E.front();
       TGraph* up=new TGraph(); TGraph* dn=new TGraph(); int k=0;
@@ -147,13 +148,13 @@ void depthDial(){
         TF1* fit=new TF1("fitp",Form("[0]*log(x/%.1f)",dP.E.front()),dP.E.front(),155);
         fit->SetParameter(0,dP.slope); fit->SetLineColor(kAzure+2); fit->SetLineWidth(3);
         fit->Draw("SAME"); g->Draw("P SAME");
-        TLegend* lg=new TLegend(0.16,0.16,0.66,0.38); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.034);
+        TLegend* lg=new TLegend(0.40,0.70,0.94,0.92); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.034);
         lg->AddEntry(g,"DSB1, srCFD (lgcfd), full fiducial r=2.5 mm","lp");
         lg->AddEntry(fit,Form("fit: %+.1f #pm %.1f ps per e-fold",dP.slope,dP.slopeErr),"l");
         lg->AddEntry((TObject*)nullptr,Form("prediction #minusX_{0}/v_{g} = %.1f ps per e-fold (dashed)",kPredSlope_ps),"");
         lg->Draw();
     }
-    DrawSuperTitle("The depth dial: shower-max migration read as a dual-end propagation-time shift, #Delta#LTt_{diff}#GT(E)",0.020f);
+    // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
     c->Print("papers/figures/depth_dial/depth_dial.png");
 
     // ---------- diagnostic figure: method + build cross-checks + RMS ----------

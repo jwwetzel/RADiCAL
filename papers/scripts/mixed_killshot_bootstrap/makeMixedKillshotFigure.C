@@ -114,8 +114,8 @@ void makeMixedKillshotFigure(){
       lg->AddEntry(gD,"DSB1 capillaries (NE, SW)","lp"); lg->AddEntry(gL,"LuAG:Ce capillaries (NW, SE)","lp"); lg->Draw();
       TLatex tx; tx.SetNDC(); tx.SetTextSize(0.034); tx.SetTextColor(kGray+3);
       tx.DrawLatex(0.18,0.20,"same module, same showers, same DRS group;");
-      tx.DrawLatex(0.18,0.155,"only the WLS capillary differs (map: pulse-shape confirmed)");
-      DrawPadTitle("A  same-shower timing widths (srCFD)"); }
+      tx.DrawLatex(0.18,0.155,"only the WLS capillary differs (pulse-shape map)");
+      DrawPadTitle("A  same-shower widths (srCFD)"); }
     // --- Panel B: ratio vs E + scatter band ---
     c->cd(2); gPad->SetLeftMargin(0.15);gPad->SetRightMargin(0.03);gPad->SetTopMargin(0.085);gPad->SetBottomMargin(0.13);gPad->SetGridy();
     { TH1F* fr=gPad->DrawFrame(40,0.80,160,1.32);
@@ -135,7 +135,7 @@ void makeMixedKillshotFigure(){
       DrawPadTitle("B  width ratio per energy"); }
     // --- Panel C: method dependence ---
     c->cd(3); gPad->SetLeftMargin(0.15);gPad->SetRightMargin(0.03);gPad->SetTopMargin(0.085);gPad->SetBottomMargin(0.13);gPad->SetGridy();
-    { TH1F* fr=gPad->DrawFrame(-0.5,0.70,2.5,1.32);
+    { TH1F* fr=gPad->DrawFrame(-0.5,0.70,2.5,1.45);
       fr->SetTitle(";timing estimator;5-energy mean  #sigma_{DSB1}/#sigma_{LuAG}");
       fr->GetYaxis()->SetTitleSize(0.05);fr->GetYaxis()->SetTitleOffset(1.45);fr->GetXaxis()->SetTitleSize(0.05);
       for(int s=0;s<NS;++s) fr->GetXaxis()->SetBinLabel(fr->GetXaxis()->FindBin(s),SN[s]);
@@ -153,7 +153,8 @@ void makeMixedKillshotFigure(){
       tx.DrawLatex(0.18,0.71,"LED: noise penalizes dim LuAG corners.");
       tx.DrawLatex(0.18,0.655,"#Rightarrow diagnostic, not headline, estimators.");
       DrawPadTitle("C  estimator dependence"); }
-    c->cd(0); DrawSuperTitle("MIXED module head-to-head: DSB1 vs LuAG:Ce wavelength shifters reading the same showers (GATE-1 map, GATE-6 statistics)",0.019f);
+    // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
+    c->cd(0);
     c->Print("papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.png");
     c->Print("papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.pdf");
     printf("  wrote papers/figures/mixed_killshot_bootstrap/mixed_h2h_corrected.{png,pdf}\n");

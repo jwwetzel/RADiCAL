@@ -144,6 +144,14 @@ FCC CDRs, DRD6, RDC9 · PDG stats, Efron/Tibshirani · Ruchti Annu.Rev. 46 (1996
   thesis_postfix.{png,pdf}): BTL/HGTD per-track/per-hit bands, MIXED grey-dashed reference,
   fit values in legend; numbers untouched. Circulation materials:
   `papers/timing/COAUTHOR_CIRCULATION_NOTE_2026-06-09.md` + `REFEREE_RISK_MEMO_2026-06-09.md`.
+- **PRODUCTION-FORMATTING PASS DONE (2026-06-09, post-`8a44b35`; layout only, zero content
+  change):** all 3 table overflows fixed (benchmark 472 pt → wrapped p{} columns, caveats kept;
+  tab:builds 63 pt; tab_systematics 33 pt + its generator patched to match). PAPER FIGURE
+  CONVENTION ADOPTED: no internal ROOT super-titles — LaTeX captions carry titles; all five
+  campaign scripts edited + re-run, values reproduced identically. method_postfix axis collisions
+  fixed; hglg/dist garbled title strips cropped; "Appendix Appendix" fixed; mixed_h2h → figure*.
+  Overfulls 4 → 1 (2.22 pt page-head, cosmetic). Inventory + outcome:
+  `papers/timing/FORMAT_AUDIT_2026-06-09.md`.
 - **Remaining before EXTERNAL submission (none block internal circulation):** author block +
   funding text (collaboration); title sign-off; GATE-1 logbook half (recommended);
   tab_methods.tex generated-not-input (decide drop/include); optional G4 campaign (floor

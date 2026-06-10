@@ -122,19 +122,19 @@ void timingFitSummary(){
 
     // ---- figure (publication style: requirement bands, MIXED as grey reference) ----
     TCanvas* c=new TCanvas("tfs","",1000,760);
-    c->SetLeftMargin(0.12);c->SetRightMargin(0.04);c->SetTopMargin(0.07);c->SetBottomMargin(0.13);c->SetGridy();
-    TH1F* fr=c->DrawFrame(15,12,165,80);
+    c->SetLeftMargin(0.12);c->SetRightMargin(0.04);c->SetTopMargin(0.04);c->SetBottomMargin(0.13);c->SetGridy();
+    TH1F* fr=c->DrawFrame(15,12,165,85);
     fr->SetTitle(";beam energy E (GeV);brightest-1000 (DW#minusUP)/2  #sigma_{t} (ps)");
     fr->GetYaxis()->SetTitleSize(0.045);fr->GetYaxis()->SetTitleOffset(1.25);fr->GetXaxis()->SetTitleSize(0.045);
     // per-MIP/track comparator bands (context only; cited in the text): BTL 30-60, HGTD 35-50
     TBox* bBTL=new TBox(15,30,165,60); bBTL->SetFillColorAlpha(kOrange+1,0.10); bBTL->Draw();
     TBox* bHGTD=new TBox(15,35,165,50); bHGTD->SetFillColorAlpha(kOrange+1,0.10); bHGTD->Draw();
     TLatex bt; bt.SetTextSize(0.026); bt.SetTextColor(kOrange+3);
-    bt.DrawLatex(18,57,"CMS BTL 30#minus60 ps (per track)"); bt.DrawLatex(18,46.5,"ATLAS HGTD 35#minus50 ps (per hit)");
+    bt.DrawLatex(18,57,"CMS BTL 30#minus60 ps (per track)"); bt.DrawLatex(18,52.5,"ATLAS HGTD 35#minus50 ps (per hit)");
     // MIXED drawn first, dashed grey, reference-only
     int ord[4]={2,0,1,3};
     int cols[4]={kRData,kRGreen+1,kGray+2,kOrange+8}; int mks[4]={20,21,24,23};
-    TLegend* lg=new TLegend(0.40,0.62,0.96,0.92); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.031);
+    TLegend* lg=new TLegend(0.47,0.66,0.96,0.93); lg->SetBorderSize(0);lg->SetFillStyle(0);lg->SetTextSize(0.031);
     for(int k=0;k<4;++k){ int i=ord[k]; BRow& r=rows[i]; if(r.E.size()<3) continue;
         bool mixed=(i==2);
         std::vector<double> ze(r.E.size(),0);
@@ -153,7 +153,7 @@ void timingFitSummary(){
     lg->Draw();
     TLatex tx; tx.SetNDC(); tx.SetTextSize(0.026); tx.SetTextColor(kGray+3);
     tx.DrawLatex(0.40,0.585,"*single-estimator timing is ill-posed for MIXED (Sec. 6)");
-    DrawSuperTitle("Four-build #sigma_{t}(E), production estimator (adopted sources), a/#sqrt{E} #oplus b fits; shaded: per-MIP/track comparators",0.019f);
+    // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
     c->Print("papers/figures/timing_fit_summary/timing_fit_summary.png");
     c->Print("papers/timing/figs/thesis_postfix.png");
     c->Print("papers/timing/figs/thesis_postfix.pdf");
