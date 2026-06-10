@@ -11,6 +11,15 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
 - "The data are **consistent with / confirm** the published floor of 17.5 ps" — the ONLY floor verbs.
 - "Light yield, not WLS species, governs the timing" — the thesis sentence.
 - "The stochastic term tracks detected light: a = 201 → 455 ps·√GeV from DSB1 to LuAG:Ce."
+- MIXED kill-shot — GATE 6 CONDITIONAL 2026-06-09; the 0.99 is RETIRED. ALLOWED (exact form):
+  "In the MIXED module, DSB1 and LuAG:Ce capillaries reading the same showers give per-capillary
+  timing widths that agree within ~10–20% (same-layer paired comparison: width ratio 0.93–1.19
+  across energies, 0.80–1.16 across estimators; 1.04 ± 0.05 under the clip-independent srCFD,
+  where the uncertainty is the energy-period scatter). This same-shower near-parity, set against
+  the ×2.3 cross-build stochastic-term ratio, DISFAVORS intrinsic WLS re-emission kinetics as the
+  dominant cause of the cross-build timing difference, within this geometry and at these light
+  levels." Mandatory companions: the method-dependence sentence (cfd05/LED biases named), the
+  position-coupling dilution caveat, and the corner-map provenance (pulse-shape confirmed, GATE 1).
 - "srCFD (saturation-recovered CFD): a constant-fraction discriminator applied at f of the LG-predicted
   true amplitude, recovering the edge of clipped pulses."
 - "Sub-30 ps EM-shower timing from a 14×14 mm², 16-SiPM module" — compactness + channel economy framing;
@@ -93,6 +102,12 @@ Updated: 2026-06-09. Non-negotiable. Source: ten-expert panel consensus
    or best-bin always second with the selection named.
 10. ✗ "crystal differs between builds" — INVARIANT WORDING RULE: LYSO:Ce + W are common to all builds;
     the WLS capillary is the variable. (House rule, predates panel.)
+11. ✗ "DSB1/LuAG ratio 0.99, χ²/ndf = 0.4 ⇒ consistent" — RETIRED 2026-06-09 (GATE 6): produced by
+    brightness-threshold labels that misassigned SE-D, with over-conservative errors. Also forbidden:
+    ✗ "statistically indistinguishable timing performance" (the bootstrap CI excludes 1 and the
+    method spread is 0.80–1.16 — use the within-~20%-parity form); ✗ "ratio consistent with unity"
+    without the scatter-based uncertainty and method-dependence caveats; ✗ "proves WLS species does
+    not matter" (always was; reaffirmed).
 
 ## Referee-defense pairs (abbreviated; full list in synthesis JSON)
 - "1.5 mm vs 3.6 mm impossible" → reconciliation shipped in-paper (GATE 2 outputs).

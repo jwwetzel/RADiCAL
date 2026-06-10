@@ -22,7 +22,7 @@ published 17.5 ps as shower-depth geometry.
 | LuAG led | a≈455, b=19.8±5.6 (best measured point 42 ps) | same |
 | MIXED lgcfd (post-fix, monotonic) | b≈34.3 (module-wide; ill-posed — use per-material) | `timingRegression.C` |
 | TENERGY led | 240/22±3 (RECORDED — recompute post-fix before quoting) | report/memory |
-| Kill-shot in-event ratio | ≈0.99 (needs bootstrap CI — GATE 6) | `mixed_h2h.png` |
+| Kill-shot in-event ratio | **0.99 RETIRED (GATE 6)**: label artifact. Replacement: width parity within ~10–20%; srCFD paired ratio 1.04±0.05 (scatter); methods 0.80–1.16 | `papers/figures/mixed_killshot_bootstrap/` |
 | Published baseline | 256/√E ⊕ 17.5 ps; 27 ps @150 (BestMinus, cfd05) | parent Eq. 2 |
 | Estimator fix | adopted methods monotonic; cfd05 Δ≤0.4 ps | `monotonicity_fix.png` |
 | MIXED clip fractions | DSB1 corners 33–55%, LuAG corners 0–24% (E-dependent) | session log, `mixedSeparate.C` |
@@ -48,8 +48,13 @@ S10 benchmark+requirements table + deployability box · S11 systematics/OOS vali
 7. MCP-jitter forensics. Tables: nomenclature; 8×4 survey (a,b,χ²); benchmark; OOS; ps-budget.
 
 ## Unresolved gates blocking this paper
-- GATE 1 MIXED corner map logbook (blocks S8 kill-shot).
-- GATE 6 bootstrap CI on 0.99 + method-gain claims.
+- GATE 1 — data half CONFIRMED (8/8 pulse-shape); logbook half = user action (belt & suspenders).
+- GATE 6 — **CONDITIONAL (2026-06-09): the 0.99 is RETIRED** (brightness-label artifact, SE-D
+  misassigned). S8 must be REWRITTEN around the replacement result: same-shower per-capillary width
+  parity within ~10–20% (srCFD paired 1.04±0.05 scatter-based; methods 0.80–1.16) vs the ×2.3
+  cross-build a-ratio → kinetics DISFAVORED as dominant, with the position-coupling dilution caveat.
+  `mixed_h2h.png` and its 0.99/χ² annotation must be regenerated before any draft circulates.
+  Remaining: bootstrap CI on the srCFD-vs-cfd05 method-gain claims (separate, smaller task).
 - GATE 3 depth dial — **PASSED 2026-06-09**: the S9 drift-consistency panel is now MEASURED
   (−33.6±2.9 ps/e-fold vs −X₀/v_g = −26.3; `papers/figures/depth_dial/depth_dial.png`). S9 can write
   "the floor IS depth physics — shown, not asserted." Bonus S5/S6 material: the LED family does not

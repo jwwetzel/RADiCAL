@@ -70,6 +70,34 @@ energy/position paper (the fifth coordinate).
   clock-referenced time-of-arrival; mm numbers as calibrated position resolution; any revision wording
   against the published 17.5 ps / 27 ps; E_SM-untagged energy-resolution numbers.
 
+## UPDATE (later 2026-06-09): committed + GATE 2 closed
+- Campaign committed: `45f15dc` "Add RADiCAL paper memory infrastructure and depth-dial gate analysis"
+  (60 files). GATE 2 committed: `c8280f9` "GATE 2 passed: position arithmetic reconciled" (8 files).
+  Working tree clean after both. Branch `main` is ahead of `origin/main` (not pushed).
+- **GATE 2 outcome: PASSED (RECONCILED).** The 1.5 mm is a legitimate unbinned event-level residual
+  RMS that survives a train/test split (Δ = 3.5 µm); the "3.6 mm comparator" was the t₀-inflated
+  end-time-SUM upper bound and never applied to the position difference (memory mischaracterization,
+  now corrected everywhere). Held-out residuals: 1.54/1.45 mm (x/y, ±6 mm window, 150 GeV),
+  0.91/0.88 mm in the r<2.5 beam core, ~energy-independent. New finding: closure slope 0.698 —
+  linear light-division estimator saturates beyond |x|≈3 mm. Joint-upper-bound language only; no
+  intrinsic resolution; unfolding vs 3.6 demonstrated imaginary and refused.
+  Products: `papers/scripts/position_reconciliation/`, `papers/figures/position_reconciliation/`.
+
+## UPDATE 2 (later 2026-06-09): GATE 6 CONDITIONAL — the 0.99 kill-shot number RETIRED
+- Pre-state verified: working tree clean at `c8280f9`; commits 45f15dc + c8280f9 confirmed.
+- **GATE 6 outcome: CONDITIONAL.** The recorded MIXED ratio 0.99 (`mixedHeadToHead.C`) used
+  brightness-threshold corner labels (amp > 0.65·max) that misassign SE-D (LuAG by GATE-1
+  pulse-shape) into the DSB1 group at mid/high E — the 0.99 and χ²/ndf=0.4 are a label-mixing
+  artifact and are retired from all claims. Replacement (common-event, GATE-1 labels, Down-layer
+  same-material diagonal pairs, srCFD): per-capillary width parity within ~10–20%; 5-E mean ratio
+  1.038, bootstrap 95% [1.033,1.043], honest scatter-based 1.04 ± 0.05; methods srCFD/cfd05/led =
+  1.04/1.16/0.80; jackknife spread 0.003 (76 variants, no single-run dependence); swapped map
+  inverts exactly; scrambled map collapses the amplitude control. Kill-shot claim rewritten
+  (see claims memory): within-~20% same-shower parity vs ×2.3 cross-build → kinetics disfavored as
+  dominant, with the position-coupling dilution caveat. `mixed_h2h.png` must be regenerated before
+  any draft circulates. Products: `papers/scripts/mixed_killshot_bootstrap/`,
+  `papers/figures/mixed_killshot_bootstrap/`.
+
 ## Open flags at snapshot time
 - 125→150 GeV local re-steepening of the dial (−56 ps/e-fold locally) — run-period check pending
   (addressed in DEPTH_DIAL_REVIEW.md diagnostics).

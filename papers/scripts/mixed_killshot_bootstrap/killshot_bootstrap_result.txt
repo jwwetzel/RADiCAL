@@ -1,0 +1,31 @@
+Info in <TMacOSXSystem::ACLiC>: creating shared library /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/mixed_killshot_bootstrap/mixedKillshotBootstrap_C.so
+
+===== GATE 6: MIXED KILL-SHOT BOOTSTRAP =====
+map (GATE 1): DSB1 = NE,SW (slots 1,3,5); LuAG = NW,SE (slots 0,2,4,6); SW-U excluded.
+M1 direct paired ratio convention: R = sigma(NE-D minus SW-D)/sigma(NW-D minus SE-D) = DSB1/LuAG.
+   50 GeV: N= 46217  sigmaCap(DSB1)=  361 ps  sigmaCap(LuAG)=  384 ps  R(direct)=0.940 [68%: 0.936-0.943] [95%: 0.932-0.947]  R(solve)=1.048
+   75 GeV: N= 42845  sigmaCap(DSB1)=  395 ps  sigmaCap(LuAG)=  373 ps  R(direct)=1.058 [68%: 1.053-1.062] [95%: 1.049-1.067]  R(solve)=1.188
+  100 GeV: N= 17592  sigmaCap(DSB1)=  295 ps  sigmaCap(LuAG)=  318 ps  R(direct)=0.929 [68%: 0.923-0.934] [95%: 0.917-0.941]  R(solve)=1.501
+  125 GeV: N= 22412  sigmaCap(DSB1)=  347 ps  sigmaCap(LuAG)=  324 ps  R(direct)=1.072 [68%: 1.066-1.077] [95%: 1.061-1.083]  R(solve)=1.230
+  150 GeV: N= 16533  sigmaCap(DSB1)=  405 ps  sigmaCap(LuAG)=  339 ps  R(direct)=1.194 [68%: 1.186-1.202] [95%: 1.178-1.209]  R(solve)=1.374
+
+  5-E mean direct ratio = 1.038   bootstrap median 1.038  [68%: 1.036-1.041]  [95%: 1.033-1.043]
+  5-E mean solve ratio (original quantity, GATE-1 labels) = 1.268
+  amplitude control (correct map): <amp>_DSB1/<amp>_LuAG = 1.96
+
+  M4 run jackknife (leave-one-run-out, runs with N>=700):
+    76 leave-one-out variants: mean 1.038, spread (max-min) 0.003, worst run 2986 (|dev|=0.001)
+    single-run dependence: NO (spread < 0.02)
+
+  M5 method dependence (5-E mean direct ratio):
+    srCFD (primary): 1.038   cfd05 (original): 1.161   led: 0.795
+
+  M6 wrong-map diagnostics (150 GeV):
+    correct map : R=1.194   amplitude control=1.27 (expect >~2)
+    swapped map : R=0.838   (expect ~1/correct=0.838)
+    scrambled   : R=0.596   amplitude control=0.84 (expect ~1)
+    NOTE: scrambled-pair widths include the material-difference variance and lose
+    the same-capillary correlations -> not directly comparable to the correct-map sigma.
+Info in <TCanvas::Print>: png file papers/figures/mixed_killshot_bootstrap/killshot_bootstrap.png has been created
+
+  wrote papers/figures/mixed_killshot_bootstrap/killshot_bootstrap.png

@@ -133,14 +133,41 @@ STATUS: OPEN.
 - If FAIL → documented fallback: dual-label wording on the existing 4D figure (panel-approved fallback).
 
 ## GATE 6 — Kill-shot ratio with bootstrap CI   [RANK 5]
-STATUS: OPEN.
-- Inputs: MIXED reduced 50–150. Branches: per-end timing (adopted per material: `hg_lgcfd` DSB1 corners /
-  `hg_led` LuAG corners), `hg_peak[8]`, selection branches.
-- Script: extend `analyze/studies/mixedSeparate.C` or new `mixedH2hBootstrap.C`: paired event-bootstrap
-  (resample events, recompute per-material σ and ratio), run-jackknife, audit the χ²/ndf=0.4/5.
-- Output: ratio ± CI; updated `mixed_h2h.png` lower panel.
-- PASS: CI excludes large deviations from 1 (e.g. 0.99 ± few %) and jackknife stable across runs.
-- If PASS → S8 claim ladder complete. If FAIL (run-dependent) → ratio quoted per run-period with spread.
+STATUS: **CONDITIONAL 2026-06-09 — the recorded "0.99" is RETIRED; the physics claim survives in a
+weaker, honest form.** Products: `papers/scripts/mixed_killshot_bootstrap/{AUDIT.md,
+mixedKillshotBootstrap.C, killshot_bootstrap_result.txt}`,
+`papers/figures/mixed_killshot_bootstrap/killshot_bootstrap.png`.
+
+### RESULT (2026-06-09)
+- **The recorded 0.99 is not reproducible as stated.** Source (`mixedHeadToHead.C`): mean over 5
+  energies of group-σ(DSB1)/group-σ(LuAG) from a same-layer pairwise cfd05 solve with
+  **brightness-threshold labels (amp > 0.65·max)**. Those labels demonstrably MISASSIGN SE-D
+  (amp ~530–570 > thr ≈ 436 at mid/high E) into the DSB1 group — SE-D is LuAG by the GATE-1
+  pulse-shape confirmation. With the CORRECT (GATE-1) labels the same solve gives **1.27**, not 0.99.
+  The 0.99 and its χ²/ndf = 0.4/5 are a label-mixing artifact with over-conservative errors.
+- **The clean replacement (direct event-paired, common all-7-valid events, Down-layer same-material
+  diagonal pairs):** R = σ(NE−SW)/σ(NW−SE) per energy (srCFD): 0.940 / 1.058 / 0.929 / 1.072 / 1.194
+  (50→150 GeV); 5-E mean **1.038**, Poisson-bootstrap 95% CI [1.033, 1.043] — but the per-energy
+  scatter (RMS ≈ 0.10 ≫ per-point CI) is a real period/energy systematic, so the honest uncertainty
+  is scatter-based: **R = 1.04 ± 0.05**. N = 16.5k–46k paired events per energy.
+- Per-capillary widths (srCFD): DSB1 295–405 ps, LuAG 318–384 ps — same ballpark, parity within
+  ~10–20%, non-monotonic in E.
+- **Method dependence (beyond CI):** srCFD 1.038, cfd05 1.161, led 0.795 — each bias physically
+  explicable (cfd05 clip-walk penalizes the clipping DSB1 corners; LED noise penalizes the dim LuAG
+  corners; srCFD is the clip-independent middle). Range 0.80–1.16.
+- Run jackknife: 76 leave-one-out variants, spread 0.003 — NO single-run dependence (the ±0.10
+  structure is between energy PERIODS, not single runs).
+- Map controls: swapped map inverts exactly (0.838 = 1/1.194 ✓); scrambled map collapses the
+  amplitude control 1.96→0.84 ✓ (its σ-ratio is geometry-confounded — noted in-log).
+- **Pre-registered caveat now QUANTIFIED-relevant:** the pair widths (300–400 ps) contain a common
+  position-coupling term (diagonal pairs, r<3 mm fiducial) that dilutes the ratio toward 1; the
+  strong method spread shows the widths still respond to per-capillary differences, but the dilution
+  must be acknowledged (or bounded via G4 / amplitude-binned pairs) in the manuscript.
+- VERDICT per pre-registration: **CONDITIONAL** (near-unity but method/period dependent beyond CI).
+  The kill-shot claim is REWRITTEN: same-shower per-capillary width parity within ~20% across all
+  estimators — against the ×2.3 cross-build stochastic-term ratio — disfavors intrinsic WLS kinetics
+  as the dominant cause, within this geometry and at these light levels. "0.99 consistent with
+  unity, χ²/ndf=0.4" must never appear in print.
 
 ## GATE 5 — Universal collapse: σ_t vs detected light   [RANK 6 — the graphical abstract]
 STATUS: OPEN (data exists; figure to build).

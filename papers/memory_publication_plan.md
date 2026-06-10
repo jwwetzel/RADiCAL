@@ -51,8 +51,9 @@ Companion memories: `memory_paper2_timing.md`, `memory_paper3_energy_position_4d
 ### B. Needs verification (plausible; check scripts/logbooks/branches/calibrations BEFORE writing)
 1. **MIXED corner material map** (NE+SW=DSB1, NW+SE=LuAG) — logbook confirmation + independent
    pulse-shape/decay discriminant. GATE 1 (see memory_analysis_gates.md).
-2. **Kill-shot ratio 0.99 with defensible CI** — needs paired event-bootstrap + run-jackknife + the
-   χ²/ndf=0.4/5 error audit. GATE 6.
+2. ~~Kill-shot ratio 0.99 with defensible CI~~ **GATE 6 CONDITIONAL: 0.99 RETIRED** (brightness-label
+   artifact — SE-D misassigned; χ²=0.4 was over-conservative errors). Replacement claim (B→A once
+   `mixed_h2h.png` is regenerated): same-shower width parity within ~10–20%, srCFD 1.04±0.05.
 3. ~~Position residual 1.5 mm vs WC σ≈3.6 mm arithmetic~~ **GATE 2 RECONCILED 2026-06-09**: the 3.6
    was the t₀-inflated sum-side bound (inapplicable); the residual is real, survives train/test
    (Δ=3.5 µm), and is 0.9 mm in the beam core / 1.5 mm full-window (saturation beyond |x|≈3 mm,
@@ -84,8 +85,12 @@ See `memory_claims_and_forbidden_language.md` for exact wording. Summary:
 2. GATE 1 — **data half CONFIRMED 2026-06-09 (8/8 ends match the map, brightness-independent)**;
    logbook confirmation remains the user-action half (belt and suspenders, no longer blocking).
 3. ~~GATE 2 position arithmetic reconciliation~~ **PASSED/RECONCILED 2026-06-09**.
-4. GATE 6 kill-shot bootstrap CI. ← NEXT analysis gate.
-5. Recompute all four builds' (a,b) with post-fix estimator → single authoritative table.
+4. ~~GATE 6 kill-shot bootstrap CI~~ **CONDITIONAL 2026-06-09 — the 0.99 is RETIRED** (brightness-label
+   artifact; SE-D misassigned). Kill-shot rewritten as within-~20% same-shower width parity
+   (srCFD 1.04±0.05 scatter; methods 0.80–1.16) vs ×2.3 cross-build. Follow-ups: regenerate
+   `mixed_h2h.png` (drop 0.99/χ² annotation), method-gain bootstrap CIs, position-coupling
+   dilution bound (G4 or amplitude-binned pairs).
+5. Recompute all four builds' (a,b) with post-fix estimator → single authoritative table. ← NEXT.
 6. Reframe `papers/timing/radical_timing.tex` to the materials-comparison center of gravity.
 7. Stage-1 GEANT4 campaign (serves both papers; ~days of CPU; on Argon) — now also pins the
    depth-dial ps→mm calibration (modal-dispersion v_eff, the ×1.28 slope excess).
