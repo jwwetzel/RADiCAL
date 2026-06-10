@@ -43,10 +43,12 @@
   \draw[callout] ($(qc.south)+(-0.02,0)$) -- (0.61,0.75);
   \node[ann, anchor=south west] (wf) at (0.02,0.88) {WLS filament (shower max)};
   \draw[callout] ($(wf.south)+(-0.03,0)$) -- (0.275,0.665);
-  \node[ann, anchor=south east] (sd) at (0.97,0.66) {to DW SiPM};
-  \draw[callout] ($(sd.south)+(0.04,0)$) -- (0.935,0.47);
-  \node[ann, anchor=south west] (su) at (0.005,0.44) {to UP SiPM};
-  \draw[callout] ($(su.north)+(0.0,0)$) -- (0.038,0.645);
+  % DW label below the readout face, arrow rising to the stub tips through clear space
+  \node[ann, anchor=south west] (sd) at (0.70,0.08) {to DW SiPM};
+  \draw[callout] (0.90,0.14) -- (0.945,0.30);
+  % UP label below the protruding capillary ends, arrow ending at the lower stub tip
+  \node[ann, anchor=south west] (su) at (0.0,0.40) {to UP SiPM};
+  \draw[callout] ($(su.north)+(0.01,0)$) -- (0.028,0.60);
 \end{scope}
 
 % ---------------- panel (c): beam's-eye corner map (REDRAWN) ----------------
@@ -75,9 +77,9 @@
   \node[ann, anchor=west] at (8.0,-0.9) {monitoring fibre};
   \node[ann, anchor=west] at (8.0,-1.95) {$\varnothing$0.9 mm (central)};
   \draw[callout] (8.0,-1.4) -- (0.6,-0.3);
-  % declared convention compass
-  \draw[-{Stealth[length=1.8mm]}, line width=0.7pt] (-9.3,-5.0) -- (-9.3,-2.8) node[ann, anchor=south]{N};
-  \draw[-{Stealth[length=1.8mm]}, line width=0.7pt] (-9.3,-5.0) -- (-7.1,-5.0) node[ann, anchor=west]{E};
+  % declared convention compass (lower right, clear of panel b's readout stubs)
+  \draw[-{Stealth[length=1.8mm]}, line width=0.7pt] (8.6,-7.2) -- (8.6,-5.0) node[ann, anchor=south]{N};
+  \draw[-{Stealth[length=1.8mm]}, line width=0.7pt] (8.6,-7.2) -- (10.8,-7.2) node[ann, anchor=west]{E};
   \node[ann, align=center, anchor=north] at (0,-7.9)
     {beam's-eye view, looking downstream;\\ N up, E right (drawing convention)};
   % MIXED legend
