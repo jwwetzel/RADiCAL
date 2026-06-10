@@ -151,8 +151,8 @@ void timingFitSummary(){
         lg->AddEntry(gl,Form("%s%s: a=%.0f#pm%.0f, b=%.1f#pm%.1f",r.build,
             i==2?"*":Form(" (%s)",r.srcName),r.a,r.ae,r.b,r.be),"lp"); }
     lg->Draw();
-    TLatex tx; tx.SetNDC(); tx.SetTextSize(0.026); tx.SetTextColor(kGray+3);
-    tx.DrawLatex(0.44,0.585,"*single-estimator timing is ill-posed for MIXED (Sec. 6)");
+    // the MIXED* asterisk is explained in the LaTeX caption (ill-posed module-wide timing,
+    // Sec. 6) — no in-figure footnote, per the captions-carry-prose convention (2026-06-10)
     // paper convention (format pass 2026-06-09): no internal super-title; the LaTeX caption carries it
     c->Print("papers/figures/timing_fit_summary/timing_fit_summary.png");
     c->Print("papers/timing/figs/thesis_postfix.png");
