@@ -1,0 +1,42 @@
+
+===== GATE 3 DEPTH DIAL: mean (DW-UP)/2 vs ln(E) =====
+prediction: slope = -X0/v_g = -26.3 ps per e-fold (PASS band -(26+-10))
+
+  DSB1    lgcfd   25 GeV: N= 27196  <t_diff>=  -195.68 ps  err= 0.38  RMS= 62.3
+  DSB1    lgcfd   50 GeV: N= 53888  <t_diff>=  -228.39 ps  err= 0.23  RMS= 53.7
+  DSB1    lgcfd   75 GeV: N= 49153  <t_diff>=  -242.80 ps  err= 0.23  RMS= 50.6
+  DSB1    lgcfd  100 GeV: N= 63911  <t_diff>=  -248.59 ps  err= 0.20  RMS= 50.2
+  DSB1    lgcfd  125 GeV: N= 49901  <t_diff>=  -252.74 ps  err= 0.23  RMS= 50.3
+  DSB1    lgcfd  150 GeV: N= 90063  <t_diff>=  -263.04 ps  err= 0.17  RMS= 51.4
+  DSB1    led     25 GeV: N= 27952  <t_diff>=  -273.70 ps  err= 0.44  RMS= 73.0
+  DSB1    led     50 GeV: N= 54719  <t_diff>=  -280.04 ps  err= 0.26  RMS= 60.5
+  DSB1    led     75 GeV: N= 50479  <t_diff>=  -281.32 ps  err= 0.25  RMS= 56.9
+  DSB1    led    100 GeV: N= 65958  <t_diff>=  -281.01 ps  err= 0.22  RMS= 55.3
+  DSB1    led    125 GeV: N= 52106  <t_diff>=  -281.44 ps  err= 0.24  RMS= 54.7
+  DSB1    led    150 GeV: N= 94535  <t_diff>=  -286.02 ps  err= 0.17  RMS= 53.0
+  DSB1    cfd05   25 GeV: N= 26958  <t_diff>=  -211.25 ps  err= 0.41  RMS= 68.1
+  DSB1    cfd05   50 GeV: N= 55313  <t_diff>=  -294.27 ps  err= 0.24  RMS= 56.1
+  DSB1    cfd05   75 GeV: N= 51786  <t_diff>=  -314.60 ps  err= 0.25  RMS= 57.2
+  DSB1    cfd05  100 GeV: N= 67373  <t_diff>=  -316.35 ps  err= 0.22  RMS= 58.0
+  DSB1    cfd05  125 GeV: N= 52664  <t_diff>=  -315.97 ps  err= 0.25  RMS= 57.2
+  DSB1    cfd05  150 GeV: N= 95202  <t_diff>=  -319.51 ps  err= 0.18  RMS= 55.4
+  TENERGY led     50 GeV: N= 36040  <t_diff>=  -293.87 ps  err= 0.34  RMS= 63.8
+  TENERGY led     75 GeV: N= 55346  <t_diff>=  -293.60 ps  err= 0.25  RMS= 57.7
+  TENERGY led    100 GeV: N= 50111  <t_diff>=  -290.35 ps  err= 0.25  RMS= 56.7
+  TENERGY led    125 GeV: N= 42304  <t_diff>=  -294.46 ps  err= 0.27  RMS= 54.8
+  TENERGY led    150 GeV: N= 40512  <t_diff>=  -296.87 ps  err= 0.27  RMS= 53.8
+  LUAG    led     50 GeV: N= 43633  <t_diff>=  -281.54 ps  err= 0.44  RMS= 92.6
+  LUAG    led     75 GeV: N= 58761  <t_diff>=  -288.30 ps  err= 0.33  RMS= 80.8
+  LUAG    led    100 GeV: N= 44177  <t_diff>=  -290.21 ps  err= 0.36  RMS= 75.7
+  LUAG    led    125 GeV: N= 58724  <t_diff>=  -295.24 ps  err= 0.29  RMS= 69.5
+  LUAG    led    150 GeV: N= 89082  <t_diff>=  -297.04 ps  err= 0.22  RMS= 65.8
+
+  ---- slopes (ps per e-fold of E) ----
+  DSB1 lgcfd         -33.6 +-  2.9   chi2/ndf=972.4/4
+  DSB1 led            -5.5 +-  1.5   chi2/ndf=231.2/4
+  DSB1 cfd05         -41.6 +- 13.7   chi2/ndf=19735.7/4
+  TENERGY led         -2.3 +-  3.3   chi2/ndf=278.2/3
+  LUAG led           -13.9 +-  1.1   chi2/ndf=24.1/3
+
+  GATE 3 VERDICT: slope -33.6 +- 2.9 ps/e-fold vs predicted -26.3  ->  PASS
+  wrote papers/figures/depth_dial/depth_dial.png + depth_dial_diag.png

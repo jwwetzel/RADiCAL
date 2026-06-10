@@ -24,12 +24,72 @@
 #include "TF1.h"
 #include "TLatex.h"
 #include "TPad.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TGraph.h"
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 // StylePad is defined in RADiCALStyle.h (included above).
+
+// ---------------------------------------------------------------------------
+// DrawSuperTitle — canvas super-title that AUTO-FITS its width so it can never
+// run off the right edge (the recurring "...HG cli"/"...adopted m" truncation).
+// Call after canvas->cd(0). Shrinks the text size until it fits [x0, 1-x0].
+// ---------------------------------------------------------------------------
+static void DrawSuperTitle(const char* text, float maxSize = 0.020f)
+{
+    const float x0 = 0.012f, avail = 1.0f - 2.0f * x0;
+    TLatex lab; lab.SetNDC(); lab.SetTextFont(62); lab.SetTextAlign(12);
+    float s = maxSize;
+    for (int it = 0; it < 22; ++it) {
+        lab.SetTextSize(s); lab.SetText(x0, 0.985f, text);
+        if (lab.GetXsize() <= avail) break;
+        s *= 0.93f; if (s < 0.009f) { s = 0.009f; break; }
+    }
+    lab.SetTextSize(s); lab.SetTextColor(kBlack);
+    lab.DrawLatex(x0, 0.985f, text);
+}
+
+// ---------------------------------------------------------------------------
+// GridWithTitle — divide a canvas into nx*ny pads BELOW a reserved top band that
+// holds the (auto-fitting) super-title, so the title can never overprint the
+// row-1 panel titles. Returns the grid pad; call grid->cd(i) for panel i.
+// ---------------------------------------------------------------------------
+static TPad* GridWithTitle(TCanvas* c, int nx, int ny, const char* title,
+                           double gx = 0.004, double gy = 0.012,
+                           double bandFrac = 0.05, double titleSize = 0.020)
+{
+    c->cd();
+    TPad* g = new TPad(Form("grid_%s", c->GetName()), "", 0.0, 0.0, 1.0, 1.0 - bandFrac);
+    g->SetFillStyle(0); g->SetBorderSize(0); g->Draw();
+    g->Divide(nx, ny, gx, gy);
+    c->cd(0); DrawSuperTitle(title, titleSize);
+    return g;
+}
+
+// ---------------------------------------------------------------------------
+// DrawEnergyLegend — shared "colour -> GeV" key for the multi-energy overlays,
+// driven off the energies ACTUALLY drawn (so it can never drift from the data).
+// E and cols are parallel; draws short colour-line swatches with "<E> GeV".
+// ---------------------------------------------------------------------------
+static void DrawEnergyLegend(double x1, double y1, double x2, double y2,
+                             const std::vector<double>& E, const std::vector<int>& cols,
+                             double txt = 0.030, const char* header = nullptr)
+{
+    TLegend* lg = new TLegend(x1, y1, x2, y2);
+    lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(txt); lg->SetMargin(0.30);
+    if (header) lg->SetHeader(header);
+    for (size_t i = 0; i < E.size(); ++i) {
+        TGraph* g = new TGraph(1); g->SetPoint(0, 0, 0);
+        g->SetLineColor(cols[i]); g->SetLineWidth(5); g->SetMarkerColor(cols[i]);
+        lg->AddEntry(g, Form("%d GeV", (int)E[i]), "l");
+    }
+    lg->Draw();
+}
 
 // ---------------------------------------------------------------------------
 // FitGaussCore — iterative two-pass Gaussian fit to the core of a histogram

@@ -139,10 +139,23 @@ static const double kFiducial_r_timing = 3.0;  // nominal/loose timing fiducial 
 //                            benefit from the looser pool (OOS 27.4 vs 28.1 ps).
 //                            Both are OOS-validated at 3 mm.
 //
-// Two-tier, physics-motivated, OOS-validated -- NOT a per-energy argmin (the
+// Physics-motivated, OOS-validated endpoints -- NOT a per-energy argmin (the
 // per-energy best-bin curve is too jumpy, and tighter cuts overfit in-sample).
+//
+// CONTINUITY: the former hard 2.5->3.0 STEP at 112 GeV created a fiducial seam --
+// 125/150 GeV abruptly admit the noisy 2.5-3.0 mm outer annulus that lower
+// energies exclude, contributing a non-monotonic bump at the 100->125 boundary
+// (sigma-monotonicity audit, 2026-06). We keep the two OOS-validated endpoints
+// (2.5 mm at <=100 GeV, 3.0 mm at >=125 GeV) but RAMP linearly between them so the
+// radius is continuous in energy. At every MEASURED energy this is identical to the
+// old step (25-100 ->2.5; 125,150 ->3.0), so the published headline is unchanged;
+// it only removes the discontinuity for interpolated energies. (The seam's residual
+// effect on the measured points is removed upstream by the in-event broken-timing
+// veto + robust estimator window, not by moving the validated radii.)
 static inline double TimingFiducialR(double energy_GeV) {
-    return (energy_GeV > 112.) ? 3.0 : 2.5;   // 125 & 150 GeV: 3.0 mm;  25-100 GeV: 2.5 mm
+    if (energy_GeV <= 100.) return 2.5;
+    if (energy_GeV >= 125.) return 3.0;
+    return 2.5 + 0.5*(energy_GeV-100.)/25.;    // linear 2.5->3.0 across 100..125 GeV
 }
 
 // ---------------------------------------------------------------------------
@@ -166,6 +179,17 @@ static const float kHG_minPeak_prescan = 30.0f; // stricter HG cut used in pre-s
 static const float kHG_minPeak    = 20.0f;  // min HG amplitude for timing use
 static const float kHG_LED_thresh = 20.0f;  // LED/TOT absolute threshold (= kHG_minPeak)
 static const float kHG_maxPeak = 950.0f;  // DRS4 near-saturation threshold [mV] -- above this, waveform may clip
+
+// In-event broken-timing veto [ns]: a capillary-end crossing that disagrees with
+// the event's MEDIAN end-time by more than this is a wrong-feature / near-noise
+// crossing (e.g. a channel that triggered ~30 ns off on a pre-pulse, or a near-
+// threshold 20-100 mV pulse picked up because brightness was ranked on LG). Such
+// ends are dropped from that event's (DW-UP)/2 (the other ends still time it).
+// Legitimate end-to-end spread is ~0.5 ns (shower depth), so 2 ns is wide open for
+// real pulses and only removes genuine outliers -> no-op for clean events. This is
+// the deterministic veto that de-fuels the estimator-window distortion behind the
+// non-monotonic sigma_t(E) (sigma-monotonicity audit, 2026-06).
+static const float kTimingChanConsistency_ns = 2.0f;
 
 // ---------------------------------------------------------------------------
 // LG energy channel quality  [mV]

@@ -1,0 +1,25 @@
+Info in <TMacOSXSystem::ACLiC>: creating shared library /Users/jameswetzel/Dropbox/Research/CERN_TEST_BEAMS/CERN_May_2023/RADiCAL/RADiCAL/./papers/scripts/mixed_corner_map/cornerDiscriminant_C.so
+
+===== GATE 1 (data half): MIXED corner pulse-shape classification =====
+collecting references + MIXED ...
+
+  reference templates (median +- robust width):
+    D1 lgQ/lgP : DSB1 51.16+-1.90   LuAG 58.53+-3.67
+    D2 cfd50-05: DSB1 2.018+-0.355  LuAG 1.651+-0.311 (ns)
+    D3 hgQ/hgP : DSB1 39.39+-6.51   LuAG 40.63+-4.96
+
+  per-end classification (score>0 => DSB1-like; expected map in [..]):
+  end      D1 score   D2 score   D3 score   verdict  vs expected
+  NW-D         -2.2       -0.8       -0.2   LuAG      [LuAG]  OK
+  NE-D          1.1        1.1        0.2   DSB1      [DSB1]  OK
+  SE-D         -1.1       -1.1       -0.2   LuAG      [LuAG]  OK
+  SW-D          2.6        1.1        0.2   DSB1      [DSB1]  OK
+  NW-U         -1.4       -0.8       -0.2   LuAG      [LuAG]  OK
+  NE-U          2.5        1.1        0.2   DSB1      [DSB1]  OK
+  SE-U         -1.3       -1.1       -0.2   LuAG      [LuAG]  OK
+  SW-U          1.6        1.1        0.2   DSB1      [DSB1]  OK
+
+  capillary-pair consistency: all 4 capillaries: D and U ends agree
+  VERDICT: 8/8 ends match the inferred map (NE+SW=DSB1, NW+SE=LuAG)
+Info in <TCanvas::Print>: png file papers/figures/mixed_corner_map/corner_discriminant.png has been created
+  wrote papers/figures/mixed_corner_map/corner_discriminant.png

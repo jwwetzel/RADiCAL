@@ -63,7 +63,7 @@ static Ladder ladder(const char* build, BuildConfig& cfg, int src){
                           if(e>149) L.s150=r.sigma_ps; }
         fp->Close(); }
     if(L.E.size()>=3){ TGraphErrors g(L.E.size(),&L.E[0],&L.S[0],&L.ze[0],&L.Se[0]);
-        TF1 f("f","sqrt([0]*[0]/x+[1]*[1])",20,160); f.SetParameters(300,18); g.Fit(&f,"QN");
+        TF1 f("f","sqrt([0]*[0]/x+[1]*[1])",L.E.front(),L.E.back()); f.SetParameters(300,18); g.Fit(&f,"QN");
         L.a=std::fabs(f.GetParameter(0)); L.b=std::fabs(f.GetParameter(1));
         L.chi=f.GetChisquare()/std::max(1,f.GetNDF()); L.be=f.GetParError(1); if(L.chi>1) L.be*=std::sqrt(L.chi); }
     return L;
@@ -81,21 +81,23 @@ static void computeLadders(const char* build, Ladder L[3]){
 static void drawPanel(const char* build, Ladder L[3], double lo, double hi){
     int adopt=adoptedSrc(build);
     int col[3]={kRed+1,kGreen+3,kAzure+2}; int mk[3]={24,25,26};
+    double minE=1e9,maxE=0; for(int i=0;i<3;++i) for(double e:L[i].E){minE=std::min(minE,e);maxE=std::max(maxE,e);} if(minE>maxE){minE=25;maxE=150;}
     if(lo>=hi){ double ymn=1e9,ymx=0;
         for(int i=0;i<3;++i) for(double s:L[i].S){ ymn=std::min(ymn,s); if(s<=80) ymx=std::max(ymx,s); }
-        if(ymn>ymx){ymn=20;ymx=60;} double r=ymx-ymn; if(r<5)r=5; lo=std::max(0.0,ymn-0.10*r); hi=ymx+0.12*r; }
-    TH1F* fr=gPad->DrawFrame(0,lo,165,hi);
+        if(ymn>ymx){ymn=20;ymx=60;} double r=ymx-ymn; if(r<5)r=5; lo=std::max(0.0,ymn-0.10*r); hi=ymx+0.16*r; }
+    TH1F* fr=gPad->DrawFrame(minE-12,lo,maxE+12,hi);
     fr->SetTitle(Form("%s;beam energy E (GeV);brightest-1000  (DW#minusUP)/2  #sigma_{t} (ps)",titleFor(build)));
     fr->GetYaxis()->SetTitleSize(0.045); fr->GetYaxis()->SetTitleOffset(1.2); fr->GetXaxis()->SetTitleSize(0.045);
-    TLegend* lg=new TLegend(0.54,0.66,0.95,0.89); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.037);
+    TLegend* lg=new TLegend(0.50,0.62,0.93,0.89); lg->SetBorderSize(0); lg->SetFillStyle(0); lg->SetTextSize(0.035);
+    lg->SetHeader("line = a/#sqrt{E}#oplusb fit (none if non-photostat.)");
     for(int i=0;i<3;++i){ if(L[i].E.empty())continue; bool A=(SRCS[i]==adopt);
         TGraphErrors* g=new TGraphErrors(L[i].E.size(),&L[i].E[0],&L[i].S[0],&L[i].ze[0],&L[i].Se[0]);
         g->SetMarkerStyle(A?(20+i):mk[i]); g->SetMarkerColor(col[i]); g->SetLineColor(col[i]); g->SetMarkerSize(A?1.7:1.2);
-        if(L[i].a>0 && L[i].chi<8.0){ TF1* f=new TF1(Form("f%s%d",build,i),"sqrt([0]*[0]/x+[1]*[1])",20,160);
+        if(L[i].a>0 && L[i].chi<8.0){ TF1* f=new TF1(Form("f%s%d",build,i),"sqrt([0]*[0]/x+[1]*[1])",minE,maxE);
             f->SetParameters(L[i].a,L[i].b); f->SetLineColor(col[i]); f->SetLineWidth(A?3:2); f->SetLineStyle(A?1:2); f->Draw("SAME"); }
         g->Draw("P SAME");
         const char* leglab=SLAB[i];
-        lg->AddEntry(g,Form("%s%s",leglab,A?"  (adopted)":""),"lp");
+        lg->AddEntry(g,Form("%s%s%s",leglab,A?" (adopted)":"",(L[i].a>0&&L[i].chi<8.0)?"":" #scale[0.8]{[pts only]}"),"lp");
         for(size_t j=0;j<L[i].S.size();++j) if(L[i].S[j]>hi){ TLatex tx; tx.SetTextSize(0.032); tx.SetTextColor(col[i]);
             tx.DrawLatex(L[i].E[j]-7, hi-0.07*(hi-lo), Form("#uparrow%.0f",L[i].S[j])); } }
     lg->Draw();

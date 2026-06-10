@@ -105,27 +105,38 @@ void waveformProfiles(const char* build="DSB1"){
         for(int c=0;c<8;++c){ hAll[e][c]=hg[c]; lAll[e][c]=lg[c]; } valid[e]=true;
     }
 
-    // draw a gain (HG or LG) summary: 8 channel panels, energies overlaid
+    // energies actually present (drives the title + shared legend, no false colour claim)
+    std::vector<double> Epres; std::vector<int> Ecols;
+    for(int e=0;e<6;++e) if(valid[e]){ Epres.push_back(Es[e]); Ecols.push_back(kREnergyCols[e]); }
+    TString erange = Epres.empty()? "" : Form("%d#minus%d GeV",(int)Epres.front(),(int)Epres.back());
+
+    // draw a gain (HG or LG) summary: 8 channel panels, energies overlaid, COMMON y-range
     auto drawSummary=[&](TProfile* P[6][8],const char* gain,double t0,double t1,const char* fn){
-        TCanvas* c=new TCanvas(Form("c%s",gain),"",3200,1600); c->Divide(4,2,0.004,0.03);
-        for(int ci=0;ci<8;++ci){ c->cd(ci+1); gPad->SetLeftMargin(0.12); gPad->SetBottomMargin(0.13);
-            double ymax=0; for(int e=0;e<6;++e) if(P[e][ci]) ymax=std::max(ymax,P[e][ci]->GetMaximum());
-            if(ymax<=0)ymax=1; bool first=true;
+        bool isHG = (std::string(gain)=="HG");
+        TCanvas* c=new TCanvas(Form("c%s",gain),"",3200,1640);
+        TPad* g=GridWithTitle(c,4,2,Form("%s: average %s DRS4 waveform per channel (mean #pm RMS), %s, aligned at CFD t=0",build,gain,erange.Data()),0.004,0.03,0.06,0.020);
+        // ONE common y-range across all 8 channels so peak heights are comparable + undershoot is contained
+        double gymax=0, gymin=0;
+        for(int ci=0;ci<8;++ci) for(int e=0;e<6;++e) if(P[e][ci]){ gymax=std::max(gymax,P[e][ci]->GetMaximum());
+            for(int b=1;b<=P[e][ci]->GetNbinsX();++b){ double tc=P[e][ci]->GetBinCenter(b); if(tc<t0||tc>t1)continue; double y=P[e][ci]->GetBinContent(b); if(P[e][ci]->GetBinEntries(b)>0) gymin=std::min(gymin,y); } }
+        if(gymax<=0)gymax=1; double ylo=gymin-0.10*gymax, yhi=1.18*gymax;
+        for(int ci=0;ci<8;++ci){ g->cd(ci+1); gPad->SetLeftMargin(0.165); gPad->SetBottomMargin(0.15); gPad->SetRightMargin(0.03); gPad->SetTopMargin(0.10);
+            bool first=true;
             for(int e=0;e<6;++e){ if(!P[e][ci])continue; TProfile* h=(TProfile*)P[e][ci]->Clone(Form("d%s%d%d",gain,e,ci));
                 h->SetLineColor(kREnergyCols[e]); h->SetLineWidth(2); h->SetMarkerSize(0);
-                h->GetYaxis()->SetRangeUser(-0.1*ymax,1.25*ymax); h->GetXaxis()->SetRangeUser(t0,t1);
-                h->GetXaxis()->SetTitleSize(0.05); h->GetYaxis()->SetTitleSize(0.05);
+                h->GetYaxis()->SetRangeUser(ylo,yhi); h->GetXaxis()->SetRangeUser(t0,t1);
+                h->GetXaxis()->SetTitleSize(0.055); h->GetYaxis()->SetTitleSize(0.055); h->GetYaxis()->SetTitleOffset(1.35);
+                h->GetXaxis()->SetLabelSize(0.05); h->GetYaxis()->SetLabelSize(0.05);
                 h->Draw(first?"HIST":"HIST SAME"); first=false; }
-            TLine* l=new TLine(0,-0.1*ymax,0,1.25*ymax); l->SetLineStyle(2); l->SetLineColor(kRed); l->Draw();
+            TLine* l=new TLine(0,ylo,0,yhi); l->SetLineStyle(2); l->SetLineColor(kRed); l->Draw();
             DrawPadTitle(kCap[ci].name);
+            if(ci==0) DrawEnergyLegend(isHG?0.21:0.60, 0.46, isHG?0.50:0.95, 0.90, Epres, Ecols, 0.052, "beam E");
         }
-        c->cd(0); TLatex t; t.SetNDC(); t.SetTextFont(62); t.SetTextSize(0.028);
-        t.DrawLatex(0.04,0.965,Form("%s: average %s waveform per channel (mean#pm RMS), energies 25(violet)#rightarrow150(red) GeV",build,gain));
         c->Print(Form("output/%s/%s",build,fn));
         printf("  wrote output/%s/%s\n",build,fn);
     };
     drawSummary(hAll,"HG",T0_HG,T1_HG,"hg_waveforms.png");
-    drawSummary(lAll,"LG",T0_LG,T1_LG,"lg_waveforms.png");
+    drawSummary(lAll,"LG",T0_LG,520,"lg_waveforms.png");   // crop to the informative pulse (ends ~450 ns); no '1000' edge-clip
 
     // persist profiles
     TFile fo(Form("output/%s/waveform_profiles.root",build),"RECREATE");
