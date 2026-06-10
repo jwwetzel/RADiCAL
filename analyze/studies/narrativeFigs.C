@@ -109,8 +109,11 @@ void narrativeFigs(const char* build="DSB1", const char* rawPath="data/2023/raw/
     double xa=tlo+0.46*(thi-tlo), xb=tlo+0.30*(thi-tlo);
     t.SetTextColor(kGray+2);  t.DrawLatex(xa,clipPk+60,"clipped peak (820 mV)");
     t.SetTextColor(kGreen+3); t.DrawLatex(xb,hgTrue-120,Form("LG-predicted true peak = %.0f mV",hgTrue));
-    t.SetTextColor(kRed+1);   t.DrawLatex(tlo+0.2,thr05+14,Form("cfd05 @ %.0f mV  (foot: %.0f mV/ns)",thr05,std::fabs(slope(t05))));
-    t.SetTextColor(kAzure+2); t.DrawLatex(tlo+0.2,thrLG+14,Form("hg_lgcfd @ %.0f mV  (edge: %.0f mV/ns)",thrLG,std::fabs(slope(tLG))));
+    // threshold labels in the right half, under the clipped plateau, clear of the
+    // rising edge, the crossing markers, and their dotted drop lines (format pass 2026-06-10)
+    double xt=tlo+0.50*(thi-tlo);
+    t.SetTextColor(kRed+1);   t.DrawLatex(xt,thr05+14,Form("cfd05 @ %.0f mV  (foot: %.0f mV/ns)",thr05,std::fabs(slope(t05))));
+    t.SetTextColor(kAzure+2); t.DrawLatex(xt,thrLG+14,Form("hg_lgcfd @ %.0f mV  (edge: %.0f mV/ns)",thrLG,std::fabs(slope(tLG))));
     TLatex tt; tt.SetNDC(); tt.SetTextFont(62); tt.SetTextSize(0.040);
     tt.DrawLatex(0.13,0.94,Form("%s %s @ %.0f GeV: time the steep edge, not the clipped foot", build, c.name.c_str(), E));
     c2->Print(radFigP("figures/narrative/narrative_pulse.png"));
