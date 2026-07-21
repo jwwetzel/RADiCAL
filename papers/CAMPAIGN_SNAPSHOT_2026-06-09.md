@@ -354,3 +354,40 @@ energy/position paper (the fifth coordinate).
   veto and discloses the per-energy fiducial ramp (2.5 mm ≤100 GeV -> 3.0 mm ≥125); App. A
   "chosen 3.0 mm" reworded. Rebuilt clean (one 2.22 pt cosmetic overfull unchanged).
 - All 6 edited gate macros compile clean in isolation; expected post-quick-win SoC ~80-90 min.
+
+
+## UPDATE 15 (2026-07-21): Phase B mechanical batch — reproduction tooling + indexes
+- Documentation/tooling only; no numeric change, no gate-macro bytes touched. Commits
+  `a7c400e` (batch) + `3c81e7f` (repro.sh verdict fix) on this machine (OWC checkout,
+  ROOT 6.36.04/macosxarm64 — NOT the 6.40.00 machine of UPDATE 14's E4 run).
+- SHIPPED: tools/repro.sh (D1: one-command headline-chain reproduction, PDF-timestamp
+  exemption built in); tools/run_gate.sh (B3 wrapper: refuses without data, clobber
+  warning, bash-3.2-safe); tools/check_figure_manifest.sh (B8 drift checker — run twice
+  this pass, 14/14 OK both times); papers/scripts/INDEX.md (gate index + runbook);
+  analyze/README.md + analyze/studies/INDEX.md (~120 macros, one line each, from their
+  own headers; only hgLgPlot.C + narrativeFigs.C load-bearing; 3 DEPRECATED banners
+  confirmed m–z, none a–l); docs/ARCHITECTURE.md + docs/CONVENTIONS.md (B4);
+  lib/physics/ESTIMATOR.md (D3: kernel walk + naming bridge + SW-U/mcp_ref-2
+  cancellation); data/2023/MANIFEST.sha256 (B2: sha256+bytes+entries, 21 ntuples +
+  8 sidecars, generated programmatically, `shasum -c` verified 29/29 OK); REPRODUCE.md
+  (env pinning, venue-pending placeholders); README/ANALYSIS_GUIDE pointers;
+  .gitignore tracked-log-exception comment.
+- VERIFICATION RUN (new evidence): `tools/repro.sh --check-data` executed twice on this
+  machine. Final: STEP 0 manifest 29/29 OK; STEP 1 verify.C PASS; STEP 2
+  timingFitSummary exit 0; STEP 3 fullFiducialCheck stdout IDENTICAL to committed log
+  (diff -B); STEP 4 = NUMERIC PASS: papers/tables/timing_fit_summary_2026-06-09.md
+  byte-identical, but the three figure renders (timing_fit_summary.png,
+  thesis_postfix.{png,pdf}) came out byte-different under ROOT 6.36.04 (~0.3% size;
+  encoder/writer version). FINDING RECORDED in REPRODUCE.md: image byte-identity is
+  toolchain-pinned (6.40.00); numeric records are version-robust. Figures restored from
+  HEAD (`git checkout --`), tree clean, figs/MANIFEST unchanged. repro.sh exit code 3
+  now names this outcome; first-run false-positive (blank-line capture noise in the
+  full_fiducial log compare) fixed with diff -B. Total 229 s.
+- FINDING (deferred to B5 metadata reconciliation): data/2023/README.md still describes
+  two ntuple formats; measured today all 21 reduced files carry the single 39-branch
+  'rad' schema. Also: tectonic absent on this machine (manuscript builds happen on the
+  other machine or after install).
+- Phase B remaining: blocked-on-decisions B1 (license/CITATION), B2 venue (Zenodo vs
+  CERN Open Data) + fetch script, B5 (metadata reconciliation), B6 (banner batch),
+  B7 (GATE-1 logbook half, Q8), B8 tab_methods/NIM_A dispositions, B9 tag; plus the
+  A.10 optimization-curve re-verification.
