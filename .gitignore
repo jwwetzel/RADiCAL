@@ -41,3 +41,8 @@ archive/**/*.pdf
 
 # LaTeX build artifacts
 papers/**/*.log
+
+# workspace audit A10: generator build artifact (canonical copy: papers/timing/figs/) + third-party source assets pending rights decision + macOS noise
+papers/scripts/apparatus_composite/apparatus_composite.pdf
+papers/timing/NIM_A_Figures/
+.DS_Store

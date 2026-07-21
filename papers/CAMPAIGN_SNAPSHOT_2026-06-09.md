@@ -299,3 +299,29 @@ energy/position paper (the fifth coordinate).
   needs after coauthor review). Earlier this session: author block completed from the parent
   roster (39 authors, 11 ORCIDs verified against the parent PDF link annotations; Wetzel first,
   Perez-Lara alphabetical at P) and the parent-figure reuse report committed.
+
+
+## UPDATE 13 (2026-07-21): workspace world-class audit — Phase A executed
+- Ten-agent panel audit committed (`WORKSPACE_AUDIT_2026-06-10.md` + REORG_PLAN; verdict
+  C+ trending B-: interior record A-, stranger-facing shell D). User decisions: transparency
+  perimeter KEPT (memos/panel docs publish as-is); Phase A executed in full.
+- A1 full-fiducial evidence gap CLOSED: fullFiducialCheck.C rerun (identical: 50.5 ps @150
+  full-fiducial, K=1000 reproduces 25.7), log committed, AUDIT.md added honestly labeled
+  post-hoc. A2 root README rewritten to the claims-law headline + trust path + complete map;
+  ANALYSIS_GUIDE.md added (waterfall + full provenance table, srCFD<->hg_lgcfd bridge,
+  exploratory-vs-load-bearing split). A3 chain_of_evidence.html fixed (8 waveform PNGs
+  vendored into figures/2023/narrative/chain/; renders complete on fresh clone). A4 external
+  working memory imported verbatim with provenance headers: data/2023/metadata/DATASET_NOTES.md,
+  docs/APPARATUS_2023.md, docs/METHODS_2023.md. A5 papers/README.md (master index + series-
+  numbering declaration: timing = Paper 1; "Paper 2" alias explained) and papers/timing/README.md
+  (actual 12-figure map + document index) rewritten. A6 papers/timing/figs/MANIFEST.md
+  (md5 + generator + copy method per figure; dist/optimization frozen-as-circulated). A7
+  DEPRECATED banners on paperSystematics.C + methodCompare.C + breadcrumb beside the stale
+  narrative systematics.png. A8 HISTORICAL-PAGE banners on site/paper.html, timing_story.html,
+  report/index.html. A10 manuscript rebuilt from committed sources; apparatus_composite build
+  artifact + NIM_A_Figures (rights pending) + .DS_Store gitignored; push + tag
+  `circulation-2026-06`.
+- Phase B (pre-submission) remains: LICENSE/CITATION/Zenodo data DOI + fetch script +
+  REPRODUCE.md, studies/gates indexes, metadata reconciliation, A.10-era optimization-curve
+  re-verification, ARCHITECTURE/CONVENTIONS docs. Follow-up experts warranted: open-data/
+  publishing-rights specialist; hardware coauthor (Q8); user logbook scan (GATE 1 half).
