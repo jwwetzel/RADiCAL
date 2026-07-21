@@ -42,6 +42,9 @@ static const char* SNM[NS]={"srCFD","cfd05","LED"};
 
 struct Ev { float dwup[NS]; float slg; int nsat; };
 struct W { double lo,hi; };
+// KERNEL CLONE: the iterative 2.5-sigma truncated window of rad::tebSigma
+// (lib/physics/RadTiming.h); used here to define a COMMON window for the
+// identical-event width conventions (production widths come from tebSigma itself).
 static W cw(std::vector<float>& v){ W w{0,0}; if(v.size()<200)return w;
     double mu=0; for(float x:v)mu+=x; mu/=v.size();
     double sd=0; for(float x:v)sd+=(x-mu)*(x-mu); sd=std::sqrt(sd/v.size()); if(sd<1e-4)sd=0.1;
@@ -97,6 +100,7 @@ void methodGainPostfix(){
     TRandom3 rng(20260610);
     double S[NS][6], Se[NS][6]; bool ok[6]={false};
     double d150_cfd=-1,d150_lo=-1,d150_hi=-1, d150_led=-1,d150_led_lo=0,d150_led_hi=0;
+    double d150_tail=-1, d150_led_tail=-1;   // un-resampled fixed-window (tail-sensitive) centrals
     double clip150[NS]={-1,-1,-1}, unclip150[NS]={-1,-1,-1}; long nClip=0,nUnclip=0;
     printf("\n===== METHOD GAIN, POST-FIX (DSB1, identical events, production chain) =====\n");
     for(int ie=0;ie<6;++ie){
@@ -113,6 +117,13 @@ void methodGainPostfix(){
         if(Es[ie]>149){
             // paired Poisson bootstrap of the fixed-window RMS differences
             W w0=cw(vt[0]), w1=cw(vt[1]), w2=cw(vt[2]);
+            // un-resampled tail-sensitive centrals (the quantity the bootstrap CI brackets;
+            // convention: fixed-window truncated RMS, NOT the production Gaussian-core width)
+            { double t0=wrms(vt[0],w0), t1=wrms(vt[1],w1), t2=wrms(vt[2],w2);
+              if(t0>0&&t1>0) d150_tail=(t1-t0)*1000.0;
+              if(t0>0&&t2>0) d150_led_tail=(t2-t0)*1000.0;
+              printf("    tail-sensitive centrals @150: Delta(cfd05-srCFD)=%.1f ps, Delta(LED-srCFD)=%.1f ps\n",
+                     d150_tail,d150_led_tail); }
             std::vector<double> bo1, bo2; bo1.reserve(2000); bo2.reserve(2000);
             std::vector<int> wt(1000);
             for(int b=0;b<2000;++b){ for(auto&x:wt)x=rng.Poisson(1.0);
@@ -158,14 +169,24 @@ void methodGainPostfix(){
       md << "Identical-event design: intersection of per-source validity+veto; brightest-1000 selected once.\n";
       md << "Width = production post-fix tebSigma. SUPERSEDES the pre-fix 3.1 ps / 22.1->19.5 / tab_methods values.\n\n";
       md << "| E (GeV) | srCFD (ps) | cfd05 (ps) | LED (ps) | cfd05−srCFD (ps) |\n|---|---|---|---|---|\n";
-      char b[256];
+      char b[320];
       for(int ie=0;ie<6;++ie){ if(!ok[ie])continue;
           snprintf(b,sizeof(b),"| %.0f | %.1f | %.1f | %.1f | %+.1f |\n",Es[ie],S[0][ie],S[1][ie],S[2][ie],S[1][ie]-S[0][ie]); md<<b; }
-      snprintf(b,sizeof(b),"\n- 150 GeV gain (cfd05−srCFD): **%.1f ps (%.0f%%)**, paired-bootstrap 68%% CI [%.1f, %.1f] ps\n",
-               S[1][5]-S[0][5],gainPct,d150_lo,d150_hi); md<<b;
-      snprintf(b,sizeof(b),"- 150 GeV LED−srCFD: %+.1f ps, 68%% CI [%.1f, %.1f] ps\n",d150_led,d150_led_lo,d150_led_hi); md<<b;
-      snprintf(b,sizeof(b),"- Saturation split @150: fully clipped (nsat≥7, N=%ld): srCFD %.1f vs cfd05 %.1f ps; less clipped (nsat≤5, N=%ld): %.1f vs %.1f ps\n",
-               nClip,clip150[0],clip150[1],nUnclip,unclip150[0],unclip150[1]); md<<b;
+      md << "\nNOTE — two width conventions (see docs/STATS_CONVENTIONS.md): table widths = production\n";
+      md << "tebSigma (Gaussian-core, the convention of every paper resolution); the bootstrap CI below\n";
+      md << "brackets the TAIL-SENSITIVE (fixed-window truncated-RMS) difference, whose central value is\n";
+      md << "listed beside it. The two are different observables and are quoted separately in Sec. 5.3.\n";
+      snprintf(b,sizeof(b),"\n- 150 GeV core-width gain (cfd05−srCFD, tebSigma): **%.1f ps (%.0f%%)**\n",
+               S[1][5]-S[0][5],gainPct); md<<b;
+      snprintf(b,sizeof(b),"- 150 GeV tail-sensitive gain (cfd05−srCFD, fixed-window RMS): %.1f ps, paired-bootstrap 68%% CI [%.1f, %.1f] ps\n",
+               d150_tail,d150_lo,d150_hi); md<<b;
+      snprintf(b,sizeof(b),"- 150 GeV LED−srCFD: core %+.1f ps; tail-sensitive %+.1f ps, 68%% CI [%.1f, %.1f] ps\n",
+               d150_led,d150_led_tail,d150_led_lo,d150_led_hi); md<<b;
+      { char u0[24],u1[24];
+        if(unclip150[0]<0) snprintf(u0,sizeof(u0),"n/a"); else snprintf(u0,sizeof(u0),"%.1f",unclip150[0]);
+        if(unclip150[1]<0) snprintf(u1,sizeof(u1),"n/a"); else snprintf(u1,sizeof(u1),"%.1f",unclip150[1]);
+        snprintf(b,sizeof(b),"- Saturation split @150: fully clipped (nsat≥7, N=%ld): srCFD %.1f vs cfd05 %.1f ps; less clipped (nsat≤5, N=%ld): %s vs %s (subset < 300: width not quoted; the less-clipped comparison lives in the 75 GeV full-fiducial split)\n",
+               nClip,clip150[0],clip150[1],nUnclip,u0,u1); md<<b; }
       md << "- Floors (identical-event fits):\n";
       for(int s=0;s<NS;++s){ snprintf(b,sizeof(b),"  - %s: a=%.0f±%.0f ps·√GeV, b=%.1f±%.1f ps (χ²/ndf %.1f/%d)\n",
                SNM[s],A[s],Ae[s],B[s],Be[s],Chi[s],Ndf[s]); md<<b; }

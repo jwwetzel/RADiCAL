@@ -59,6 +59,9 @@ static std::vector<Ev> gather150(const char* build,int src,BuildConfig& cfg){
 }
 
 // production-equivalent sigma under a variant (post-hoc cuts on the stored events)
+// KERNEL CLONE: rad::eventDWUP + brightest-K + rad::tebSigma re-run on STORED events with
+// cuts as arguments (the whole point: post-hoc variants on identical events). Nominal
+// args (3.0,750,20,2.0,1000) reproduce the production headline 25.7 — the equivalence proof.
 static double variantSigma(std::vector<Ev>& EV,double rmax,double mcpHi,float hgThr,float W,int K){
     std::vector<std::pair<float,float>> sd; sd.reserve(EV.size());
     for(Ev& e:EV){
@@ -97,7 +100,10 @@ void systematicsPostfix(){
             variantSigma(EV,3.0,700,20,2.0f,1000), variantSigma(EV,3.0,750,30,2.0f,1000),
             variantSigma(EV,3.0,750,20,1.5f,1000), variantSigma(EV,3.0,750,20,3.0f,1000)};
         double rms=0; int n=0;
-        for(int k=0;k<8;++k){ shift[ib][k]=(v[k]>0&&nom[ib]>0)?v[k]-nom[ib]:0; rms+=shift[ib][k]*shift[ib][k]; ++n; }
+        for(int k=0;k<8;++k){
+            if(v[k]<=0||nom[ib]<=0)   // insurance (never trips on committed data): a failed
+                printf("  WARNING: %s variant %d FAILED (sigma<0) — recorded as 0 shift; do NOT quote without investigating\n",BS[ib].build,k);
+            shift[ib][k]=(v[k]>0&&nom[ib]>0)?v[k]-nom[ib]:0; rms+=shift[ib][k]*shift[ib][k]; ++n; }
         tot[ib]=std::sqrt(rms/n);
         printf("  %-8s nominal %.1f ps | shifts:",BS[ib].build,nom[ib]);
         for(int k=0;k<8;++k) printf(" %+0.1f",shift[ib][k]);

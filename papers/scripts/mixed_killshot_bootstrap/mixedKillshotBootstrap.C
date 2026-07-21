@@ -44,6 +44,8 @@ struct Ev { float t[7]; float amp[7]; int run; };
 struct Win { double lo,hi; };
 
 // full-sample 2.5-sigma core window (frozen -> enables Poisson bootstrap)
+// KERNEL CLONE: the iterative 2.5-sigma truncated window of rad::tebSigma
+// (lib/physics/RadTiming.h); window FROZEN per dataset before bootstrap resampling.
 static Win coreWindow(std::vector<float>& v){
     Win w{0,0}; if(v.size()<300) return w;
     double mu=0; for(float x:v)mu+=x; mu/=v.size();

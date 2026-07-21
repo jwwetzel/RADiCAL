@@ -325,3 +325,32 @@ energy/position paper (the fifth coordinate).
   REPRODUCE.md, studies/gates indexes, metadata reconciliation, A.10-era optimization-curve
   re-verification, ARCHITECTURE/CONVENTIONS docs. Follow-up experts warranted: open-data/
   publishing-rights specialist; hardware coauthor (Q8); user logbook scan (GATE 1 half).
+
+
+## UPDATE 14 (2026-07-21): code-audit quick-win list executed
+- Six-expert code/analysis audit (CODE_AUDIT_2026-07-21.md: A-, SoC ~125 min measured, zero
+  code-vs-paper mismatches, byte-identical reproduction) followed by the full quick-win list:
+- (1) RadTiming.h header rewritten — timingBrightestK+kLGCFD (srCFD) declared THE production
+  headline (25.7±0.6); timingBestBin marked RETIRED at its definition; stale tebSigma lead-in
+  and dead paths fixed; sigmaT.C header corrected. (2) KERNEL-CLONE cross-reference comments on
+  all 7 gate-macro reimplementations of eventDWUP/tebSigma, each naming its deliberate deltas
+  and the sigma_K1000(150)=25.7 equivalence proof. (3) SelectionCuts.h summary rewritten as
+  WHICH-CHAIN-APPLIES-WHAT (production timing = 1,2,3,5,6+veto+brightest-K; Pb/M5/M7 tagged
+  study-era/retired); kMCP2*/kHG_maxPeak annotated not-applied-in-production. (4) Reproduction
+  protocol: run-from-repo-root + expected PDF-timestamp residual documented in ANALYSIS_GUIDE +
+  timing_fit_summary AUDIT addendum (numeric-record vs environment-noise split of the log).
+  (5) srCFD alias at all three code definition sites + METHODS_2023. (6) docs/STATS_CONVENTIONS.md
+  (two width conventions, sqrt(2N), PDG scaling, RMS-of-shifts + quadrature alternative
+  2.8/3.3/2.4/5.5 with conclusions-survive paragraph, bootstrap, MIXED scatter); methodGainPostfix
+  now prints the un-resampled tail-sensitive centrals — gate RERUN, diff = intended lines only,
+  ALL numbers identical, and the paper's 4.0 ps tail-sensitive gain now sits in the committed
+  table (evidentiary hole closed; LED tail-sensitive 4.3 ps also recorded); sentinel -1.0 -> n/a.
+  (7) lgcfd_frac=0.15 WHY at BuildConfig.h + Reducer.C incl. the 20/780 mV guard rationale.
+  (8) BuildConfig D4U4-order guard (protects eventDWUP's index invariant); systematicsPostfix
+  FAIL-print insurance; fullFiducialCheck r=3.0-protocol AUDIT addendum; depth-dial fit-form
+  addendum; tebSigma 0.9546-vs-iterated-0.938 fallback-debias caveat (comment only, post-
+  submission item); ChannelConfig authority note; stale Analysis/ path tags purged.
+- MANUSCRIPT (disclosure, no numbers changed): Sec. 4 now defines the in-event 2 ns median
+  veto and discloses the per-energy fiducial ramp (2.5 mm ≤100 GeV -> 3.0 mm ≥125); App. A
+  "chosen 3.0 mm" reworded. Rebuilt clean (one 2.22 pt cosmetic overfull unchanged).
+- All 6 edited gate macros compile clean in isolation; expected post-quick-win SoC ~80-90 min.

@@ -1,6 +1,10 @@
 // ============================================================================
 // ChannelConfig.h — RADiCAL CERN May 2023 Test Beam
 // ============================================================================
+// NOTE (2026-07): the AUTHORITATIVE channel map consumed by the reduction is the
+// per-build JSON (data/2023/configs/<BUILD>.json via lib/io/BuildConfig.h). This
+// header provides the raw flat-array indexing arithmetic and the 2023 defaults
+// used by raw-waveform studies; the two are consistent (see docs/APPARATUS_2023.md).
 //
 // Two CAEN DT5742 digitizers (DRS0, DRS1).  Each module has 2 inner groups
 // of 9 channels (8 signal + 1 trigger).  Data is stored flat per event:

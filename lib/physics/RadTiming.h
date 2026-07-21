@@ -1,20 +1,27 @@
 // ============================================================================
 // RadTiming.h — THE one timing-resolution method, reused by every analysis.
 // ----------------------------------------------------------------------------
-// Encapsulates the published headline (DW-UP)/2 Method A pipeline so that every
-// build/run/year is analysed identically (no per-macro re-derivation). Matches
-// Analysis/timingEnergyBins.C exactly; reproduces DSB1/150 = 27.4 ps.
+// PRODUCTION HEADLINE (the paper's numbers): timingBrightestK(v, E, kLGCFD)
+//   = brightest-1000 (DW-UP)/2 with the in-event consistency veto (eventDWUP)
+//   and the robust core width (tebSigma). kLGCFD is the paper's "srCFD"
+//   (saturation-recovered CFD; reduced-tree branch hg_lgcfd). Reproduces the
+//   published sigma_t(150 GeV, DSB1) = 25.7 +- 0.6 ps.
 //
 //   rad::RadView v; v.attach(tree, &cfg);
-//   rad::TimingResult r = rad::timingBestBin(v, energy);
-//   // r.sigma_ps, r.best_bin, r.nFid, r.xc/yc, ...
+//   rad::TimingResult r = rad::timingBrightestK(v, energy, RadView::kLGCFD);
+//   // r.sigma_ps, r.nFid, r.xc/yc, ...
+//
+// HISTORICAL: timingBestBin (below) is the RETIRED parent-paper-era Method A
+// best-bin pipeline (cfd05 default; reproduced the published 27.4 ps era).
+// Kept for the record; NOT the paper headline. See README.md (lib table) and
+// ANALYSIS_GUIDE.md. Historical reference macro: analyze/studies/timingEnergyBins.C.
 // ============================================================================
 #ifndef RADCORE_RADTIMING_H
 #define RADCORE_RADTIMING_H
 
 #include "RadView.h"
-#include "PlotUtils.h"       // Analysis: FitGaussCore
-#include "SelectionCuts.h"   // Analysis: kMCP1_minPeak.., kHG_minPeak, TimingFiducialR
+#include "PlotUtils.h"       // lib/viz: FitGaussCore
+#include "SelectionCuts.h"   // lib/physics: kMCP1_minPeak.., kHG_minPeak, TimingFiducialR
 #include "TH1F.h"
 #include <vector>
 #include <algorithm>
@@ -22,8 +29,10 @@
 
 namespace rad {
 
-// VecToHist_teb + FitGaussCore, identical to timingEnergyBins.C: 120 bins over
-// mu2 +- 4*ms2 after a 5-sigma outlier rejection, then 2-sigma core Gaussian fit.
+// The production width estimator: iterative robust core window, then a 2-sigma
+// Gaussian-core fit inside it, with a tail guard. (The historical pre-fix version
+// windowed on a 5-sigma RMS, which rare broken-timing outliers inflated — the
+// sigma-monotonicity bug documented below and fixed 2026-06.)
 inline double tebSigma(std::vector<float>& v) {
     if (v.size() < 50) return -1;
     double mu1=0; for(float x:v) mu1+=x; mu1/=v.size();
@@ -35,6 +44,12 @@ inline double tebSigma(std::vector<float>& v) {
         for(float x:v) if(std::fabs(x-rc)<2.5*rw){ s+=x; ss+=x*x; ++n; }
         if(n<20) break; rc=s/n; double w2=ss/n-rc*rc; if(w2>0) rw=std::sqrt(w2); }
     double robust = rw/0.9546*1000.0;   // ps, truncation-debiased
+    // NOTE (stats audit 2026-07): 0.9546 is the SINGLE-pass 2.5-sigma truncation
+    // factor; the iterated fixed point converges slightly narrower (~0.938), so the
+    // robust FALLBACK is ~-2% biased for a pure Gaussian. The published resolutions
+    // use the Gaussian-core fit below (fallback only trips for pathological samples),
+    // so no gated number is affected; correcting the constant is a post-submission
+    // item requiring a full gate rerun (see CODE_AUDIT_2026-07-21.md).
     // --- Gaussian-core fit (preferred for clean peaks) ---
     // Build the 120-bin core window from the ROBUST truncated centre/width (rc,rw),
     // NOT a 5-sigma RMS. The 5-sigma RMS is inflated by the very broken-timing
@@ -94,9 +109,9 @@ inline bool eventDWUP(RadView& v, int src, float& dwup) {
     return true;
 }
 
-// The headline (DW-UP)/2 Method A best-bin sigma_t, build-agnostic via RadView.
-// src selects the per-end timing source (RadView::kCFD05 default = published method;
-// RadView::kLGCFD = CFD on the LG-predicted true peak, the improved headline).
+// RETIRED (see file header) — historical parent-paper-era Method A best-bin
+// pipeline; NOT the paper headline. The production headline is timingBrightestK
+// below. src: RadView::kCFD05 (historical default) | RadView::kLGCFD (paper "srCFD").
 inline TimingResult timingBestBin(RadView& v, double energy, int src = RadView::kCFD05) {
     TimingResult r;
     v.beamCenter(r.xc, r.yc);                                  // ScanRunCenters LG-weighted centroid

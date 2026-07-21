@@ -57,7 +57,13 @@ struct BuildConfig {
     // digitizer geometry
     int    boards = 2, groups_per_board = 2, chans_per_group = 9, samples = 1024;
     double sample_ns = 0.2;
-    double lgcfd_frac = 0.15;   // hg_lgcfd threshold = frac * (LG-predicted TRUE HG peak)
+    double lgcfd_frac = 0.15;   // hg_lgcfd (srCFD) threshold = frac * (LG-predicted TRUE HG peak).
+                                // WHY 0.15: the steep-but-safe sweet spot — low enough that the
+                                // threshold stays below the ~820 mV clip even for the brightest
+                                // events (higher fracs re-hit the clip and blow up), high enough
+                                // to sit on the steep recovered edge (~x3.7 the foot slope).
+                                // Baked in AT REDUCTION, so it is not a post-hoc systematics knob;
+                                // the fraction sweep lives in the App. A optimization scan.
     double hg_sat_mV = 950.0;   // HG positive clip/saturation level [mV]. 2023: ~800
                                 // because the DT5742 window was DC-offset down to
                                 // capture the negative afterpulse (default 950 = full rail)
@@ -137,6 +143,18 @@ struct BuildConfig {
             m.use_mcp2 = (ref == 2);
             m.mcp   = m.use_mcp2 ? c.mcp2   : c.mcp1;
             m.mcp_t = m.use_mcp2 ? c.mcp2_t : c.mcp1_t;
+        }
+        // GUARD (code audit 2026-07): rad::eventDWUP hardcodes canonical index order
+        // 0-3 = Down ends, 4-7 = Up ends. A config that lists ends in any other order
+        // would silently corrupt the (DW-UP)/2 observable — warn loudly.
+        if (n == 8) {
+            bool d4u4 = true;
+            for (int i = 0; i < 4; ++i) if (c.end[i].end   != "D") d4u4 = false;
+            for (int i = 4; i < 8; ++i) if (c.end[i].end   != "U") d4u4 = false;
+            if (!d4u4)
+                fprintf(stderr, "WARNING [BuildConfig] %s: channel_map.ends is NOT in the "
+                        "canonical D,D,D,D,U,U,U,U order that rad::eventDWUP assumes — "
+                        "(DW-UP)/2 results from this config would be corrupted!\n", path.c_str());
         }
         c.nend = n;
 

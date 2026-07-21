@@ -73,6 +73,9 @@ static std::vector<Ev> gather(double E, BuildConfig& cfg){
 
 struct M { double core=0,prod=0,rob=0,ftail=0,med=0; long n=0,ntail=0; };
 static double medianOf(std::vector<float>& v){ std::vector<float> a=v; std::nth_element(a.begin(),a.begin()+a.size()/2,a.end()); return a[a.size()/2]; }
+// Width conventions on identical events: prod = rad::tebSigma (lib/physics/RadTiming.h,
+// the production estimator, called directly); core/robust/f_tail computed in a COMMON
+// window so the estimators are compared on the same footing (Sec. 5.3 / App. B).
 static M metrics(std::vector<float>& v,double W){
     M m; if(v.size()<200) return m; m.n=v.size(); m.med=medianOf(v);
     std::vector<float> t=v; m.prod=tebSigma(t);

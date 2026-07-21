@@ -86,24 +86,30 @@
 // ── Wire chamber ────────────────────────────────────────────────────────────
 //
 //   kWC_minPeak  Minimum WC pulse amplitude [mV] for a plane to be counted
-//                 as valid.  Applied in processRun.C (wc_ok branch).
+//                 as valid.  Applied in reduce/Reducer.C (wc_ok branch;
+//                 historically processRun.C).
 //                 Must have all four planes (R, L, D, U) valid for wc_ok.
 //
-// ── Summary of event selection (applied sequentially) ───────────────────────
+// ── Summary of event selection — WHICH CHAIN APPLIES WHAT ───────────────────
 //
-//   1. wc_ok == true                      wire-chamber track reconstructed
-//   2. mcp_peak > kMCP1_minPeak           clean MCP1 reference (timing, lower)
-//      mcp_peak < kMCP1_maxPeak           MCP1 not saturated (timing, upper)
-//      mcp_peak > kMCP_minPeak_E          MCP confirmed (energy, lower only)
-//   3. r_beam  < kFiducial_r_timing       beam within timing fiducial
-//      r_beam  < kFiducial_r_energy       beam within energy fiducial (tighter)
-//      where r_beam is computed from data-derived centroid, not kCalo_x0/y0
-//   4. sum_pb < kPb_maxRatio * sum_lg     shower contained in RADiCAL
+//   The PRODUCTION TIMING chain (the paper numbers; RadTiming.h timingBrightestK)
+//   applies: 1, 2 (MCP1 window only), 3 (TimingFiducialR), 5, 6, plus the
+//   in-event median-consistency veto (kTimingChanConsistency_ns) and the
+//   brightest-K selection (K=1000 by sum_lg). Steps 4, 7, 8 and the MCP2/energy
+//   variants are ENERGY- or STUDY-chain only — NOT applied by production timing.
+//
+//   1. wc_ok == true                      [timing + energy]
+//   2. mcp1_peak in (kMCP1_min, kMCP1_max) [timing]
+//      mcp_peak > kMCP_minPeak_E          [energy chain, lower only]
+//   3. r_beam  < TimingFiducialR(E)       [timing: 2.5 mm ≤100 GeV → 3.0 mm ≥125]
+//      r_beam  < kFiducial_r_energy       [energy, tighter]
+//      where r_beam is computed from the data-derived centroid, not kCalo_x0/y0
+//   4. sum_pb < kPb_maxRatio * sum_lg     [energy/uniformity STUDIES only]
 //      (only applied when sum_lg > kSumLG_centroid to avoid divide-near-zero)
-//   5. hg_peak[i] > kHG_minPeak           per-channel: signal above noise
-//   6. hg_cfd[i]  > kNoTime sentinel      per-channel: CFD crossing found
-//   7. hg_tot[i]  > 0                     per-channel: TOT valid (M5 only)
-//   8. lg_peak[i] > kLG_minPeak           per-channel: LG valid (M7 only)
+//   5. hg_peak[i] > kHG_minPeak           [timing + energy, per channel]
+//   6. hg_cfd[i]  > kNoTime sentinel      [timing, per channel: crossing found]
+//   7. hg_tot[i]  > 0                     [RETIRED legacy TOT study ("M5")]
+//   8. lg_peak[i] > kLG_minPeak           [RETIRED legacy LG study ("M7")]
 //
 // ============================================================================
 
@@ -163,8 +169,10 @@ static inline double TimingFiducialR(double energy_GeV) {
 // ---------------------------------------------------------------------------
 static const float kMCP1_minPeak    = 200.0f;  // MCP1 amplitude cut for timing (lower)
 static const float kMCP1_maxPeak    = 750.0f;  // MCP1 saturation cut for timing (upper)
-static const float kMCP2_minPeak    = 200.0f;  // MCP2 amplitude cut for timing (lower)
-static const float kMCP2_maxPeak    = 750.0f;  // MCP2 saturation cut for timing (upper)
+static const float kMCP2_minPeak    = 200.0f;  // MCP2 amplitude cut (NOT applied in production —
+static const float kMCP2_maxPeak    = 750.0f;  //   no macro cuts mcp2_peak; SW-U's MCP2 reference is
+                                               //   guarded only by the reducer's 30 mV validity floor
+                                               //   + the in-event veto. Kept for symmetry/studies.
 static const float kMCP_minPeak_E   =  50.0f;  // MCP amplitude cut for energy (lower only)
 
 // ---------------------------------------------------------------------------
@@ -178,7 +186,9 @@ static const float kHG_minPeak_prescan = 30.0f; // stricter HG cut used in pre-s
 // ---------------------------------------------------------------------------
 static const float kHG_minPeak    = 20.0f;  // min HG amplitude for timing use
 static const float kHG_LED_thresh = 20.0f;  // LED/TOT absolute threshold (= kHG_minPeak)
-static const float kHG_maxPeak = 950.0f;  // DRS4 near-saturation threshold [mV] -- above this, waveform may clip
+static const float kHG_maxPeak = 950.0f;  // DRS4 near-saturation threshold [mV] (diagnostic studies
+                                          // ONLY — not applied in production; the 2023 HG chain
+                                          // physically clips at ~820 mV, see BuildConfig hg_sat_mV)
 
 // In-event broken-timing veto [ns]: a capillary-end crossing that disagrees with
 // the event's MEDIAN end-time by more than this is a wrong-feature / near-noise

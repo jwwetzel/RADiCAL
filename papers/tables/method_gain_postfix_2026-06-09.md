@@ -13,9 +13,15 @@ Width = production post-fix tebSigma. SUPERSEDES the pre-fix 3.1 ps / 22.1->19.5
 | 125 | 26.5 | 30.1 | 27.0 | +3.6 |
 | 150 | 25.6 | 26.9 | 28.2 | +1.3 |
 
-- 150 GeV gain (cfd05−srCFD): **1.3 ps (5%)**, paired-bootstrap 68% CI [3.4, 4.7] ps
-- 150 GeV LED−srCFD: +2.5 ps, 68% CI [3.6, 4.9] ps
-- Saturation split @150: fully clipped (nsat≥7, N=892): srCFD 25.3 vs cfd05 27.4 ps; less clipped (nsat≤5, N=46): -1.0 vs -1.0 ps
+NOTE — two width conventions (see docs/STATS_CONVENTIONS.md): table widths = production
+tebSigma (Gaussian-core, the convention of every paper resolution); the bootstrap CI below
+brackets the TAIL-SENSITIVE (fixed-window truncated-RMS) difference, whose central value is
+listed beside it. The two are different observables and are quoted separately in Sec. 5.3.
+
+- 150 GeV core-width gain (cfd05−srCFD, tebSigma): **1.3 ps (5%)**
+- 150 GeV tail-sensitive gain (cfd05−srCFD, fixed-window RMS): 4.0 ps, paired-bootstrap 68% CI [3.4, 4.7] ps
+- 150 GeV LED−srCFD: core +2.5 ps; tail-sensitive +4.3 ps, 68% CI [3.6, 4.9] ps
+- Saturation split @150: fully clipped (nsat≥7, N=892): srCFD 25.3 vs cfd05 27.4 ps; less clipped (nsat≤5, N=46): n/a vs n/a (subset < 300: width not quoted; the less-clipped comparison lives in the 75 GeV full-fiducial split)
 - Floors (identical-event fits):
   - srCFD: a=194±6 ps·√GeV, b=19.9±0.8 ps (χ²/ndf 2.7/4)
   - cfd05: a=195±23 ps·√GeV, b=21.8±2.7 ps (χ²/ndf 50.3/4)

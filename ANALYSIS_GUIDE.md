@@ -38,8 +38,12 @@ Governance around the waterfall: the **claims law**
 (`papers/memory_claims_and_forbidden_language.md`), the **gate history**
 (`papers/memory_analysis_gates.md`), and the append-only **campaign snapshot**
 (`papers/CAMPAIGN_SNAPSHOT_2026-06-09.md`). Estimator naming bridge: the paper's **srCFD**
-is the code's `hg_lgcfd` source (`RadView::kLGCFD`); `cfd05` and `LED` are the diagnostic
-sources.
+is the code's `hg_lgcfd` source (`RadView::kLGCFD`). Adopted sources are per-regime (paper
+Sec. 5.3): srCFD for the bright/clipped builds (DSB1, MIXED), **LED as the primary source for
+the dim builds** (LuAG, TENERGY); `cfd05` is diagnostic (the clipped-peak reference class).
+The WHY behind each method choice: `docs/METHODS_2023.md` (methods compendium); statistical
+conventions (width definitions, error scaling, bootstrap, systematics total):
+`docs/STATS_CONVENTIONS.md`.
 
 ## Provenance table — every figure/table/number in the manuscript
 
@@ -67,11 +71,14 @@ sources.
 | −33.6 ± 2.9 ps/e-fold | acceptance-conditional consistency reading | `depthDial.C` | log prints the GATE 3 verdict line |
 | method gain 1.3 ps core / 4.0 ps tail-sensitive | identical events | `methodGainPostfix.C` | md table + paired-bootstrap CI in log |
 
-To re-derive any row: `source setup.sh`, run the generator listed, and `git diff` — a clean
-diff (or byte-identical outputs) is the reproduction. ⚠ Gate macros write their committed
-outputs in place; treat a dirty diff as a finding, not a formality. All generators are
-deterministic (seeded bootstrap; no wall-clock randomness). Requires `data/2023/reduced/`
-(see README → Data).
+To re-derive any row: `source setup.sh`, run the generator listed **from the repo root** (gate
+macros write repo-relative outputs), and `git diff` — a clean diff (or byte-identical outputs)
+is the reproduction. Expected residual: `thesis_postfix.pdf` differs only in its embedded
+PDF /CreationDate metadata; the table md and every PNG must be byte-identical (verified
+2026-07-21: full chain reproduced in ~93 s of machine time, `CODE_AUDIT_2026-07-21.md`).
+⚠ Gate macros write their committed outputs in place; treat a dirty diff as a finding, not a
+formality. All generators are deterministic (seeded bootstrap; no wall-clock randomness).
+Requires `data/2023/reduced/` (see README → Data).
 
 ## Exploratory vs load-bearing
 

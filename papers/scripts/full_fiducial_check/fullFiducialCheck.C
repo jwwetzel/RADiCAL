@@ -43,6 +43,9 @@ static std::vector<Ev> gatherE(const char* build,double E,int src,BuildConfig& c
 }
 
 // production (DW-UP)/2 per event with the in-event consistency veto (W=2.0 ns)
+// KERNEL CLONE: reimplements rad::eventDWUP (lib/physics/RadTiming.h) on stored events.
+// Deliberate deltas: thresholds passed as arguments (post-hoc variants); otherwise identical
+// (median veto, per-end means). Chain equivalence: sigma_K1000(150)=25.7 reproduces the headline.
 static bool dwup(Ev& e,float hgThr,float W,float& out){
     float tt[8]; bool okc[8]; int m=0; float a[8];
     for(int c=0;c<8;++c){ okc[c]=e.istim[c]&&e.pk[c]>=hgThr&&e.t[c]>-1e5f; if(okc[c]){tt[c]=e.t[c];a[m++]=e.t[c];} }

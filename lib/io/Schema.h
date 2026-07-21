@@ -72,7 +72,7 @@ struct RadEvent {
     Float_t hg_cfd30[NCAP]   = {0};
     Float_t hg_cfd50[NCAP]   = {0};
     Float_t hg_led[NCAP]     = {0};
-    Float_t hg_lgcfd[NCAP]   = {0};   // MCP-ref CFD at frac*(LG-predicted TRUE peak) -- steep-edge timing
+    Float_t hg_lgcfd[NCAP]   = {0};   // MCP-ref CFD at frac*(LG-predicted TRUE peak) -- steep-edge timing (the paper's "srCFD")
     Float_t hg_tot[NCAP]     = {0};
     Float_t hg_charge[NCAP]  = {0};
     Float_t lg_peak[NCAP]    = {0};

@@ -1,15 +1,16 @@
 // ============================================================================
 // sigmaT.C — build-agnostic timing resolution driver (uses the shared method)
 // ----------------------------------------------------------------------------
-// Thin driver over rad::timingBestBin (analyze/RadTiming.h), which IS the
-// published headline (DW-UP)/2 Method A pipeline. The same rigorous method is
-// applied to every build/run/year. Reproduces DSB1/150 = 27.4 ps.
+// Thin driver over rad::timingBestBin (lib/physics/RadTiming.h) — the RETIRED
+// historical Method A best-bin pipeline (parent-paper 27.4 ps era). Kept as a
+// historical driver; the PAPER headline (25.7±0.6 ps) is timingBrightestK with
+// kLGCFD (srCFD), run by papers/scripts/timing_fit_summary/timingFitSummary.C.
 //
 //   ROOT_INCLUDE_PATH=lib/waveform:lib/io:lib/physics:lib/viz root -l -b -q \
 //     'analyze/sigmaT.C+("data/2023/configs/DSB1.json", 150)'
 // ============================================================================
-#include "RadTiming.h"       // lib/physics: timingBestBin (the one method)
-#include "DataPaths.h"       // Analysis: radReduced
+#include "RadTiming.h"       // lib/physics: timingBestBin (retired) + timingBrightestK
+#include "DataPaths.h"       // lib/io: radReduced
 #include "TFile.h"
 #include "TTree.h"
 #include <cstdio>

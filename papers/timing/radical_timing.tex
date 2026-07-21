@@ -306,7 +306,13 @@ differential estimator
   t_{\mathrm{DW-UP}} \equiv \tfrac{1}{2}\!\left(\bar t_\mathrm{DW} - \bar t_\mathrm{UP}\right),
   \label{eq:dwup}
 \end{equation}
-averaging up to four downstream and four upstream SiPM times. The difference cancels any
+averaging up to four downstream and four upstream SiPM times. Before averaging, an
+in-event consistency veto is applied: a capillary-end crossing that disagrees with the
+event's median end-time by more than $2$~ns is a wrong-feature or near-noise crossing
+(e.g.\ a pre-pulse trigger on a dim channel) and is dropped, the surviving ends still
+timing the event; this is a no-op for clean events and removes a rare far-outlier tail
+(its window is varied to $1.5$ and $3.0$~ns in the systematics budget,
+Table~\ref{tab:syst}). The difference cancels any
 time common to both ends --- in particular the MCP start --- so $t_{\mathrm{DW-UP}}$ is
 free of the reference jitter; averaging four channels per end suppresses uncorrelated
 single-channel noise. The single-event resolution quoted throughout is the standard
@@ -320,7 +326,10 @@ suppressed by the recovered edge, Sec.~\ref{sec:method-gain}.) The suppression o
 Sec.~\ref{sec:method-gain} (Fig.~\ref{fig:satellite}).
 
 Events are required to lie in the wire-chamber fiducial region and to have a valid MCP
-signal. Because shower fluctuations spread the collected light at fixed beam energy, the
+signal; the timing fiducial radius is $2.5$~mm at $\leq\!100$~GeV, relaxing to $3.0$~mm
+at $125$--$150$~GeV where the larger samples support it (both radii appear as
+variations in the systematics budget, Table~\ref{tab:syst}). Because shower
+fluctuations spread the collected light at fixed beam energy, the
 resolution depends on shower brightness; for a uniform, well-measured comparison across
 builds we quote the resolution of the $1000$ brightest showers (by total low-gain signal)
 at each energy, which fixes the statistical precision of every point. Within each build,
@@ -704,7 +713,8 @@ is the quantitative basis for the method of Sec.~\ref{sec:method}. Panel~(b) sho
 brightness selection: $\sigma_t$ falls steeply as the dimmest showers are removed and
 flattens near $K\!\sim\!1000$, beyond which admitting dimmer showers degrades it again;
 $K=1000$ sits at the knee. Panel~(c) shows the resolution is flat across the timing
-fiducial radius out to the chosen $3.0$~mm, rising only as off-axis showers leak in.
+fiducial radius out to the adopted high-energy value of $3.0$~mm (Sec.~\ref{sec:estimator}),
+rising only as off-axis showers leak in.
 Panel~(d) shows insensitivity to the per-channel HG threshold, confirming the $20$~mV
 working point is well clear of the noise floor. The corresponding systematic stability of
 $\sigma_t(150)$ under these variations is summarised in Fig.~\ref{fig:syststab} and

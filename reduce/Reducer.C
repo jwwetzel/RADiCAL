@@ -15,9 +15,9 @@
 // ============================================================================
 #include "BuildConfig.h"       // radcore
 #include "Schema.h"            // radcore
-#include "WaveformUtils.h"     // Analysis: ExtractPulse, ExtractPulseMulti, Pulse, PulseMulti, kNoTime
-#include "DRS4Calibration.h"   // Analysis: drs4::FindStopCell
-#include "SelectionCuts.h"     // Analysis: kHG_LED_thresh, kWC_minPeak, kFiducial_r_energy
+#include "WaveformUtils.h"     // lib/waveform: ExtractPulse, ExtractPulseMulti, Pulse, PulseMulti, kNoTime
+#include "DRS4Calibration.h"   // lib/waveform: drs4::FindStopCell
+#include "SelectionCuts.h"     // lib/physics: kHG_LED_thresh, kWC_minPeak, kFiducial_r_energy
 
 #include "TChain.h"
 #include "TFile.h"
@@ -163,10 +163,14 @@ static long reduceChain(const rad::BuildConfig& cfg, TChain* chain, double energ
             ev.hg_cfd03[i] = (hg.cfd03  > -1e5f && ref > -1e5f) ? hg.cfd03  - ref : kNoTime;
             ev.hg_cfd05[i] = (hg.cfd05  > -1e5f && ref > -1e5f) ? hg.cfd05  - ref : kNoTime;
             ev.hg_led[i]   = (hg.ledTime> -1e5f && ref > -1e5f) ? hg.ledTime- ref : kNoTime;
-            // hg_lgcfd: CFD at frac*(LG-predicted TRUE peak) -> times the steep edge
-            // below the clip (express as a fraction of the MEASURED peak for ExtractPulse).
+            // hg_lgcfd (the paper's srCFD): CFD at frac*(LG-predicted TRUE peak) -> times the
+            // steep edge below the clip (expressed as a fraction of the MEASURED peak for
+            // ExtractPulse). frac=0.15 rationale: BuildConfig.h (lgcfd_frac) — steep-but-safe;
+            // baked in at reduction, hence absent from the post-hoc systematics sweep.
             ev.hg_lgcfd[i] = kNoTime;
             { double HGtrue = fa[i] + fb[i]*lg.peak, thr = cfg.lgcfd_frac * HGtrue;
+              // guards: thr > 20 mV keeps the threshold above noise (= kHG_minPeak);
+              // thr < 780 mV keeps it safely below the ~820 mV clip shelf
               if (thr > 20.0 && thr < 780.0 && hg.peak > thr && ref > -1e5f) {
                   Pulse hc = ExtractPulse(T + c.hg_t, A + c.hg, (float)(thr/hg.peak), 5.f);
                   if (hc.crossingTime > -1e5f) ev.hg_lgcfd[i] = hc.crossingTime - ref; } }

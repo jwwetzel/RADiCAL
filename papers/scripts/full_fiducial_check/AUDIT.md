@@ -48,3 +48,12 @@ source setup.sh
 root -l -b -q 'papers/scripts/full_fiducial_check/fullFiducialCheck.C+' | tee full_fiducial_result.log
 ```
 Deterministic (no RNG); requires `data/2023/reduced/DSB1/`.
+
+## Addendum (2026-07-21, code audit): fiducial-radius protocol note
+
+This check fixes r = 3.0 mm at ALL energies (matching the systematicsPostfix NOMINAL protocol),
+whereas the production chain uses the per-energy TimingFiducialR ramp (2.5 mm ≤100 GeV → 3.0 mm
+≥125 GeV). Consequence: the sigma_K1000 column equals the production values exactly at ≥125 GeV
+(25.7/25.7 — including the headline this check exists to anchor) and differs at the few-hundred-fs
+to sub-ps level below (45.6/33.5/30.8/26.4 here vs production 45.0/34.2/30.7/27.1). Both committed
+logs are correct under their stated protocols; no claim uses the sub-125 GeV rows of this check.

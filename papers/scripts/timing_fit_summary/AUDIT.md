@@ -33,3 +33,20 @@ IS UPDATED to the new numbers — not the reverse.
 
 Outputs: `papers/tables/timing_fit_summary_2026-06-09.md`,
 `papers/figures/timing_fit_summary/timing_fit_summary.png`, log in this directory.
+
+## Addendum (2026-07-21, code audit): reproduction protocol
+
+Canonical command (from the REPO ROOT — all gate macros write repo-relative outputs):
+
+    source setup.sh
+    root -l -b -q 'papers/scripts/timing_fit_summary/timingFitSummary.C'
+
+Outputs regenerated in place: `papers/tables/timing_fit_summary_2026-06-09.md`,
+`papers/figures/timing_fit_summary/timing_fit_summary.png`,
+`papers/timing/figs/thesis_postfix.{png,pdf}`, and the stdout log
+(`timing_fit_summary_result.txt` in this directory). The NUMERIC record in that log is the
+per-build table + fit lines; the log header above them is environment noise (ACLiC build path
+of the machine that ran it + compiler warnings) and legitimately differs across machines.
+Expected reproduction residual: `thesis_postfix.pdf` differs only in its embedded
+/CreationDate–/ModDate metadata; the table md and all PNGs must be byte-identical
+(verified 2026-07-21, CODE_AUDIT_2026-07-21.md).

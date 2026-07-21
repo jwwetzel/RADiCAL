@@ -38,6 +38,9 @@ static const char* HB[NS]={"hg_lgcfd","hg_cfd05","hg_led"};
 
 struct Pair { std::vector<float> dD,dL; };
 struct W { double lo,hi; };
+// KERNEL CLONE: the iterative 2.5-sigma truncated window of rad::tebSigma
+// (lib/physics/RadTiming.h) — pair-difference widths use the truncated-RMS
+// convention (deliberate: same-shower pair differences, not the headline observable).
 static W cw(std::vector<float>& v){ W w{0,0}; if(v.size()<300)return w;
     double mu=0; for(float x:v)mu+=x; mu/=v.size();
     double sd=0; for(float x:v)sd+=(x-mu)*(x-mu); sd=std::sqrt(sd/v.size()); if(sd<1e-4)sd=0.1;

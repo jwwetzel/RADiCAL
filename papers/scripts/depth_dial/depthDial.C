@@ -38,6 +38,9 @@ static const double kPredSlope_ps = -kX0_mm / kVg_mmns * 1000.0;   // -26.3 ps /
 
 // robust (2.5-sigma truncated, iterated) mean of t_diff; returns {mean, errOnMean, rms, n}
 struct RM { double mu=0, err=0, rms=0; long n=0; };
+// KERNEL CLONE: the iterative 2.5-sigma truncated core of rad::tebSigma
+// (lib/physics/RadTiming.h), returning the MEAN (this gate reads a mean shift,
+// not a width) — hence no Gaussian-core fit stage and no debias factor.
 static RM robustMean(std::vector<float>& v){
     RM r; if(v.size()<100) return r;
     double mu=0; for(float x:v)mu+=x; mu/=v.size();

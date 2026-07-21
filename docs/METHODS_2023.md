@@ -77,7 +77,7 @@ uses a tighter radius (e.g. 2023: 2.0 mm).
 
 **Containment.** Reject low-amplitude spikes from under-measured high-E tails: require ≥2 of 4 ends each
 side AND a per-energy light floor (e.g. sum_lg > 0.40·median_E). A Pb-glass leakage veto rejects events
-with sum_pb > 0.30·sum_lg (when sum_lg is above a threshold).
+with sum_pb > 0.30·sum_lg (when sum_lg is above a threshold)). [STUDY-ERA NOTE, 2026-07: the Pb-glass containment veto is applied by the energy/uniformity STUDIES only — the production timing chain does not apply it; see the which-chain-applies-what summary in lib/physics/SelectionCuts.h.]
 
 ---
 
@@ -96,7 +96,7 @@ hard-code one source for all builds.
   threshold (e.g. 2023: 20 mV ≈ 4× HG noise), linear-interpolated between bracketing samples. Fixed-
   voltage, NOT a fraction of peak → immune to the clip that corrupts cfd05 (5% of a clipped 820 mV ≈
   41 mV of a bad peak). Best for dim/low-light builds and for ANY absolute-time work.
-- **lgcfd = HG/LG edge recovery (the key NEW method for high-light, heavily-clipped builds).** The HG
+- **lgcfd = HG/LG edge recovery (paper name: srCFD; the key NEW method for high-light, heavily-clipped builds).** The HG
   timing chain hard-clips, so we are forced to time at the foot; lgcfd predicts the UNCLIPPED true peak
   from the linear LG and times on the steep edge below the clip:
   - Pre-pass fits `HG_peak = a + b·LG_peak` per end on UNCLIPPED events (the linear part of the HG-vs-LG

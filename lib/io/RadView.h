@@ -32,6 +32,8 @@ struct RadView {
     bool named = false;          // file has role-resolved branches (hg_cfd05[8] etc.)
 
     // selectable per-end timing source (all MCP-referenced in the schema)
+    // kLGCFD = branch hg_lgcfd = the paper's "srCFD" (saturation-recovered CFD, PRIMARY
+    // for bright/clipped builds); kLED = adopted source for the dim builds (LuAG, TENERGY)
     enum { kCFD03=0, kCFD05, kCFD10, kCFD20, kCFD30, kCFD50, kLED, kLGCFD, kNSrc };
     bool srcAvail[kNSrc] = {false};
     static const char* srcName(int s) {
@@ -98,7 +100,7 @@ struct RadView {
     }
 
     // ScanRunCenters-equivalent beam center: ONE sum_lg-light-weighted centroid
-    // over the whole file (matches Analysis/PlotUtils.h ScanRunCenters). This is
+    // over the whole file (matches lib/viz/PlotUtils.h ScanRunCenters). This is
     // the center of the timing fiducial circle — the world-class method applied
     // uniformly. Cuts from SelectionCuts.h: mcp>kMCP_minPeak_E(50), sum_lg>
     // kSumLG_centroid(300). Format-agnostic via the accessors, so EVERY build

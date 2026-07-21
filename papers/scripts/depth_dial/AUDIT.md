@@ -57,3 +57,10 @@ in `papers/memory_dataset_inventory.md`):
 `{LUAG,MIXED,TENERGY}/{50..150}GeV.root` (cross-checks). Script: `depthDial.C` (this directory).
 Outputs: `papers/figures/depth_dial/depth_dial.png` (publication), `depth_dial_diag.png` (diagnostics),
 slope table on stdout (logged to `papers/scripts/depth_dial/depth_dial_result.log`).
+
+## Addendum (2026-07-21, code audit): fit-form clarification
+
+The publication fit is the anchored one-parameter form Δ⟨t_diff⟩ = s·ln(E/E₀) (zero at the
+reference energy by construction; depthDial.C `TF1("fitp","[0]*log(x/E0)")`), consistent with
+the pre-registered slope-only reading. Free-intercept or alternative-form variants appear only
+as stability checks in the diagnostics canvas, not in the published slope.
