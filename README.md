@@ -1,80 +1,109 @@
 # RADiCAL — CERN May 2023 Test-Beam Analysis
 
-Analysis of the RADiCAL radiation-hard W/LYSO:Ce shashlik calorimeter prototype,
-taken in the CERN SPS H2 electron beam (25–150 GeV) in May 2023. The pipeline
-goes from raw CAEN DT5742 (DRS4) waveforms to energy- and timing-resolution
-results and a browsable HTML report.
+Analysis of the RADiCAL radiation-hard W/LYSO:Ce shashlik shower-maximum calorimeter
+prototype, CERN SPS H2 electron beam (25–150 GeV), May 2023. The pipeline goes from raw
+CAEN DT5742 (DRS4) waveforms to timing-, energy-, and position-resolution results and a
+journal manuscript, with every published number traced to a committed, audited generator.
 
-**Headline result:** σ_t ≈ 27 ps at 150 GeV (DSB1, MCP-free `(DW−UP)/2`
-shower-depth estimator) — a ~1 X₀ shower-depth timing floor.
+**Headline result (timing paper, `papers/timing/`):**
+σ_t = **25.7 ± 0.6 ps** at 150 GeV for the brightest-1000 showers of the high-light DSB1
+build (saturation-recovered CFD, reference-free (DW−UP)/2), **≈50 ps over the full fiducial
+sample**; the fitted floor **18.8 ± 0.8 ps confirms** the previously published 17.5 ps
+(NIM A 1068 (2024) 169737). Across wavelength-shifter builds the stochastic term tracks
+detected light — a = 203±6 → 440±18 ps·√GeV from the high-light to the low-light build —
+while the same-shower MIXED control (σ_DSB1/σ_LuAG = 1.04 ± 0.05) disfavors intrinsic WLS
+re-emission kinetics as the dominant cause, within this geometry and at these light levels.
+
+**The trust path (start here):**
+1. [`ANALYSIS_GUIDE.md`](ANALYSIS_GUIDE.md) — the top-down waterfall: raw → reduced →
+   selection → estimator → gated results → manuscript, with the figure/number provenance table.
+2. [`papers/timing/radical_timing.pdf`](papers/timing/radical_timing.pdf) — the manuscript.
+3. [`papers/scripts/`](papers/scripts/) — one directory per published result ("gate"), each
+   with a pre-registered `AUDIT.md`, the generator macro, and its committed result log.
+4. [`papers/memory_claims_and_forbidden_language.md`](papers/memory_claims_and_forbidden_language.md)
+   — the wording law every public number obeys; and
+   [`papers/CAMPAIGN_SNAPSHOT_2026-06-09.md`](papers/CAMPAIGN_SNAPSHOT_2026-06-09.md) — the
+   append-only campaign record.
+5. [`chain_of_evidence.html`](chain_of_evidence.html) — browsable raw-to-result evidence for
+   all four builds.
 
 ---
 
 ## Quick start (local analysis)
 
 ```bash
-source setup.sh                      # sets ROOT_INCLUDE_PATH + RAD_DATA, once per shell
+source setup.sh                      # ROOT_INCLUDE_PATH + RAD_DATA, once per shell
 
 # verify the reduced data is present + clean (all builds Y/Y/Y)
 root -l -b -q 'reduce/verify.C+("data/2023/reduced")'
 
-# headline timing resolution for a build (reads data/2023/reduced/<BUILD>/)
-root -l -b -q 'analyze/timingHeadline.C+("DSB1")'
+# regenerate the paper's four-build table + money plot (the headline chain)
+root -l -b -q 'papers/scripts/timing_fit_summary/timingFitSummary.C'
 ```
 
-That's it — all **reduced** data lives in `data/2023/reduced/` (in the repo,
-multi-GB but local for fast analysis). You only need Argon to **re-reduce** from
-raw (see *Reducing from raw* below).
+⚠ Gate macros regenerate their committed logs/tables/figures in place — run them to *verify*
+(outputs should be identical), not casually; `git diff` afterward is the check.
+
+**Data:** the reduced ntuples (~13 GB) are **not in git**. Collaborators: mirror from Argon
+with `tools/pull_argon_data.sh`, or copy `data/2023/reduced/` from an existing checkout.
+A public archival deposit (DOI) is a pre-submission task tracked in
+[`WORKSPACE_REORG_PLAN_2026-06-10.md`](WORKSPACE_REORG_PLAN_2026-06-10.md) §5. Raw waveforms
+live on Argon/EOS (paths below); a small local subset under `data/2023/raw/` feeds the
+waveform-level figures.
 
 ---
 
 ## Repository map
 
 ```
-lib/                 ← shared library (all headers). The single include root.
-  waveform/   WaveformUtils ChannelConfig DRS4Calibration   (raw-pulse domain)
-  io/         MiniJson BuildConfig Schema RadView DataPaths  (config + canonical IO)
+ANALYSIS_GUIDE.md    ← THE spine: waterfall + provenance table (read first)
+lib/                 ← shared header-only library. The single include root.
+  waveform/   WaveformUtils ChannelConfig DRS4Calibration    (raw-pulse domain)
+  io/         MiniJson BuildConfig Schema RadView DataPaths FigPaths (config + IO)
   physics/    SelectionCuts RadTiming                        (cuts + timing primitives)
   viz/        PlotUtils RADiCALStyle                         (plotting)
-reduce/              ← raw → reduced pipeline
-  Reducer.C reduceRun.C calibHGLG.C validateReduce.C verify.C
-  hpc/        Argon SGE pipeline (env.sh, submit_reduce.sh, ...)
-analyze/             ← reduced → results
-  timingHeadline.C sigmaT.C timingLadder.C slopeVsE.C        (curated headline analyses)
-  makeReport.py deployReport.sh                              (report build/publish)
-  studies/    ~80 one-off investigation macros (kept, runnable, quarantined)
-data/                ← ALL data, per year
-  2023/{raw, reduced, configs, metadata}/                    (configs = <BUILD>.json + .hglg)
-figures/             ← analysis output plots (PNG/PDF)
-site/                ← published GitHub Pages website (self-contained)
-  *.html  report/  assets/                                   (deployed via Actions; see site/README.md)
-student/             ← self-contained student lab module (.C macros + expected figs)
-docs/                ← design notes, plans, paper drafts
-archive/             ← legacy code (superseded; kept for provenance)
+reduce/              ← raw → reduced pipeline (Reducer.C; hpc/ = Argon SGE recipe → REREDUCE.md)
+analyze/             ← curated exploratory analyses + report builder
+  studies/    ~118 investigation macros (exploratory record; the PUBLISHED results
+              live in papers/scripts/ — ANALYSIS_GUIDE.md maps which studies fed them)
+papers/              ← THE SCIENTIFIC RECORD
+  timing/     Paper 1 manuscript (elsarticle) + figs/ + circulation/review documents
+  scripts/    gated result generators: one dir per published result, AUDIT.md + logs
+  tables/     generated single-source-of-truth result tables
+  figures/    gate-script figure outputs
+  memory_*.md + CAMPAIGN_SNAPSHOT_*.md ← claims law, gate history, dataset inventory
+  energy_position/  Paper 2 skeleton (companion: energy + position + 4D)
+data/                ← per-year data + configs + metadata (ntuples gitignored)
+  2023/{raw, reduced, configs, metadata}/   metadata/DATASET_NOTES.md = dataset compendium
+docs/                ← APPARATUS_2023.md, METHODS_2023.md, design notes, outlines
+figures/             ← analysis figure outputs (year-namespaced; narrative/ feeds the paper)
+tools/               ← utilities (Argon data mirror)
+site/                ← GitHub Pages site (outreach/report; historical pages carry banners)
+student/             ← self-contained student lab module
+archive/             ← superseded code kept for provenance (do not use)
+output/              ← transient per-run scratch (gitignored)
 setup.sh             ← source once per shell
 ```
 
-**Three rules that keep it DRY + navigable:**
-1. **One include root** — `source setup.sh` puts `lib/{waveform,io,physics,viz}`
-   on `ROOT_INCLUDE_PATH`; every macro `#include`s headers bare.
-2. **One data resolver** — `lib/io/DataPaths.h`: `radReduced(build,E)`,
-   `radRaw(name)`, `radConfig(build)` all resolve under `data/<year>/`.
-3. **Dependency direction** — `reduce/` and `analyze/` depend on `lib/`, never
-   the reverse; `lib/` knows nothing about specific studies.
+**Three rules that keep it navigable:**
+1. **One include root** — `source setup.sh`; every macro `#include`s headers bare.
+2. **One data resolver** — `lib/io/DataPaths.h`: `radReduced(build,E)`, `radRaw(name)`,
+   `radConfig(build)`, `radHglg(build)` all resolve under `data/<year>/`.
+3. **Dependency direction** — `lib ← reduce ← analyze ← papers/scripts`; never the reverse.
 
 ### The library (`lib/`)
 | Header | Role |
 |--------|------|
-| `io/Schema.h` | the canonical reduced-ntuple branch layout (`rad` tree) |
-| `io/BuildConfig.h` | per-build JSON config loader + channel-map resolution (+ `.hglg` sidecar) |
+| `io/Schema.h` | canonical reduced-ntuple branch layout (`rad` tree, 39 branches) |
+| `io/BuildConfig.h` | per-build JSON config + channel map (+ `.hglg` calibration sidecar) |
 | `io/RadView.h` | typed reader over a reduced file (`hg_peak`, `timeOf(c,src)`, beam center) |
-| `io/DataPaths.h` | **the** path resolver — `radReduced/radRaw/radConfig/radHglg` |
+| `io/DataPaths.h` | **the** path resolver |
 | `io/MiniJson.h` | minimal JSON parser for the build configs |
 | `waveform/WaveformUtils.h` | DRS4 pulse extraction (pedestal, peak, CFD, charge) |
 | `waveform/ChannelConfig.h` | detector geometry + `chanOff()`/`timeOff()` raw indexing |
 | `waveform/DRS4Calibration.h` | DRS4 stop-cell recovery + timing correction |
-| `physics/SelectionCuts.h` | single source of truth for every cut threshold |
-| `physics/RadTiming.h` | `timingBestBin()` — the headline (DW−UP)/2 σ_t primitive |
+| `physics/SelectionCuts.h` | single source of truth for every cut threshold (with WHY notes) |
+| `physics/RadTiming.h` | production primitives: `timingBrightestK()` + robust `tebSigma()` (the retired `timingBestBin()` is kept for the historical record) |
 | `viz/PlotUtils.h` | fits, `ScanRunCenters`, plot helpers |
 | `viz/RADiCALStyle.h` | unified ROOT plotting style |
 
@@ -82,25 +111,26 @@ setup.sh             ← source once per shell
 
 ## Builds & energies
 
-Four detector configurations ("builds"), identical channel map:
+Four builds — LYSO:Ce + W common to all; **the WLS capillary is the variable**:
 
-| Build | Material | Energies (GeV) |
-|-------|----------|----------------|
-| `DSB1` | LYSO:Ce, high light (headline) | 25, 50, 75, 100, 125, 150 |
-| `LUAG` | LuAG:Ce, lower light | 50–150 |
-| `MIXED` | NE+SW = DSB1, NW+SE = LuAG | 50–150 (valid era 2975–3044) |
-| `TENERGY` | 3×DSB1 + 1×Energy capillary | 50–150 |
+| Build | WLS capillaries | Light | Energies (GeV) |
+|-------|-----------------|-------|----------------|
+| `DSB1` | 4 × DSB1 organic (headline; the build+dataset of NIM A 1068 (2024) 169737) | high | 25–150 |
+| `LUAG` | 4 × LuAG:Ce ceramic | ~3× less | 50–150 |
+| `MIXED` | NE+SW = DSB1, NW+SE = LuAG (same-shower control; valid era runs 2975–3044) | mixed | 50–150 |
+| `TENERGY` | 3 × DSB1 timing + 1 full-length energy capillary | high | 50–150 |
 
-Each build has a config at `data/2023/configs/<BUILD>.json` and an HG/LG gain
-calibration sidecar `<BUILD>.hglg` (written by `reduce/calibHGLG.C`).
+Configs: `data/2023/configs/<BUILD>.json` + `.hglg` gain sidecar (`reduce/calibHGLG.C`).
+Apparatus: `docs/APPARATUS_2023.md`. Dataset compendium: `data/2023/metadata/DATASET_NOTES.md`.
+Methods compendium: `docs/METHODS_2023.md`.
 
 ---
 
 ## Reducing from raw (Argon HPC)
 
-Reduction (raw waveforms → reduced `rad` ntuple) runs on the Iowa **Argon**
-cluster. See `reduce/hpc/README.md` and `reduce/hpc/REREDUCE.md` for the full
-recipe; the short version, per build:
+Reduction (raw waveforms → reduced `rad` ntuple) runs on the Iowa **Argon** cluster.
+Follow **`reduce/hpc/REREDUCE.md`** (the current recipe; `reduce/hpc/README.md` describes the
+superseded legacy pipeline retained in `archive/hpc_legacy/`):
 
 ```bash
 # on the Argon login node, from the repo root
@@ -110,10 +140,9 @@ RAD_CONFIG=DSB1 RAD_MANIFEST=$PWD/reduce/hpc/manifest_DSB1.csv \
 # then copy home:  data/2023/reduced/<BUILD>/<E>GeV.root
 ```
 
-The reduced files store HG times already MCP-referenced, plus `hg_lgcfd`
-(LG-predicted-true-peak CFD) and the TR0 trigger-scintillator times. Run
-`reduce/verify.C` after a reduction to confirm every file carries the new
-branches before shipping.
+Reduced files carry MCP-referenced HG times, `hg_lgcfd` (the srCFD source branch), and TR0
+trigger times. Run `reduce/verify.C` after any reduction; `reduce/validateReduce.C` enforces
+bit-identity against the legacy reducer.
 
 ---
 
@@ -121,9 +150,9 @@ branches before shipping.
 
 ```
 data/<year>/raw/        RUN<n>_<E>_GeV.root   (raw 'pulse' tree; subset kept locally)
-data/<year>/reduced/    <BUILD>/<E>GeV.root   (analysis 'rad' tree; ALL kept locally)
-data/<year>/configs/    <BUILD>.json + .hglg  (build configs)
-data/<year>/metadata/   channel_map.yaml, dataset.yaml, runs.csv
+data/<year>/reduced/    <BUILD>/<E>GeV.root   (analysis 'rad' tree; ~13 GB, gitignored)
+data/<year>/configs/    <BUILD>.json + .hglg  (build configs + gain calibration)
+data/<year>/metadata/   DATASET_NOTES.md, channel_map.yaml, dataset.yaml, runs.csv, logbook
 ```
 
 Raw files (~18 GB/build) are gitignored. Sources:
@@ -137,21 +166,21 @@ Raw files (~18 GB/build) are gitignored. Sources:
 
 ## Detector & DAQ (background)
 
-Two CAEN **DT5742** digitisers (16+1 channels each) record waveforms via the
-**DRS4** switched-capacitor chip. Each DT5742 stores its channels in two groups
-of 8 signal + 1 trigger, so reconstructed data has channels 0–8 (8 = trigger) and
-9–17 (17 = trigger) per board. Each channel saves 1024 time samples per event.
+Two CAEN **DT5742** digitisers (16+1 channels each) record waveforms via the **DRS4**
+switched-capacitor chip: **DRS0 at 5 GS/s** (HG timing channels + MCP reference copies),
+**DRS1 at 1 GS/s** (LG amplitude channels + wire chambers). Each DT5742 stores its channels
+in two groups of 8 signal + 1 trigger; 1024 samples per channel per event.
 
-The module (14 mm, W/LYSO shashlik) is read out by 8 capillary fibres (4 corners ×
-Up/Down): **HG** channels (shower-max, → timing, negative-going, clip ~820 mV) and
-**LG** channels (full-length, → energy, unsaturated), plus 2 MCP timing references
-and the TR0 trigger scintillator (ch 8 of each DRS0 group). Channel map:
-`lib/waveform/ChannelConfig.h` and the per-build `data/2023/configs/<BUILD>.json`.
+The module (14×14 mm², W/LYSO shashlik) is read out by 8 capillary ends (4 corners ×
+UP/DW): **HG** copies (→ timing, clip ~820 mV) and **LG** copies (→ amplitude, linear),
+plus the MCP-PMT timing reference (split into both DRS0 groups) and the TR0 trigger
+scintillator. Channel map: `lib/waveform/ChannelConfig.h`, the per-build
+`data/2023/configs/<BUILD>.json`, and `docs/APPARATUS_2023.md`.
 
 ### Raw data format (reference)
 
-Per event, all channels are stored end-to-end in two flat arrays in the `pulse`
-tree: `amplitude` (waveforms) and `timevalue` (time axes):
+Per event, all channels are stored end-to-end in two flat arrays in the `pulse` tree:
+`amplitude` (waveforms) and `timevalue` (time axes):
 
 ```cpp
 // drs ∈ {0,1}, group ∈ {0,1}, ch ∈ 0..8
@@ -159,14 +188,14 @@ channel_index = (1024*9*2)*drs + (1024*9)*group + 1024*ch
 time_index    = (1024*2)*drs   + 1024*group
 ```
 
-These index helpers are wrapped as `chanOff()`/`timeOff()` in `ChannelConfig.h`.
-`reduce/reduceRun.C` (→ `reduce/Reducer.C`) turns these raw waveforms into the
-compact analysis ntuple that everything in `analyze/` reads.
-
 ---
 
-## Provenance
+## Papers
 
-Method builds on A. Ledovskoy's prescription:
-<https://github.com/ledovsk/RADiCAL_TB_May2023>. The original single-file analysis
-and superseded first-pass code live in `archive/` (kept for provenance — not used).
+- **Paper 1 — Timing** (`papers/timing/`): at internal coauthor circulation. σ_t(E) for four
+  WLS builds, srCFD saturation recovery, same-shower MIXED control, systematics budget,
+  depth-asymmetry drift. Index: `papers/README.md`.
+- **Paper 2 — Energy + Position (+4D)** (`papers/energy_position/`): companion, in preparation.
+
+Workspace-release status (license, citation, data DOI, tags):
+`WORKSPACE_REORG_PLAN_2026-06-10.md` §5. Full panel audit: `WORKSPACE_AUDIT_2026-06-10.md`.
