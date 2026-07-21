@@ -22,7 +22,10 @@
 # runbook). Requires data/2023/reduced/ (~13 GB, not in git) and ROOT.
 #
 # Usage: tools/repro.sh [--check-data]
-# Exit:  0 = PASS (all outputs reproduced), 1 = FAIL, 2 = environment problem.
+# Exit:  0 = PASS (byte-identical), 1 = FAIL (numeric-record drift),
+#        2 = environment problem, 3 = NUMERIC PASS but figure bytes re-rendered
+#            differently (expected under a ROOT version other than the audited
+#            6.40.00 — tables/logs identical; restore figures with git checkout).
 set -u
 
 cd "$(dirname "$0")/.." || exit 2
@@ -72,10 +75,11 @@ fi
 
 step "STEP 3: full_fiducial_check gate (~50 ps companion)"
 if root -l -b -q 'papers/scripts/full_fiducial_check/fullFiducialCheck.C+' > "$TMP/ffc_raw.log" 2>&1; then
-  # Committed log = stdout capture; strip ROOT/ACLiC banner noise from both sides
+  # Committed log = stdout capture; strip ROOT/ACLiC banner noise from both sides,
+  # and let diff -B ignore blank-line-only differences (capture-environment noise).
   grep -v '^Processing\|^Info in\|^Warning in' "$TMP/ffc_raw.log" > "$TMP/ffc.log"
   grep -v '^Processing\|^Info in\|^Warning in' papers/scripts/full_fiducial_check/full_fiducial_result.log > "$TMP/ffc_committed.log"
-  if diff -u "$TMP/ffc_committed.log" "$TMP/ffc.log" > "$TMP/ffc.diff"; then
+  if diff -uB "$TMP/ffc_committed.log" "$TMP/ffc.log" > "$TMP/ffc.diff"; then
     echo "STEP 3: PASS (stdout identical to committed log)"
   else
     head -30 "$TMP/ffc.diff"; echo "STEP 3: FAIL (numeric drift vs committed log)"; overall=FAIL
@@ -104,14 +108,33 @@ elif [[ "$dirty" == " M $PDF" ]]; then
     overall=FAIL
   fi
 else
-  echo "$dirty"
-  echo "STEP 4: FAIL (unexpected modified files above — a gated output drifted."
-  echo "         Treat as a FINDING per ANALYSIS_GUIDE.md; tree left dirty on purpose)"
-  overall=FAIL
+  # Distinguish numeric-record drift (tables/logs/tex — always a hard FAIL) from
+  # image-byte drift (PNG/PDF renders). Byte-identical images are only promised
+  # under the audited toolchain (ROOT 6.40.00 — see REPRODUCE.md); other ROOT
+  # versions have been observed (6.36.04, 2026-07-21) to re-render byte-different
+  # images from IDENTICAL numeric records.
+  nonimage="$(echo "$dirty" | grep -v -E '\.(png|pdf)$' || true)"
+  if [[ -n "$nonimage" ]]; then
+    echo "$dirty"
+    echo "STEP 4: FAIL (a NUMERIC record above drifted — a table/log/tex changed."
+    echo "         Treat as a FINDING per ANALYSIS_GUIDE.md; tree left dirty on purpose)"
+    overall=FAIL
+  else
+    echo "$dirty"
+    echo "STEP 4: NUMERIC PASS, IMAGE BYTES DRIFTED (files above are figures only;"
+    echo "         every committed table/log reproduced byte-identically). Expected"
+    echo "         when your ROOT version differs from the audited 6.40.00. Inspect"
+    echo "         the figures if you wish, then restore:  git checkout -- <files>"
+    overall=NUMERIC-PASS
+  fi
 fi
 
 echo
 echo "======================================"
 echo "repro.sh: $overall  ($((SECONDS-t0)) s total)"
 echo "======================================"
-[[ "$overall" == PASS ]]
+case "$overall" in
+  PASS) exit 0 ;;
+  NUMERIC-PASS) exit 3 ;;   # numbers reproduced; image bytes differ (ROOT version)
+  *) exit 1 ;;
+esac

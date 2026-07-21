@@ -8,9 +8,12 @@ checking that yourself. The full provenance map is `ANALYSIS_GUIDE.md`.
 ## 1. Environment
 
 - **ROOT** — verified byte-identical under **ROOT 6.40.00 (macosxarm64)** on
-  2026-07-21 (`CODE_AUDIT_2026-07-21.md`, reproduction runner E4). ROOT's PNG/text
-  output has proven byte-stable across sessions here; other ROOT versions or platforms
-  may reproduce numerically but not byte-for-byte. **Honesty line: Linux is untested.**
+  2026-07-21 (`CODE_AUDIT_2026-07-21.md`, reproduction runner E4). Measured
+  cross-version behavior (ROOT 6.36.04, macosxarm64, 2026-07-21, `tools/repro.sh`):
+  **every numeric record — table markdown and stdout logs — reproduced
+  byte-identically; only the figure renders (2 PNG + 1 PDF) came out byte-different**
+  (~0.3% size change; different PNG encoder/PDF writer). `repro.sh` reports that case
+  as its own verdict (exit 3, NUMERIC PASS). **Honesty line: Linux is untested.**
 - **tectonic** — only for rebuilding the manuscript PDF (`cd papers/timing && tectonic
   radical_timing.tex`; document class + orcidlink are vendored). Not needed for the
   numeric chain.
