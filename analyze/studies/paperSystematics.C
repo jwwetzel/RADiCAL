@@ -1,4 +1,12 @@
 // ============================================================================
+// *** DEPRECATED (2026-06-09/10) — DO NOT RUN FOR PAPER NUMBERS *************
+// Superseded by papers/scripts/systematics_postfix/systematicsPostfix.C, which
+// recomputes the budget with the POST-FIX production chain (patched tebSigma +
+// in-event veto + continuous fiducial) and regenerates tab_systematics.tex AND
+// the Fig. A.11 stability figure from the same arrays. This macro's outputs
+// carry PRE-FIX numbers (e.g. LuAG floor 19.8±5.6, retired) and RUNNING IT
+// WILL OVERWRITE committed post-fix products. Kept for the historical record.
+// ============================================================================
 // paperSystematics.C — Paper 1 systematic-uncertainty budget, all four builds.
 // ----------------------------------------------------------------------------
 // The headline brightest-1000 (DW-UP)/2 sigma_t = a/sqrt(E) (+) b is recomputed

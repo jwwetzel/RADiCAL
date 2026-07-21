@@ -1,4 +1,12 @@
 // ============================================================================
+// *** DEPRECATED (2026-06-09/10) — DO NOT RUN FOR PAPER NUMBERS *************
+// Superseded by papers/scripts/method_gain_postfix/methodGainPostfix.C (the
+// gated identical-event method comparison with the post-fix production chain
+// and paired bootstrap). This macro predates the sigma-estimator fix; its
+// numbers (e.g. the 22.1->19.5 era) are RETIRED, and rerunning it can
+// overwrite figure outputs consumed by historical documents. Kept for the
+// exploratory record only.
+// ============================================================================
 // methodCompare.C — motivation for the choice of timing estimator, per build.
 // ----------------------------------------------------------------------------
 // On IDENTICAL events (same brightest-1000 selection, same (DW-UP)/2 estimator,
