@@ -1,0 +1,12 @@
+Processing papers/scripts/full_fiducial_check/fullFiducialCheck.C+...
+
+===== FULL-FIDUCIAL companion check (DSB1, srCFD, production chain) =====
+  E         N_fid   sigma_full    sigma_K1000
+   25    41280      64.6 ps        45.6 ps
+   50    81488      53.7 ps        33.5 ps
+   75    76619      50.0 ps        30.8 ps
+  100    98994      50.1 ps        26.4 ps
+  125    77201      49.8 ps        25.7 ps
+  150   145423      50.5 ps        25.7 ps
+  (sigma_K1000 at 150 must reproduce the 25.7 headline; sigma_full at 150 is the
+   claims-law companion number for manuscript edit M1.)
