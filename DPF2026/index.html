@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RADiCAL — DPF 2026 (J. Wetzel)</title>
+<style>
+:root{
+  --ink:#0d2436; --ink-soft:#435b6d; --paper:#ffffff; --paper2:#f4f7fa; --line:#dde5ec;
+  --blue:#1f6feb; --blue-deep:#12408f; --amber:#ef930d; --teal:#12a394; --rad:#e23b2e;
+  --good:#1f9d55; --dark1:#0b1f30; --dark2:#0d2b42; --dark3:#10405c;
+  --sans:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"SF Mono","JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#05121d;font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#deck{position:relative;width:1280px;height:720px;transform-origin:center center;
+  box-shadow:0 30px 90px rgba(0,0,0,.55);border-radius:4px;overflow:hidden}
+.slide{position:absolute;inset:0;background:var(--paper);color:var(--ink);
+  padding:54px 66px 60px;opacity:0;visibility:hidden;transition:opacity .28s ease;
+  display:flex;flex-direction:column}
+.slide.on{opacity:1;visibility:visible;z-index:2}
+.slide.dark{background:linear-gradient(135deg,var(--dark1),var(--dark2) 55%,var(--dark3));color:#eaf2f8}
+
+/* ---- typographic system ---- */
+.kicker{font-size:15px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.slide.dark .kicker{color:#5cc8ff}
+h1{font-size:34px;line-height:1.12;font-weight:800;letter-spacing:-.01em;margin:6px 0 4px}
+h2{font-size:29px;line-height:1.15;font-weight:800;letter-spacing:-.01em;margin:6px 0 10px}
+.sub{font-size:18px;color:var(--ink-soft);font-weight:500;line-height:1.4}
+.slide.dark .sub{color:#9fc0d4}
+p{font-size:18px;line-height:1.5;color:var(--ink)}
+ul{list-style:none;margin:8px 0}
+li{font-size:18.5px;line-height:1.44;padding:7px 0 7px 30px;position:relative;color:#22384a}
+li::before{content:"";position:absolute;left:2px;top:15px;width:11px;height:11px;border-radius:3px;
+  background:var(--blue);transform:rotate(45deg)}
+li.a::before{background:var(--amber)} li.t::before{background:var(--teal)} li.r::before{background:var(--rad)}
+li b{color:var(--ink)} .em{color:var(--blue);font-weight:700} .em.a{color:var(--amber)} .em.t{color:var(--teal)}
+.mono{font-family:var(--mono)}
+
+/* ---- header band on content slides ---- */
+.hd{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--line);
+  padding-bottom:12px;margin-bottom:16px;flex:none}
+.hd .n{font-family:var(--mono);font-size:14px;color:var(--blue);font-weight:700}
+.body{flex:1;min-height:0;display:flex;gap:34px}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+
+/* ---- figure cards ---- */
+.fig{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;
+  display:flex;flex-direction:column;box-shadow:0 6px 22px rgba(13,36,54,.07)}
+.fig img{width:100%;height:100%;object-fit:contain;border-radius:4px}
+.fig .cap{font-size:13px;color:var(--ink-soft);margin-top:8px;line-height:1.35}
+.fig .cap b{color:var(--blue)}
+.figwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+
+/* ---- stat callouts ---- */
+.stats{display:flex;gap:16px;flex-wrap:wrap}
+.stat{background:var(--paper2);border:1px solid var(--line);border-left:4px solid var(--blue);
+  border-radius:8px;padding:13px 16px;flex:1;min-width:150px}
+.stat.a{border-left-color:var(--amber)} .stat.t{border-left-color:var(--teal)} .stat.r{border-left-color:var(--rad)}
+.stat .v{font-family:var(--mono);font-size:27px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.stat .v small{font-size:16px;color:var(--ink-soft);font-weight:600}
+.stat .l{font-size:13.5px;color:var(--ink-soft);margin-top:3px;line-height:1.3}
+.slide.dark .stat{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+.slide.dark .stat .v{color:#fff}
+
+/* ---- builds table ---- */
+table{border-collapse:collapse;width:100%;font-size:16px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);font-weight:700}
+td b{color:var(--ink)} .chip{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:middle}
+
+/* ---- footer / chrome ---- */
+.foot{position:absolute;left:0;right:0;bottom:0;height:34px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 20px;font-size:12px;color:#8aa1b2;z-index:3}
+.slide.dark .foot{color:#6f92a8}
+.foot .wm{font-weight:700;letter-spacing:.04em}
+.foot .wm b{color:var(--rad)}
+.pbar{position:absolute;left:0;bottom:0;height:3px;background:var(--blue);z-index:4;transition:width .28s}
+.pageno{font-family:var(--mono)}
+
+/* ---- title slide ---- */
+.title-wrap{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.bigtitle{font-size:44px;line-height:1.08;font-weight:800;letter-spacing:-.015em;max-width:62%}
+.tick{position:absolute;right:60px;top:0;bottom:0;width:34%;display:flex;align-items:center;justify-content:center;z-index:1;opacity:.9}
+.byline{margin-top:26px;font-size:20px;color:#cfe4f2}
+.byline b{color:#fff}
+.meta{margin-top:18px;font-size:15px;color:#8fb2c9;line-height:1.7}
+.wordmark{font-size:19px;font-weight:800;letter-spacing:.02em;color:#fff}
+.wordmark b{color:var(--rad)}
+
+/* section divider */
+.section-lead{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:74%;position:relative;z-index:2}
+.section-lead h1{font-size:40px}
+.bignum{position:absolute;right:56px;bottom:36px;font-family:var(--mono);font-size:150px;font-weight:800;
+  color:rgba(255,255,255,.05);z-index:0;line-height:.8}
+
+/* knob diagram */
+.knobrow{display:flex;gap:22px;margin-top:8px}
+.knob{flex:1;background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:16px 16px 18px;text-align:center}
+.knob h3{font-size:17px;margin-top:10px;color:var(--ink)}
+.knob p{font-size:14px;color:var(--ink-soft);margin-top:5px;line-height:1.35}
+.knob .tag{display:inline-block;margin-top:9px;font-size:12px;font-weight:700;color:#fff;background:var(--teal);
+  padding:3px 9px;border-radius:20px}
+.knob .tag.new{background:var(--rad)} .knob .tag.blue{background:var(--blue)}
+
+/* timeline */
+.tl{display:flex;flex-direction:column;gap:0;margin-top:6px}
+.tl .row{display:flex;gap:16px;align-items:flex-start;padding:9px 0;position:relative}
+.tl .yr{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--blue);width:120px;flex:none;padding-top:2px}
+.tl .row.now .yr{color:var(--rad)} .tl .row.fut .yr{color:var(--teal)}
+.tl .dot{width:13px;height:13px;border-radius:50%;background:var(--blue);flex:none;margin-top:4px;box-shadow:0 0 0 4px rgba(31,111,235,.15)}
+.tl .row.now .dot{background:var(--rad);box-shadow:0 0 0 4px rgba(226,59,46,.15)}
+.tl .row.fut .dot{background:var(--teal);box-shadow:0 0 0 4px rgba(18,163,148,.15)}
+.tl .txt{font-size:16.5px;line-height:1.4} .tl .txt b{color:var(--ink)}
+.tl .line{position:absolute;left:126px;top:16px;bottom:-9px;width:2px;background:var(--line);z-index:-1}
+
+.note{font-size:13.5px;color:var(--ink-soft);font-style:italic;margin-top:auto;padding-top:10px}
+.prelim{display:inline-block;background:#fff3d6;color:#8a5a00;border:1px solid #f2d18a;
+  font-size:12px;font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:5px;text-transform:uppercase}
+.pill{display:inline-block;background:#e7f0ff;color:var(--blue-deep);font-size:12.5px;font-weight:700;
+  padding:3px 10px;border-radius:20px;margin:3px 5px 0 0}
+
+/* hint + notes */
+#hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);color:#6f8ba0;font-size:12px;
+  z-index:50;background:rgba(5,18,29,.8);padding:6px 14px;border-radius:20px;transition:opacity .5s}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34%;overflow:auto;background:#0b1a26;color:#cfe0ec;
+  border-top:2px solid var(--blue);padding:16px 30px;font-size:15px;line-height:1.5;z-index:60;display:none}
+#notes.show{display:block} #notes b{color:#5cc8ff} #notes h4{color:#fff;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+
+@media print{
+  html,body{overflow:visible;background:#fff}
+  #stage{position:static;display:block}
+  #deck{transform:none!important;width:100%;height:auto;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;page-break-after:always;
+    width:1280px;height:720px}
+  #hint,#notes{display:none!important}
+}
+</style>
+</head>
+<body>
+<div id="stage"><div id="deck">
+
+<!-- 1 · TITLE -->
+<section class="slide dark" data-notes="Good afternoon. I'm Jim Wetzel from Iowa, speaking for the RADiCAL Collaboration. RADiCAL is an R&D program on the OPTICAL MATERIALS for ultra-compact, fast-timing EM calorimetry. Today: our best-yet timing measurement from the 2023 CERN test beam, what it taught us, and how it's reshaping the program into a materials TEST BED.">
+  <div class="title-wrap">
+    <div class="wordmark"><b>RADiCAL</b> &nbsp;·&nbsp; Research &amp; Development of Optical Materials</div>
+    <div class="bigtitle" style="margin-top:16px">Ultra-compact, fast-timing<br>EM calorimetry</div>
+    <div class="byline"><b>James Wetzel</b> &nbsp;— University of Iowa<br><span style="font-size:17px;color:#9fc0d4">for the RADiCAL Collaboration</span></div>
+    <div class="meta">DPF 2026 · Fermilab · July 20–24, 2026<br>Instrumentation — Calorimetry &amp; Scintillators</div>
+  </div>
+  <div class="tick">
+    <svg viewBox="0 0 340 420" width="330" fill="none">
+      <!-- stylized module + timing edge motif -->
+      <g opacity="0.9">
+        <rect x="60" y="70" width="150" height="280" rx="6" fill="#0e344c" stroke="#2f7fb5" stroke-width="1.5"/>
+        <g stroke="#7fd4ff" stroke-width="6" opacity="0.5">
+          <line x1="60" y1="95" x2="210" y2="95"/><line x1="60" y1="120" x2="210" y2="120"/>
+          <line x1="60" y1="145" x2="210" y2="145"/><line x1="60" y1="170" x2="210" y2="170"/>
+          <line x1="60" y1="195" x2="210" y2="195"/><line x1="60" y1="220" x2="210" y2="220"/>
+          <line x1="60" y1="245" x2="210" y2="245"/><line x1="60" y1="270" x2="210" y2="270"/>
+          <line x1="60" y1="295" x2="210" y2="295"/><line x1="60" y1="320" x2="210" y2="320"/>
+        </g>
+        <line x1="100" y1="60" x2="100" y2="360" stroke="#f2960f" stroke-width="4"/>
+        <line x1="170" y1="60" x2="170" y2="360" stroke="#f2960f" stroke-width="4"/>
+        <circle cx="100" cy="60" r="8" fill="#e23b2e"/><circle cx="170" cy="60" r="8" fill="#e23b2e"/>
+        <circle cx="100" cy="360" r="8" fill="#e23b2e"/><circle cx="170" cy="360" r="8" fill="#e23b2e"/>
+      </g>
+      <!-- rising-edge timing curve -->
+      <path d="M35,395 L110,395 C150,395 150,300 190,300 C250,300 245,255 305,255"
+        stroke="#5cc8ff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="150" cy="347" r="6" fill="#5cc8ff"/>
+      <text x="200" y="392" fill="#7fa9c4" font-size="15" font-family="monospace">~25 ps</text>
+    </svg>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span>DPF 2026 · Fermilab</span></div>
+</section>
+
+<!-- 2 · MOTIVATION -->
+<section class="slide" data-notes="Future facilities need calorimeters that measure the TIME of a shower to tens of picoseconds, on top of energy and position — for pileup rejection at a muon collider or FCC, and for beam-dump / target monitoring. The RADiCAL answer: sample the shower AT ITS MAXIMUM, where signal is largest and most localized, with wavelength-shifting capillaries piping light to SiPMs at both ends. Program targets on the right — 10 ps, 1 mm, 10 percent over root E.">
+  <div class="hd"><span class="n">01</span><div><div class="kicker">The challenge</div><h2>Why fast-timing EM calorimetry</h2></div></div>
+  <div class="body">
+    <div class="col">
+      <ul>
+        <li>Future colliders &amp; fixed-target experiments — <b>muon collider, FCC, beam-dump &amp; target monitoring</b> — need the <span class="em">time</span> of an EM shower, not just its energy.</li>
+        <li>Picosecond timing rejects out-of-time pileup and beam-induced background, and enables 4-D shower reconstruction.</li>
+        <li class="a">RADiCAL samples the shower <b>at its maximum</b> — where the signal is largest and most localized — with WLS capillaries reading light to SiPMs at <b>both ends</b>.</li>
+      </ul>
+    </div>
+    <div class="col" style="flex:.85">
+      <div class="kicker" style="margin-bottom:10px">Program objectives</div>
+      <div class="stats" style="flex-direction:column">
+        <div class="stat"><div class="v">~10 <small>ps</small></div><div class="l">EM-shower timing resolution</div></div>
+        <div class="stat a"><div class="v">~1 <small>mm</small></div><div class="l">transverse position resolution</div></div>
+        <div class="stat t"><div class="v">10%<small>/√E</small></div><div class="l">energy stochastic term</div></div>
+      </div>
+      <div class="note">Ultra-compact: a module is roughly the size of a human index finger.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">2 / 14</span></div>
+</section>
+
+<!-- 3 · CONCEPT / APPARATUS -->
+<section class="slide" data-notes="The module: interleaved tungsten absorber and LYSO:Ce scintillator, 25 radiation lengths in 135 mm — index-finger sized. Quartz capillaries run the full length; a short wavelength-shifting FILAMENT sits at shower-max depth inside each, piping light to SiPMs at the upstream and downstream ends. Panel c is the beam's-eye corner map — four capillaries at the corners, the key to the same-shower control later. The timing observable is (DW minus UP) over 2 — a DUAL-END DIFFERENCE that cancels the common start-time reference, so it needs no external clock.">
+  <div class="hd"><span class="n">02</span><div><div class="kicker">The concept</div><h2>An ultra-compact shower-maximum module</h2></div></div>
+  <div class="body" style="flex-direction:column;gap:12px">
+    <div class="fig" style="flex:1">
+      <div class="figwrap"><img src="assets/apparatus.png" alt="RADiCAL apparatus composite"></div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center">
+      <span class="pill">W / LYSO:Ce shashlik · 25 X₀ · 14×14×135 mm³</span>
+      <span class="pill">WLS capillary at shower max → SiPM both ends</span>
+      <span class="pill">observable: reference-free <b>(t<sub>DW</sub>−t<sub>UP</sub>)/2</b></span>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">3 / 14</span></div>
+</section>
+
+<!-- 4 · 2023 BEAM TEST / BUILDS -->
+<section class="slide" data-notes="May 2023, CERN SPS, electrons 25 to 150 GeV. We ran FOUR builds. Here's the design of the experiment: LYSO:Ce and tungsten were IDENTICAL in every build — the ONE thing we changed was the WLS CAPILLARY. High-light organic DSB1, low-light ceramic LuAG:Ce, a MIXED module with both on opposite diagonals, and TENERGY with an added energy capillary. That lets us ask a sharp question: is a timing difference between materials about the light they collect, or the intrinsic re-emission kinetics of the shifter?">
+  <div class="hd"><span class="n">03</span><div><div class="kicker">2023 CERN SPS test beam</div><h2>Four builds — the WLS capillary is the variable</h2></div></div>
+  <div class="body">
+    <div class="col" style="flex:1.15">
+      <table>
+        <tr><th>Build</th><th>WLS capillary</th><th>Light</th><th>Energies</th></tr>
+        <tr><td><span class="chip" style="background:#1f6feb"></span><b>DSB1</b></td><td>organic (bright)</td><td>high</td><td>25–150 GeV</td></tr>
+        <tr><td><span class="chip" style="background:#ef930d"></span><b>LuAG:Ce</b></td><td>ceramic</td><td>~3× less</td><td>50–150</td></tr>
+        <tr><td><span class="chip" style="background:#12a394"></span><b>MIXED</b></td><td>DSB1 + LuAG, opposite diagonals</td><td>both</td><td>50–150</td></tr>
+        <tr><td><span class="chip" style="background:#e23b2e"></span><b>TENERGY</b></td><td>3× DSB1 + 1 energy capillary</td><td>high</td><td>50–150</td></tr>
+      </table>
+      <div class="note" style="margin-top:14px">LYSO:Ce scintillator + W absorber common to all builds — only the shifter changes.</div>
+    </div>
+    <div class="col">
+      <div style="background:var(--paper2);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:10px;padding:18px 20px">
+        <div class="kicker" style="color:var(--amber)">The question</div>
+        <p style="margin-top:8px;font-size:20px;line-height:1.4">Does a cross-build timing difference come from the <b>light collected</b>, or the <b>intrinsic kinetics</b> of the wavelength shifter?</p>
+        <p style="margin-top:10px;font-size:15px;color:var(--ink-soft)">Builds up front · parent result: 27 ps published, NIM A <b>1068</b> (2024) 169737.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">4 / 14</span></div>
+</section>
+
+<!-- 5 · srCFD METHOD -->
+<section class="slide" data-notes="A hardware reality first: the high-gain timing pulse SATURATES — it hard-clips at 820 mV (left). A constant-fraction time on the clipped foot sits on a shallow slope and times poorly. Our method — saturation-recovered CFD, srCFD: use the LINEAR low-gain copy to predict the TRUE unclipped peak, then time a constant fraction on the steep recovered edge (right). That edge is about 3.7 times steeper than the foot — and steeper edge means better timing. This also removes a satellite tail that clipping produces. This is a genuine method contribution, applied uniformly across builds.">
+  <div class="hd"><span class="n">04</span><div><div class="kicker">Method</div><h2>Recovering the saturated edge — srCFD</h2></div></div>
+  <div class="body">
+    <div class="col"><div class="fig" style="flex:1"><div class="figwrap"><img src="assets/clip.png" alt="HG clip"></div>
+      <div class="cap">High-gain timing pulse <b>hard-clips at 820 mV</b> — the true peak is lost.</div></div></div>
+    <div class="col"><div class="fig" style="flex:1"><div class="figwrap"><img src="assets/pulse.png" alt="srCFD vs cfd05"></div>
+      <div class="cap">Predict the true peak from the linear LG copy → time the <b>steep recovered edge</b> (×3.7 slope).</div></div></div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">5 / 14</span></div>
+</section>
+
+<!-- 6 · HEADLINE RESULT -->
+<section class="slide" data-notes="The headline. For the brightest 150 GeV showers of the high-light DSB1 build, we measure 25.7 plus-minus 0.6 picoseconds — and about 50 ps over the full fiducial sample without the brightness selection; I always quote both. The fitted floor is 18.8 plus-minus 0.8 ps, which CONFIRMS the previously published 17.5 ps — not a revision, a confirmation with an independent estimator. Across builds the stochastic term more than doubles, from 203 to 440 — foreshadowing the punchline.">
+  <div class="hd"><span class="n">05</span><div><div class="kicker">Headline result · timing</div><h2>25.7 ps at shower maximum</h2></div></div>
+  <div class="body">
+    <div class="col" style="flex:1.25"><div class="fig" style="flex:1"><div class="figwrap"><img src="assets/thesis_postfix.png" alt="four-build sigma_t vs E"></div>
+      <div class="cap">Four-build σ<sub>t</sub>(E), reference-free (DW−UP)/2, production estimator · CERN SPS 2023.</div></div></div>
+    <div class="col">
+      <div class="stats" style="flex-direction:column">
+        <div class="stat"><div class="v">25.7<small> ± 0.6 ps</small></div><div class="l">brightest 150 GeV showers (DSB1, srCFD)</div></div>
+        <div class="stat a"><div class="v">≈ 50 <small>ps</small></div><div class="l">full fiducial sample, same estimator</div></div>
+        <div class="stat t"><div class="v">18.8<small> ± 0.8 ps</small></div><div class="l">fitted floor — <b>confirms</b> published 17.5 ps</div></div>
+      </div>
+      <div class="note">Parametrized σ<sub>t</sub> = a/√E ⊕ b. Selection systematics ±1.0 ps.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">6 / 14</span></div>
+</section>
+
+<!-- 7 · LIGHT YIELD NOT SPECIES -->
+<section class="slide" data-notes="The punchline. Two facts. First: across builds the stochastic term tracks the DETECTED LIGHT — a goes from 203 to 440, more than a factor of two, from the bright to the dim build. Second — and this is the clean part — the MIXED module reads BOTH shifters on the SAME showers, in the same module, same digitizer. On identical showers the per-capillary widths agree at the 10-to-20 percent level: the ratio is 1.04 plus-minus 0.05. So the big cross-build difference is LIGHT, not the shifter's re-emission kinetics — within this geometry and these light levels. Light yield, not species, sets the timing. This is what reframes the whole program.">
+  <div class="hd"><span class="n">06</span><div><div class="kicker">The thesis</div><h2>Detected light — not WLS species — sets the timing</h2></div></div>
+  <div class="body">
+    <div class="col"><div class="fig" style="flex:1"><div class="figwrap"><img src="assets/mixed_h2h_corrected.png" alt="MIXED same-shower control"></div>
+      <div class="cap"><b>Same-shower control:</b> DSB1 &amp; LuAG:Ce capillaries reading the <b>same</b> showers in the MIXED module.</div></div></div>
+    <div class="col" style="flex:.9">
+      <div class="stats" style="flex-direction:column">
+        <div class="stat"><div class="v">203 → 440</div><div class="l">stochastic term a (ps·√GeV), DSB1 → LuAG — <b>&gt; 2×</b></div></div>
+        <div class="stat a"><div class="v">1.04<small> ± 0.05</small></div><div class="l">same-shower σ<sub>DSB1</sub>/σ<sub>LuAG</sub> — near-parity</div></div>
+      </div>
+      <ul style="margin-top:8px">
+        <li class="a">The cross-build gap is <b>light</b>, not intrinsic re-emission kinetics — <i>within this geometry &amp; these light levels.</i></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">7 / 14</span></div>
+</section>
+
+<!-- 8 · DEPTH DIAL -->
+<section class="slide" data-notes="One more result that becomes a design principle. The dual-end asymmetry — how the two ends split — drifts with energy at minus 33.6 ps per e-fold, consistent in sign and magnitude with the migration of shower maximum deeper as energy rises. I am careful: this is an ensemble consistency reading, NOT a calibrated depth coordinate — yet. But the message is unmistakable: the timing carries DEPTH information, and the timing performance depends on WHERE along the shower the capillary samples. Depth is a knob. Hold that thought.">
+  <div class="hd"><span class="n">07</span><div><div class="kicker">Depth sensitivity</div><h2>Timing tracks shower-maximum depth</h2></div></div>
+  <div class="body">
+    <div class="col" style="flex:1.15"><div class="fig" style="flex:1"><div class="figwrap"><img src="assets/depth_dial.png" alt="depth dial"></div>
+      <div class="cap">Mean dual-end asymmetry vs energy — the <b>depth dial</b>.</div></div></div>
+    <div class="col">
+      <div class="stat r" style="margin-bottom:14px"><div class="v">−33.6<small> ± 2.9</small></div><div class="l">ps per e-fold in energy — consistent with shower-max migration (−X₀/v<sub>eff</sub>)</div></div>
+      <ul>
+        <li class="r">Timing carries <b>longitudinal depth</b> information.</li>
+        <li>An acceptance-conditional ensemble reading — <i>not a calibrated z</i> (calibration is future work).</li>
+        <li class="a">⇒ where the capillary samples the shower <b>matters</b>, and depends on energy.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">8 / 14</span></div>
+</section>
+
+<!-- 9 · PRELIMINARY ENERGY + POSITION -->
+<section class="slide" data-notes="Preliminary, from the same 2023 data — the companion measurements toward 4-D. Energy at shower max: sigma-E over E about 14 percent at 150 GeV, and — echoing the timing story — essentially INDEPENDENT of WLS species. Position from four-corner light division: a held-out residual around 1.5 mm over the full window, tightening to about 0.9 mm in the beam core. I quote these as UPPER BOUNDS — they include our tracker's own resolution, which is coarser than the module. So: few-millimeter localization already, with the same shower-max signals that give the timing. Together: a path to simultaneous x, y, energy, and time.">
+  <div class="hd"><span class="n">08</span><div><div class="kicker">Toward 4-D &nbsp;<span class="prelim">Preliminary</span></div><h2>Energy &amp; position — same shower-max signals</h2></div></div>
+  <div class="body">
+    <div class="col"><div class="fig" style="flex:1"><div class="figwrap"><img src="assets/energy_res.png" alt="energy resolution"></div>
+      <div class="cap">σ<sub>E</sub>/E ≈ <b>14%</b> at 150 GeV (shower-max sampled) — <b>species-independent</b>.</div></div></div>
+    <div class="col"><div class="fig" style="flex:1"><div class="figwrap"><img src="assets/position_res.png" alt="position residuals"></div>
+      <div class="cap">Four-corner light → held-out residual <b>~1.5 mm</b> (upper bound); <b>~0.9 mm</b> in beam core.</div></div></div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">9 / 14</span></div>
+</section>
+
+<!-- 10 · SECTION: REPOSITIONING -->
+<section class="slide dark" data-notes="So here's the pivot the 2023 data hands us. If LIGHT YIELD is the dominant lever — not the specific shifter chemistry — and if DEPTH is a knob, then the highest-value thing we can build is not one more fixed prototype. It's a platform where EVERY optical variable is a knob we can turn, one at a time, in beam. We are repositioning RADiCAL as a calorimeter TEST BED.">
+  <div class="section-lead">
+    <div class="kicker" style="color:#5cc8ff">The repositioning</div>
+    <h1>RADiCAL as a calorimeter test bed</h1>
+    <p class="sub" style="margin-top:14px;max-width:88%">The 2023 results say light yield is the dominant lever and depth is a knob. So make <span style="color:#ffd27a;font-weight:700">every optical variable a knob we can turn</span> — one at a time, in beam.</p>
+  </div>
+  <div class="bignum">01</div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">10 / 14</span></div>
+</section>
+
+<!-- 11 · THE KNOBS -->
+<section class="slide" data-notes="Three families of knobs, and the design lets us swap each independently. One: the SCINTILLATOR tile — 2023 was LYSO:Ce; now we add LuO:Yb ceramic. Two: the WLS capillary — not just the species, but its POSITION along the shower, which the depth dial told us matters, and which we're making ADJUSTABLE. Three: the readout — new electronics cards with SiPM adapter cards, so photosensor and front-end swap too. Everything modular: change a tile, change a capillary, change a card.">
+  <div class="hd"><span class="n">09</span><div><div class="kicker">Every variable a knob</div><h2>Three families, each swappable independently</h2></div></div>
+  <div class="body" style="flex-direction:column;justify-content:center">
+    <div class="knobrow">
+      <div class="knob">
+        <svg width="66" height="66" viewBox="0 0 66 66"><circle cx="33" cy="33" r="26" fill="#eaf1fb" stroke="#1f6feb" stroke-width="2.5"/><line x1="33" y1="33" x2="33" y2="12" stroke="#1f6feb" stroke-width="4" stroke-linecap="round"/><circle cx="33" cy="33" r="4" fill="#1f6feb"/></svg>
+        <h3>Scintillator tile</h3>
+        <p>LYSO:Ce crystal (2023) → <b>LuO:Yb ceramic</b> and beyond. Radiation-tolerant candidates.</p>
+        <span class="tag new">LuO:Yb — new</span>
+      </div>
+      <div class="knob">
+        <svg width="66" height="66" viewBox="0 0 66 66"><circle cx="33" cy="33" r="26" fill="#fdf0dc" stroke="#ef930d" stroke-width="2.5"/><line x1="33" y1="33" x2="49" y2="20" stroke="#ef930d" stroke-width="4" stroke-linecap="round"/><circle cx="33" cy="33" r="4" fill="#ef930d"/></svg>
+        <h3>WLS capillary</h3>
+        <p><b>Species</b> (DSB1, LuAG:Ce, …) <b>and depth position</b> — adjustable, motivated by the depth dial.</p>
+        <span class="tag blue">species + position</span>
+      </div>
+      <div class="knob">
+        <svg width="66" height="66" viewBox="0 0 66 66"><circle cx="33" cy="33" r="26" fill="#e2f6f2" stroke="#12a394" stroke-width="2.5"/><line x1="33" y1="33" x2="18" y2="24" stroke="#12a394" stroke-width="4" stroke-linecap="round"/><circle cx="33" cy="33" r="4" fill="#12a394"/></svg>
+        <h3>Readout</h3>
+        <p>New electronics cards with <b>SiPM adapter cards</b> — swap photosensor &amp; front-end.</p>
+        <span class="tag">modular cards</span>
+      </div>
+    </div>
+    <div class="note" style="text-align:center;margin-top:20px">Change a tile · change a capillary · change a card — isolate one variable at a time, in beam.</div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">11 / 14</span></div>
+</section>
+
+<!-- 12 · NOW -->
+<section class="slide" data-notes="Where we are right now, this summer. We have LuO:Yb ceramic tiles in hand — we are drilling the capillary holes now. New electronics cards with SiPM adapter cards are in development. And the mechanics are being built for adjustable capillary depth and quick swap of every element. This is the test bed coming together.">
+  <div class="hd"><span class="n">10</span><div><div class="kicker">Right now — summer 2026</div><h2>Building the test bed</h2></div></div>
+  <div class="body">
+    <div class="col">
+      <ul>
+        <li class="r"><b>LuO:Yb ceramic tiles received</b> — drilling capillary holes now.</li>
+        <li><b>New electronics cards</b> in development, with SiPM adapter cards for photosensor swaps.</li>
+        <li class="a"><b>Adjustable capillary depth</b> &amp; quick-swap mechanics — turn the depth knob the 2023 data pointed to.</li>
+        <li class="t">Modular by design — tiles, capillaries, and cards all change independently.</li>
+      </ul>
+    </div>
+    <div class="col" style="flex:.8">
+      <div class="stats" style="flex-direction:column">
+        <div class="stat r"><div class="v">LuO:Yb</div><div class="l">new ceramic scintillator — in hand, drilling</div></div>
+        <div class="stat"><div class="v">3 knobs</div><div class="l">tile · capillary (species + depth) · readout</div></div>
+        <div class="stat t"><div class="v">modular</div><div class="l">swap any element without a rebuild</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">12 / 14</span></div>
+</section>
+
+<!-- 13 · ROADMAP / T10 -->
+<section class="slide" data-notes="The roadmap. The parent NIM A paper established 27 ps. The 2023 analysis I showed today gives 25.7 ps and — more importantly — the physics: light yield sets timing, depth is a knob. Right now we're building the modular test bed with LuO:Yb. The next milestone is a beam test at CERN's T10 at the END OF AUGUST — first data with the new materials and the tunable geometry. And the destination stays fixed: 10 ps, 1 mm, 10 percent over root E.">
+  <div class="hd"><span class="n">11</span><div><div class="kicker">Roadmap</div><h2>To T10 — and toward the targets</h2></div></div>
+  <div class="body">
+    <div class="col" style="flex:1.3">
+      <div class="tl">
+        <div class="row"><div class="yr">2022</div><div class="dot"></div><div class="txt"><b>Parent result</b> — 27 ps published, NIM A 1068 (2024) 169737.<div class="line"></div></div></div>
+        <div class="row"><div class="yr">May 2023</div><div class="dot"></div><div class="txt"><b>CERN SPS</b> — 25.7 ps; light-yield thesis; the depth dial.<div class="line"></div></div></div>
+        <div class="row now"><div class="yr">Now · 2026</div><div class="dot"></div><div class="txt"><b>Test bed build</b> — LuO:Yb tiles drilling, new cards, adjustable depth.<div class="line"></div></div></div>
+        <div class="row fut"><div class="yr">Aug 2026</div><div class="dot"></div><div class="txt"><b>CERN T10 beam test</b> — first data with new materials &amp; tunable geometry.<div class="line"></div></div></div>
+        <div class="row fut"><div class="yr">Targets</div><div class="dot"></div><div class="txt"><b>10 ps · 1 mm · 10%/√E</b> — the program destination.</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div style="background:var(--paper2);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;padding:16px 18px">
+        <div class="kicker" style="color:var(--teal)">Next milestone</div>
+        <p style="margin-top:8px;font-size:22px;font-weight:700;line-height:1.25">CERN T10<br><span style="font-size:16px;font-weight:600;color:var(--ink-soft)">end of August 2026</span></p>
+        <p style="margin-top:10px;font-size:14.5px;color:var(--ink-soft)">Test the test bed: LuO:Yb tiles, adjustable capillary depth, new SiPM/readout cards.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span class="pageno">13 / 14</span></div>
+</section>
+
+<!-- 14 · SUMMARY -->
+<section class="slide dark" data-notes="To close. From the 2023 CERN data: 25.7 ps at shower max, with a floor confirming the published 17.5. The physics lesson — light yield, not shifter species, sets the timing — and the timing carries depth. Those two lessons turn RADiCAL into a materials test bed where every optical variable is a knob. LuO:Yb is in the drill; T10 is at the end of August. Thank you — I'm happy to take questions.">
+  <div class="section-lead" style="max-width:100%">
+    <div class="kicker" style="color:#5cc8ff">Summary &amp; outlook</div>
+    <h1 style="font-size:32px">Results that became a design principle</h1>
+    <div class="stats" style="margin-top:20px">
+      <div class="stat"><div class="v">25.7<small> ps</small></div><div class="l">shower-max timing (150 GeV, DSB1) · floor confirms 17.5 ps</div></div>
+      <div class="stat a"><div class="v">light ≫ species</div><div class="l">detected light sets the timing (1.04±0.05 same-shower)</div></div>
+      <div class="stat t"><div class="v">every knob</div><div class="l">tile · capillary species &amp; depth · readout — a test bed</div></div>
+    </div>
+    <ul style="margin-top:14px">
+      <li class="r" style="color:#dbe9f2">Now: <b style="color:#fff">LuO:Yb tiles drilling</b>, new electronics, adjustable depth → <b style="color:#fff">CERN T10, end of August 2026</b>.</li>
+      <li style="color:#dbe9f2">Destination unchanged: <b style="color:#fff">10 ps · 1 mm · 10%/√E</b>.</li>
+    </ul>
+    <p style="margin-top:16px;color:#7fa9c4;font-size:15px">Thank you — questions welcome. &nbsp;·&nbsp; <span class="mono">github.com/jwwetzel/RADiCAL</span> · manuscript in preparation.</p>
+  </div>
+  <div class="foot"><span class="wm"><b>●</b> RADiCAL</span><span>J. Wetzel · for the RADiCAL Collaboration · DPF 2026</span></div>
+</section>
+
+<div class="pbar" id="pbar"></div>
+</div></div>
+
+<div id="hint">← → or Space to navigate · <b>F</b> fullscreen · <b>S</b> speaker notes · <b>O</b> overview</div>
+<div id="notes"><h4>Speaker notes</h4><div id="notes-body"></div></div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck'), slides=[].slice.call(deck.querySelectorAll('.slide'));
+  var pbar=document.getElementById('pbar'), hint=document.getElementById('hint');
+  var notes=document.getElementById('notes'), notesBody=document.getElementById('notes-body');
+  var i=0, n=slides.length;
+
+  function fit(){
+    var pad=0; var sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(k,push){
+    i=Math.max(0,Math.min(n-1,k));
+    slides.forEach(function(s,j){ s.classList.toggle('on', j===i); });
+    pbar.style.width=((i)/(n-1)*100)+'%';
+    if(notes.classList.contains('show')) notesBody.textContent=slides[i].getAttribute('data-notes')||'';
+    if(push!==false) history.replaceState(null,'','#'+(i+1));
+  }
+  function next(){ show(i+1); } function prev(){ show(i-1); }
+
+  window.addEventListener('resize',fit); fit();
+  window.addEventListener('hashchange',function(){var h=(location.hash.match(/\d+/)||[1])[0];show(parseInt(h,10)-1,false);});
+  var start=(location.hash.match(/\d+/)||[1])[0]; show(parseInt(start,10)-1,false);
+  setTimeout(function(){hint.style.opacity='0';},4200);
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(n-1);}
+    else if(e.key==='f'||e.key==='F'){ if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); else document.exitFullscreen&&document.exitFullscreen(); }
+    else if(e.key==='s'||e.key==='S'){ notes.classList.toggle('show'); if(notes.classList.contains('show'))notesBody.textContent=slides[i].getAttribute('data-notes')||''; }
+    else if(e.key==='o'||e.key==='O'){ overview(); }
+  });
+  // click zones: left third = prev, else next (ignore clicks on links)
+  deck.addEventListener('click',function(e){
+    if(e.target.closest('a'))return;
+    var r=deck.getBoundingClientRect(); (e.clientX-r.left)/r.width<0.32?prev():next();
+  });
+  // touch swipe
+  var tx=0; deck.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+  deck.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>45)(dx<0?next():prev());});
+  // simple overview: toggle scaled grid via print? keep minimal — jump prompt
+  function overview(){ var g=prompt('Go to slide (1–'+n+'):',(i+1)); if(g)show(parseInt(g,10)-1); }
+})();
+</script>
+</body>
+</html>
