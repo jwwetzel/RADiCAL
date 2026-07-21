@@ -1,12 +1,227 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=going_radical.html">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GOING RADiCAL — RADiCAL CERN test-beam field guide</title>
-<link rel="canonical" href="going_radical.html">
-<style>body{background:#0b0e14;color:#e6edf6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-text-align:center;padding:90px 20px}h1{font-size:42px;letter-spacing:-1px}h1 b{color:#27e0c8}a{color:#27e0c8;font-weight:600}</style>
-</head><body>
-<h1>GOING <b>RADiCAL</b></h1>
-<p>Redirecting to the field guide… <a href="going_radical.html">enter the guide →</a></p>
-</body></html>
+<title>RADiCAL — Ultra-compact, fast-timing EM calorimetry</title>
+<meta name="description" content="RADiCAL: R&D on optical materials for ultra-compact, fast-timing electromagnetic calorimetry. Field guide, labs, analysis, and talks from the CERN SPS 2023 test beam.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{
+  --navy:#0b1f30; --navy2:#0d2b42; --navy3:#10405c;
+  --ink:#0d2436; --muted:#5a6b7a; --line:#e3e9f0; --bg:#f6f8fb; --card:#fff;
+  --blue:#1f6feb; --blue-d:#12408f; --amber:#e0850a; --teal:#0f9e8f; --rad:#e23b2e;
+  --sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;background:rgba(11,31,48,.96);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.bar .in{max-width:1120px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px}
+.bar .wm{font-weight:800;letter-spacing:.02em;color:#fff;font-size:16px}
+.bar .wm b{color:var(--rad)}
+.bar nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.bar nav a{color:#b9cfe0;font-size:13.5px;font-weight:600;padding:6px 11px;border-radius:7px}
+.bar nav a:hover{background:rgba(255,255,255,.09);color:#fff}
+
+/* hero */
+.hero{background:linear-gradient(135deg,var(--navy),var(--navy2) 55%,var(--navy3));color:#eaf3fa;
+  position:relative;overflow:hidden}
+.hero .in{max-width:1120px;margin:0 auto;padding:66px 24px 60px;position:relative;z-index:2}
+.kick{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#5cc8ff}
+.hero h1{font-size:46px;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:14px 0 6px;max-width:15ch}
+.hero .tag{font-size:19px;color:#a9c6da;max-width:56ch;line-height:1.5;margin-top:10px}
+.hero .cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;padding:11px 18px;border-radius:9px}
+.btn.p{background:#2f8fff;color:#fff} .btn.p:hover{background:#4b9dff}
+.btn.g{background:rgba(255,255,255,.09);color:#eaf3fa;border:1px solid rgba(255,255,255,.16)}
+.btn.g:hover{background:rgba(255,255,255,.15)}
+/* headline stat card in hero */
+.result{margin-top:34px;display:inline-flex;flex-wrap:wrap;gap:26px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:20px 26px}
+.result .m{display:flex;flex-direction:column}
+.result .v{font-family:var(--mono);font-size:30px;font-weight:700;letter-spacing:-.02em;color:#fff}
+.result .v small{font-size:16px;color:#9fc0d4;font-weight:600}
+.result .l{font-size:13px;color:#9fc0d4;margin-top:2px}
+.hero .tick{position:absolute;right:-40px;top:0;bottom:0;width:44%;opacity:.5;z-index:1;pointer-events:none}
+
+/* sections */
+main{max-width:1120px;margin:0 auto;padding:52px 24px 20px}
+.sec{margin-bottom:44px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.sec-h h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.sec-h .dot{width:11px;height:11px;border-radius:3px;transform:rotate(45deg)}
+.sec-h.explore .dot{background:var(--teal)} .sec-h.results .dot{background:var(--blue)} .sec-h.talks .dot{background:var(--amber)}
+.sec-sub{font-size:14.5px;color:var(--muted);margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px 20px 18px;
+  box-shadow:0 2px 10px rgba(15,23,42,.05);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+  position:relative;overflow:hidden}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(15,23,42,.13);border-color:#cdd9e6}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+.card.explore::before{background:var(--teal)} .card.results::before{background:var(--blue)} .card.talks::before{background:var(--amber)}
+.card .ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.card.explore .ic{background:#e2f6f2;color:var(--teal)} .card.results .ic{background:#e7f0ff;color:var(--blue-d)} .card.talks .ic{background:#fdf1dd;color:var(--amber)}
+.card h3{font-size:17.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
+.card h3 .arrow{margin-left:auto;color:var(--muted);transition:transform .16s ease}
+.card:hover h3 .arrow{transform:translateX(3px);color:var(--blue)}
+.card p{font-size:14px;color:var(--muted);margin-top:7px;line-height:1.5}
+.card .meta{margin-top:11px;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8496a6}
+.hist{display:inline-block;background:#fff3d6;color:#8a5a00;border:1px solid #f0d38f;font-size:10.5px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:5px;margin-left:6px}
+
+/* footer */
+footer{background:var(--navy);color:#a9c6da;margin-top:30px}
+footer .in{max-width:1120px;margin:0 auto;padding:34px 24px 40px}
+footer .grant{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);border-radius:11px;
+  padding:16px 20px;font-size:14px;line-height:1.55}
+footer .grant b{color:#eaf3fa}
+footer .inst{margin-top:16px;font-size:13.5px;color:#8fb2c9;line-height:1.7}
+footer .foot-b{margin-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  font-size:12.5px;color:#6f92a8;border-top:1px solid rgba(255,255,255,.09);padding-top:16px}
+footer a{color:#8fd0ff}
+
+@media(max-width:640px){ .hero h1{font-size:34px} .hero .tick{display:none} .result{gap:18px;padding:16px 18px} .result .v{font-size:24px} }
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="in">
+  <span class="wm"><b>●</b> RADiCAL</span>
+  <nav>
+    <a href="#explore">Explore</a>
+    <a href="#results">Results</a>
+    <a href="#talks">Talks</a>
+    <a href="https://github.com/jwwetzel/RADiCAL" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</div></div>
+
+<header class="hero">
+  <svg class="tick" viewBox="0 0 500 460" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true">
+    <g opacity="0.85">
+      <rect x="120" y="70" width="150" height="300" rx="6" fill="#0e344c" stroke="#2f7fb5" stroke-width="1.4"/>
+      <g stroke="#7fd4ff" stroke-width="5" opacity="0.45">
+        <line x1="120" y1="95" x2="270" y2="95"/><line x1="120" y1="122" x2="270" y2="122"/><line x1="120" y1="149" x2="270" y2="149"/>
+        <line x1="120" y1="176" x2="270" y2="176"/><line x1="120" y1="203" x2="270" y2="203"/><line x1="120" y1="230" x2="270" y2="230"/>
+        <line x1="120" y1="257" x2="270" y2="257"/><line x1="120" y1="284" x2="270" y2="284"/><line x1="120" y1="311" x2="270" y2="311"/><line x1="120" y1="338" x2="270" y2="338"/>
+      </g>
+      <line x1="162" y1="58" x2="162" y2="382" stroke="#e0850a" stroke-width="4"/><line x1="228" y1="58" x2="228" y2="382" stroke="#e0850a" stroke-width="4"/>
+      <circle cx="162" cy="58" r="7" fill="#e23b2e"/><circle cx="228" cy="58" r="7" fill="#e23b2e"/><circle cx="162" cy="382" r="7" fill="#e23b2e"/><circle cx="228" cy="382" r="7" fill="#e23b2e"/>
+    </g>
+    <path d="M70,420 L180,420 C230,420 230,300 285,300 C355,300 350,250 430,250" stroke="#5cc8ff" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="230" cy="360" r="6" fill="#5cc8ff"/>
+  </svg>
+  <div class="in">
+    <div class="kick">Research &amp; Development of Optical Materials</div>
+    <h1>Ultra-compact, fast-timing EM calorimetry</h1>
+    <p class="tag">A radiation-hard R&amp;D program timing electromagnetic showers to tens of picoseconds
+      at shower maximum — tungsten / LYSO:Ce sampling modules the size of a human index finger,
+      read out through wavelength-shifting capillaries. CERN SPS test beam, May 2023.</p>
+    <div class="result">
+      <div class="m"><div class="v">25.7<small> ± 0.6 ps</small></div><div class="l">brightest 150 GeV showers at shower max (≈50 ps full fiducial)</div></div>
+      <div class="m"><div class="v">18.8<small> ± 0.8 ps</small></div><div class="l">fitted floor — confirms the published 17.5 ps</div></div>
+    </div>
+    <div class="cta">
+      <a class="btn p" href="going_radical.html">Start with the field guide →</a>
+      <a class="btn g" href="https://github.com/jwwetzel/RADiCAL" target="_blank" rel="noopener">View the repository ↗</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="sec" id="explore">
+    <div class="sec-h explore"><span class="dot"></span><h2>Explore &amp; learn</h2></div>
+    <p class="sec-sub">Start here — the concepts, the data, and the simulation, hands-on.</p>
+    <div class="grid">
+      <a class="card explore" href="going_radical.html">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <h3>Going RADiCAL <span class="arrow">→</span></h3>
+        <p>The field guide: particle detectors, fast electronics, and timing light to a trillionth of a second.</p>
+        <div class="meta">Field guide</div>
+      </a>
+      <a class="card explore" href="data_lab.html">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3>Data Lab <span class="arrow">→</span></h3>
+        <p>Open the real test-beam data, write a loop over the events, and make the plots yourself.</p>
+        <div class="meta">Interactive</div>
+      </a>
+      <a class="card explore" href="geant4_lab.html">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></div>
+        <h3>GEANT4 Lab <span class="arrow">→</span></h3>
+        <p>Build the detector inside the computer: electron shower → scintillation &amp; WLS light → digitized waveform.</p>
+        <div class="meta">Simulation</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="sec" id="results">
+    <div class="sec-h results"><span class="dot"></span><h2>Results &amp; analysis</h2></div>
+    <p class="sec-sub">The 2023 CERN SPS campaign, from raw waveforms to the physics.</p>
+    <div class="grid">
+      <a class="card results" href="report/">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div>
+        <h3>Analysis Report <span class="arrow">→</span></h3>
+        <p>The six-layer evidence chain — raw DRS4 waveforms to energy &amp; timing resolution, end to end.</p>
+        <div class="meta">Evidence chain <span class="hist">2023 analysis</span></div>
+      </a>
+      <a class="card results" href="paper.html">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg></div>
+        <h3>The Paper <span class="arrow">→</span></h3>
+        <p>Precision timing in a tungsten–LYSO:Ce shashlik calorimeter — the narrative writeup.</p>
+        <div class="meta">Writeup <span class="hist">2023 analysis</span></div>
+      </a>
+      <a class="card results" href="timing_story.html">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-9"/><path d="M21 6v5h-5"/></svg></div>
+        <h3>Timing the Steep Edge <span class="arrow">→</span></h3>
+        <p>How signal saturation forced a new method: recover the true pulse from a low-gain copy (srCFD).</p>
+        <div class="meta">Method <span class="hist">2023 analysis</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="sec" id="talks">
+    <div class="sec-h talks"><span class="dot"></span><h2>Talks &amp; posters</h2></div>
+    <p class="sec-sub">Conference presentations of the RADiCAL program.</p>
+    <div class="grid">
+      <a class="card talks" href="calor2026_radical.html">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3>CALOR 2026 · Santa Fe <span class="arrow">→</span></h3>
+        <p>Optical-materials R&amp;D for fast-timing, ultra-compact calorimetry — the conference page.</p>
+        <div class="meta">Conference</div>
+      </a>
+      <a class="card talks" href="calor2026_slides.html">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4M7 9l3 2-3 2"/></svg></div>
+        <h3>CALOR 2026 · Slides <span class="arrow">→</span></h3>
+        <p>The CALOR 2026 presentation deck.</p>
+        <div class="meta">Slide deck</div>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="in">
+    <div class="grant">
+      Supported by <b>U.S. Department of Energy award DE-SC0026349</b> — <i>“Advanced Calorimetry for
+      High Energy Physics: Characterization and Material Exploration for Enhanced Radiation-Hard Timing
+      and Resolution.”</i>
+    </div>
+    <div class="inst">
+      <b style="color:#cfe4f2">The RADiCAL Collaboration</b><br>
+      Caltech · University of Virginia · University of Notre Dame · University of Iowa · Istanbul University · Coe College
+      &nbsp;— and collaborating institutions.
+    </div>
+    <div class="foot-b">
+      <span>Building on <a href="https://doi.org/10.1016/j.nima.2024.169737" target="_blank" rel="noopener">NIM A 1068 (2024) 169737</a> · timing manuscript in preparation.</span>
+      <span><a href="https://github.com/jwwetzel/RADiCAL" target="_blank" rel="noopener">github.com/jwwetzel/RADiCAL</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
