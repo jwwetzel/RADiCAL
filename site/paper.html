@@ -538,14 +538,18 @@ See <code>papers/timing/radical_timing.pdf</code> and <code>ANALYSIS_GUIDE.md</c
   <h3>8.2 The in-event crystal test</h3>
   <p>The cleanest test reads <b>both</b> crystals in the <b>same showers</b>: in the mixed module, the pairwise
   difference of any two same-group capillary times cancels the event time, the reference, and the shared shower
-  time, leaving each capillary's intrinsic jitter. By this confound-free comparison, DSB1 and LuAG capillaries
-  time <b>identically</b> — about 200 ps per capillary, with no systematic difference, equal at 150 GeV.</p>
+  time, leaving each capillary's intrinsic jitter. By this same-shower comparison, the DSB1 and LuAG:Ce
+  <b>wavelength-shifting capillaries</b> give timing widths agreeing at the 10–20% level
+  (σ<sub>DSB1</sub>/σ<sub>LuAG</sub> = 1.04 ± 0.05, srCFD) — near-parity that disfavors WLS re-emission
+  kinetics as the dominant driver, within this geometry and at these light levels.</p>
 
   <div class="figrow">
-    <figure><img src="assets/mixed_h2h.png" alt="in-event DSB1 vs LuAG">
-      <figcaption><span class="fnum">Figure 12a.</span> In-event, confound-free head-to-head in the mixed module:
-      per-capillary intrinsic σ<sub>t</sub> for DSB1 versus LuAG crystals in the same showers. They agree at every
-      energy — crystal species is not the timing driver.</figcaption></figure>
+    <figure><img src="assets/mixed_h2h.png" alt="same-shower DSB1 vs LuAG:Ce capillaries">
+      <figcaption><span class="fnum">Figure 12a.</span> Same-shower control in the mixed module: DSB1 and LuAG:Ce
+      <b>wavelength-shifting capillaries</b> reading the same showers give per-capillary timing widths agreeing at
+      the 10–20% level (σ<sub>DSB1</sub>/σ<sub>LuAG</sub> = 1.04 ± 0.05, srCFD). Set against the more-than-2×
+      cross-build stochastic-term difference, this disfavors intrinsic WLS re-emission kinetics as the dominant
+      cause — within this geometry and at these light levels.</figcaption></figure>
     <figure><img src="assets/compare_configs.png" alt="config comparison">
       <figcaption><span class="fnum">Figure 12b.</span> Apples-to-apples out-of-sample best-bin resolution across
       the four builds at 150 GeV: DSB1 29.4, TENERGY 35.7, LuAG 36.6, mixed 36.7 ps. The uniformly-brightest DSB1
