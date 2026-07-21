@@ -34,15 +34,19 @@ re-emission kinetics as the dominant cause, within this geometry and at these li
 ```bash
 source setup.sh                      # ROOT_INCLUDE_PATH + RAD_DATA, once per shell
 
-# verify the reduced data is present + clean (all builds Y/Y/Y)
-root -l -b -q 'reduce/verify.C+("data/2023/reduced")'
+# one-command reproduction of the headline chain, verdict included:
+tools/repro.sh --check-data          # full protocol + env pinning: REPRODUCE.md
 
-# regenerate the paper's four-build table + money plot (the headline chain)
-root -l -b -q 'papers/scripts/timing_fit_summary/timingFitSummary.C'
+# or by hand:
+root -l -b -q 'reduce/verify.C+("data/2023/reduced")'          # data present + clean
+root -l -b -q 'papers/scripts/timing_fit_summary/timingFitSummary.C'   # money plot
 ```
 
 ⚠ Gate macros regenerate their committed logs/tables/figures in place — run them to *verify*
-(outputs should be identical), not casually; `git diff` afterward is the check.
+(outputs should be identical), not casually; `git diff` afterward is the check (known
+benign residual: one PDF timestamp — see [`REPRODUCE.md`](REPRODUCE.md)). Per-gate runbook:
+[`papers/scripts/INDEX.md`](papers/scripts/INDEX.md); guarded runs: `tools/run_gate.sh`.
+Data integrity: `shasum -a 256 -c data/2023/MANIFEST.sha256`.
 
 **Data:** the reduced ntuples (~13 GB) are **not in git**. Collaborators: mirror from Argon
 with `tools/pull_argon_data.sh`, or copy `data/2023/reduced/` from an existing checkout.
@@ -63,9 +67,9 @@ lib/                 ← shared header-only library. The single include root.
   physics/    SelectionCuts RadTiming                        (cuts + timing primitives)
   viz/        PlotUtils RADiCALStyle                         (plotting)
 reduce/              ← raw → reduced pipeline (Reducer.C; hpc/ = Argon SGE recipe → REREDUCE.md)
-analyze/             ← curated exploratory analyses + report builder
-  studies/    ~118 investigation macros (exploratory record; the PUBLISHED results
-              live in papers/scripts/ — ANALYSIS_GUIDE.md maps which studies fed them)
+analyze/             ← curated exploratory analyses + report builder (README inside)
+  studies/    ~120 investigation macros (exploratory record, indexed in studies/INDEX.md;
+              the PUBLISHED results live in papers/scripts/)
 papers/              ← THE SCIENTIFIC RECORD
   timing/     Paper 1 manuscript (elsarticle) + figs/ + circulation/review documents
   scripts/    gated result generators: one dir per published result, AUDIT.md + logs
@@ -75,9 +79,12 @@ papers/              ← THE SCIENTIFIC RECORD
   energy_position/  Paper 2 skeleton (companion: energy + position + 4D)
 data/                ← per-year data + configs + metadata (ntuples gitignored)
   2023/{raw, reduced, configs, metadata}/   metadata/DATASET_NOTES.md = dataset compendium
-docs/                ← APPARATUS_2023.md, METHODS_2023.md, design notes, outlines
+docs/                ← APPARATUS_2023.md, METHODS_2023.md, ARCHITECTURE.md, CONVENTIONS.md,
+                       STATS_CONVENTIONS.md, design notes, outlines
 figures/             ← analysis figure outputs (year-namespaced; narrative/ feeds the paper)
-tools/               ← utilities (Argon data mirror)
+tools/               ← repro.sh (one-command reproduction), run_gate.sh (guarded gate runs),
+                       check_figure_manifest.sh (figure drift), pull_argon_data.sh
+REPRODUCE.md         ← fresh clone → published numbers, env pinning + expected residual
 site/                ← GitHub Pages site (outreach/report; historical pages carry banners)
 student/             ← self-contained student lab module
 archive/             ← superseded code kept for provenance (do not use)

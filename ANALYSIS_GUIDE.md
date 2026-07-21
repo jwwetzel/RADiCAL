@@ -78,7 +78,9 @@ PDF /CreationDate metadata; the table md and every PNG must be byte-identical (v
 2026-07-21: full chain reproduced in ~93 s of machine time, `CODE_AUDIT_2026-07-21.md`).
 ⚠ Gate macros write their committed outputs in place; treat a dirty diff as a finding, not a
 formality. All generators are deterministic (seeded bootstrap; no wall-clock randomness).
-Requires `data/2023/reduced/` (see README → Data).
+Requires `data/2023/reduced/` (see README → Data; integrity: `data/2023/MANIFEST.sha256`).
+One-command version of this protocol, PDF-timestamp exemption included: `tools/repro.sh`
+(see `REPRODUCE.md`); per-gate runbook: `papers/scripts/INDEX.md`.
 
 ## Exploratory vs load-bearing
 

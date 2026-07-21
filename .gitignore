@@ -39,7 +39,10 @@ archive/**/Output_old/
 archive/**/*.root
 archive/**/*.pdf
 
-# LaTeX build artifacts
+# LaTeX build artifacts — with a deliberate exception: committed gate-result logs
+# (papers/scripts/*/*.log evidence files) are tracked via `git add -f` and must
+# never be deleted or regenerated silently; this pattern only keeps NEW LaTeX
+# .log noise out. See ANALYSIS_GUIDE.md "gate discipline".
 papers/**/*.log
 
 # workspace audit A10: generator build artifact (canonical copy: papers/timing/figs/) + third-party source assets pending rights decision + macOS noise

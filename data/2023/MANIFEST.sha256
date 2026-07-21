@@ -1,0 +1,70 @@
+# data/2023/MANIFEST.sha256 — integrity manifest for the analysis-ready data tier
+# Recorded 2026-07-21 (REORG_PLAN Phase B2) on the canonical local copy.
+# Scope: the 21 reduced ntuples (everything the published analysis needs) plus the
+# 8 config/calibration sidecars (listed for completeness; those are in git).
+# Verify:  shasum -a 256 -c data/2023/MANIFEST.sha256   (from the repo root;
+#          comment lines provoke an "improperly formatted" warning — harmless.)
+#
+# Per-file metadata — every reduced file carries the single 39-branch 'rad' tree
+# (lib/io/Schema.h); bytes + entries read 2026-07-21:
+#
+#   data/2023/reduced/DSB1/100GeV.root           771506031 bytes   rad   1019410 entries  39 branches
+#   data/2023/reduced/DSB1/125GeV.root           723530216 bytes   rad    959101 entries  39 branches
+#   data/2023/reduced/DSB1/150GeV.root          1380189183 bytes   rad   1826512 entries  39 branches
+#   data/2023/reduced/DSB1/25GeV.root            501953492 bytes   rad    693006 entries  39 branches
+#   data/2023/reduced/DSB1/50GeV.root            808201197 bytes   rad   1077129 entries  39 branches
+#   data/2023/reduced/DSB1/75GeV.root            596740047 bytes   rad    777632 entries  39 branches
+#   data/2023/reduced/LUAG/100GeV.root           542902857 bytes   rad    717007 entries  39 branches
+#   data/2023/reduced/LUAG/125GeV.root           739076637 bytes   rad    968083 entries  39 branches
+#   data/2023/reduced/LUAG/150GeV.root          1260141757 bytes   rad   1673476 entries  39 branches
+#   data/2023/reduced/LUAG/50GeV.root            639616781 bytes   rad    867426 entries  39 branches
+#   data/2023/reduced/LUAG/75GeV.root            704752204 bytes   rad    929967 entries  39 branches
+#   data/2023/reduced/MIXED/100GeV.root          179857408 bytes   rad    236766 entries  39 branches
+#   data/2023/reduced/MIXED/125GeV.root          216746196 bytes   rad    283349 entries  39 branches
+#   data/2023/reduced/MIXED/150GeV.root          200181689 bytes   rad    264372 entries  39 branches
+#   data/2023/reduced/MIXED/50GeV.root           759608279 bytes   rad   1016898 entries  39 branches
+#   data/2023/reduced/MIXED/75GeV.root           413169804 bytes   rad    539982 entries  39 branches
+#   data/2023/reduced/TENERGY/100GeV.root        584083686 bytes   rad    767625 entries  39 branches
+#   data/2023/reduced/TENERGY/125GeV.root        533993630 bytes   rad    697212 entries  39 branches
+#   data/2023/reduced/TENERGY/150GeV.root        608742729 bytes   rad    807147 entries  39 branches
+#   data/2023/reduced/TENERGY/50GeV.root         553707989 bytes   rad    745855 entries  39 branches
+#   data/2023/reduced/TENERGY/75GeV.root         753398474 bytes   rad    989966 entries  39 branches
+#
+#   data/2023/configs/DSB1.hglg                        219 bytes
+#   data/2023/configs/DSB1.json                       2308 bytes
+#   data/2023/configs/LUAG.hglg                        219 bytes
+#   data/2023/configs/LUAG.json                       1959 bytes
+#   data/2023/configs/MIXED.hglg                       214 bytes
+#   data/2023/configs/MIXED.json                      2238 bytes
+#   data/2023/configs/TENERGY.hglg                     218 bytes
+#   data/2023/configs/TENERGY.json                    2001 bytes
+#
+f12159aedc4a867e8414b7a55b602667555af0f3162d44fbbd1d1b5451300321  data/2023/reduced/DSB1/100GeV.root
+6468a9479e952b928f523abe63a52269b6c65f0ecbcf7cb27a55eeb0d399b309  data/2023/reduced/DSB1/125GeV.root
+2f0ab91c1712a132ee3861d999b4f4e2de9368324d4d289efa277d71e6d32110  data/2023/reduced/DSB1/150GeV.root
+469683ab8478b0b07baf2d8537f9ae25c83bcafdd3b5e523640b145014c01c9d  data/2023/reduced/DSB1/25GeV.root
+8fb095c66b04f667f53bc1d055fce78f15512dc654f37f4310ec406f89697746  data/2023/reduced/DSB1/50GeV.root
+306c9eaecfbd0fb1d7596f43e44d1ee2b2c18616fd7a201001ae738a180c8218  data/2023/reduced/DSB1/75GeV.root
+97c528ec773ff6068017169f6cfcba2ebf2b1eef7b552bf40cf3090616b3f526  data/2023/reduced/LUAG/100GeV.root
+c7e52bdccdff4820de40543a63799a9b3a999db0b33a778896d8ae3791caee48  data/2023/reduced/LUAG/125GeV.root
+4f81a72fceaab4d8f8ed7d181ab5e40a91fc518c9e56b895a36b73c80e031493  data/2023/reduced/LUAG/150GeV.root
+00937267ed884be47265f9d5a5a57b812c38f0482ca30bd9b8544e98898bb269  data/2023/reduced/LUAG/50GeV.root
+89f7f22ac45d95643cdb1d79b81aead79c4042199d4e45f1b86219629a7ee811  data/2023/reduced/LUAG/75GeV.root
+ea249aa91d5d2d89d778b148f874e7edcccc97eaea5e21d3f6232d5de90ebc11  data/2023/reduced/MIXED/100GeV.root
+c26ce1680294a6cde266bb7b36ffb9d46475cc3385a404434855f35864aeb3e7  data/2023/reduced/MIXED/125GeV.root
+c0d0332d02020eb423a746811ca09f306d05e33d34bac25a222578642ac49ec9  data/2023/reduced/MIXED/150GeV.root
+5efe46275cf59ab76bc960ef4b140c3515cc2191def1705ac306c56332ef9f43  data/2023/reduced/MIXED/50GeV.root
+f3ae0a0946dfb687cc0f86ca85ae0701baebca9edd6accf658cb80b7b6358a59  data/2023/reduced/MIXED/75GeV.root
+dac887d6e90b3b5705fe09c5c7d634c0dd94509fececc8bede078dbc3f488ce9  data/2023/reduced/TENERGY/100GeV.root
+af8f43c4664f81b7826003238d85d2fc290fa3ed8e6fcbe571046c0f7965d885  data/2023/reduced/TENERGY/125GeV.root
+8d5e0854eea93514264e4a5f902b8c5abbc96d74346412a54e5f0761194ace4b  data/2023/reduced/TENERGY/150GeV.root
+33987e1f11a23af84d7ac396085a54b0fe52dd581f7b8878394f92e501acec30  data/2023/reduced/TENERGY/50GeV.root
+fa85b209e3a3a0de8c09e164727608266eaffcbb37ffd7006c03401982c5b141  data/2023/reduced/TENERGY/75GeV.root
+0f8fbf036773036d4376d3ee9ea19049bd3454b9e882e768e540cc4f890505c3  data/2023/configs/DSB1.hglg
+a036dccbde3c1ace544fb7db7b88e3af0f8df7e68985b03f3a4a92ceb7f6563d  data/2023/configs/DSB1.json
+3cdcffa5c5e15704cd8c836c09907689aa4ff18f076b072b5dc8a880150ae000  data/2023/configs/LUAG.hglg
+cfb0dcd63f1d2b8d679f99dcf1ed02ec34e45d3d623a151a4cb709169b20e790  data/2023/configs/LUAG.json
+c590374747348c701a20a975cc4acd194ba797c48fd26b69261cc36295a0c515  data/2023/configs/MIXED.hglg
+703dbcd804ec281dc3328c8e248ccf27d24e4b5f0c9a3d40f1d23fc81e1dcffa  data/2023/configs/MIXED.json
+3d9bde15a9c01d1d17d7502e3afee3356d394cad448c01e89a328f4b1dd394ef  data/2023/configs/TENERGY.hglg
+8d487083306d760c8b0a7640d1923492372069bb416b01aac6da2b1b45185dcc  data/2023/configs/TENERGY.json
