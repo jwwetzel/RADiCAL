@@ -171,8 +171,8 @@ void mcpJitter()
         t->SetBranchAddress("x_trk",     &x_trk);
         t->SetBranchAddress("y_trk",     &y_trk);
         t->SetBranchAddress("wc_ok",     &wc_ok);
-        t->SetBranchAddress("mcp_peak",  &mcp_peak);
-        t->SetBranchAddress("mcp_time",  &mcp_time);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",  &mcp_peak);
+        t->SetBranchAddress(t->GetBranch("mcp1_time")?"mcp1_time":"mcp_time",  &mcp_time);
         t->SetBranchAddress("mcp2_peak", &mcp2_peak);
         t->SetBranchAddress("mcp2_time", &mcp2_time);
 
@@ -708,8 +708,8 @@ void mcpJitter()
             double xc2, yc2, tcfd2, trms2;
             ScanRunCenters(ta, xc2, yc2, tcfd2, trms2);
             Float_t mp, mt, mp2, mt2, xt, yt; Bool_t wok;
-            ta->SetBranchAddress("mcp_peak",  &mp);
-            ta->SetBranchAddress("mcp_time",  &mt);
+            ta->SetBranchAddress(ta->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",  &mp);
+            ta->SetBranchAddress(ta->GetBranch("mcp1_time")?"mcp1_time":"mcp_time",  &mt);
             ta->SetBranchAddress("mcp2_peak", &mp2);
             ta->SetBranchAddress("mcp2_time", &mt2);
             ta->SetBranchAddress("x_trk",     &xt);

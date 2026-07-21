@@ -386,7 +386,7 @@ void qualityPlots()
         tree->SetBranchAddress("wc_ok",    &wc_ok);
         tree->SetBranchAddress("x_trk",    &x_trk);
         tree->SetBranchAddress("y_trk",    &y_trk);
-        tree->SetBranchAddress("mcp_peak", &mcp_peak);
+        tree->SetBranchAddress(tree->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
         tree->SetBranchAddress("hg_peak",  hg_peak);
         // Per-channel timing uses CFD-5% (adopted headline fraction) when available:
         // it removes the broad CFD-20% shoulder on the Down capillaries (whose
@@ -404,7 +404,7 @@ void qualityPlots()
         if (hasMCP2) {
             tree->SetBranchAddress("mcp2_peak", &mcp2_peak);
             // mcp_time and mcp2_time are present if mcp2_peak is
-            if (tree->GetBranch("mcp_time"))  tree->SetBranchAddress("mcp_time",  &mcp_time);
+            if (tree->GetBranch("mcp_time"))  tree->SetBranchAddress(tree->GetBranch("mcp1_time")?"mcp1_time":"mcp_time",  &mcp_time);
             if (tree->GetBranch("mcp2_time")) tree->SetBranchAddress("mcp2_time", &mcp2_time);
         }
 

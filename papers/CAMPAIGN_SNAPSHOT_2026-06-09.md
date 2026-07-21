@@ -391,3 +391,42 @@ energy/position paper (the fifth coordinate).
   CERN Open Data) + fetch script, B5 (metadata reconciliation), B6 (banner batch),
   B7 (GATE-1 logbook half, Q8), B8 tab_methods/NIM_A dispositions, B9 tag; plus the
   A.10 optimization-curve re-verification.
+
+## UPDATE 2026-07-21 (late) — report pipeline migrated to the production chain (banner retired)
+
+- WHAT: the full report pipeline (harvester + ~30 analyze/studies macros + makeReport.py +
+  deployReport.sh) migrated off the retired best-bin/cfd05 chain onto the gated production
+  chain (brightest-1000 (DW−UP)/2, srCFD/LED per regime, TimingFiducialR ramp, eventDWUP veto,
+  robust tebSigma). site/report/ redeployed banner-free with current numbers.
+- NEW PRODUCER: analyze/studies/timingProduction.C — writes Summary/timing_energy_bins.root
+  under the legacy graph names + per-build TParameters + full-fiducial/cfd05 companions. Carries
+  a KERNEL CLONE equivalence assertion vs rad::timingBrightestK and a GATED CHECK printout.
+  Run evidence (output/logs/rerun_timingProduction.log): "GATED CHECK: s150 PASS (25.7 vs 25.7)
+  | FF150 PASS (50.5 vs 50.5) | a PASS | b PASS"; all four builds reproduce the gated table
+  exactly (DSB1 a=203±6 b=18.8±0.8 s150=25.7 light150=5185; LUAG 440±18/24.6±3.3/44.4/1800;
+  MIXED 253±29/34.3±2.4/39.6/3230; TENERGY 198±21/26.0±1.8/30.3/4045).
+- DATA: reduced ntuples symlinked as output/<E>GeV/ntuple.root (identical event sample,
+  n=1,826,512 @150). Comprehensive branch-bind audit: mcp_time/mcp_peak → dynamic
+  mcp1_* fallback in lib/viz/PlotUtils.h (ScanRunCenters ×2), alignmentAnalysis.C, + 37-macro
+  mechanical sweep (silent-zero SetBranchAddress hazard eliminated).
+- RERUNS: Batch A (18 QA macros) + Batch B (12 consumers/heroes) all exit=0 errors=0
+  (output/logs/rerun_*.log). Rewritten data-driven: timingFloorComparison.C (was hard-coded
+  "22 vs 17.5" story → 18.8±0.8 CONFIRMS 17.5), idealUniform.C (was hard-coded 27.4 ladder →
+  reads production curve; projection now 25.7→23.7 ps @150). Label fixes: elbowFractionTrend,
+  edgeMechanism, layer4Summary, layer5Summary (srCFD is the operating point, not "CFD-5% adopted").
+- HARVESTER: harvestResults.C emits fit errors (PDG inflation), dsb1_sigma_ff[], per-build
+  block (from timingProduction TParameters), mixed_sameshower_ratio 1.04±0.05, depth_slope
+  −33.6±2.9, syst_sel (gate-log provenance). results.json sha256[:12]=bdb57d97668e.
+- makeReport.py: 24 pre-fix passages rewritten under the claims law (exec summary wholesale,
+  l5-floor section now "confirming the published 17.5 ps", fiducial-opt reframed as the
+  historical radius derivation, per-regime estimator rule throughout, WLS-capillary-is-the-
+  variable statement, per-build table, generated-on dateline). Claims-gate greps on
+  output/report.html: 27.4=0, "22 vs 17.5"=0, 0.99=0, "identical timing"=0, "crystal differs"=0;
+  required: 25.7×16, brightest-1000×27, srCFD×23, "confirming the published 17.5"×2.
+  report.html sha256[:12]=77b5cdffe926.
+- DEPLOY: bash analyze/deployReport.sh → 219 files, 36 MB; deployed index sha256[:12]=77b5cdffe926;
+  verified in-browser (KPIs 25.7 / ≈50 / 18.8; 244/244 figures load; hero + floor figures
+  visually inspected). Hub card (site/index.html) updated to "production chain · 2026-07".
+- COMMANDS: root -l -b -q 'analyze/studies/timingProduction.C+' ; batch scripts (nohup) ;
+  root -l -b -q 'analyze/studies/harvestResults.C+' ; python3 analyze/makeReport.py ;
+  bash analyze/deployReport.sh.

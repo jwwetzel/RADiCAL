@@ -212,7 +212,7 @@ static void ScanRunCenters(TTree* t,
     t->SetBranchAddress("y_trk",    &y_trk);
     t->SetBranchAddress("wc_ok",    &wc_ok);
     t->SetBranchAddress("sum_lg",   &sum_lg);
-    t->SetBranchAddress("mcp_peak", &mcp_peak);
+    t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
     t->SetBranchAddress("hg_cfd",    hg_cfd);
     t->SetBranchAddress("hg_peak",   hg_peak);
 
@@ -303,7 +303,7 @@ static void CalibrateCableDelays(TTree* t, double delay[8])
     Float_t mcp_peak, hg_cfd[8], hg_peak[8];
     Bool_t  wc_ok;
     t->SetBranchAddress("wc_ok",    &wc_ok);
-    t->SetBranchAddress("mcp_peak", &mcp_peak);
+    t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
     t->SetBranchAddress("hg_cfd",    hg_cfd);
     t->SetBranchAddress("hg_peak",   hg_peak);
 

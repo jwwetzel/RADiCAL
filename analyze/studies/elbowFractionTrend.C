@@ -8,7 +8,9 @@
 //   on the DOWN capillaries sigma_t rises steeply with CFD fraction (the leading-
 //   edge SHAPE jitters more high on the edge — not a mean-slope effect; see
 //   edgeMechanism.C), while the UP capillaries depend far less on fraction.
-//   CFD-5% is the adopted headline fraction.
+//   The 5% edge is the optimum among plain CFD fractions; the production
+//   headline estimator (srCFD) times exactly this low edge, with LG-guided
+//   recovery of clipped pulses (see hg_lgcfd in the reduction).
 //
 //   Estimator (stated on the figure caption in the report):
 //     For each (energy, group, fraction) the four capillaries of the group are
@@ -165,7 +167,7 @@ void DrawGroup(const char* pngName, const char* title,
     adopt->SetLineColor(kGray+2); adopt->SetLineStyle(2); adopt->SetLineWidth(2);
     adopt->Draw("SAME");
     { TLatex a; a.SetTextColor(kGray+3); a.SetTextSize(0.034); a.SetTextAngle(90);
-      a.DrawLatex(7.2, hi*0.40, "adopted (CFD-5%)"); }
+      a.DrawLatex(7.2, hi*0.40, "5% edge #minus srCFD's operating point"); }
 
     // legend (energies)
     TLegend* leg = MakeCornerLegend(6, "tl", 0.034);

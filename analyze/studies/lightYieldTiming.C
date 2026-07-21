@@ -41,7 +41,7 @@ static void perCap(const char* dir, bool isDSB1, double E,
     Float_t m1t,m2t,m1p,sp[36],sc[36];          // reduced
     Float_t mp,cfd[8],lgp[8];                    // DSB1
     t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-    if(isDSB1){ t->SetBranchAddress("mcp_peak",&mp); t->SetBranchAddress("hg_cfd05",cfd); t->SetBranchAddress("lg_peak",lgp); }
+    if(isDSB1){ t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mp); t->SetBranchAddress("hg_cfd05",cfd); t->SetBranchAddress("lg_peak",lgp); }
     else { t->SetBranchAddress("mcp1_time",&m1t); t->SetBranchAddress("mcp2_time",&m2t);
            t->SetBranchAddress("mcp1_peak",&m1p); t->SetBranchAddress("s_peak",sp); t->SetBranchAddress("s_cfd05",sc); }
     long N=t->GetEntries(); double xs=0,ys=0; long nw=0;

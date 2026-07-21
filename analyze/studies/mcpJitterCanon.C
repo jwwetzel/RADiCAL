@@ -53,8 +53,8 @@ void mcpJitterCanon(){
         TFile* fp=TFile::Open(radReduced("DSB1",Es[e])); TTree* t=(TTree*)fp->Get("rad");
         Bool_t wc; Float_t mp,mp2,mt,mt2; Int_t sc[4];
         t->SetBranchAddress("wc_ok",&wc);
-        t->SetBranchAddress("mcp_peak",&mp);   t->SetBranchAddress("mcp2_peak",&mp2);
-        t->SetBranchAddress("mcp_time",&mt);   t->SetBranchAddress("mcp2_time",&mt2);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mp);   t->SetBranchAddress("mcp2_peak",&mp2);
+        t->SetBranchAddress(t->GetBranch("mcp1_time")?"mcp1_time":"mcp_time",&mt);   t->SetBranchAddress("mcp2_time",&mt2);
         t->SetBranchAddress("stopcell",sc);
         long N=t->GetEntries(); std::vector<Mev> ev; ev.reserve(N); long ie=0;
         for(long i=0;i<N;++i){ t->GetEntry(i);

@@ -28,7 +28,7 @@ void showerLocalization(double E=150){
     TTree* t=(TTree*)fp->Get("rad");
     Bool_t wc; Float_t x,y,mp,lg[8];
     t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-    t->SetBranchAddress("mcp_peak",&mp); t->SetBranchAddress("lg_peak",lg);
+    t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mp); t->SetBranchAddress("lg_peak",lg);
     const double cx0=6.6, cy0=4.7;                 // module centre in WC coords
 
     // best linear estimator of WC (x,y) from 3 independent corner fractions (the

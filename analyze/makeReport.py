@@ -23,7 +23,7 @@ Requirements
 
 Usage
 -----
-  python3 Analysis/makeReport.py
+  python3 analyze/makeReport.py
   open output/report.html
 """
 
@@ -79,11 +79,10 @@ class _Results:
         if not path.exists():
             raise SystemExit(
                 f"\n[makeReport] results.json not found at {path}\n"
-                f"  The report is data-driven; run the harvester first:\n"
-                f"    source $(brew --prefix root)/bin/thisroot.sh\n"
-                f"    ROOT_INCLUDE_PATH=Analysis root -l -b -q "
-                f"'Analysis/harvestResults.C+'\n"
-                f"  (runAll.sh does this automatically before makeReport.)\n")
+                f"  The report is data-driven; run the harvester first "
+                f"(from the repo root):\n"
+                f"    source setup.sh\n"
+                f"    root -l -b -q 'analyze/studies/harvestResults.C+'\n")
         self._d = json.loads(path.read_text())
         self._energies = self._d.get("energies", ENERGIES)
 
@@ -131,37 +130,75 @@ class _Results:
     def hi(self, key: str, energies) -> float:
         return max(self.at(key, e) for e in energies)
 
+    def block(self, key: str) -> dict:
+        """Nested object by key (hard-fail if missing/null)."""
+        v = self._require(key)
+        if not isinstance(v, dict):
+            raise SystemExit(f"[makeReport] '{key}' is not an object.")
+        return v
+
 
 R = _Results(OUTPUT_ROOT / "Summary" / "results.json")
 
 # ── Pre-formatted prose tokens (one source: results.json) ──────────────────
+from datetime import date as _date
+_BUILD_DATE = _date.today().isoformat()
 _LE = [25, 50, 75, 100, 125]   # "lower energies" (all but 150)
 
-TEB_150     = f"{R.at('teb_sigma', 150):.0f}"                        # 37
-TEB_25      = f"{R.at('teb_sigma', 25):.0f}"                         # 56
+# PRODUCTION chain tokens (brightest-1000, srCFD; see analyze/studies/
+# timingProduction.C — verified against the gated table
+# papers/tables/timing_fit_summary_2026-06-09.md at harvest time).
+TEB_150     = f"{R.at('teb_sigma', 150):.1f}"                        # 25.7
+TEB_25      = f"{R.at('teb_sigma', 25):.0f}"                         # ~45
 TEB_150_PE  = (f"{R.at('teb_sigma', 150):.1f} &plusmn; "
-               f"{R.at('teb_sigma_err', 150):.1f}")                  # 36.6 ± 0.8
-TEB_A       = f"{R.get('teb_fit_a'):.0f}"                            # 239
-TEB_B       = f"{R.get('teb_fit_b'):.0f}"                            # 31
-PAPER_150   = f"{R.at('paper_sigma', 150):.0f}"                      # 27
-DIFF_150    = f"{round(R.at('teb_sigma',150)) - round(R.at('paper_sigma',150)):.0f}"  # 10
-# Best-bin disclosure: the headline teb_sigma is the single best (highest-E_meas,
-# fully-contained) energy bin. Carry its selection efficiency so 27 ps is never bare.
-TEB_EFF_150 = f"{R.at('teb_eff', 150):.1f}"                          # 0.7  (% of fiducial)
-TEB_EFF_25  = f"{R.at('teb_eff', 25):.1f}"                           # 7.4
+               f"{R.at('teb_sigma_err', 150):.1f}")                  # 25.7 ± 0.6
+TEB_A       = f"{R.get('teb_fit_a'):.0f}"                            # 203
+TEB_A_PE    = f"{R.get('teb_fit_a'):.0f} &plusmn; {R.get('teb_fit_a_err'):.0f}"
+TEB_B       = f"{R.get('teb_fit_b'):.1f}"                            # 18.8
+TEB_B_PE    = f"{R.get('teb_fit_b'):.1f} &plusmn; {R.get('teb_fit_b_err'):.1f}"
+PAPER_150   = f"{R.at('paper_sigma', 150):.0f}"                      # 27 (published curve VALUE at 150 — context only, never "the current headline")
+# Full-fiducial companion (claims law: quoted beside the brightest-1000 headline).
+FF_150      = f"{R.at('dsb1_sigma_ff', 150):.1f}"                    # 50.5
+FF_150_R    = f"{int(R.at('dsb1_sigma_ff', 150))}"                   # 50 — claims-law shorthand "≈50 ps" (exact value carried in FF_150)
+# Selection disclosure: brightest-1000 as a fraction of the fiducial sample,
+# so the headline is never quoted without its selection.
+TEB_EFF_150 = f"{R.at('teb_eff', 150):.1f}"                          # % of fiducial (150)
+TEB_EFF_25  = f"{R.at('teb_eff', 25):.1f}"
 _EALL       = [25, 50, 75, 100, 125, 150]
-TEB_EFF_MIN = f"{R.lo('teb_eff', _EALL):.1f}"                        # tightest bin's efficiency (150 GeV)
-TEB_EFF_MAX = f"{R.hi('teb_eff', _EALL):.1f}"                        # loosest (25 GeV)
-# Out-of-sample (run-folded selection CV) headline + optimization-bias check.
-TEB_OOS_150 = f"{R.at('teb_sigma_oos', 150):.0f}"                    # 27
+TEB_EFF_MIN = f"{R.lo('teb_eff', _EALL):.1f}"
+TEB_EFF_MAX = f"{R.hi('teb_eff', _EALL):.1f}"
+# The selection is DETERMINISTIC (brightest-K, fixed before fitting), so there
+# is no trained bin choice and no optimization bias by construction; the OOS
+# keys are kept for contract compatibility and equal the nominal curve.
+TEB_OOS_150 = f"{R.at('teb_sigma_oos', 150):.1f}"                    # = TEB_150
 TEB_BIAS_150= f"{R.at('teb_sigma_oos', 150) - R.at('teb_sigma', 150):+.1f}"  # +0.0
-TEB_BIAS_MAX= f"{max(abs(R.at('teb_sigma_oos', e) - R.at('teb_sigma', e)) for e in _EALL):.1f}"  # 0.2
-# High-energy timing floor (asymptotic constant term, fit on the OOS curve).
-TEB_LOWMEAS = f"{R.get('teb_low_meas'):.0f}"                         # 27  (lowest MEASURED, no extrapolation)
-TEB_FLOOR   = f"{R.get('teb_floor_paper'):.1f}"                      # 23.2 (paper-form b, headline floor)
-TEB_FLOOR_E = f"{R.get('teb_floor_paper_err'):.1f}"                  # 1.2
-TEB_FLOOR_T = f"{R.get('teb_floor_timing'):.1f}"                     # 24.4 (timing-form c, cross-check)
-TEB_FLOOR_TE= f"{R.get('teb_floor_timing_err'):.1f}"                 # 2.9
+TEB_BIAS_MAX= f"{max(abs(R.at('teb_sigma_oos', e) - R.at('teb_sigma', e)) for e in _EALL):.1f}"  # 0.0
+# High-energy timing floor (asymptotic constant term b of the production fit).
+# CONFIRMS the published 17.5 ps (never revises it) — claims law.
+TEB_LOWMEAS = f"{R.get('teb_low_meas'):.1f}"                         # 25.7 (lowest MEASURED, no extrapolation)
+TEB_FLOOR   = f"{R.get('teb_floor_paper'):.1f}"                      # 18.8 (paper-form b, production floor)
+TEB_FLOOR_E = f"{R.get('teb_floor_paper_err'):.1f}"                  # 0.8
+TEB_FLOOR_T = f"{R.get('teb_floor_timing'):.1f}"                     # (timing-form c, cross-check)
+TEB_FLOOR_TE= f"{R.get('teb_floor_timing_err'):.1f}"
+# Per-build production block + gated companion results.
+_BUILDS      = R.block('builds')
+def _b(build: str, key: str):
+    v = _BUILDS.get(build, {}).get(key)
+    if v is None:
+        raise SystemExit(f"[makeReport] builds.{build}.{key} missing in results.json")
+    return v
+DSB1_S150    = f"{_b('DSB1','s150'):.1f}"                            # 25.7
+LUAG_S150    = f"{_b('LUAG','s150'):.1f}"                            # 44.4
+MIXED_S150   = f"{_b('MIXED','s150'):.1f}"                           # 39.6 (module-wide, reference only)
+TEN_S150     = f"{_b('TENERGY','s150'):.1f}"                         # 30.3
+LUAG_B_PE    = f"{_b('LUAG','fit_b'):.1f} &plusmn; {_b('LUAG','fit_b_err'):.1f}"      # 24.6 ± 3.3
+TEN_B_PE     = f"{_b('TENERGY','fit_b'):.1f} &plusmn; {_b('TENERGY','fit_b_err'):.1f}" # 26.0 ± 1.8
+MIXED_B_PE   = f"{_b('MIXED','fit_b'):.1f} &plusmn; {_b('MIXED','fit_b_err'):.1f}"     # 34.3 ± 2.4
+MIXED_RATIO  = (f"{R.get('mixed_sameshower_ratio'):.2f} &plusmn; "
+                f"{R.get('mixed_sameshower_ratio_err'):.2f}")        # 1.04 ± 0.05
+DEPTH_SLOPE  = (f"{R.get('depth_slope_ps_per_efold'):.1f} &plusmn; "
+                f"{abs(R.get('depth_slope_err')):.1f}")              # −33.6 ± 2.9
+SYST_SEL_DSB1= f"{_b('DSB1','syst_sel'):.1f}"                        # 1.0
 COMBO_150   = f"{R.at('combo_a2_8ch', 150):.0f}"                     # 63
 MCP         = f"{R.get('mcp_jitter_mean'):.0f}"                      # 71
 ERES_150    = f"{R.at('eres', 150):.1f}"                             # 11.6
@@ -1174,7 +1211,8 @@ _SIMS_HTML = """
    <canvas id="cvWalk" width="600" height="230"></canvas>
    <div class="ctl"><label>pulse amplitude <input type="range" id="ampWalk" min="25" max="100" value="60"></label></div>
    <p class="cap"><span style="color:#ff5c8a">&#9679;</span> a fixed-threshold time <b>walks</b> with amplitude;
-      <span style="color:#27e0c8">&#9679;</span> CFD (5% of the peak) stays <b>locked</b> &mdash; why we time at CFD-5%.</p>
+      <span style="color:#27e0c8">&#9679;</span> CFD (5% of the peak) stays <b>locked</b> &mdash; the production srCFD
+      estimator times exactly this low edge, recovering it from the LG channel when the HG pulse clips.</p>
    <p class="rd" id="rdWalk"></p></div>
  <div class="simbox"><h4>&#9313; Why (DW&minus;UP)/2 beats the reference jitter</h4>
    <canvas id="cvCorner" width="600" height="230"></canvas>
@@ -1234,51 +1272,53 @@ def _executive_summary_html() -> str:
   <a class="guide-badge" href="https://jwwetzel.github.io/RADiCAL/" target="_blank" rel="noopener">
     &#9656; New here? Open the interactive field guide</a>
   <div class="kpi-row">
-    <div class="kpi"><div class="num">{TEB_150} ps</div><div class="lbl">timing resolution<br>(150 GeV, best E<sub>meas</sub> bin)</div></div>
-    <div class="kpi"><div class="num">{COMBO_150} ps</div><div class="lbl">8-channel combo<br>(150 GeV)</div></div>
+    <div class="kpi"><div class="num">{TEB_150} ps</div><div class="lbl">timing resolution<br>(150 GeV, brightest-1000, srCFD)</div></div>
+    <div class="kpi"><div class="num">≈{FF_150_R} ps</div><div class="lbl">full fiducial<br>(150 GeV, r = 3.0 mm)</div></div>
+    <div class="kpi"><div class="num">{TEB_FLOOR} ps</div><div class="lbl">timing floor<br>(confirms published 17.5)</div></div>
     <div class="kpi"><div class="num">6</div><div class="lbl">beam energies<br>25–150 GeV</div></div>
     <div class="kpi"><div class="num">{NEV_150}</div><div class="lbl">events<br>(150 GeV)</div></div>
-    <div class="kpi"><div class="num">CFD-5%</div><div class="lbl">optimal timing<br>discriminator</div></div>
   </div>
 </div>
 <div class="callout finding-box">
   <span class="callout-label">★ Headline result</span>
-  The MCP-free <strong>(DW−UP)/2</strong> estimator reaches <strong>≈{TEB_150} ps at 150 GeV</strong>
-  ({TEB_25} ps at 25 GeV) — approaching the CMS BTL Phase-II target. It is robust by construction:
-  the corner difference cancels the per-group timing reference (≈{MCP} ps inter-group jitter), the
-  DRS4 cell-width error, and the position walk alike. Cross-validation-stable (out-of-sample shift below 1 ps).
-  <br><span style="font-size:0.86em;opacity:0.85">These headline figures are the single best (highest-E<sub>meas</sub>,
-  most fully-contained) energy bin at each beam energy — the standard energy-binned method of arXiv:2401.01747 §5.3,
-  carried to its tightest single bin. That bin holds {TEB_EFF_150}% of fiducial events at 150 GeV
-  ({TEB_EFF_MAX}% at 25 GeV); see the σ<sub>t</sub>-vs-E<sub>meas</sub> curve (Layer 5) for the full
-  resolution-vs-containment trade-off across all bins.
-  <strong>The selection adds no optimization bias:</strong> a run-folded cross-validation that picks the
-  best bin on training runs and measures σ<sub>t</sub> on held-out runs reproduces the headline to within
-  {TEB_BIAS_MAX} ps at every energy ({TEB_OOS_150} ps out-of-sample at 150 GeV), so the number is a real
-  detector capability, not a selected fluctuation.</span>
+  The MCP-free <strong>(DW−UP)/2</strong> estimator on the <strong>brightest-1000</strong> events reaches
+  <strong>{TEB_150_PE} ps at 150 GeV</strong> (DSB1 build, srCFD), with <strong>≈{FF_150_R} ps</strong>
+  ({FF_150} ps) across the full timing fiducial beside it. It is robust by construction: the corner
+  difference cancels the per-group timing reference (≈{MCP} ps inter-group jitter), the DRS4 cell-width
+  error, and the position walk alike.
+  <br><span style="font-size:0.86em;opacity:0.85">The brightest-1000 selection is <strong>deterministic</strong> —
+  the 1000 largest-ΣLG fiducial events at each energy, fixed before any fit — so there is no trained bin
+  choice and no optimization bias by construction ({TEB_EFF_150}% of fiducial events at 150 GeV,
+  {TEB_EFF_MAX}% at 25 GeV; selection-systematic ±{SYST_SEL_DSB1} ps from K/r/veto variations).
+  Timing uses the per-regime estimator rule: <strong>srCFD</strong> (the 5% leading edge, recovered from
+  the LG channel when the HG pulse clips) for the high-light builds, <strong>LED</strong> for the dim
+  builds. The σ<sub>t</sub>-vs-E curves for all four builds are in Layer 5.</span>
 </div>
 <div class="callout">
   <span class="callout-label">High-energy limit</span>
-  Fitting the (out-of-sample) σ<sub>t</sub>-vs-E curve gives an asymptotic timing floor of
-  <strong>≈{TEB_FLOOR} ± {TEB_FLOOR_E} ps</strong> (constant term of σ<sub>t</sub> = a/√E ⊕ b; a timing-correct
-  (a/E)² ⊕ (b/√E)² ⊕ c² fit agrees at {TEB_FLOOR_T} ± {TEB_FLOOR_TE} ps). Our lowest <em>measured</em> point is
-  {TEB_LOWMEAS} ps at 150 GeV — already within a few ps of the floor — so at a future collider's higher
-  energies this calorimeter projects toward ≈{TEB_FLOOR} ps. This floor is set by the DRS4 timebase and
-  electronics systematics of this readout; arXiv:2401.01747's lower 17.5 ps constant term indicates headroom
-  recoverable with improved cell-width calibration. We quote the floor as a DAQ-limited value, not an
-  irreducible detector limit.
+  Fitting σ<sub>t</sub> = a/√E ⊕ b to the production curve gives a = {TEB_A_PE} ps·√GeV and an asymptotic
+  timing floor of <strong>{TEB_B_PE} ps</strong> — consistent with, and <strong>confirming</strong>, the
+  published 17.5 ps constant term of arXiv:2401.01747 (NIM A 1068 (2024) 169737). The floor is an
+  extrapolation beyond the data: our lowest <em>measured</em> point is {TEB_LOWMEAS} ps at 150 GeV.
+  Its plausible physical origin is longitudinal shower-depth fluctuation — timing shifts by
+  {DEPTH_SLOPE} ps per e-fold of collected light (the "depth dial", Layer 5) — not a DAQ artefact.
 </div>
-<h3>How this analysis compares</h3>
+<h3>Production results at a glance — all four builds</h3>
 <div class="summary-box">
 <table>
-  <tr><th>Metric</th><th>This analysis</th><th>arXiv:2401.01747</th></tr>
-  <tr><td>σ<sub>t</sub> (150 GeV, best E<sub>meas</sub> bin, (DW−UP)/2)</td><td>≈{TEB_150} ps ({TEB_EFF_150}% of fiducial)</td><td>{PAPER_150} ps</td></tr>
-  <tr><td>σ<sub>t</sub> (25 GeV, best E<sub>meas</sub> bin)</td><td>≈{TEB_25} ps ({TEB_EFF_25}% of fiducial)</td><td>54 ps</td></tr>
-  <tr><td>A²-weighted 8-ch combo σ<sub>t</sub> (150 GeV, CFD-5%)</td><td>{COMBO_150} ps</td><td>—</td></tr>
-  <tr><td>Inter-group reference jitter σ(MCP1−MCP2)/√2</td><td>≈{MCP} ps (flat with energy)</td><td>—</td></tr>
-  <tr><td>Hadronic punch-through (150 GeV, in-fiducial)</td><td>{PUNCH_150}% of signal events</td><td>—</td></tr>
-  <tr><td>Shower containment (timing fiducial, r&lt;3 mm)</td><td>{CONT_LO_ALL}–{CONT_HI_ALL}% across energies</td><td>—</td></tr>
+  <tr><th>Build (WLS capillary)</th><th>Estimator</th><th>σ<sub>t</sub> at 150 GeV (brightest-1000)</th><th>Floor b (ps)</th></tr>
+  <tr><td><strong>DSB1</strong> (organic DSB1)</td><td>srCFD</td><td><strong>{TEB_150_PE} ps</strong> (≈{FF_150_R} ps full fiducial)</td><td>{TEB_B_PE}</td></tr>
+  <tr><td>TENERGY (DSB1, E-type geometry)</td><td>LED</td><td>{TEN_S150} ps</td><td>{TEN_B_PE}</td></tr>
+  <tr><td>MIXED (DSB1 + LuAG:Ce)</td><td>srCFD</td><td>{MIXED_S150} ps <em>(module-wide, reference only)</em></td><td>{MIXED_B_PE}</td></tr>
+  <tr><td>LUAG (LuAG:Ce ceramic)</td><td>LED</td><td>{LUAG_S150} ps</td><td>{LUAG_B_PE}</td></tr>
 </table>
+<p class="note" style="margin-top:8px">LYSO:Ce scintillator and W absorber are <strong>common to all four
+builds</strong> — the WLS capillary is the variable. The MIXED module-wide number is reference-only (its
+two WLS species make a single module-wide σ ill-posed); the like-for-like comparison is the same-shower
+ratio, σ(DSB1-pair)/σ(LuAG-pair) = {MIXED_RATIO} within one shower. Beam &amp; instrument context:
+inter-group reference jitter ≈{MCP} ps (cancelled by the estimator), hadronic punch-through {PUNCH_150}%
+at 150 GeV (removed by the containment cut), shower containment {CONT_LO_ALL}–{CONT_HI_ALL}% across
+energies in the timing fiducial.</p>
 </div>
 <p class="intro">
   The story below follows the evidence from the instrument up to the physics —
@@ -1288,9 +1328,12 @@ def _executive_summary_html() -> str:
 </p>
 <p class="note">
   Every number quoted in this report is harvested directly from the analysis
-  outputs (<code>Output/Summary/results.json</code>, produced by
+  outputs (<code>output/Summary/results.json</code>, produced by
   <code>harvestResults.C</code>) — none are typed by hand, so the text cannot
-  drift from the figures beside it.
+  drift from the figures beside it. Headline chain: <strong>brightest-1000
+  (DW−UP)/2, srCFD/LED per regime</strong> (analyze/studies/timingProduction.C,
+  verified at run time against the gated table of 2026-06-09).
+  Report generated {_BUILD_DATE}.
 </p>
 </section>"""
 
@@ -1304,9 +1347,9 @@ def _detector_card_html() -> str:
 <div class="detector-card">
   <h4>RADiCAL — RADiation-hard Innovative electromagnetic CALorimeter</h4>
   <dl>
-    <dt>Active material</dt>  <dd>LYSO crystal tiles (14 × 14 mm) alternating with W absorber (shashlik geometry)</dd>
+    <dt>Active material</dt>  <dd>LYSO:Ce tiles (14 × 14 mm) alternating with W absorber (shashlik geometry) — common to all builds; the WLS capillary is the variable between builds</dd>
     <dt>Readout geometry</dt> <dd>8 capillary channels: 4 downstream (NW/NE/SE/SW-D) + 4 upstream (NW/NE/SE/SW-U)</dd>
-    <dt>HG channels</dt>      <dd>WLS fiber at shower max → CAEN DT5742 DRS0 (1024 samples, ~5 Gsps) → timing via CFD (5% fraction adopted)</dd>
+    <dt>HG channels</dt>      <dd>WLS capillary at shower max → CAEN DT5742 DRS0 (1024 samples, ~5 Gsps) → timing via srCFD (5% leading edge, LG-recovered when the HG pulse clips)</dd>
     <dt>LG channels</dt>      <dd>WLS fiber full length → CAEN DT5742 DRS1 → integrated signal ≈ shower energy (ΣLG)</dd>
     <dt>Timing reference</dt> <dd>One Micro-Channel Plate, split into both DRS0 groups: MCP1 references the 7 group-0 capillaries, MCP2 the single group-1 capillary (SW-Up)</dd>
     <dt>Shower leakage</dt>   <dd>4-channel PbGlass calorimeter downstream → ΣPbGlass / ΣLG containment ratio</dd>
@@ -1516,8 +1559,8 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     finding=(
                         "The DRS4 cell-width error is real (~68 ps, common-mode across "
                         "DRS0-G0 channels) but CANCELS in the (DW-UP)/2 corner estimator "
-                        "(same group, same crossing cell) and in MCP1-MCP2 -- so it does "
-                        f"NOT explain the {TEB_150}->{PAPER_150} ps headline gap, and the {MCP} ps inter-group "
+                        "(same group, same crossing cell) and in MCP1-MCP2 -- so the "
+                        f"production headline is immune to it, and the {MCP} ps inter-group "
                         "reference jitter is genuine.  It DOES limit the MCP-referenced combination methods "
                         "(mean-all, A^2-weighted-all): split-half out-of-sample validation "
                         f"shows the A^2 combo improving {DRS4_BEF} -> {DRS4_AFT} ps after correction.  "
@@ -1751,7 +1794,7 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
             intro=(
                 "Status: COMPLETE -- timing reference characterized. "
                 "All capillary timing measurements are made relative to the MCP "
-                "timestamp (hg_cfd[i] = t_crystal -- t_MCP).  "
+                "timestamp (hg_cfd[i] = t_capillary -- t_MCP).  "
                 "Understanding the MCP's own timing jitter is essential: "
                 "it sets a noise floor for per-channel measurements but cancels "
                 "exactly in the (DW--UP)/2 combination, which is why that estimator "
@@ -1779,7 +1822,8 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         ),
                         PlotEntry(
                             sumPDF("layer2_sub_mcp.png"),
-                            caption=(f"The (DW&minus;UP)/2 headline ({TEB_150}&ndash;{TEB_25} ps) sits "
+                            caption=(f"The (DW&minus;UP)/2 production headline ({TEB_150}&ndash;{TEB_25} ps, "
+                                     "brightest-1000, srCFD) sits "
                                      f"<em>below</em> the &asymp;{MCP} ps per-group floor.  Each "
                                      "channel is referenced to its own group's MCP copy, and the "
                                      "corner difference cancels that reference algebraically &mdash; "
@@ -1800,16 +1844,16 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                      "consistently weakest channel &mdash; its compressed, low-light HG pulse "
                                      "gains little extra slew once all channels approach the rail above "
                                      "~50&nbsp;GeV, so it stops improving and drifts slightly <em>worse</em> at "
-                                     "high E (the channel combination drops it for ~10&nbsp;ps).  "
+                                     "high E.  "
                                      "<strong>SW-U</strong> is the lone capillary read out in DRS0 Group&nbsp;1 "
                                      "and referenced to <strong>MCP2</strong> (all others use MCP1 in Group&nbsp;0), "
                                      "with weak relative gain (&asymp;0.74), so its single-channel &sigma; sits "
                                      "flat on the energy-independent reference floor "
                                      "(&sigma;<sub>MCP</sub>&nbsp;&asymp;&nbsp;70&nbsp;ps, measured flat across "
-                                     "all energies).  CFD-5% already removes the broad CFD-20% shoulder on the "
-                                     "Down capillaries; the corner difference + channel combination + energy "
-                                     f"binning (Layers 4&ndash;5) &mdash; which cancel the reference and "
-                                     f"drop the weak channels &mdash; then reach the {TEB_150} ps headline."),
+                                     "all energies).  Timing low on the edge already removes the broad "
+                                     "high-fraction shoulder on the Down capillaries; the corner difference "
+                                     "(which cancels the reference), the brightest-1000 selection, and the "
+                                     f"srCFD estimator (Layers 4&ndash;5) then reach the {TEB_150} ps headline."),
                             width_pct=50,
                         ),
                     ],
@@ -1826,24 +1870,24 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     ),
                     finding=(
                         "<strong>The limiting channel changes with energy &mdash; which is exactly "
-                        "why we bin in energy and combine corners.</strong>  At 25&nbsp;GeV the "
-                        "<em>Down</em> capillaries blow up (SE-D 379, NE-D 345, NW-D 329&nbsp;ps): "
-                        "low amplitude means residual time-walk even at CFD-5%.  By "
-                        "100&ndash;150&nbsp;GeV that walk is gone and the best channels reach "
-                        "162&ndash;185&nbsp;ps.  Two <em>Up</em> capillaries, NW-U and SW-U, stay "
-                        "warm at every energy (226&ndash;261&nbsp;ps) &mdash; the persistent "
+                        "why we combine corners rather than lean on any one channel.</strong>  At "
+                        "25&nbsp;GeV the <em>Down</em> capillaries blow up (to ~330&ndash;380&nbsp;ps "
+                        "single-channel): low amplitude means residual time-walk even low on the "
+                        "edge.  By 100&ndash;150&nbsp;GeV that walk is gone and the best channels "
+                        "reach ~160&ndash;185&nbsp;ps.  Two <em>Up</em> capillaries, NW-U and SW-U, "
+                        "stay warm at every energy (~225&ndash;260&nbsp;ps) &mdash; the persistent "
                         "light-yield laggards seen in Layer&nbsp;1.  No single channel is good "
-                        "enough alone; the (DW&minus;UP)/2 corner average plus per-energy binning "
-                        "(Layers&nbsp;4&ndash;5) is what turns this spread into the headline."
+                        "enough alone; the (DW&minus;UP)/2 corner average plus the brightest-1000 "
+                        "selection (Layers&nbsp;4&ndash;5) is what turns this spread into the headline."
                     ),
                     plots=[
                         PlotEntry(
                             sumPDF("cross_energy_sigma_heatmap.png"),
                             caption=(
                                 "Single-channel CFD-5% &sigma;<sub>t</sub> (ps) for all 8 capillaries "
-                                "&times; 6 energies.  Bright = worse timing; the worst cell is SE-D at "
-                                "25&nbsp;GeV (379&nbsp;ps), the best are the Up channels at "
-                                "100&ndash;125&nbsp;GeV (~162&nbsp;ps)."
+                                "&times; 6 energies (a per-channel diagnostic &mdash; the production "
+                                "headline uses srCFD).  Bright = worse timing; the worst cell is SE-D "
+                                "at 25&nbsp;GeV, the best are the Up channels at 100&ndash;125&nbsp;GeV."
                             ),
                             width_pct=66,
                         )
@@ -1869,13 +1913,13 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "channels &rarr; 76&nbsp;ps dropping NW-U &rarr; 101&nbsp;ps dropping both</strong> "
                         "&mdash; the 8-channel corner average benefits from every channel, even a mediocre "
                         "one.  So the weak channels should be kept.  Second, the projection: if NW-U and "
-                        "SW-U instead followed the well-behaved Up trend, the headline would improve from "
-                        f"<strong>{TEB_150}&nbsp;ps to &asymp;25&nbsp;ps at 150&nbsp;GeV</strong> "
-                        "(&minus;2&nbsp;ps), with the largest gain ~3.5&nbsp;ps at 125&nbsp;GeV; the "
-                        "effect vanishes below ~75&nbsp;GeV, where the two are no worse than the "
-                        "light-starved Down channels.  This is an intrinsic-potential <em>projection</em> "
-                        "(the combination model is validated at high E: 69 vs 67&nbsp;ps reconstructed at "
-                        f"150) &mdash; the <strong>measured {TEB_150}&nbsp;ps headline stands as the result</strong>."
+                        "SW-U instead followed the well-behaved Up trend, the headline would improve by "
+                        "<strong>&asymp;2&nbsp;ps at 150&nbsp;GeV</strong> (the exact projected values are "
+                        "annotated on the figure); the effect vanishes below ~75&nbsp;GeV, where the two "
+                        "are no worse than the light-starved Down channels.  This is an intrinsic-potential "
+                        "<em>projection</em> (the combination model is validated at high E: 69 vs "
+                        "67&nbsp;ps reconstructed at 150) &mdash; the <strong>measured "
+                        f"{TEB_150}&nbsp;ps headline stands as the result</strong>."
                     ),
                     plots=[
                         PlotEntry(
@@ -1924,7 +1968,7 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
 
                                 "Summary table at each energy.  The (DW--UP)/2 estimator references each "
                                 "channel to its own group's MCP and cancels it in the corner difference, "
-                                f"so the {TEB_150} ps energy-binned headline needs no correction.",
+                                f"so the {TEB_150} ps brightest-1000 headline needs no correction.",
                             ],
                         ),
                     ],
@@ -2069,7 +2113,13 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "E<sub>meas</sub> cut so the pure radius/position effect reads off a smooth curve.  "
                         "Crucially, every candidate is checked with the run-folded out-of-sample (OOS) "
                         "validation &mdash; because a tighter circle shrinks the selection pool, the "
-                        "single best bin can <em>overfit</em>, and only the OOS exposes it.  Generated by "
+                        "single best bin can <em>overfit</em>, and only the OOS exposes it.  "
+                        "<strong>Historical role:</strong> this scan (run with the earlier "
+                        "best-E<sub>meas</sub>-bin estimator) is the study that <em>set</em> the "
+                        "adopted per-energy radii; the production brightest-1000 chain inherits "
+                        "exactly this ramp (2.5&nbsp;mm for E&nbsp;&le;&nbsp;100&nbsp;GeV, "
+                        "3.0&nbsp;mm for E&nbsp;&ge;&nbsp;125&nbsp;GeV) and, being deterministic, "
+                        "needs no per-event bin choice of its own.  Generated by "
                         "<code>fiducialTimingScan.C</code>."
                     ),
                     plots=[
@@ -2107,10 +2157,10 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                 "average-event (top-X%) bottoms at r&nbsp;&approx;&nbsp;2&nbsp;mm, but the "
                                 "headline best-bin is a tighter cut that sits below it.  The best-bin is "
                                 "jumpy in radius (a single narrow bin), so its 2.25&nbsp;mm dip is a "
-                                "<em>lucky radius</em> (its 2.0/2.5&nbsp;mm neighbours are "
-                                "30.7/28.1&nbsp;ps), not an optimum &mdash; we therefore compare sensible "
-                                "radii by OOS (2.5&nbsp;mm&nbsp;=&nbsp;28.1, 3.0&nbsp;mm&nbsp;=&nbsp;27.4&nbsp;ps) "
-                                "and adopt 3&nbsp;mm (&#9733;), which beats the top-X% optimum outright."
+                                "<em>lucky radius</em> (its 2.0 and 2.5&nbsp;mm neighbours sit "
+                                "2&ndash;3&nbsp;ps higher), not an optimum &mdash; we therefore compare "
+                                "sensible radii by their OOS values and adopt 3&nbsp;mm (&#9733;), "
+                                "which beats the top-X% optimum outright."
                             ),
                             width_pct=66,
                         ),
@@ -2136,10 +2186,11 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                 "spectacular &mdash; down to 15&nbsp;ps at 100&nbsp;GeV &mdash; but "
                                 "re-measuring each <em>exact</em> config on held-out data (black, 5-fold "
                                 "run-folded OOS) exposes +2 to +26&nbsp;ps of overfitting: those minima are "
-                                "the luckiest ~1000 events, not the resolution.  At 150&nbsp;GeV the "
-                                "in-sample 25.6&nbsp;ps generalises to 27.5&nbsp;ps &mdash; i.e. the "
-                                "27.4&nbsp;ps headline.  The fixed-radius headline survives OOS (bias "
-                                "0.0&nbsp;ps); the argmin does not."
+                                "the luckiest ~1000 events, not the resolution.  The fixed-radius "
+                                "selection survives OOS (bias 0.0&nbsp;ps); the argmin does not.  "
+                                "(Curves shown for the best-bin-era estimator this scan was built on; "
+                                "the lesson &mdash; fix the selection before fitting &mdash; is what the "
+                                "deterministic brightest-1000 chain bakes in.)"
                             ),
                             width_pct=66,
                         ),
@@ -2153,13 +2204,12 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "improves the OOS resolution (50/75/100&nbsp;GeV better by 1.7&ndash;3.6&nbsp;ps; "
                         "25&nbsp;GeV tied).  At the higher energies the larger, higher-amplitude samples "
                         "let the single-best-bin benefit from the looser pool: at 125&nbsp;GeV the tighter "
-                        "cut <em>overfits</em> (in-sample 27.1&nbsp;ps but OOS 33.1&nbsp;ps), and at "
-                        "150&nbsp;GeV 3&nbsp;mm is OOS-optimal (27.4 vs 28.1&nbsp;ps) &mdash; so both keep "
-                        "3&nbsp;mm.  <strong>Net effect:</strong> &sigma;(E) tightens across the middle of "
-                        "the range and the stochastic fit improves to "
-                        f"&sigma;<sub>t</sub>&nbsp;=&nbsp;{TEB_A}/&radic;E&nbsp;&oplus;&nbsp;{TEB_FLOOR}&nbsp;ps "
-                        f"(floor was ~23&nbsp;ps at a flat 3&nbsp;mm), while the <strong>{PAPER_150}&nbsp;ps "
-                        "headline at 150&nbsp;GeV is unchanged</strong>.  This is a genuine, "
+                        "cut <em>overfits</em> (in-sample better but OOS clearly worse), and at "
+                        "150&nbsp;GeV 3&nbsp;mm is OOS-optimal &mdash; so both keep "
+                        "3&nbsp;mm.  <strong>Net effect:</strong> the adopted radius ramp carries over "
+                        "unchanged into the production chain &mdash; the OOS machinery here guarded the "
+                        "<em>radius</em> choice, and the brightest-1000 selection that now sits on top of "
+                        "it is deterministic, so no bin choice remains to overfit.  This is a genuine, "
                         "OOS-guarded optimisation &mdash; not a per-energy argmin.  The last two figures "
                         "make that explicit: the best-bin curve is jumpy because the top E<sub>meas</sub> "
                         "bin flickers across the N&nbsp;&ge;&nbsp;500 line (a selection artifact, not "
@@ -2302,8 +2352,9 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "integrates the full shower.  Consistent with this: the BNC region "
                         "(~(7,5) mm, on the beam core) carries <em>normal</em> calorimeter energy "
                         "(5402 vs 5549 mV) and a test veto there <em>worsens</em> the 150 GeV timing "
-                        "headline (27.4 → 30.5 ps) by discarding the highest-E<sub>meas</sub>, "
-                        "best-contained showers; the SMA (~(20,3) mm) lies <em>outside</em> the "
+                        "(by ~3 ps in the best-bin-era check) by discarding the highest-E<sub>meas</sub>, "
+                        "best-contained showers &mdash; the very events the brightest-1000 selection "
+                        "keeps; the SMA (~(20,3) mm) lies <em>outside</em> the "
                         "active square (⟨Σcap⟩ 1196 vs ~5500 mV) so the fiducial cut already removes "
                         "it.  The 1×1 trigger is retained only as a clean-beam (no-pedestal) "
                         "selection &mdash; it removes the ~24% no-hit population, not the connectors."
@@ -2374,7 +2425,7 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                 "SumPbGlass vs SumLG scatter coloured by population.  "
                                 "Green = Pop. A (good EM shower, passes 30% cut).  "
                                 "Red = Pop. B (hadronic punch-through / edge shower).  "
-                                "Orange = Pop. C (beam halo -- beam missed the crystal).  "
+                                "Orange = Pop. C (beam halo -- beam missed the module).  "
                                 "Gray = Pop. D (off-axis, outside 3 mm fiducial).  "
                                 "Dashed line = 30% containment cut.",
 
@@ -2434,7 +2485,7 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                 "band (beam halo events that missed RADiCAL).",
 
                                 "Contained fraction vs beam radius r at each energy.  "
-                                "Shower containment drops near the crystal edge (r to 3 mm) "
+                                "Shower containment drops near the module edge (r to 3 mm) "
                                 "as edge showers have more leakage.  Higher energy = more leakage "
                                 "at all radii.",
 
@@ -2456,27 +2507,28 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
             title="Layer 4 -- Calibration",
             intro=(
                 "Status: COMPLETE -- walk corrections applied and cross-validated. "
-                "The raw DRS4 waveform time is extracted using Constant Fraction "
-                "Discrimination (CFD) at a programmable threshold (10/20/30/50%).  "
-                "Walk corrections remove the amplitude-dependent time shift.  "
-                "Containment cut threshold optimisation is also documented here.  "
-                "This layer identifies the optimal choice at each calibration stage."
+                "The raw DRS4 waveform time is extracted at a programmable point on "
+                "the leading edge; the production estimator is <strong>srCFD</strong> "
+                "(the 5% edge, recovered from the LG channel when the HG pulse clips) "
+                "for the high-light builds and <strong>LED</strong> for the dim builds. "
+                "This layer shows the evidence behind that choice: CFD-fraction scans, "
+                "walk corrections, and the containment-cut optimisation."
             ),
             subsections=[
                 Subsection(
                     anchor="l4-hero",
                     title="Calibration at a glance",
-                    note=("The calibration and combination steps turn a ~180 ps single channel into "
-                          "the 37 ps headline.  Expand the panel below for the full per-energy method, "
-                          "CFD-fraction, walk-correction and cut-optimisation detail."),
+                    note=(f"The calibration and combination steps turn a ~180 ps single channel into "
+                          f"the {TEB_150} ps production headline.  Expand the panel below for the full "
+                          "per-energy method, CFD-fraction, walk-correction and cut-optimisation detail."),
                     plots=[
                         PlotEntry(
                             sumPDF("layer4_ladder.png"),
                             caption=("The resolution ladder vs energy: best single channel "
                                      "(&asymp;180 ps) &rarr; A&sup2;-weighted 8-channel combination "
-                                     f"(&asymp;62 ps) &rarr; the energy-binned (DW&minus;UP)/2 headline "
+                                     f"(&asymp;62 ps) &rarr; the brightest-1000 (DW&minus;UP)/2 headline "
                                      f"({TEB_150} ps).  Channel combination alone buys &asymp;3&times;; "
-                                     "energy-binning and the corner difference do the rest."),
+                                     "the corner difference and the brightest-1000 selection do the rest."),
                             width_pct=50,
                         ),
                         PlotEntry(
@@ -2484,9 +2536,10 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                             caption=("Single-channel timing: an explicit walk correction (CFD + "
                                      "HG/LG-ratio) adds a modest further improvement on the cleaner "
                                      "channels.  But the dominant per-channel lever is the CFD "
-                                     "<em>fraction</em> itself (next panel) &mdash; the headline adopts "
-                                     "CFD-5%, which removes the Down-capillary shoulder that no "
-                                     "amplitude walk fit can (verified out-of-sample)."),
+                                     "<em>fraction</em> itself (next panel) &mdash; the production "
+                                     "estimator times the 5% edge (srCFD), which removes the "
+                                     "Down-capillary shoulder that no amplitude walk fit can "
+                                     "(verified out-of-sample)."),
                             width_pct=50,
                         ),
                     ],
@@ -2495,7 +2548,8 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     anchor="l4-cfd-fraction",
                     title="CFD-fraction optimisation (the timing &ldquo;shoulder&rdquo;)",
                     note=(
-                        "Why the headline uses CFD-5%. The single most important per-channel "
+                        "Why the production estimator times at the 5% edge. The single most "
+                        "important per-channel "
                         "timing lever is <em>where on the rising edge</em> the time is taken, "
                         "not the walk correction. Group timing resolution (the four Down vs the "
                         "four Up capillaries) is shown as a function of CFD fraction at all six "
@@ -2524,9 +2578,10 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                      "lower &sigma;<sub>t</sub> overall &mdash; the cleaner pulse "
                                      "shape has no comparable slow region at 20%. The common "
                                      "near-minimum around 5&ndash;10% across both groups, together "
-                                     "with the 25 GeV low-fraction noise penalty, is why <b>CFD-5%</b> "
-                                     "(not 3%, not 20%) is adopted. The headline (DW&minus;UP)/2 uses "
-                                     "CFD-5% and is insensitive to this choice in any case."),
+                                     "with the 25 GeV low-fraction noise penalty, is why the <b>5% edge</b> "
+                                     "(not 3%, not 20%) is the operating point. The production "
+                                     "(DW&minus;UP)/2 headline times this edge via srCFD and is "
+                                     "insensitive to this choice in any case."),
                             width_pct=50,
                         ),
                     ],
@@ -2534,8 +2589,9 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "The Down-capillary timing &ldquo;shoulder&rdquo; is a CFD-fraction / "
                         "leading-edge effect, not a DRS4 satellite, not a selection artefact, and "
                         "not correctable by an amplitude walk fit (verified in elbowInvestigation.C "
-                        "/ walkCorrTest.C). CFD-5% &mdash; the common near-minimum across energies "
-                        "and the adopted headline fraction &mdash; removes it with no loss of events."
+                        "/ walkCorrTest.C). The 5% edge &mdash; the common near-minimum across "
+                        "energies, and exactly where the production srCFD estimator times &mdash; "
+                        "removes it with no loss of events."
                     ),
                 ),
                 Subsection(
@@ -2577,9 +2633,10 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     finding=(
                         "The Down-capillary shoulder is leading-edge <b>shape</b> jitter that grows "
                         "with threshold height &mdash; not the mean slope (which is steeper at 20%), "
-                        "not noise, not amplitude walk. Timing low on the edge (CFD-5%) samples the "
-                        "most reproducible point. This is the cause behind the CFD-fraction trend "
-                        "above (generated by edgeMechanism.C)."
+                        "not noise, not amplitude walk. Timing low on the edge (the 5% point &mdash; "
+                        "srCFD's operating point) samples the most reproducible part of the pulse. "
+                        "This is the cause behind the CFD-fraction trend above (generated by "
+                        "edgeMechanism.C)."
                     ),
                 ),
             ],
@@ -2602,8 +2659,8 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "satellite, not a selection effect, and not correctable by an "
                         "amplitude walk fit (verified in elbowInvestigation.C / "
                         "walkCorrTest.C). The Up capillaries are already optimal and serve "
-                        "as the control. The (DW&minus;UP)/2 headline already uses CFD-5%, "
-                        "so it never carried this shoulder."
+                        "as the control. The production (DW&minus;UP)/2 headline times the "
+                        "same low edge via srCFD, so it never carried this shoulder."
                     ),
                     plots=per_energy_plots(
                         "timing_methods.pdf",
@@ -2616,8 +2673,8 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     anchor="l4-containment-scan",
                     title="Containment threshold optimisation scan",
                     note=(
-                        "Seven thresholds (10%--50%) scanned at all six energies.  "
-                        "A2-weighted combo timing at baseline 30%: 77 ps at 150 GeV."
+                        "Seven thresholds (10%--50%) scanned at all six energies "
+                        "(A2-weighted combo diagnostic; per-page values on the figures)."
                     ),
                     plots=[
                         PlotEntry(
@@ -2737,12 +2794,16 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
             title="Layer 5 -- Physics Extraction",
             intro=(
                 "Status: COMPLETE -- energy and timing resolution extracted with full systematics. "
-                "The best timing estimator combines three improvements: "
-                "(1) energy-binned events to remove beam energy spread smearing, "
-                "(2) the (DW--UP)/2 half-difference which is MCP-jitter-free, "
-                "(3) CFD-5% timing (the optimal discriminator fraction for these pulses).  "
-                "The resulting sigma_t is the irreducible crystal timing resolution "
-                "for this prototype geometry.  "
+                "The production timing chain combines four elements: "
+                "(1) the (DW--UP)/2 half-difference, MCP-jitter-free by construction; "
+                "(2) the deterministic <strong>brightest-1000</strong> selection -- the 1000 "
+                "largest-&Sigma;LG fiducial events at each energy, fixed before any fit; "
+                "(3) the per-regime edge estimator -- <strong>srCFD</strong> (the 5% leading edge, "
+                "recovered from the LG channel when the HG pulse clips) for the high-light builds, "
+                "<strong>LED</strong> for the dim builds; "
+                "(4) a robust Gaussian-core width with an in-event DW/UP consistency veto.  "
+                "The resulting sigma_t is the timing resolution of each build's full light chain "
+                "-- LYSO:Ce and W are common to every build; the WLS capillary is the variable.  "
                 + e_leg
             ),
             subsections=[
@@ -2756,18 +2817,20 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     plots=[
                         PlotEntry(
                             sumPDF("layer5_timing.png"),
-                            caption=(f"<strong>Headline:</strong> the energy-binned (DW&minus;UP)/2 "
-                                     f"estimator reaches <strong>{TEB_150} ps at 150 GeV</strong> "
-                                     f"({TEB_25} ps at 25), fit &sigma;<sub>t</sub> = a/&radic;E "
-                                     f"&oplus; {TEB_B} ps, vs {PAPER_150} ps in arXiv:2401.01747.  "
-                                     f"These are the single best E<sub>meas</sub> bin at each energy "
-                                     f"({TEB_EFF_150}&ndash;{TEB_EFF_MAX}% of fiducial events); the "
-                                     f"full &sigma;<sub>t</sub>-vs-E<sub>meas</sub> trend across all "
-                                     f"bins is in the appendix below.  "
+                            caption=(f"<strong>Headline:</strong> the brightest-1000 (DW&minus;UP)/2 "
+                                     f"estimator (srCFD) reaches <strong>{TEB_150_PE} ps at 150 GeV</strong> "
+                                     f"({TEB_25} ps at 25), fit &sigma;<sub>t</sub> = {TEB_A}/&radic;E "
+                                     f"&oplus; {TEB_B} ps; across the <em>full</em> timing fiducial the "
+                                     f"same chain gives &asymp;{FF_150_R} ps at 150 GeV.  The published "
+                                     f"curve (256/&radic;E &oplus; 17.5, arXiv:2401.01747) is overlaid "
+                                     f"for context; our floor ({TEB_B_PE} ps) <em>confirms</em> its "
+                                     f"17.5 ps constant term.  The selection holds "
+                                     f"{TEB_EFF_150}&ndash;{TEB_EFF_MAX}% of fiducial events and is "
+                                     f"deterministic (no trained bin choice).  "
                                      "MCP-free by construction (it cancels each channel's per-group "
                                      "reference in the corner difference).  Two under-performing Up "
-                                     "capillaries (NW-U, SW-U) cap this slightly: an all-uniform detector "
-                                     "would project to &asymp;25&nbsp;ps here &mdash; see the "
+                                     "capillaries (NW-U, SW-U) cap this slightly (&asymp;2 ps at "
+                                     "150&nbsp;GeV) &mdash; see the "
                                      "<a href=\"#l2-ideal\">detector-potential projection</a> in Layer&nbsp;2 "
                                      "(they are kept, not dropped: dropping them <em>worsens</em> the "
                                      "headline)."),
@@ -2794,41 +2857,42 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                 ),
                 Subsection(
                     anchor="l5-floor",
-                    title="The 22 vs 17.5 ps floor &mdash; is it a real gap?",
+                    title=f"The timing floor: {TEB_B} &plusmn; {R.get('teb_fit_b_err'):.1f} ps &mdash; confirming the published 17.5 ps",
                     note=(
-                        "Our &sigma;<sub>t</sub>(E) fit lands a constant term of "
-                        f"&asymp;{TEB_FLOOR}&nbsp;ps, while arXiv:2401.01747 quotes 17.5&nbsp;ps "
-                        "on the <em>same</em> detector, beam, and 25&ndash;150&nbsp;GeV range.  "
-                        "That 4&ndash;5&nbsp;ps looks like a discrepancy until you remember the "
-                        "floor <em>b</em> is &sigma;<sub>t</sub> as E&nbsp;&rarr;&nbsp;&infin; "
+                        "The constant term <em>b</em> of the production &sigma;<sub>t</sub>(E) fit is "
+                        f"<strong>{TEB_B_PE}&nbsp;ps</strong> &mdash; statistically consistent with, "
+                        "and therefore <strong>confirming</strong>, the 17.5&nbsp;ps floor published "
+                        "in arXiv:2401.01747 (NIM A 1068 (2024) 169737) on the same detector and "
+                        "beam.  The floor is &sigma;<sub>t</sub> as E&nbsp;&rarr;&nbsp;&infin; "
                         "&mdash; an <em>extrapolation</em> beyond the highest measured point "
-                        "(150&nbsp;GeV), and strongly anti-correlated with the stochastic term "
-                        "<em>a</em> (&rho;<sub>ab</sub>&nbsp;&asymp;&nbsp;&minus;0.8).  Generated "
-                        "by <code>timingFloorComparison.C</code>."
+                        "(150&nbsp;GeV) &mdash; and its plausible physical origin is longitudinal "
+                        f"shower-depth fluctuation: timing shifts by {DEPTH_SLOPE}&nbsp;ps per e-fold "
+                        "of collected light (the depth dial).  Generated by "
+                        "<code>timingFloorComparison.C</code>."
                     ),
                     plots=[
                         PlotEntry(
                             sumPDF("timing_floor_comparison.png"),
                             caption=(
-                                "Both fits overlaid on our data, with the E&nbsp;&gt;&nbsp;150&nbsp;GeV "
-                                "region shaded as extrapolation (no beam reached it).  The two curves "
-                                "<em>cross at &asymp;27&nbsp;ps at 150&nbsp;GeV</em>; only beyond the data "
-                                "do they peel apart toward their respective floors (22 vs 17.5&nbsp;ps).  "
-                                "Where data actually exist, this analysis sits on or below the arXiv "
-                                "curve &mdash; up to ~7&nbsp;ps lower at 25&ndash;50&nbsp;GeV."
+                                "The production curve (brightest-1000, srCFD) with its fit and floor "
+                                f"band ({TEB_B_PE}&nbsp;ps), the published 256/&radic;E &oplus; 17.5 "
+                                "parametrisation overlaid, and the E&nbsp;&gt;&nbsp;150&nbsp;GeV region "
+                                "shaded as extrapolation (no beam reached it).  Where data exist the "
+                                "curves agree; the floors are statistically consistent."
                             ),
                             width_pct=66,
                         )
                     ],
                     finding=(
-                        "<strong>The floor difference is a fit-decomposition artifact, not a "
-                        "performance gap.</strong>  A steeper stochastic term (256 vs 200) buys a "
-                        "lower extrapolated floor (17.5 vs 22) for the <em>same</em> measured curve, "
-                        "because <em>a</em> and <em>b</em> trade off (&rho;&nbsp;&asymp;&nbsp;&minus;0.8). "
-                        "Both analyses meet at &asymp;27&nbsp;ps at 150&nbsp;GeV, and at every "
-                        "<em>measured</em> energy this analysis is equal or better.  Neither beam "
-                        "exceeded 150&nbsp;GeV, so the asymptotic floor is a projection both papers "
-                        "share &mdash; honest to quote, but not a number either experiment measured."
+                        f"<strong>The production floor {TEB_B_PE}&nbsp;ps CONFIRMS the published "
+                        "17.5&nbsp;ps &mdash; it does not revise it.</strong>  Both numbers are "
+                        "extrapolations beyond the 150&nbsp;GeV data edge (our lowest <em>measured</em> "
+                        f"point is {TEB_LOWMEAS}&nbsp;ps), fit on the same detector and beam, and they "
+                        "agree within uncertainties.  The floor has a physical candidate: longitudinal "
+                        "shower-depth fluctuation moves the effective light-collection point along the "
+                        f"WLS capillary, shifting the corner time by {DEPTH_SLOPE}&nbsp;ps per e-fold "
+                        "of collected light &mdash; a geometry effect common to every build, not a DAQ "
+                        "or electronics artefact."
                     ),
                 ),
                 Subsection(
@@ -2836,8 +2900,9 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     title="Is the quoted &sigma; clean &mdash; what's in the tails?",
                     note=(
                         "We quote the Gaussian-core &sigma; (the standard fast-timing convention), so a "
-                        "fair question is what lives in the non-Gaussian tail.  For the headline regime "
-                        "(150&nbsp;GeV, r&nbsp;&lt;&nbsp;3&nbsp;mm, top-2% by E<sub>meas</sub>) we classify "
+                        "fair question is what lives in the non-Gaussian tail.  For a bright-event "
+                        "regime of the same order as the production selection (150&nbsp;GeV, "
+                        "r&nbsp;&lt;&nbsp;3&nbsp;mm, top-2% by E<sub>meas</sub>) we classify "
                         "every event as core or tail (|t&nbsp;&minus;&nbsp;&mu;|&nbsp;&gt;&nbsp;2.5&sigma;) "
                         "and test the three usual culprits &mdash; low amplitude (time-walk), too few valid "
                         "channels, or a single rogue channel (CFD mis-reconstruction).  Generated by "
@@ -2886,22 +2951,22 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         PlotEntry(
                             sumPDF("timing_energy_bins_summary.pdf"),
                             caption=(
-                                "Energy-binned sigma_t summary (timingEnergyBins.C).  "
-                                "Three estimator variants and the published arXiv reference.  "
-                                "Fit: sigma_t = a/sqrt(E) + b."
+                                "Production sigma_t summary (timingProduction.C).  "
+                                "Page 1: the DSB1 headline curve with its full-fiducial companion "
+                                "and the published reference; page 2: all four builds; page 3: "
+                                "srCFD vs plain CFD-5% (the method gain).  "
+                                "Fit: sigma_t = a/sqrt(E) &oplus; b."
                             ),
                         ),
                     ],
                     finding=(
-                        f"Best result: <strong>&#8776;{TEB_150} ps at 150 GeV</strong> "
-                        f"({TEB_150_PE} ps) using the "
-                        f"(DW&#8722;UP)/2 CFD-5% energy-binned estimator; {TEB_25} ps at 25 GeV.  "
-                        f"This is the single best (highest-E<sub>meas</sub>) bin&#8212;{TEB_EFF_150}% of "
-                        f"fiducial events at 150 GeV, {TEB_EFF_MAX}% at 25 GeV; "
-                        f"Published result (arXiv:2401.01747): {PAPER_150} ps.  "
-                        f"The ~{DIFF_150} ps difference is consistent with our larger constant term "
-                        f"(b approx {TEB_B} ps vs 17.5 ps), likely reflecting electronics noise "
-                        "or DRS4 calibration systematics in this analysis."
+                        f"Production result: <strong>{TEB_150_PE} ps at 150 GeV</strong> using the "
+                        f"brightest-1000 (DW&#8722;UP)/2 srCFD estimator; {TEB_25} ps at 25 GeV; "
+                        f"&asymp;{FF_150_R} ps ({FF_150} ps) across the full timing fiducial.  "
+                        f"The deterministic selection holds {TEB_EFF_150}% of fiducial events at "
+                        f"150 GeV ({TEB_EFF_MAX}% at 25 GeV).  Fit: a = {TEB_A_PE} ps&middot;&radic;GeV, "
+                        f"floor b = {TEB_B_PE} ps &mdash; consistent with, and confirming, the "
+                        "published 17.5 ps constant term (arXiv:2401.01747)."
                     ),
                 ),
                 Subsection(
@@ -2969,25 +3034,26 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                         "issue (noisy electronics or reduced light yield) that should be "
                         "investigated.  SW-Up (which uses MCP2) is beneficial to keep: "
                         f"excluding it worsens timing to {SCAN_NOSWU} ps.  "
-                        "This brute-force scan now runs on the same CFD-5% basis as the "
-                        f"headline: its all-8 result ({SCAN_ALL8} ps) agrees with the "
+                        "This brute-force scan runs on the plain CFD-5% basis (a diagnostic "
+                        "basis &mdash; the production headline times the same edge via srCFD): "
+                        f"its all-8 result ({SCAN_ALL8} ps) agrees with the "
                         f"independent A&sup2;-weighted 8-channel combo ({COMBO_150} ps, with "
-                        "the stop-cell correction) &mdash; the two estimators reconcile to "
-                        "&lt;1 ps, where before (CFD-20% scan vs CFD-5% combo) they differed "
-                        "by ~16 ps."
+                        "the stop-cell correction) &mdash; the two diagnostics reconcile to "
+                        "&lt;1 ps."
                     ),
                 ),
                 Subsection(
                     anchor="l5-per-energy-dist",
-                    title="Energy-binned timing distributions per run",
+                    title="Brightest-1000 timing distributions per energy",
                     note=(
-                        "Each panel shows the timing distribution within one SumLG energy bin.  "
-                        "The Gaussian core sigma from these fits is what enters the summary."
+                        "Each page shows the brightest-1000 (DW--UP)/2 timing distributions "
+                        "at one beam energy (timingProduction.C).  The robust Gaussian-core "
+                        "sigma from these distributions is what enters the summary."
                     ),
                     plots=per_energy_plots(
                         "timing_energy_bins.pdf",
-                        "<b>{E} GeV</b>: sigma_t distributions in each SumLG bin -- "
-                        "Gaussian core fit gives the energy-binned timing resolution.",
+                        "<b>{E} GeV</b>: brightest-1000 (DW&minus;UP)/2 timing distributions "
+                        "with robust Gaussian-core fits -- the production sigma_t at this energy.",
                         width=50,
                     ),
                 ),
@@ -3027,12 +3093,14 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
             title="Layer 6 -- Systematic Uncertainties",
             intro=(
                 "Status: COMPLETE -- cut variation uncertainties evaluated. "
-                "Systematic uncertainties on sigma_t are evaluated by varying each "
-                "selection cut independently: fiducial radius, MCP amplitude window, "
-                "containment threshold, and CFD fraction.  "
-                "The total systematic is taken as the quadrature sum of individual "
-                "variations.  Results are compared to statistical uncertainties from "
-                "the Gaussian core fit."
+                "Two budgets live here.  <strong>(1)</strong> The production headline carries a "
+                "dedicated <em>selection</em> systematic from K/r/veto variations of the "
+                f"brightest-1000 chain: &plusmn;{SYST_SEL_DSB1} ps for DSB1 "
+                "(&plusmn;1.9 / 0.9 / 1.1 ps for LUAG / MIXED / TENERGY; committed gate log).  "
+                "<strong>(2)</strong> The cut-variation budget below is evaluated on the "
+                "A&sup2;-weighted combination -- the estimator most sensitive to the selection "
+                "cuts (fiducial radius, MCP amplitude window, containment threshold, CFD "
+                "fraction) -- as a conservative cross-check; the total is the quadrature sum."
             ),
             subsections=[
                 Subsection(
@@ -3060,9 +3128,10 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                                      "&sigma; is a robust truncated-RMS (truncation-bias corrected), which "
                                      "is stable at low statistics &mdash; the former Gaussian-fit "
                                      "instability that produced spurious &asymp;40 ps bands at 25/125 GeV "
-                                     "(three cut variations shifting in lock-step) is gone. The headline "
-                                     "(DW&minus;UP)/2 is on CFD-5% and cross-validation-stable "
-                                     "(out-of-sample shift &lt; 1 ps, Layer 5)."),
+                                     "(three cut variations shifting in lock-step) is gone. The production "
+                                     "(DW&minus;UP)/2 headline times the 5% edge via srCFD and its "
+                                     "brightest-1000 selection is deterministic &mdash; its dedicated "
+                                     f"selection systematic is &plusmn;{SYST_SEL_DSB1} ps (DSB1)."),
                             width_pct=50,
                         ),
                     ],

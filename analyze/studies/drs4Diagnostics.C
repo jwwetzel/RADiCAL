@@ -166,7 +166,7 @@ void drs4Diagnostics()
         Float_t mcp_peak;
 
         t->SetBranchAddress("wc_ok",       &wc_ok);
-        t->SetBranchAddress("mcp_peak",    &mcp_peak);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",    &mcp_peak);
         t->SetBranchAddress("hg_peak",      hg_peak);
         t->SetBranchAddress("hg_ped_rms",   hg_ped_rms);
         t->SetBranchAddress("lg_peak",      lg_peak);

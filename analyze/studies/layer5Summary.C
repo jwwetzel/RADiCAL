@@ -42,7 +42,7 @@ void HeroTiming()
     TFile f(Form("%stiming_energy_bins.root", kSumDir));
     if (f.IsZombie()) { printf("[layer5Summary] no timing_energy_bins.root — skip H1\n"); return; }
     TGraphErrors* gT = dynamic_cast<TGraphErrors*>(f.Get("gBestSigma_teb_m0"));
-    TGraphErrors* gP = dynamic_cast<TGraphErrors*>(f.Get("gPaper_teb"));
+    TGraph*       gP = dynamic_cast<TGraph*>(f.Get("gPaper_teb"));   // plain TGraph (published curve)
     if (!gT) { printf("[layer5Summary] gBestSigma_teb_m0 missing — skip H1\n"); return; }
 
     TCanvas* c = NewSquareCanvas("c_l5_timing");
@@ -73,7 +73,7 @@ void HeroTiming()
 
     TLegend* leg = new TLegend(0.40, 0.78, 0.95, 0.90);
     leg->SetBorderSize(0); leg->SetFillStyle(0); leg->SetTextFont(42); leg->SetTextSize(0.033);
-    leg->AddEntry(gT, "this analysis (energy-binned)", "lp");
+    leg->AddEntry(gT, "this analysis (brightest-1000, srCFD)", "lp");
     if (gP) leg->AddEntry(gP, "arXiv:2401.01747", "lp");
     leg->Draw();
 
@@ -81,7 +81,7 @@ void HeroTiming()
       t.DrawLatex(0.18, 0.34, Form("#sigma_{t} = %.0f ps at 150 GeV", valAt(gT, 150.)));
       t.SetTextSize(0.028); t.SetTextColor(kGray + 2);
       t.DrawLatex(0.18, 0.295, Form("fit  #sigma_{t} = %.0f/#sqrt{E} #oplus %.0f ps", a, b));
-      t.DrawLatex(0.18, 0.255, "MCP-free (DW#minusUP)/2, CFD-5%, energy-binned"); }
+      t.DrawLatex(0.18, 0.255, "MCP-free (DW#minusUP)/2, brightest-1000, srCFD"); }
 
     DrawPageTitle("Timing resolution vs beam energy  (headline)");
     c->Print(Form("%slayer5_timing.png", kSumDir));

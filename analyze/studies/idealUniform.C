@@ -15,8 +15,10 @@
 // with the well-behaved Up trend (mean of NE-U, SE-U) and propagate to the
 // headline via the effective combination model sigma_HL ~ (1/8) sqrt(sum_i
 // sigma_i^2) — validated at high E against the reconstruction (69 vs 67 ps at
-// 150).  The measured 27.4 ps headline STANDS; this is a clearly-labelled
-// projection only.
+// 150).  The measured production headline (brightest-1000, srCFD; read live
+// from timing_energy_bins.root) STANDS; this is a clearly-labelled projection.
+// MIGRATED 2026-07-21: headline curve is now data-driven (was a hard-coded
+// best-bin/cfd05-era ladder).
 //
 // Output: output/Summary/ideal_uniform_projection.{png,pdf}
 // ============================================================================
@@ -34,7 +36,14 @@ void idealUniform()
     ApplyRADiCALStyle();
     const char* nm[8]={"NW-D","NE-D","SE-D","SW-D","NW-U","NE-U","SE-U","SW-U"};
     double E[6]={25,50,75,100,125,150};
-    double real[6]={47.1,32.7,30.8,30.2,29.2,27.4};   // measured headline (best-bin)
+
+    // measured production headline (brightest-1000, srCFD) — data-driven
+    double real[6];
+    { TFile ft("output/Summary/timing_energy_bins.root");
+      TGraphErrors* gp = ft.IsZombie()?nullptr:(TGraphErrors*)ft.Get("gBestSigma_teb_m0");
+      if (!gp) { printf("[idealUniform] run timingProduction.C first — skip\n"); return; }
+      for(int e=0;e<6;++e){ real[e]=NAN; for(int p=0;p<gp->GetN();++p){ double x,y;
+          gp->GetPoint(p,x,y); if(fabs(x-E[e])<2) real[e]=y; } } }
 
     TFile f("output/Summary/summary.root");
     if (f.IsZombie()) { printf("[idealUniform] no summary.root — skip\n"); return; }
@@ -85,12 +94,12 @@ void idealUniform()
       t.DrawLatex(40,25.2,Form("125 GeV: %.1f #rightarrow %.1f ps  (#minus%.1f)",real[4],idealHL[4],dHL[4]));
       t.DrawLatex(40,23.7,Form("150 GeV: %.1f #rightarrow %.1f ps  (#minus%.1f)",real[5],idealHL[5],dHL[5]));
       t.SetTextColor(kROrange+2); t.SetTextSize(0.025);
-      t.DrawLatex(40,21.9,"projection only #minus the measured 27.4 ps stands as the result"); }
+      t.DrawLatex(40,21.9,Form("projection only #minus the measured %.1f ps stands as the result",real[5])); }
     DrawPadTitle("Projected headline if all channels were uniform", 0.055);
 
     c->cd(0);
     DrawPageTitle("Detector-potential projection: what an all-uniform calorimeter would time");
     c->Print("output/Summary/ideal_uniform_projection.png");
     c->Print("output/Summary/ideal_uniform_projection.pdf");
-    printf("[idealUniform] wrote ideal_uniform_projection.png  (150 GeV: 27.4 -> %.1f ps)\n", idealHL[5]);
+    printf("[idealUniform] wrote ideal_uniform_projection.png  (150 GeV: %.1f -> %.1f ps)\n", real[5], idealHL[5]);
 }

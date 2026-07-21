@@ -111,7 +111,7 @@ static void loadDSB1(double E, std::vector<Ev>& ev, double& sErel){
     Int_t run; Bool_t wc; Float_t x,y,slg,mp,cfd[8];
     t->SetBranchAddress("run",&run); t->SetBranchAddress("wc_ok",&wc);
     t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-    t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress("mcp_peak",&mp); t->SetBranchAddress("hg_cfd05",cfd);
+    t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mp); t->SetBranchAddress("hg_cfd05",cfd);
     long N=t->GetEntries(); double xs=0,ys=0; long nw=0;
     for(long i=0;i<N&&nw<50000;++i){ t->GetEntry(i); if(wc&&x>-100&&x<100){xs+=x;ys+=y;++nw;} }
     double xc=nw?xs/nw:0, yc=nw?ys/nw:0; std::vector<float> elist;

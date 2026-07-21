@@ -30,7 +30,7 @@ void pbLeakage() {
         TFile* fp=TFile::Open(radReduced("DSB1",Es[e])); TTree* t=(TTree*)fp->Get("rad");
         Bool_t wc; Float_t x,y,mcp,slg,spb;
         t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-        t->SetBranchAddress("mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress("sum_pb",&spb);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress("sum_pb",&spb);
         long N=t->GetEntries();
         double wx=0,wy=0,w=0; for(long i=0;i<N;++i){ t->GetEntry(i); if(wc&&mcp>kMCP_minPeak_E&&slg>kSumLG_centroid){wx+=x*slg;wy+=y*slg;w+=slg;} }
         double xc=w>0?wx/w:0, yc=w>0?wy/w:0, r2=kFiducial_r_energy*kFiducial_r_energy;

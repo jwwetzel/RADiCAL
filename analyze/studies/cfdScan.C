@@ -47,7 +47,7 @@ static void sigmasForEnergy(double E, double out[6]) {
     TFile* fp=TFile::Open(radReduced("DSB1",E)); TTree* t=(TTree*)fp->Get("rad");
     Bool_t wc; Float_t x,y,mcp,slg,hgp[8]; Float_t cfd[6][8];
     t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-    t->SetBranchAddress("mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress("hg_peak",hgp);
+    t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress("hg_peak",hgp);
     for(int f=0;f<6;++f) t->SetBranchAddress(brs[f],cfd[f]);
     long N=t->GetEntries();
     double wx=0,wy=0,w=0; for(long i=0;i<N;++i){ t->GetEntry(i); if(wc&&mcp>kMCP_minPeak_E&&slg>kSumLG_centroid){wx+=x*slg;wy+=y*slg;w+=slg;} }

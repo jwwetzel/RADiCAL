@@ -58,7 +58,7 @@ void sigmaVsAmp() {
         TTree* t=(TTree*)fp->Get("rad");
         Bool_t wc; Float_t x,y,mcp,slg,hgc[8],hgp[8]; Bool_t hsat[8];
         t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-        t->SetBranchAddress("mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg);
         t->SetBranchAddress("hg_cfd05",hgc); t->SetBranchAddress("hg_peak",hgp); t->SetBranchAddress("hg_saturated",hsat);
         long N=t->GetEntries();
         // pass 1: LG-weighted centroid (ScanRunCenters)

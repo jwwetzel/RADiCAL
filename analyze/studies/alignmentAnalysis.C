@@ -82,7 +82,7 @@ void alignmentAnalysis()
 
     Float_t x, y, spb, mcp, hg[8]; Bool_t ok;
     ch.SetBranchAddress("x_trk", &x); ch.SetBranchAddress("y_trk", &y);
-    ch.SetBranchAddress("sum_pb", &spb); ch.SetBranchAddress("mcp_peak", &mcp);
+    ch.SetBranchAddress("sum_pb", &spb); ch.SetBranchAddress(ch.GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp);
     ch.SetBranchAddress("hg_peak", hg); ch.SetBranchAddress("wc_ok", &ok);
 
     // response maps (context) + projection profiles (centres)

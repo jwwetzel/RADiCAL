@@ -135,7 +135,7 @@ void chargeProfiles()
         t->SetBranchAddress("wc_ok",    &wc_ok);
         t->SetBranchAddress("x_trk",    &x_trk);
         t->SetBranchAddress("y_trk",    &y_trk);
-        t->SetBranchAddress("mcp_peak", &mcp_peak);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
         t->SetBranchAddress("hg_peak",   hg_peak);

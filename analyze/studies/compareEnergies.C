@@ -201,7 +201,7 @@ static void PlotGroup1_BeamQuality()
         t->SetBranchAddress("x_trk",    &x_trk);
         t->SetBranchAddress("y_trk",    &y_trk);
         t->SetBranchAddress("wc_ok",    &wc_ok);
-        t->SetBranchAddress("mcp_peak", &mcp_peak);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
         t->SetBranchAddress("sum_lg",   &sum_lg);
 
         Long64_t nEv = t->GetEntries();
@@ -459,7 +459,7 @@ static void PlotGroup2_Containment()
         t->SetBranchAddress("x_trk",    &x_trk);
         t->SetBranchAddress("y_trk",    &y_trk);
         t->SetBranchAddress("wc_ok",    &wc_ok);
-        t->SetBranchAddress("mcp_peak", &mcp_peak);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
         t->SetBranchAddress("sum_lg",   &sum_lg);
         t->SetBranchAddress("sum_pb",   &sum_pb);
 
@@ -728,7 +728,7 @@ static void PlotGroup3_Channels()
         t->SetBranchAddress("x_trk",    &x_trk);
         t->SetBranchAddress("y_trk",    &y_trk);
         t->SetBranchAddress("wc_ok",    &wc_ok);
-        t->SetBranchAddress("mcp_peak", &mcp_peak);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
         t->SetBranchAddress("hg_peak",   hg_peak);
 
         Long64_t nEv = t->GetEntries();

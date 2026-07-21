@@ -252,7 +252,7 @@ void timingResolution()
         t->SetBranchAddress("wc_ok",    &wc_ok);
         t->SetBranchAddress("x_trk",    &x_trk);
         t->SetBranchAddress("y_trk",    &y_trk);
-        t->SetBranchAddress("mcp_peak", &mcp_peak);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
         // CFD-5% adopted as the base timing fraction (#6a; 3% regresses low-E, noise); falls back to
         // hg_cfd (20%) if the 3% branch is absent (pre-reprocess ntuples).
         t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);

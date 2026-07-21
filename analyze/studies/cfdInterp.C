@@ -62,7 +62,7 @@ static void loadE(double E, std::vector<Ev>& out) {
     TFile* fp=TFile::Open(radReduced("DSB1",E)); TTree* t=(TTree*)fp->Get("rad");
     Bool_t wc; Float_t x,y,mcp,slg,hgp[8],c03[8],c05[8],c10[8],c20[8],c30[8],c50[8];
     t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-    t->SetBranchAddress("mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress("hg_peak",hgp);
+    t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mcp); t->SetBranchAddress("sum_lg",&slg); t->SetBranchAddress("hg_peak",hgp);
     t->SetBranchAddress("hg_cfd03",c03); t->SetBranchAddress("hg_cfd05",c05); t->SetBranchAddress("hg_cfd10",c10);
     t->SetBranchAddress("hg_cfd",c20); t->SetBranchAddress("hg_cfd30",c30); t->SetBranchAddress("hg_cfd50",c50);
     long N=t->GetEntries(); double wx=0,wy=0,w=0;

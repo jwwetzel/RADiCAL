@@ -103,7 +103,7 @@ void depthCorr(){
         TFile* fp=TFile::Open(radReduced("DSB1",Es[e])); TTree* t=(TTree*)fp->Get("rad");
         Bool_t wc; Float_t x,y,mcp,mt,slg,cfd[8],hgp[8]; Int_t sc[4];
         t->SetBranchAddress("wc_ok",&wc); t->SetBranchAddress("x_trk",&x); t->SetBranchAddress("y_trk",&y);
-        t->SetBranchAddress("mcp_peak",&mcp); t->SetBranchAddress("mcp_time",&mt); t->SetBranchAddress("sum_lg",&slg);
+        t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",&mcp); t->SetBranchAddress(t->GetBranch("mcp1_time")?"mcp1_time":"mcp_time",&mt); t->SetBranchAddress("sum_lg",&slg);
         t->SetBranchAddress("hg_cfd05",cfd); t->SetBranchAddress("hg_peak",hgp); t->SetBranchAddress("stopcell",sc);
         long N=t->GetEntries(); double wx=0,wy=0,w=0;
         for(long i=0;i<N;++i){ t->GetEntry(i); if(wc&&mcp>kMCP_minPeak_E&&slg>kSumLG_centroid){wx+=x*slg;wy+=y*slg;w+=slg;} }

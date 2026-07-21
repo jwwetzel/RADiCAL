@@ -223,8 +223,8 @@ static bool CollectEvents(const char* ntuple, std::vector<EvFTS>& out)
     t->SetBranchAddress("wc_ok",    &wc_ok);
     t->SetBranchAddress("x_trk",    &x_trk);
     t->SetBranchAddress("y_trk",    &y_trk);
-    t->SetBranchAddress("mcp_peak", &mcp_peak);
-    t->SetBranchAddress("mcp_time", &mcp_time);
+    t->SetBranchAddress(t->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
+    t->SetBranchAddress(t->GetBranch("mcp1_time")?"mcp1_time":"mcp_time", &mcp_time);
     t->SetBranchAddress(t->GetBranch("hg_cfd05") ? "hg_cfd05" : "hg_cfd", hg_cfd);
     t->SetBranchAddress("sum_lg",   &sum_lg);
 

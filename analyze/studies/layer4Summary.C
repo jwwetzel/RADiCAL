@@ -123,8 +123,8 @@ void HeroWalk()
       t.DrawLatex(0.17, 0.355, "amplitude-dependent time-walk, improving");
       t.DrawLatex(0.17, 0.310, "single-channel timing by 20-50 ps.");
       t.SetTextSize(0.026); t.SetTextColor(kGray + 2);
-      t.DrawLatex(0.17, 0.255, "(Headline uses CFD-5%, the optimal fraction;");
-      t.DrawLatex(0.17, 0.220, "lower CFD = less walk -- see appendix.)"); }
+      t.DrawLatex(0.17, 0.255, "(Headline uses srCFD #minus the 5% edge with LG");
+      t.DrawLatex(0.17, 0.220, "clip recovery; lower edge = less walk.)"); }
 
     DrawPageTitle("Walk correction -- single-channel timing");
     c->Print(Form("%slayer4_walk.png", kSumDir));

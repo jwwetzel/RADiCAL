@@ -376,8 +376,8 @@ void timingEnergyBins()
         tree->SetBranchAddress("wc_ok",    &wc_ok);
         tree->SetBranchAddress("x_trk",    &x_trk);
         tree->SetBranchAddress("y_trk",    &y_trk);
-        tree->SetBranchAddress("mcp_peak", &mcp_peak);
-        tree->SetBranchAddress("mcp_time", &mcp_time);
+        tree->SetBranchAddress(tree->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak", &mcp_peak);
+        tree->SetBranchAddress(tree->GetBranch("mcp1_time")?"mcp1_time":"mcp_time", &mcp_time);
         // CFD-5% adopted as the base timing fraction: per-channel timing improves
         // substantially (esp. the Down capillaries, whose leading-edge shape jitters
         // more high on the edge and produces a broad shoulder at CFD-20%) and the

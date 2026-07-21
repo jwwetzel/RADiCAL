@@ -295,7 +295,7 @@ void timingMethods()
         else for (int i = 0; i < 8; ++i) hg_cfd05[i] = -1e6f;  // kNoTime sentinel
         tree->SetBranchAddress("x_trk",     &x_trk);
         tree->SetBranchAddress("y_trk",     &y_trk);
-        tree->SetBranchAddress("mcp_peak",  &mcp_peak);
+        tree->SetBranchAddress(tree->GetBranch("mcp1_peak")?"mcp1_peak":"mcp_peak",  &mcp_peak);
         tree->SetBranchAddress("wc_ok",     &wc_ok);
 
         // MCP2 amplitude — present in all ntuples produced by the current processRun.C;

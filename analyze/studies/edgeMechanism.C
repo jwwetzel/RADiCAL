@@ -207,7 +207,8 @@ void EdgeJitter()
       t.DrawLatex(0.46, 0.30, "Edge shape jitters more");
       t.DrawLatex(0.46, 0.255, "the higher you time, and");
       t.DrawLatex(0.46, 0.21, "more for the Down edge.");
-      t.DrawLatex(0.46, 0.155, "CFD-5% = most reproducible."); }
+      t.DrawLatex(0.46, 0.155, "The 5% edge = most reproducible");
+      t.DrawLatex(0.46, 0.11,  "(srCFD's operating point)."); }
 
     DrawPadTitle("Leading-edge shape jitter (100 GeV)", 0.050f);
     c->Print(Form("%slayer4_edge_jitter.png", kSumDir));
