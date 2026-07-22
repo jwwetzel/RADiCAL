@@ -56,8 +56,11 @@ static const double kTMax    = 18.0;
 
 // LG pulses (full-length fibre → energy) are much slower/longer than HG, so
 // they need a wider window to show the full rise, peak and fall.
-static const int    kNBins_LG = 320;
-static const double kTMin_LG  = -10.0;
+// Pre-edge extent −150 ns: shows genuine pre-pulse baseline so the edge-aligned
+// display cannot be mistaken for a pulse sitting at the start of the raw DRS1
+// window (measured raw placement: edge at ~374 ns of the ~1022 ns record).
+static const int    kNBins_LG = 364;
+static const double kTMin_LG  = -150.0;
 static const double kTMax_LG  =  1000.0;
 
 // Maximum events per energy (raw data is large; keep runtime reasonable)

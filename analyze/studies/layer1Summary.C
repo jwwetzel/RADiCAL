@@ -133,11 +133,11 @@ void HeroPulseShapes()
     DrawPageTitle(Form("Average pulse shape per capillary, %s  "
                        "--  HG timing (rows 1-2),  LG energy (rows 3-4)",
                        usedLabel ? usedLabel : "best run"));
-    { TLatex sub; sub.SetNDC(); sub.SetTextSize(0.016); sub.SetTextColor(kGray + 2);
+    { TLatex sub; sub.SetNDC(); sub.SetTextSize(0.014); sub.SetTextColor(kGray + 2);
       sub.SetTextAlign(12);
       sub.DrawLatex(0.012, 0.945,
-        "LG shown full-window: AC-coupled -- pulse + 35% undershoot, "
-        "clean baseline recovery by 500 ns, no ringing"); }
+        "LG edge-aligned, 150 ns pre-edge shown: AC-coupled -- 30-45% undershoot "
+        "+ ringing (strongest SE-U); raw DRS1 edge at ~374 of 1022 ns"); }
     // Direct PNG: pixel-exact aspect (ROOT's PDF paper-fit letterboxes; PNG does not).
     c->Print(Form("%slayer1_pulse_shapes.png", kSumDir));
     printf("[layer1Summary] wrote layer1_pulse_shapes.png\n");

@@ -430,3 +430,25 @@ energy/position paper (the fifth coordinate).
 - COMMANDS: root -l -b -q 'analyze/studies/timingProduction.C+' ; batch scripts (nohup) ;
   root -l -b -q 'analyze/studies/harvestResults.C+' ; python3 analyze/makeReport.py ;
   bash analyze/deployReport.sh.
+
+## UPDATE 2026-07-21 (later) — LG raw-window investigation; pulse-shape figure honesty fixes
+
+- QUESTION (JW): the layer1 pulse-shape figure's LG panels look "out of window" (pulse at left edge).
+- FINDING: artifact of the display, not the data — averageWaveforms.C aligns each LG waveform on its
+  own CFD-20% crossing, pinning the edge to t=0 by construction. UNALIGNED check on raw 150 GeV runs
+  (RUN1258–1261, 20k events, MCP+WC gate): LG edge at ~373–375 ns of the ~1022 ns DRS1 window on all
+  8 channels (~7 ns trigger jitter), ~370 ns clean pre-pulse baseline, zero right-edge truncation;
+  pedestal window (samples 3–52) in quiet baseline for ~97–98% of events (2–3% early "crossings" are
+  noise latches at the 5 mV LG threshold, spread uniformly). Evidence macro committed:
+  analyze/studies/lgWindowCheck.C → output/investigations/lg_window_check.png.
+- HONESTY FIX: the figure's subtitle claimed "clean baseline recovery by 500 ns, no ringing" — false
+  for SE-U LG (clear post-undershoot oscillation) and optimistic generally. Fixed:
+  (1) averageWaveforms.C LG profile booking widened to −150 ns pre-edge (kTMin_LG −10→−150,
+      kNBins_LG 320→364) so the display shows real pre-edge baseline; rerun over raw (all 6 energies).
+  (2) layer1Summary.C subtitle → "30-45% undershoot + ringing (strongest SE-U); raw DRS1 edge at
+      ~374 of 1022 ns". layer1 heroes regenerated.
+  (3) makeReport.py l1-pulses finding rewritten to match, incl. ΣLG = sum of LG PEAK amplitudes
+      (verified reduce/Reducer.C:158) so undershoot/ringing cannot touch the energy measure.
+- Claims-gate re-run on report.html: clean ("no ringing"=0). Redeployed site/report (219 files).
+- NOTE: DPF2026/assets/pulse.png and site/paper.html embed older copies of this figure — deck left
+  untouched (talk week); paper.html is in the pending story-page refresh.

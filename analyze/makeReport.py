@@ -1467,14 +1467,20 @@ def _build_sections(OUTPUT_ROOT: Path) -> list[Section]:
                     finding=(
                         "<strong>Every channel produces a clean, consistent pulse.</strong>  The HG chain is "
                         "fast (a sharp prompt peak in the first &asymp;18 ns &mdash; good for timing); the LG "
-                        "chain is AC-coupled, so each pulse is followed by a balancing undershoot (&asymp;35%) "
-                        "that recovers to baseline by &asymp;500 ns with no ringing &mdash; stable baseline "
-                        "restoration across the whole module."
+                        "chain is AC-coupled, so each pulse is followed by a balancing undershoot "
+                        "(&asymp;30&ndash;45%) and post-recovery ringing (strongest on SE-U), with the "
+                        "baseline fully restored within the readout window.  The LG panels are edge-aligned "
+                        "with 150 ns of pre-edge baseline shown; in the raw DRS1 record the pulse edge sits "
+                        "at &asymp;374 ns of the 1022 ns window &mdash; comfortably inside, with &asymp;370 ns "
+                        "of quiet baseline before it.  None of this touches the energy measure or timing: "
+                        "&Sigma;LG is the sum of LG <em>peak</em> amplitudes (read at the maximum, before "
+                        "the undershoot), and timing lives on the HG chain."
                     ),
                     plots=[PlotEntry(
                         sumPDF("layer1_pulse_shapes.png"),
                         caption=("Average pulse shape, all 16 channels (150 GeV): 8 HG (top, fast &rarr; "
-                                 "timing) + 8 LG (bottom, slow &rarr; energy).  Clean and consistent."),
+                                 "timing) + 8 LG (bottom, slow &rarr; energy), edge-aligned with pre-edge "
+                                 "baseline shown."),
                         width_pct=66)],
                 ),
                 Subsection(
