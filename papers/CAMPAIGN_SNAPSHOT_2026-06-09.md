@@ -452,3 +452,37 @@ energy/position paper (the fifth coordinate).
 - Claims-gate re-run on report.html: clean ("no ringing"=0). Redeployed site/report (219 files).
 - NOTE: DPF2026/assets/pulse.png and site/paper.html embed older copies of this figure — deck left
   untouched (talk week); paper.html is in the pending story-page refresh.
+
+## UPDATE 2026-07-22 — story pages refreshed to the production chain (banners retired)
+
+- SCOPE: the three remaining pre-fix story pages brought onto the gated production chain and
+  de-bannered — site/paper.html, site/timing_story.html, site/calor2026_slides.html.
+  (DPF2026 pulse.png was checked and is the srCFD method figure, already correct — no swap.)
+- RECON: a background Workflow (story-fig-recon, 9 agents) audited every bespoke figure generator.
+  Verdicts: narrativeFigs/slopeVsE/peaksHGLG125 = KEEP (estimator-agnostic method illustrations);
+  compareConfigsPlot (hard-coded retired arrays) + configResolutionFull (best-bin cfd05) +
+  narrativeLadder/optScan/crossBuild = RETIRE→REPLACE; pubFig = production estimator but its
+  pub_res/pub_thresh bake a 24.7 ps AMPLITUDE-slew floor + 25.4/25.3 headline (NOT the gated
+  25.7/18.8), so those were dropped; pub_dist (clean-Gaussian, no headline number) kept.
+- paper.html: full reframe. Abstract/KPIs/§4/§5/§7/§8/§10/§11 rewritten to 25.7±0.6 brightest-1000
+  + ≈50 ps full-fiducial companion, srCFD (§4.1 + §7.3 no longer "de-saturation you don't need" —
+  srCFD IS the estimator), floor 18.8±0.8 confirms 17.5 (removed the forbidden "DAQ-limited floor,
+  headroom toward 17.5"), depth dial −33.6, WLS-species-not-crystal, E_SM tagging. §8.3 retired
+  all-fiducial Table 4 + best-bin Fig 14 (config_sigmat_vs_E) → gated per-build table +
+  four_build_sigmat.png (copied from papers/timing/figs/thesis_postfix.png); Fig 12b compare_configs
+  → four_build_sigmat; TENERGY caveat reframed to the √(4/3) capillary-count penalty.
+- timing_story.html: banner removed; Act V (narrative_ladder) → report layer5_timing.png + gated
+  brightest-1000/full-fiducial table; Act V½ (bin-starvation + narrative_methods 23.2/28.6 floor
+  bands) → deterministic-selection rationale + timing_floor_comparison.png; Act VI floor → 18.8
+  confirms 17.5 + depth dial; Act VII (narrative_crossbuild + slew-floor pub_res/pub_thresh table)
+  → four_build_sigmat + gated per-build table, pub_dist kept, slew-floor subsection dropped.
+- calor2026_slides.html: slide 9 method → srCFD/brightest-1000; slide 10 "27 ps"→25.7 + floor
+  bullet to 18.8-confirms-17.5/shower-depth; slide 11 config_sigmat_vs_E→four_build_sigmat +
+  "identical"→within ~10–20% (1.04±0.05); E_SM tags; slides 17/18 roadmap de-electronics-floored;
+  closing "27 ps"→25.7.
+- HYGIENE: removed 11 orphaned retired figures from the published site/assets (compare_configs,
+  config_sigmat_vs_E, narrative_ladder/methods/optscan/crossbuild, pub_res_*×4, pub_thresh_DSB1) —
+  they baked 23.2/24.7/29.4 ps into a world-readable dir; generators + figures/2023 copies persist.
+- VERIFY: all three pages browser-checked (0 broken images; correct KPIs/stats; forbidden-language
+  grep CLEAN: no 27.4 / 25.3 / 23.2 / 22-vs-17.5 / 0.99 / identical-timing / crystal-differs /
+  DAQ-limited / recoverable-headroom); every figure ref resolves on disk.

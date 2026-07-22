@@ -293,28 +293,28 @@ td.m,th.m{font-variant-numeric:tabular-nums}
     <ul>
       <li><b>(DW − UP)/2</b>: the half-difference of downstream and upstream capillary times.</li>
       <li>Cancels the timing reference, the inter-group sampler jitter, and the DRS4 cell-width error — exposes the <b>intrinsic</b> module resolution.</li>
-      <li>Constant-fraction (5%) time-stamping on the sharp low edge; energy-binned selection.</li>
-      <li class="x"><b>Out-of-sample validated</b> — every quoted number is reproduced on held-out runs.</li>
+      <li><b>srCFD</b> time-stamping — a constant fraction of the low-gain-predicted <em>true</em> peak, so clipped pulses are timed on their steep edge (LED for the dim builds).</li>
+      <li class="x"><b>Deterministic brightest-1000</b> selection — fixed before any fit, so no optimization bias; quoted beside the full-fiducial ≈50 ps.</li>
     </ul>
   </div><div class="col center">
     <figure><img src="report/Summary/layer4_ladder.png" alt="resolution ladder">
-      <figcaption>From a single channel (~180 ps) → channel combination → the energy-binned corner headline.</figcaption></figure>
+      <figcaption>From a single channel (~180 ps) → channel combination → the brightest-1000 corner headline.</figcaption></figure>
   </div></div>
 </section>
 
 <!-- 10 TIMING -->
 <section class="slide">
   <div class="kick">Results · timing</div>
-  <h2>The standard: <span class="a">27 ps</span> at 150 GeV</h2>
+  <h2>The standard: <span class="a">25.7 ps</span> at 150 GeV</h2>
   <div class="body"><div class="col center" style="flex:1.3">
     <figure><img src="report/Summary/layer5_timing.png" alt="timing vs energy">
-      <figcaption>σ<sub>t</sub>(E) with the DSB1 standard capillaries; σ<sub>t</sub> = a/√E ⊕ b.</figcaption></figure>
+      <figcaption>σ<sub>t</sub>(E) with the DSB1 standard capillaries, brightest-1000 srCFD; σ<sub>t</sub> = 203/√E ⊕ 18.8 ps.</figcaption></figure>
   </div><div class="col">
-    <div class="kpis"><div class="kpi teal"><b>27 ps</b><span>150 GeV (DSB1)</span></div></div>
+    <div class="kpis"><div class="kpi teal"><b>25.7 ps</b><span>150 GeV · DSB1 · brightest-1000</span></div></div>
     <ul style="margin-top:1.2vh">
-      <li>The baseline against which every material is compared.</li>
-      <li>MCP-free, cross-validation-stable.</li>
-      <li class="h">Floor is set by the readout electronics — recoverable headroom toward the 10 ps goal.</li>
+      <li>≈50 ps across the full fiducial sample — the baseline every material is compared against.</li>
+      <li>MCP-free; deterministic selection, no optimization bias.</li>
+      <li class="h">Fitted floor <b>18.8 ± 0.8 ps confirms the published 17.5 ps</b>; its origin is shower-depth fluctuation (−33.6 ps/e-fold), not the DAQ.</li>
     </ul>
   </div></div>
 </section>
@@ -322,13 +322,13 @@ td.m,th.m{font-variant-numeric:tabular-nums}
 <!-- 11 MATERIAL COMPARISON -->
 <section class="slide">
   <div class="kick">Results · materials</div>
-  <h2>Light yield — <span class="a">not species</span> — drives timing</h2>
+  <h2>Light yield — <span class="a">not WLS species</span> — drives timing</h2>
   <div class="body"><div class="col center">
     <figure><img src="assets/mixed_h2h.png" alt="DSB1 vs LuAG in-event">
-      <figcaption><b>Confound-free:</b> DSB1 and LuAG:Ce capillaries in the <b>same showers</b> — identical per capillary.</figcaption></figure>
+      <figcaption><b>Confound-free:</b> DSB1 and LuAG:Ce capillaries in the <b>same showers</b> — per-capillary widths agree within ~10–20% (ratio 1.04 ± 0.05).</figcaption></figure>
   </div><div class="col center">
-    <figure><img src="assets/config_sigmat_vs_E.png" alt="per-build timing">
-      <figcaption>Per build: the brightest (DSB1) wins; dimmer LuAG:Ce builds sit higher — entirely a light-yield effect.</figcaption></figure>
+    <figure><img src="assets/four_build_sigmat.png" alt="per-build timing, production chain">
+      <figcaption>Per build (brightest-1000): the brightest DSB1 wins (25.7 ps); dimmer LuAG:Ce sits higher (44.4 ps) — entirely a light-yield effect (a: 203 → 440 ps·√GeV).</figcaption></figure>
   </div></div>
   <div class="foot">⇒ a radiation-hard ceramic (LuAG:Ce, LuO:Yb) times just as well once made <b>bright enough</b>.</div>
 </section>
@@ -339,7 +339,7 @@ td.m,th.m{font-variant-numeric:tabular-nums}
   <h2>Shower-max energy, build-independent</h2>
   <div class="body"><div class="col center" style="flex:1.3">
     <figure><img src="assets/config_sigmaE_vs_E.png" alt="energy resolution">
-      <figcaption>σ<sub>E</sub>/E at shower max vs energy — ~14%, essentially the same for every capillary material.</figcaption></figure>
+      <figcaption>σ<sub>E<sub>SM</sub></sub>/E at shower max vs energy — ~14%, essentially the same for every capillary material.</figcaption></figure>
   </div><div class="col">
     <ul>
       <li>Energy from the low-gain (unsaturated) chain at shower max.</li>
@@ -388,7 +388,7 @@ td.m,th.m{font-variant-numeric:tabular-nums}
   <h2>One module — <span class="a">time + energy + position</span> at once</h2>
   <div class="body center"><figure style="height:100%">
     <img src="assets/fourD_demo.png" alt="4D demonstration" style="max-height:64vh">
-    <figcaption>Same module, same 150 GeV events: <b>σ<sub>t</sub> ≈ 35 ps</b> · <b>σ<sub>E</sub>/E ≈ 12%</b> · <b>σ<sub>x</sub> ≈ 1 mm</b> — a 4D proof of concept.</figcaption>
+    <figcaption>Same module, same 150 GeV events: <b>σ<sub>t</sub> ≈ 35 ps</b> · <b>σ<sub>E<sub>SM</sub></sub>/E ≈ 12%</b> · <b>σ<sub>x</sub> ≈ 1 mm</b> — a 4D proof of concept on one co-registered event sample.</figcaption>
   </figure></div>
 </section>
 
@@ -419,12 +419,12 @@ td.m,th.m{font-variant-numeric:tabular-nums}
     <ul>
       <li>Timing precision ≈ <b>noise / slew rate</b> — and what sharpens the edge is <b>more detected photoelectrons</b>.</li>
       <li>Levers: brighter (and rad-hard) WLS &amp; scintillators · thicker LYSO at shower max · better photodetectors · lower-noise, faster electronics.</li>
-      <li>We have shown the <b>material is not the limit</b> — light yield is the lever.</li>
-      <li class="h">Bridging 27 → <b>10 ps</b> is an electronics-and-light-yield program, well-matched to this test bed.</li>
+      <li>We have shown the <b>WLS species is not the limit</b> — light yield is the lever.</li>
+      <li class="h">Bridging today's <b>25.7 ps</b> toward the <b>10 ps</b> goal is a light-yield-and-electronics program, well-matched to this test bed.</li>
     </ul>
   </div><div class="col center">
     <figure><img src="assets/sigmat_vs_lightyield.png" alt="timing vs light yield">
-      <figcaption>Timing improves with light yield, the same for both materials — the lever to 10 ps.</figcaption></figure>
+      <figcaption>Single-channel timing improves with light yield, overlapping for both materials (a confounded cross-config view; the clean test is the same-shower head-to-head) — light yield is the lever to 10 ps.</figcaption></figure>
   </div></div>
 </section>
 
@@ -438,7 +438,7 @@ td.m,th.m{font-variant-numeric:tabular-nums}
       <li><b>LuAG:Ce &amp; LuO:Yb capillaries</b> — push the light yield of rad-hard shifters.</li>
       <li><b>Enhanced modular design</b> — T-type + E-type together; updated front-end &amp; DAQ.</li>
       <li><b>3 × 3 array</b> — full transverse containment → energy resolution toward 10%/√E.</li>
-      <li class="h"><b>Drive the timing floor</b> from electronics toward 10 ps.</li>
+      <li class="h"><b>Drive the timing</b> toward the 10 ps goal — more light and faster, lower-noise electronics.</li>
     </ul>
   </div><div class="col center">
     <figure><img src="report/Summary/quality_overview_150.png" alt="beam quality">
@@ -468,13 +468,13 @@ td.m,th.m{font-variant-numeric:tabular-nums}
     <ul>
       <li>An index-finger-sized W/LYSO:Ce module reads shower-max light → <b>time, energy, position</b>.</li>
       <li>A fixed <b>standard</b> + one-knob-at-a-time swaps = a controlled <b>materials test bed</b>.</li>
-      <li>To date: <b>27 ps</b> timing, <b>~14%</b> shower-max energy, <b>~1.5 mm</b> position, and a <b>4D</b> demonstration.</li>
-      <li class="x">Timing is set by <b>light yield, not species</b> → radiation-hard ceramics are on the path.</li>
+      <li>To date: <b>25.7 ps</b> timing (brightest-1000; ≈50 ps full fiducial), <b>~14%</b> shower-max energy, <b>~1.5 mm</b> position, and a <b>4D</b> demonstration.</li>
+      <li class="x">Timing is set by <b>light yield, not WLS species</b> → radiation-hard ceramics are on the path.</li>
       <li class="h">Goal: <b>10 ps</b> — and we want collaborators to get there.</li>
     </ul>
   </div><div class="col center">
     <div class="kpis center">
-      <div class="kpi teal"><b>27 ps</b><span>timing</span></div>
+      <div class="kpi teal"><b>25.7 ps</b><span>timing</span></div>
       <div class="kpi"><b>14%</b><span>energy</span></div>
       <div class="kpi amber"><b>1.5 mm</b><span>position</span></div>
     </div>

@@ -49,13 +49,6 @@
 </style>
 </head>
 <body>
-<div style="background:#7a1f1f;color:#fff;padding:12px 18px;font:14px/1.5 -apple-system,sans-serif;z-index:9999">
-&#9888; <b>HISTORICAL PAGE</b> &mdash; the numbers here (e.g. 27.4 ps) predate the June-2026 production
-estimator chain. The current gated result is <b>&sigma;<sub>t</sub> = 25.7 &plusmn; 0.6 ps</b> (brightest-1000,
-150 GeV, srCFD; &asymp;50 ps full fiducial; floor 18.8 &plusmn; 0.8 ps confirms the published 17.5 ps).
-See <code>papers/timing/radical_timing.pdf</code> and <code>ANALYSIS_GUIDE.md</code> in the repository.
-</div>
-
 <header>
  <div class="wrap">
   <div class="kick">RADiCAL · CERN SPS electron test beam · May 2023</div>
@@ -63,10 +56,10 @@ See <code>papers/timing/radical_timing.pdf</code> and <code>ANALYSIS_GUIDE.md</c
   <p class="tag">How detector saturation forced a new timing method — predicting the unclipped pulse
    from a second, low-gain copy — and exactly what it bought us, told from the apparatus to the floor.</p>
   <div class="stats">
-   <div class="stat"><b>25.3 ps</b><span>brightest-1000 hg_lgcfd · 150 GeV</span></div>
-   <div class="stat"><b>27.4 ps</b><span>cfd05 published (arXiv)</span></div>
+   <div class="stat"><b>25.7 ps</b><span>DSB1 brightest-1000 srCFD · 150 GeV</span></div>
+   <div class="stat"><b>&asymp;50 ps</b><span>full fiducial · 150 GeV</span></div>
+   <div class="stat"><b>18.8 ps</b><span>floor — confirms published 17.5</span></div>
    <div class="stat"><b>3.7&times;</b><span>steeper edge per pulse</span></div>
-   <div class="stat"><b>820 mV</b><span>the saturation clip</span></div>
   </div>
   <p class="nav">A chapter of the field guide. &nbsp;<a href="going_radical.html"><b>&#8592; Back to GOING RADiCAL</b></a>
    &nbsp;·&nbsp; <a href="report/"><b>Full analysis report &#8594;</b></a>
@@ -88,7 +81,7 @@ See <code>papers/timing/radical_timing.pdf</code> and <code>ANALYSIS_GUIDE.md</c
   common start <span class="k">t&#8320;</span> and wire chambers tracking where each electron entered.</p>
   <p>The timing observable is the depth half-difference
   <span class="k">(DW&minus;UP)/2</span> &mdash; half the difference between the down-end and up-end shower
-  times. The common start cancels, leaving a clean, self-referencing measure of <i>how deep in the crystal the
+  times. The common start cancels, leaving a clean, self-referencing measure of <i>how deep in the module the
   shower developed</i>. Target resolution: 20&ndash;30 ps. The rest of this page is the story of getting there.</p>
 </section>
 
@@ -134,11 +127,12 @@ See <code>papers/timing/radical_timing.pdf</code> and <code>ANALYSIS_GUIDE.md</c
 
 <section>
   <div class="act">Act IV · The method</div>
-  <h2>hg_lgcfd: put the threshold on the edge</h2>
+  <h2>srCFD: put the threshold on the edge</h2>
   <p>The fix follows directly. For each event, predict the true (unclipped) HG peak from the low-gain copy,
   <span class="k">HG_true = a + b&middot;LG_peak</span>, and place the CFD threshold at <b>15% of that true peak</b>.
   Because the true peak towers over the clip, 15% of it lands high on the <b>steep rising edge</b> &mdash; not
-  down on the foot. We call this <span class="k">hg_lgcfd</span>.</p>
+  down on the foot. We call this <span class="k">srCFD</span> (saturation-recovered CFD; the code name is
+  <span class="k">hg_lgcfd</span>) &mdash; and it is the production timing estimator for the high-light builds.</p>
   <figure>
     <img src="assets/narrative_pulse.png" alt="A clipped HG pulse with cfd05 at the foot and hg_lgcfd on the steep edge">
     <figcaption><b>The money shot.</b> A single 125 GeV pulse. The LG predicts a true peak of <b>1993 mV</b> &mdash;
@@ -155,220 +149,169 @@ See <code>papers/timing/radical_timing.pdf</code> and <code>ANALYSIS_GUIDE.md</c
 
 <section>
   <div class="act">Act V · The payoff</div>
-  <h2>Better where it's clipped — monotonic, and held-out honest</h2>
-  <p>Run the de-biased (equal-population) best-bin <span class="k">(DW&minus;UP)/2</span> pipeline for both methods.
-  <span class="mono" style="color:#2471c0">hg_lgcfd</span> falls <b>monotonically with energy</b> and sits below cfd05
-  at every clipped energy &mdash; and, crucially, it <b>survives held-out (fold-by-run) validation unchanged</b>:
-  <b class="win">29.6 ps in-sample = 29.6 ps out-of-sample at 150 GeV</b>. No overfitting.</p>
+  <h2>The production headline: 25.7 ps, and a floor that confirms the published one</h2>
+  <p>The production timing chain is <span class="k">srCFD</span> on a <b>deterministic brightest-1000</b> selection
+  &mdash; the 1000 largest-&Sigma;LG fiducial events at each energy, fixed before any fit, so there is <b>no
+  optimization bias by construction</b>. For the high-light <b>DSB1</b> build it reaches
+  <b class="win">25.7 &plusmn; 0.6 ps at 150 GeV</b>, with <b>&asymp;50 ps over the full fiducial sample</b> at the
+  same energy &mdash; the two are quoted together throughout, the best-measured showers beside the whole population.</p>
   <table>
-    <tr><th>E (GeV)</th><th>25</th><th>50</th><th>75</th><th>100</th><th>125</th><th>150</th><th>floor&nbsp;b</th></tr>
-    <tr><td class="h">cfd05</td><td>51.1</td><td>42.0</td><td>36.4</td><td>35.8</td><td>35.6</td><td>33.1</td><td>28.8</td></tr>
-    <tr><td class="h">hg_lgcfd</td><td>48.3</td><td>38.7</td><td>32.9</td><td class="win">31.1</td><td class="win">29.9</td><td class="win">29.6</td><td class="win">23.2</td></tr>
+    <tr><th>E (GeV)</th><th>25</th><th>50</th><th>75</th><th>100</th><th>125</th><th>150</th></tr>
+    <tr><td class="h">brightest-1000</td><td>45.0</td><td>34.2</td><td>30.7</td><td class="win">27.1</td><td class="win">25.7</td><td class="win">25.7</td></tr>
+    <tr><td class="h">full fiducial</td><td>64.6</td><td>53.7</td><td>50.0</td><td>50.1</td><td>49.8</td><td>50.5</td></tr>
   </table>
   <figure>
-    <img src="assets/narrative_ladder.png" alt="sigma_t vs energy, cfd05 vs hg_lgcfd, equal-population bins">
-    <figcaption><b>The ladder (de-biased, OOS-robust).</b> Best-bin (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy with
-    equal-population bins. Monotonic &mdash; 150&nbsp;&le;&nbsp;125 &mdash; lgcfd below cfd05 at every clipped energy,
-    floor <b>23 vs 29 ps</b>. (This is the conservative <i>typical-bright</i> selection; the headline <b>brightest-1000</b>
-    slice &mdash; the best-measured showers, held-out-stable &mdash; reaches <b>25.3 ps</b> at 150 GeV; next panel.)</figcaption>
+    <img src="report/Summary/layer5_timing.png" alt="production DSB1 sigma_t vs energy, brightest-1000 srCFD">
+    <figcaption><b>The production ladder.</b> Brightest-1000 (DW&minus;UP)/2 srCFD &sigma;<sub>t</sub> vs energy for
+    DSB1, fit by <span class="k">&sigma;<sub>t</sub> = 203/&radic;E &oplus; 18.8 ps</span>; the published
+    256/&radic;E &oplus; 17.5 curve (arXiv:2401.01747) is overlaid for context. The fitted floor
+    <b>18.8 &plusmn; 0.8 ps confirms</b> the published 17.5 ps constant term.</figcaption>
   </figure>
-  <div class="pull"><b>The honest headline.</b> The published cfd05 result &mdash; <b>27.4 ps at 150 GeV, out-of-sample
-  validated</b> (matching arXiv:2401.01747) &mdash; stands. hg_lgcfd doesn't replace that single number; it does
-  something cleaner: a <b>~11% lower resolution at every matched selection</b>, monotonic in energy, with a ~20% lower
-  floor (23 vs 29 ps).</div>
+  <div class="pull"><b>Confirms, not revises.</b> The fitted floor <b>b = 18.8 &plusmn; 0.8 ps</b> is an independent
+  estimator reaching the <i>same</i> floor the published analysis measured (17.5 ps) on this detector &mdash; a
+  confirmation, not a competing number. The stochastic term <b>a = 203 &plusmn; 6 ps&middot;&radic;GeV</b> is what
+  the light yield sets; the next acts trace where that floor comes from and how it moves across builds.</div>
 </section>
 
 <section>
-  <div class="act">Act V&frac12; · The estimator we had to fix</div>
-  <h2>A bin that starved the brightest showers</h2>
-  <p>The first version of this ladder showed 150 GeV reading <i>worse</i> than 125 &mdash; which can't be right, since
-  150 GeV makes more light. Chasing it down exposed a real bug in the headline estimator. Resolution is read by
-  slicing events into energy bins and taking the best (brightest) one; the original code used <b>equal-width
-  &mu;&plusmn;2&sigma; bins</b>, whose top bin sits in the Gaussian tail &mdash; and that tail empties out as energy rises.</p>
+  <div class="act">Act V&frac12; · Why a deterministic selection</div>
+  <h2>A fixed count of the brightest, not a bin that can starve</h2>
+  <p>An earlier version of this analysis read resolution by slicing events into energy bins and taking the best
+  one &mdash; and a subtle failure lurked there: the top bin sits in the Gaussian tail, and that tail empties as
+  energy rises, so at 150 GeV the brightest bin could fall below the minimum-count cut and be <i>discarded</i>,
+  silently penalizing the highest energies. The production chain removes the freedom entirely: the
+  <b>brightest-1000</b> rank cut takes the same fixed count of the best-measured showers at every energy &mdash;
+  no bin to starve, and no per-event selection left to overfit. That is why the headline needs no held-out
+  cross-validation to defend it: the selection is fixed before any number is read.</p>
+  <h3 style="font-size:21px;margin:1.4em 0 .3em">Is the &ldquo;floor&rdquo; real?</h3>
+  <p>The curve, fit to <span class="k">&sigma;<sub>t</sub> = a/&radic;E &oplus; b</span>, reports a floor
+  <span class="k">b</span> &mdash; the softest number on this page. It is an <b>extrapolation</b> (no beam exceeded
+  150 GeV; &sigma;<sub>t</sub> is still falling there), and <span class="k">a</span> and <span class="k">b</span>
+  are strongly anti-correlated. So rather than trust a bare fit we let the data set the uncertainty: statistical
+  errors &sigma;/&radic;(2N), a free fit, and error inflation by &radic;(&chi;&sup2;/ndf). The result is
+  <b>b = 18.8 &plusmn; 0.8 ps</b>, statistically consistent with the published 17.5 ps measured on the same
+  detector &mdash; an independent confirmation, never a revision.</p>
   <figure>
-    <img src="assets/narrative_optscan.png" alt="sigma_t per sum_lg bin, every energy">
-    <figcaption><b>The landscape.</b> (DW&minus;UP)/2 &sigma;<sub>t</sub> for each of the 9 bins, at every energy. &sigma;
-    falls monotonically with brightness everywhere &mdash; but at 150 GeV the brightest bin holds just <b>9 events</b>,
-    fails the N&ge;500 cut, and is discarded, capping 150 at a dimmer bin. The estimator was silently penalizing the
-    highest energies by throwing away their best events.</figcaption>
+    <img src="report/Summary/timing_floor_comparison.png" alt="production floor 18.8 confirms published 17.5">
+    <figcaption><b>The floor, honestly.</b> The production curve (brightest-1000, srCFD) with its fit and floor
+    band <b>b = 18.8 &plusmn; 0.8 ps</b>, and the published 256/&radic;E &oplus; 17.5 parametrisation overlaid.
+    Where data exist the curves agree; the floors are statistically consistent. The shaded region above 150 GeV is
+    extrapolation &mdash; no beam reached it, which is why we <b>headline the measured &sigma;<sub>t</sub></b>
+    (25.7 ps), not the floor.</figcaption>
   </figure>
-  <p>The fix: bin by <b>equal population</b> (quantile) so every slice &mdash; including the brightest &mdash; stays filled,
-  and cross-check with the fixed <b>brightest-1000</b> slice (the top 1000 events by light, identical statistical tightness
-  at every energy). Both make the ladder monotonic, both <b>survive held-out validation</b> (at matched fraction,
-  fold&nbsp;A &asymp; fold&nbsp;B &asymp; full) &mdash; they just quote a different selection tightness on the same smooth
-  &sigma;(brightness) curve: <b>25.3 ps (brightest-1000, the headline) to ~30 ps (typical)</b>.</p>
-  <h3 style="font-size:21px;margin:1.4em 0 .3em">But should you trust the &ldquo;floor&rdquo;?</h3>
-  <p>Each curve, fit to <span class="k">&sigma;<sub>t</sub> = a/&radic;E &oplus; b</span>, reports a floor
-  <span class="k">b</span> &mdash; the softest number on this page. It's an <b>extrapolation</b> (no beam exceeded
-  150 GeV; &sigma;<sub>t</sub> is still falling there), and <span class="k">a</span> and <span class="k">b</span> are
-  strongly anti-correlated (&rho; &asymp; &minus;0.88). So rather than trust a bare fit &mdash; or, worse, <i>force</i>
-  the floors equal &mdash; we let the <b>data set the uncertainty</b>: give each point its statistical error
-  &sigma;/&radic;(2N), fit freely, and inflate the errors by &radic;(&chi;&sup2;/ndf). (The fits come back at
-  &chi;&sup2;/ndf of 8&ndash;14, so point-to-point <i>systematics</i>, not statistics, dominate the floor's error.)</p>
-  <figure>
-    <img src="assets/narrative_methods.png" alt="free fits with proper per-point errors; floor bands per technique">
-    <figcaption><b>The floor, honestly &mdash; no constraints.</b> Free fits, data-driven errors; the bands at right are
-    <span class="k">b &plusmn; &sigma;(b)</span>. The floor is a property of the <b>technique</b>: cfd05
-    (<b>28.6 &plusmn; 1.0 ps</b>) and hg_lgcfd (<b>23.2 &plusmn; 0.8 ps</b>) sit <b>4.2&sigma; apart</b> &mdash; a real
-    difference set by <i>how you time the pulse</i>. Within hg_lgcfd, the two <i>selections</i> (23 and 21 ps) are only
-    ~2&sigma; apart, so changing the cut barely moves the floor. Every band is an extrapolation, &plusmn;~1 ps.</figcaption>
-  </figure>
-  <p>So your instinct was right both ways: with proper errors the <i>same-technique</i> floors are statistically
-  consistent, while <b>the floor genuinely is per-technique</b> &mdash; hg_lgcfd beats cfd05 in the floor itself
-  (&gt;4&sigma;), not just at 150 GeV. We never force them equal; the data separates them. Because the floor is still an
-  extrapolation, we <b>headline the measured &sigma;<sub>t</sub> at 150 GeV</b>, not the floor. (One thing that <i>does</i>
-  overfit is the old equal-width best-bin argmin &mdash; which is why the published <b>27.4 ps</b> cfd05 headline,
-  arXiv:2401.01747, is the out-of-sample value: in-sample 25.6 &rarr; OOS 27.5.)</p>
 </section>
 
 <section style="border-bottom:none">
   <div class="act">Act VI · What's left is physics</div>
   <h2>The floor is the shower, not the instrument</h2>
   <p>Why doesn't a 3.7&times; steeper edge give a 3.7&times; better resolution? Because by the time we average
-  seven timing channels, the per-pulse slew term is already small &mdash; a few picoseconds. What dominates
+  seven timing channels, the per-pulse slew term is already small &mdash; a few picoseconds. What remains in
   <span class="k">(DW&minus;UP)/2</span> is something the electronics can't touch: <b>the longitudinal depth of the
-  shower fluctuates event to event</b>, by about one radiation length of LYSO, and that half-difference <i>is</i>
-  the measurement. The <b>~20&ndash;23 ps</b> floor is shower-development physics.</p>
-  <p>So the HG/LG-ratio method does precisely the right thing &mdash; it recovers the true rising edge that
-  saturation hid &mdash; and the experiment then tells us, cleanly, where the remaining limit lives. We push the
-  instrument until the detector itself is the thing we're measuring. <b>That</b> is the headline: not a single
-  number, but a method that takes the clipped foot off the table and leaves us face to face with the shower.</p>
-  <div class="pull"><b>Bottom line.</b> hg_lgcfd &mdash; CFD on the LG-predicted true peak &mdash; improves on clipped-peak
-  cfd05 <b>at every matched selection</b>, and every number here is held-out-stable: <b>25.3 ps</b> for the
-  brightest-1000, best-contained showers at 150 GeV, up to <b>29.6 ps</b> typical (vs cfd05's ~27&ndash;33 ps), monotonic in
-  energy, floor 23 vs 29 ps. The published cfd05 best-bin headline (<b>27.4 ps</b>, arXiv:2401.01747) stands as the
-  prior; lgcfd is the cleaner method that beats it wherever you measure the same way. The residual ~23 ps floor is
-  ~1 X&#8320; of shower-depth fluctuation &mdash; the shower, not the instrument.</div>
+  shower maximum fluctuates event to event</b>, and that half-difference <i>is</i> a measure of it. The signature
+  is direct &mdash; the mean upstream&ndash;downstream asymmetry drifts by <b>&minus;33.6 &plusmn; 2.9 ps per
+  e-fold</b> in beam energy (the &ldquo;depth dial&rdquo;), consistent in sign and scale with the expected
+  logarithmic migration of shower maximum. So the <b>~18.8 ps</b> floor is shower-development physics, not a DAQ
+  artefact. (This depth readout is CFD-based; a fixed-threshold crossing does not track the emission centroid, so
+  the dial is a property of srCFD timing.)</p>
+  <p>So srCFD does precisely the right thing &mdash; it recovers the true rising edge that saturation hid &mdash;
+  and the experiment then tells us, cleanly, where the remaining limit lives. We push the instrument until the
+  detector itself is the thing we're measuring. <b>That</b> is the headline: not just a single number, but a method
+  that takes the clipped foot off the table and leaves us face to face with the shower.</p>
+  <div class="pull"><b>Bottom line.</b> srCFD &mdash; CFD on the LG-predicted true peak &mdash; is the production
+  timing estimator, and for DSB1 it reaches <b>25.7 &plusmn; 0.6 ps</b> for the brightest-1000 showers at 150 GeV
+  (&asymp;50 ps across the full fiducial). The fitted floor <b>18.8 &plusmn; 0.8 ps confirms</b> the published
+  17.5 ps &mdash; the same floor from an independent estimator. That residual floor is shower-depth fluctuation
+  (&minus;33.6 ps/e-fold) &mdash; the shower, not the instrument.</div>
 </section>
 
 <section style="border-bottom:none">
   <div class="act">Act VII · The full spectrum</div>
-  <h2>Four materials, one law: light yield sets the clock</h2>
-  <p>RADiCAL ran four detector builds with different scintillators. Push the <i>same</i> de-biased pipeline through
-  all of them &mdash; the same <b>brightest-1000</b> method as the headline, with the most robust timing source per build
-  &mdash; and they fall into a single clean ordering by <b>scintillation light yield</b>. More light &rarr; faster rising
-  edge &rarr; better timing, exactly as the slew argument predicts. (Each build's <i>best achievable</i> is shown; the
-  broader &ldquo;typical&rdquo; quantile number is ~4 ps higher, the same selection continuum as DSB1's headline.)</p>
+  <h2>Four builds, one law: light yield, not WLS species</h2>
+  <p>RADiCAL ran four builds &mdash; the LYSO:Ce scintillator and tungsten absorber <b>common to every one</b>,
+  the wavelength-shifting (WLS) capillary the variable. Push the <i>same</i> production chain through all of them
+  &mdash; brightest-1000 (DW&minus;UP)/2 with the per-regime estimator (srCFD for the high-light builds, LED for
+  the dim ones) &mdash; and they fall into a single clean ordering by <b>scintillation light yield</b>. More light
+  &rarr; faster rising edge &rarr; better timing, exactly as the slew argument predicts.</p>
   <table>
-    <tr><th>Build</th><th>Scintillator</th><th>Best source</th><th>&sigma;<sub>t</sub>@150 (best, brightest-1000)</th><th>(typical)</th></tr>
-    <tr><td class="h">DSB1</td><td>LYSO:Ce &mdash; high light</td><td class="mono">lgcfd</td><td class="win">25.3 ps</td><td>29.6 ps</td></tr>
-    <tr><td class="h">TENERGY</td><td>3&times;LYSO + Energy</td><td class="mono">led</td><td>28.3 ps</td><td>33.9 ps</td></tr>
-    <tr><td class="h">MIXED</td><td>LYSO + LuAG mix</td><td class="mono">lgcfd</td><td>39.1 ps</td><td>41.4 ps</td></tr>
-    <tr><td class="h">LUAG</td><td>LuAG:Ce &mdash; low light</td><td class="mono">led</td><td>41.9 ps</td><td>43.1 ps</td></tr>
+    <tr><th>Build (WLS capillary)</th><th>Source</th><th>&sigma;<sub>t</sub>@150 (brightest-1000)</th><th>floor&nbsp;b</th><th>a (ps&middot;&radic;GeV)</th></tr>
+    <tr><td class="h">DSB1 (organic DSB1)</td><td class="mono">srCFD</td><td class="win">25.7 ps</td><td>18.8 &plusmn; 0.8</td><td>203 &plusmn; 6</td></tr>
+    <tr><td class="h">TENERGY (DSB1, E-type)</td><td class="mono">led</td><td>30.3 ps</td><td>26.0 &plusmn; 1.8</td><td>198 &plusmn; 21</td></tr>
+    <tr><td class="h">MIXED (DSB1 + LuAG:Ce)</td><td class="mono">srCFD</td><td>39.6 ps*</td><td>34.3 &plusmn; 2.4</td><td>253 &plusmn; 29</td></tr>
+    <tr><td class="h">LUAG (LuAG:Ce ceramic)</td><td class="mono">led</td><td>44.4 ps</td><td>24.6 &plusmn; 3.3</td><td>440 &plusmn; 18</td></tr>
   </table>
   <figure>
-    <img src="assets/narrative_crossbuild.png" alt="sigma_t vs energy for four builds, de-biased">
-    <figcaption><b>The full spectrum.</b> Brightest-slice (best achievable) (DW&minus;UP)/2 &sigma;<sub>t</sub> vs energy,
-    all four builds, brightest-1000 slice, each with its <b>most robust timing source</b> (see below) and error bars
-    scaled to the real point-to-point scatter (&radic;(&chi;&sup2;/ndf)). All four are monotonic: high-light <b>LYSO (DSB1)</b>
-    bottoms at <b>25.3 ps</b> (exactly the headline), low-light <b>LuAG</b> tops out ~42 ps, the energy and mixed builds in
-    between &mdash; a clean light-yield ordering. (MIXED's LG is partly compromised, so its mid-range is indicative.)</figcaption>
+    <img src="assets/four_build_sigmat.png" alt="sigma_t vs energy for four builds, production chain">
+    <figcaption><b>The full spectrum.</b> Production brightest-1000 (DW&minus;UP)/2 &sigma;<sub>t</sub>(E) for all
+    four builds, each with its per-regime source and a/&radic;E &oplus; b fit. High-light <b>DSB1</b> bottoms at
+    <b>25.7 ps</b> (the headline), low-light <b>LuAG:Ce</b> tops out at 44.4 ps, the energy and mixed builds
+    between &mdash; a clean light-yield ordering. The stochastic term <b>a more than doubles</b> (203 &rarr; 440
+    ps&middot;&radic;GeV) as the light falls. (*MIXED is module-wide and reference-only: two WLS species make a
+    single module-wide &sigma; ill-posed; the clean comparison is the same-shower ratio below.) Shaded bands: CMS
+    BTL and ATLAS HGTD targets.</figcaption>
   </figure>
-  <h3 style="font-size:21px;margin:1.4em 0 .3em">Why LuAG misbehaved &mdash; cfd05 fails on small pulses</h3>
-  <p>The wobble was the timing <i>source</i>, not the build. <span class="mono">cfd05</span> fires at <b>5% of the pulse
-  peak</b> &mdash; on LuAG's small (~380 mV), slow, low-light pulses at low energy, that 5% point sits low on a shallow,
-  noisy edge, so the crossing time jitters by <b>nanoseconds</b>. The (DW&minus;UP)/2 in those bins genuinely spans ~18 ns
-  (with a few bins collapsing to spurious narrow fits). The cfd05 &ldquo;best bin&rdquo; was then the lowest survivor of a
-  garbage set &mdash; which is exactly the non-monotonic ladder you'd have seen.</p>
-  <p>The fix isn't a patch &mdash; it's to stop trusting a cherry-picked number and pick the <b>most robust source per
-  build</b> (the smoothest, most monotonic). For LuAG that's the fixed-threshold <b><span class="mono">led</span></b>: it
-  fires at a set level on the edge rather than a fraction of a tiny, noisy peak, so the small low-light pulses that kill
-  cfd05 don't break it (<span class="mono">lgcfd</span> works equally well). The result is a clean <b>monotonic</b> LuAG
-  ladder &mdash; <b>~74 &rarr; 42 ps</b> from 50 to 150 GeV. More light, better timing, as it must be. (LuAG's HG <i>does</i>
-  also clip at high energy, 2% rising to 83% &mdash; but a robust source handles it; that was never the real problem.)</p>
+  <h3 style="font-size:21px;margin:1.4em 0 .3em">The per-regime rule: why the dim builds use LED</h3>
+  <p>The estimator is chosen by an ex-ante rule, not per-result. A plain low-fraction CFD (<span class="mono">cfd05</span>)
+  fires at 5% of the pulse peak &mdash; on LuAG:Ce's small (~380 mV), slow, low-light pulses that 5% point sits low
+  on a shallow, noisy edge, so the crossing time jitters badly. srCFD's edge recovery helps only when there is a
+  clipped peak to recover; the dim builds rarely clip. So the rule is simple and fixed in advance: <b>srCFD for the
+  high-light builds</b> (DSB1, MIXED), where saturation recovery is the win, and the <b>fixed-threshold
+  <span class="mono">led</span> for the dim builds</b> (LuAG:Ce, TENERGY), which fires at a set level on the edge
+  rather than a fraction of a tiny, noisy peak.</p>
+  <p>Read that way, LuAG:Ce gives a clean <b>monotonic</b> ladder &mdash; <b>~74 &rarr; 44 ps</b> from 50 to
+  150 GeV. More light, better timing, as it must be. (LuAG:Ce's HG does clip at high energy, 2% rising to 83% &mdash;
+  but LED handles it; clipping was never the dim-build's limiting problem.)</p>
 
   <h3 style="font-size:21px;margin:1.6em 0 .3em">The proof: every bin is a clean Gaussian</h3>
-  <p>The old &sigma;-vs-bin diagnostic <i>looked</i> like garbage because it plotted the failing cfd05 &mdash; not because the
-  underlying data was bad. Read with the robust source and shown the way the publication does it
-  (<b>arXiv:2401.01747, Fig.&nbsp;21</b>), the data is unambiguous. For each build we pool all six energies, bin by shower
-  amplitude (&Sigma;LG), and Gaussian-fit the <b>(DW&minus;UP)/2</b> (MCP-free) and <b>(DW+UP)/2</b> (absolute) distributions
-  in <i>every</i> bin &mdash; fitting the <b>central peak only</b> (the satellite shoulder excluded, exactly as the
-  publication does). They are clean Gaussians at every amplitude, and the bottom panel is their fitted &sigma;<sub>t</sub>.</p>
+  <p>Read with the production per-regime source and shown the way the publication does it
+  (<b>arXiv:2401.01747, Fig.&nbsp;21</b>), the data is unambiguous. For each build we pool all six energies, bin by
+  shower amplitude (&Sigma;LG), and Gaussian-fit the <b>(DW&minus;UP)/2</b> (MCP-free) and <b>(DW+UP)/2</b>
+  (absolute) distributions in <i>every</i> bin &mdash; fitting the <b>central peak only</b> (the satellite shoulder
+  excluded, exactly as the publication does). They are clean Gaussians at every amplitude, and the bottom panel is
+  their fitted &sigma;<sub>t</sub> &mdash; the distributions are sound across the whole light-yield range.</p>
   <figure>
     <img src="assets/pub_dist_DSB1.png" alt="DSB1 per-amplitude-bin timing distributions">
-    <figcaption><b>DSB1 (LYSO, lgcfd).</b> Top: (DW&minus;UP)/2 distributions per amplitude bin with central-peak Gaussian
-    fits; middle: the (DW+UP)/2 absolute cross-check (wider &mdash; it keeps the common-mode jitter the difference cancels);
-    bottom: their fitted &sigma;<sub>t</sub> vs amplitude. Clean Gaussians at every amplitude &mdash; the data is sound.</figcaption>
+    <figcaption><b>DSB1 (organic DSB1, srCFD).</b> Top: (DW&minus;UP)/2 distributions per amplitude bin with
+    central-peak Gaussian fits; middle: the (DW+UP)/2 absolute cross-check (wider &mdash; it keeps the common-mode
+    jitter the difference cancels); bottom: their fitted &sigma;<sub>t</sub> vs amplitude. Clean Gaussians at every
+    amplitude &mdash; the data is sound.</figcaption>
   </figure>
   <figure>
     <img src="assets/pub_dist_LUAG.png" alt="LuAG per-amplitude-bin timing distributions">
-    <figcaption><b>LuAG (low light, led).</b> The build that &ldquo;looked like garbage&rdquo; &mdash; in fact clean
-    Gaussians at every amplitude. The data was always sound; only the cfd05 readout wasn't.</figcaption>
+    <figcaption><b>LuAG:Ce (low light, LED).</b> Clean Gaussians at every amplitude even for the dimmest build
+    &mdash; the low-light data is sound; it simply needs the fixed-threshold source rather than a fractional one.</figcaption>
   </figure>
   <figure>
     <img src="assets/pub_dist_TENERGY.png" alt="TENERGY per-amplitude-bin timing distributions">
-    <figcaption><b>TENERGY (3&times;LYSO + Energy, led).</b> Same clean Gaussian behaviour across the full amplitude range.</figcaption>
+    <figcaption><b>TENERGY (DSB1, E-type geometry, LED).</b> Same clean Gaussian behaviour across the full amplitude range.</figcaption>
   </figure>
   <figure>
     <img src="assets/pub_dist_MIXED.png" alt="MIXED per-amplitude-bin timing distributions">
-    <figcaption><b>MIXED (LYSO + LuAG, lgcfd).</b> Clean peaks even with the partly-compromised LG.</figcaption>
+    <figcaption><b>MIXED (DSB1 + LuAG:Ce, srCFD).</b> Clean peaks even with the partly-compromised LG.</figcaption>
   </figure>
 
-  <h3 style="font-size:21px;margin:1.8em 0 .3em">Resolution vs brightness &mdash; and the slew floor</h3>
-  <p>Now read &sigma;<sub>t</sub> in <b>consecutive 1000-event brightness slices</b> &mdash; brightest 1000, next 1000,
-  &hellip; &mdash; the <i>same</i> selection size as the headline, plotted separately per beam energy (a per-energy
-  containment cut removes the under-measured tails that otherwise spike the dim end). Two things fall out. First, where the
-  energies overlap in amplitude they land on <b>one curve</b>: timing is set by <b>light yield, not beam energy</b>. Second,
-  &sigma;<sub>t</sub> falls <i>faster</i> than the 1/&radic;light of photostatistics &mdash; it goes as <b>1/light</b>, the
-  signature of <b>slew-rate timing</b> (&sigma;<sub>t</sub> = noise/slope, and slope &prop; amplitude). We read the floor
-  off the cleanest points: the <b>brightest 1000 of each energy</b> (one open circle per colour &mdash; each energy's
-  best-measured, best-contained showers), fit with
-  <span class="k">&sigma;<sub>t</sub> = &radic;(a&sup2;/&Sigma;LG&sup2; &oplus; b&sup2;)</span> &rarr; the irreducible floor
-  <span class="k">b</span> as amplitude&nbsp;&rarr;&nbsp;&infin;.</p>
-  <figure>
-    <img src="assets/pub_res_DSB1.png" alt="DSB1 resolution vs amplitude, per energy, with slew floor fit">
-    <figcaption><b>DSB1 &mdash; resolution &amp; floor.</b> Each colour is one beam energy, sliced into 1000-event brightness
-    bins; they collapse onto a single &sigma;(amplitude) law. The brightest 1000 of 150&nbsp;GeV is the <b>25.4 ps</b>
-    headline. The slew fit (black) through the <b>brightest point of each energy</b> (&#9675;) extrapolates to a floor
-    <b>b = 24.7 &plusmn; 1.1 ps</b> &mdash; independently consistent with the <b>~23 ps</b> floor from the
-    &sigma;-vs-<i>energy</i> fit (Act&nbsp;V&frac12;): two different extrapolations, one floor.</figcaption>
-  </figure>
-  <table>
-    <tr><th>Build</th><th>Headline (brightest 1000)</th><th>Slew floor <span class="mono">b</span> (&Sigma;LG&rarr;&infin;)</th></tr>
-    <tr><td class="h">DSB1</td><td class="win">25.4 ps</td><td>24.7 &plusmn; 1.1 ps</td></tr>
-    <tr><td class="h">TENERGY</td><td>28.7 ps</td><td>28.1 &plusmn; 1.6 ps</td></tr>
-    <tr><td class="h">MIXED</td><td>40.0 ps</td><td>40.2 &plusmn; 0.9 ps</td></tr>
-    <tr><td class="h">LUAG</td><td>41.2 ps</td><td>36.0 &plusmn; 3.0 ps</td></tr>
-  </table>
-
-  <h3 style="font-size:21px;margin:1.6em 0 .3em">How you'd actually quote it: a threshold, not a count</h3>
-  <p>&ldquo;Brightest 1000&rdquo; is convenient, but it's a fixed <i>count</i> &mdash; with 10&times; the beam time it would
-  be a tighter, brighter 1000 and a lower number. The reproducible way is a <b>threshold</b>: quote &sigma;<sub>t</sub> for
-  all showers above an amplitude cut &Sigma;LG&nbsp;&gt;&nbsp;X. Selecting the top 1000 is <i>identical</i> to one such cut
-  (the amplitude of the 1000th-brightest event) &mdash; so scan the cut and the headline becomes one point on a continuous,
-  dataset-size-independent curve.</p>
-  <figure>
-    <img src="assets/pub_thresh_DSB1.png" alt="DSB1 resolution vs amplitude threshold (cumulative)">
-    <figcaption><b>Resolution vs amplitude threshold (cumulative).</b> &sigma;<sub>t</sub> of <i>all</i> events above the cut
-    &Sigma;LG&nbsp;&gt;&nbsp;X, per energy. Raise the cut, keep only brighter showers, and &sigma;<sub>t</sub> slides from
-    <b>~50 ps</b> (all contained 150&nbsp;GeV showers) down toward the <b>24.7 ps</b> floor. The headline
-    &ldquo;brightest 1000&rdquo; is simply the point at <b>&Sigma;LG&nbsp;&gt;&nbsp;5135 &rarr; 25.3 ps</b> (&#9733;) &mdash;
-    one cut on a reproducible curve, not a special selection. (A fixed count drifts with dataset size; a threshold doesn't.)</figcaption>
-  </figure>
-  <figure>
-    <img src="assets/pub_res_LUAG.png" alt="LuAG resolution vs amplitude, per energy, with slew floor fit">
-    <figcaption><b>LuAG &mdash; resolution &amp; floor.</b> Lower light, so the curve sits higher and is still falling steeply
-    at the brightest; the brightest-per-energy slew fit gives a floor <b>36 ps</b>.</figcaption>
-  </figure>
-  <figure>
-    <img src="assets/pub_res_TENERGY.png" alt="TENERGY resolution vs amplitude with slew floor fit">
-    <figcaption><b>TENERGY &mdash; resolution &amp; floor.</b> Floor <b>28 ps</b>, right at its 150&nbsp;GeV headline.</figcaption>
-  </figure>
-  <figure>
-    <img src="assets/pub_res_MIXED.png" alt="MIXED resolution vs amplitude with slew floor fit">
-    <figcaption><b>MIXED &mdash; resolution &amp; floor.</b> Floor <b>40 ps</b> (LG partly compromised, so its brightest
-    points barely fall &mdash; indicative only).</figcaption>
-  </figure>
-  <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield, top to bottom &mdash; <b>25.3 ps</b> for the
-  brightest LYSO down to <b>~42 ps</b> for low-light LuAG &mdash; once you read each build with the source it can actually
-  support. The detector you build sets the clock you can read.</div>
+  <h3 style="font-size:21px;margin:1.8em 0 .3em">Resolution is set by light, not beam energy</h3>
+  <p>Read &sigma;<sub>t</sub> in <b>consecutive 1000-event brightness slices</b> &mdash; brightest 1000, next
+  1000, &hellip; &mdash; separately per beam energy, and where the energies overlap in amplitude they land on
+  <b>one curve</b>: timing is set by <b>light yield, not beam energy</b>. The width falls as <b>1/light</b> &mdash;
+  faster than the 1/&radic;light of photostatistics &mdash; the signature of <b>slew-rate timing</b>
+  (&sigma;<sub>t</sub> = noise/slope, slope &prop; amplitude). This is also why the headline is quoted <i>both</i>
+  ways: the brightest-1000 selection (25.7 ps for DSB1) and the full-fiducial sample (&asymp;50 ps) are two points
+  on the same smooth &sigma;(brightness) curve &mdash; the best-measured showers beside the whole population, both
+  named (Act&nbsp;V).</p>
+  <div class="pull"><b>The spectrum, in one line.</b> Timing tracks light yield, top to bottom &mdash;
+  <b>25.7 ps</b> for the brightest DSB1 down to <b>44.4 ps</b> for low-light LuAG:Ce &mdash; while DSB1 and LuAG:Ce
+  capillaries reading the <i>same</i> showers agree within ~10&ndash;20% (ratio 1.04 &plusmn; 0.05). Light yield,
+  not WLS species, sets the clock. The detector you build sets the clock you can read.</div>
 </section>
 
 </main>
 <footer class="wrap">
-  RADiCAL · CERN May 2023 test beam · DSB1 (LYSO:Ce) build, full-statistics canonical reduction.
-  Figures regenerated by <span class="mono">analyze/studies/narrative{Figs,Ladder}.C</span> and
-  <span class="mono">analyze/slopeVsE.C</span>. &nbsp;<a href="going_radical.html">&#8592; field guide</a>
+  RADiCAL · CERN May 2023 test beam · W/LYSO:Ce shashlik, four WLS-capillary builds.
+  Production chain: brightest-1000 (DW&minus;UP)/2, srCFD/LED per regime
+  (<span class="mono">analyze/studies/timingProduction.C</span>); headline and floor figures from the gated
+  report pipeline. Method illustrations from <span class="mono">narrativeFigs.C</span> /
+  <span class="mono">slopeVsE.C</span>; per-build four-build fit from
+  <span class="mono">timingFitSummary.C</span>. &nbsp;<a href="going_radical.html">&#8592; field guide</a>
 </footer>
 </body>
 </html>
