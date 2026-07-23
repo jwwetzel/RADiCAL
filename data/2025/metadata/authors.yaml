@@ -1,0 +1,17 @@
+# =====================================================================================
+# RADiCAL authorship — 2025 test beam.   SOURCE OF TRUTH (hand-edited) — STUB, fill in.
+# -------------------------------------------------------------------------------------
+# See data/_TEMPLATE/metadata/authors.yaml for the full schema and notes.
+# ORCID is the identity join key: reuse each returning person's exact 2023 ORCID so the
+# aggregate roster + years_active stay linked. Then:  python3 tools/gen_authors.py
+# =====================================================================================
+era: "2025"
+test_beam: "TBD — 2025 campaign"
+papers: []
+
+affiliations: []
+
+# No authors recorded yet — the generator skips artifact output for empty eras.
+authors: []
+
+contributors: []

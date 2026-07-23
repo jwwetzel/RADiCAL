@@ -1,0 +1,46 @@
+# =====================================================================================
+# RADiCAL authorship — TEMPLATE for a new test-beam era.   SOURCE OF TRUTH (hand-edited).
+# -------------------------------------------------------------------------------------
+# Copy this to data/<year>/metadata/authors.yaml and fill it in. One file per campaign.
+# ORCID is the identity join key across eras: the same person keeps the same ORCID, so
+# the aggregate roster (collaboration/people.yaml) and each person's years_active are
+# COMPUTED, never hand-maintained. The only fields that repeat across eras are the stable
+# ones (name, ORCID); the things that legitimately change per era — affiliation, role,
+# whether the person is on that paper — live here, in the era file.
+#
+# Generate all downstream artifacts (never hand-edit those):
+#   python3 tools/gen_authors.py
+#     -> collaboration/people.yaml                       aggregate roster (years_active computed)
+#     -> data/<year>/metadata/generated/authors.tex      elsarticle \author + \affiliation block
+#     -> data/<year>/metadata/generated/zenodo_creators.json   creators for that era's DOI deposit
+#     -> CITATION.cff                                     repo-level "Cite this repository"
+#
+# YAML notes for the zero-dependency loader: block mappings, block sequences, inline
+# [lists], quoted "strings", and null are supported. Avoid flow mappings {a: b},
+# anchors, and block scalars (| >) unless PyYAML is installed.
+# =====================================================================================
+era: "YYYY"
+test_beam: "CERN SPS H2 electron test beam, MONTH YYYY"
+papers:
+  - "papers/<name>/<file>.tex"      # one or more manuscripts from this campaign
+
+# Institutions active THIS era. `id` is an arbitrary short slug referenced by authors.
+affiliations:
+  - id: iowa
+    name: "University of Iowa"
+    city: "Iowa City"
+    region: "IA"                    # optional (US state / province)
+    country: "USA"
+
+# Ordered author list for this era's paper(s). Convention: corresponding author first,
+# then alphabetical by family name.
+authors:
+  - name: "Given Family"           # full name as it should print
+    orcid: "0000-0000-0000-0000"   # recommended; omit or null if none yet
+    affil: [iowa]                   # one or more affiliation ids from above
+    roles: [analysis, corresponding]  # optional; [corresponding] marks the corresponding author
+    # family: "Family"             # optional override — set when the auto-split (last token =
+    # given:  "Given"              # family) is wrong, e.g. compound surnames "Sunar Cerci"
+
+# Collaboration members credited in acknowledgements but NOT paper authors (optional).
+contributors: []

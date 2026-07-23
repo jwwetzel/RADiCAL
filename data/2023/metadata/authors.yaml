@@ -1,0 +1,172 @@
+# =====================================================================================
+# RADiCAL authorship — 2023 CERN SPS test beam        SOURCE OF TRUTH (hand-edited).
+# -------------------------------------------------------------------------------------
+# One file per test-beam era; ORCID is the identity join key across eras.
+# Generated artifacts (do NOT hand-edit): collaboration/people.yaml, this era's
+# generated/authors.tex + generated/zenodo_creators.json, and repo CITATION.cff.
+# Regenerate all:  python3 tools/gen_authors.py
+#
+# Roster below was migrated verbatim from papers/timing/radical_timing.tex (the
+# circulated author block). Ordering: corresponding author first, then alphabetical
+# by family name (the agreed convention). Per-person `roles:`/contributions may be
+# filled in over time; only what is known is recorded.
+# =====================================================================================
+era: "2023"
+test_beam: "CERN SPS H2 electron test beam, May 2023"
+papers:
+  - "papers/timing/radical_timing.tex"
+
+# Institutions active THIS era. `id` is referenced by authors' `affil:` lists.
+affiliations:
+  - id: adiyaman
+    name: "Adiyaman University"
+    city: "Adiyaman"
+    country: "Turkiye"
+  - id: caltech
+    name: "California Institute of Technology"
+    city: "Pasadena"
+    region: "CA"
+    country: "USA"
+  - id: coe
+    name: "Coe College"
+    city: "Cedar Rapids"
+    region: "IA"
+    country: "USA"
+  - id: hofstra
+    name: "Hofstra University"
+    city: "Hempstead"
+    region: "NY"
+    country: "USA"
+  - id: iowa
+    name: "University of Iowa"
+    city: "Iowa City"
+    region: "IA"
+    country: "USA"
+  - id: istanbul
+    name: "Istanbul University"
+    city: "Istanbul"
+    country: "Turkiye"
+  - id: istanbul_cerrahpasa
+    name: "Istanbul University - Cerrahpasa"
+    city: "Istanbul"
+    country: "Turkiye"
+  - id: itu
+    name: "Istanbul Technical University"
+    city: "Istanbul"
+    country: "Turkiye"
+  - id: notredame
+    name: "University of Notre Dame"
+    city: "Notre Dame"
+    region: "IN"
+    country: "USA"
+  - id: virginia
+    name: "University of Virginia"
+    city: "Charlottesville"
+    region: "VA"
+    country: "USA"
+  - id: yildiz
+    name: "Yildiz Technical University"
+    city: "Istanbul"
+    country: "Turkiye"
+
+# Ordered author list. `roles: [corresponding]` marks the corresponding author.
+authors:
+  - name: "James Wetzel"
+    orcid: "0000-0003-4687-7302"
+    affil: [coe, iowa]
+    roles: [analysis, writing, corresponding]
+  - name: "Ugur Akgun"
+    affil: [coe, iowa]
+  - name: "Thomas Anderson"
+    affil: [virginia]
+  - name: "Thomas Barbera"
+    affil: [notredame]
+  - name: "Dylan Blend"
+    affil: [iowa]
+  - name: "Kerem Cankocak"
+    affil: [itu]
+  - name: "Salim Cerci"
+    orcid: "0000-0002-8702-6152"
+    affil: [adiyaman, yildiz]
+  - name: "Nehal Chigurupati"
+    affil: [virginia]
+  - name: "Bradley Cox"
+    affil: [virginia]
+  - name: "Paul Debbins"
+    affil: [iowa]
+  - name: "Max Dubnowski"
+    affil: [virginia]
+  - name: "Buse Duran"
+    orcid: "0009-0006-6014-1544"
+    affil: [istanbul]
+  - name: "Gizem Gul Dincer"
+    orcid: "0009-0001-1997-2841"
+    affil: [itu]
+  - name: "Selbi Hatipoglu"
+    affil: [istanbul]
+  - name: "Ilknur Hos"
+    affil: [istanbul_cerrahpasa]
+  - name: "Bora Isildak"
+    orcid: "0000-0002-0283-5234"
+    affil: [yildiz]
+  - name: "Colin Jessop"
+    affil: [notredame]
+  - name: "Ohannes Kamer Koseyan"
+    orcid: "0000-0001-9040-3468"
+    affil: [hofstra]
+  - name: "Ayben Karasu Uysal"
+    orcid: "0000-0001-6297-2532"
+    family: "Karasu Uysal"
+    given: "Ayben"
+    affil: [yildiz]
+  - name: "Reyhan Kurt"
+    affil: [yildiz]
+  - name: "Berkan Kaynak"
+    affil: [istanbul]
+  - name: "Alexander Ledovskoy"
+    affil: [virginia]
+  - name: "Alexi Mestvirishvili"
+    affil: [iowa]
+  - name: "Yasar Onel"
+    affil: [iowa]
+  - name: "Suat Ozkorucuklu"
+    affil: [istanbul]
+  - name: "Aldo Penzo"
+    orcid: "0000-0003-3436-047X"
+    affil: [iowa]
+  - name: "Carlos Perez-Lara"
+    orcid: "0000-0003-0199-8864"
+    family: "Perez-Lara"
+    given: "Carlos"
+    affil: [hofstra]
+  - name: "Onur Potok"
+    affil: [istanbul]
+  - name: "Daniel Ruggiero"
+    affil: [notredame]
+  - name: "Randal Ruchti"
+    orcid: "0000-0002-3151-1386"
+    affil: [notredame]
+  - name: "Deniz Sunar Cerci"
+    family: "Sunar Cerci"
+    given: "Deniz"
+    affil: [adiyaman, yildiz]
+  - name: "Ali Tosun"
+    affil: [istanbul]
+  - name: "Mark Vigneault"
+    affil: [notredame]
+  - name: "Yuyi Wan"
+    affil: [notredame]
+  - name: "Mitchell Wayne"
+    orcid: "0000-0001-8204-6157"
+    affil: [notredame]
+  - name: "Taylan Yetkin"
+    affil: [yildiz]
+  - name: "Liyuan Zhang"
+    affil: [caltech]
+  - name: "Renyuan Zhu"
+    affil: [caltech]
+  - name: "Caglar Zorbilmez"
+    affil: [istanbul]
+
+# Collaboration members credited in acknowledgements but not paper authors (none listed yet).
+contributors: []
