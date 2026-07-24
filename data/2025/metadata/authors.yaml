@@ -1,17 +1,163 @@
 # =====================================================================================
-# RADiCAL authorship — 2025 test beam.   SOURCE OF TRUTH (hand-edited) — STUB, fill in.
+# RADiCAL authorship - 2025 campaign.        SOURCE OF TRUTH (hand-edited).
 # -------------------------------------------------------------------------------------
-# See data/_TEMPLATE/metadata/authors.yaml for the full schema and notes.
-# ORCID is the identity join key: reuse each returning person's exact 2023 ORCID so the
-# aggregate roster + years_active stay linked. Then:  python3 tools/gen_authors.py
+# Roster set from the 2025+ participation pass (see pending_confirmation below for the
+# items still open). ORCID is the identity join key - returning people keep their exact
+# 2023 ORCID so the aggregate roster and years_active stay linked.
+# Regenerate artifacts:  python3 tools/gen_authors.py
 # =====================================================================================
 era: "2025"
-test_beam: "TBD — 2025 campaign"
+test_beam: "TBD - 2025 campaign"
 papers: []
 
-affiliations: []
 
-# No authors recorded yet — the generator skips artifact output for empty eras.
-authors: []
+# Institutions active THIS era. `id` is referenced by authors' `affil:` lists.
+affiliations:
+  - id: caltech
+    name: "California Institute of Technology"
+    city: "Pasadena"
+    region: "CA"
+    country: "USA"
+  - id: coe
+    name: "Coe College"
+    city: "Cedar Rapids"
+    region: "IA"
+    country: "USA"
+  - id: hofstra
+    name: "Hofstra University"
+    city: "Hempstead"
+    region: "NY"
+    country: "USA"
+  - id: itu
+    name: "Istanbul Technical University"
+    city: "Istanbul"
+    country: "Turkiye"
+  - id: istanbul
+    name: "Istanbul University"
+    city: "Istanbul"
+    country: "Turkiye"
+  - id: iowa
+    name: "University of Iowa"
+    city: "Iowa City"
+    region: "IA"
+    country: "USA"
+  - id: notredame
+    name: "University of Notre Dame"
+    city: "Notre Dame"
+    region: "IN"
+    country: "USA"
+  - id: pittsburgh
+    name: "University of Pittsburgh"
+    city: "Pittsburgh"
+    region: "PA"
+    country: "USA"
+  - id: virginia
+    name: "University of Virginia"
+    city: "Charlottesville"
+    region: "VA"
+    country: "USA"
 
+# Ordered author list: corresponding author first, then alphabetical by family name.
+authors:
+  - name: "James Wetzel"
+    orcid: "0000-0003-4687-7302"
+    affil: [coe, iowa]
+    roles: [corresponding]
+  - name: "Thomas Anderson"
+    affil: [virginia]
+  - name: "Bradley Cox"
+    affil: [virginia]
+  - name: "Paul Debbins"
+    affil: [iowa]
+  - name: "Buse Duran"
+    orcid: "0009-0006-6014-1544"
+    affil: [istanbul]
+  - name: "Kiva Ford"
+    affil: [pittsburgh]
+    note: "moved to Pittsburgh for 2025+"
+  - name: "Gizem Gul Dincer"
+    orcid: "0009-0001-1997-2841"
+    affil: [itu]
+    note: "on pending confirmation with Suat"
+  - name: "Selbi Hatipoglu"
+    affil: [istanbul]
+  - name: "Ohannes Kamer Koseyan"
+    orcid: "0000-0001-9040-3468"
+    affil: [hofstra]
+    note: "on pending confirmation with Yasar"
+  - name: "Alexander Ledovskoy"
+    affil: [virginia]
+    note: "on for now"
+  - name: "Alexi Mestvirishvili"
+    affil: [iowa]
+  - name: "Harvey Newman"
+    affil: [caltech]
+    note: "new for 2025+"
+  - name: "Yasar Onel"
+    affil: [iowa]
+  - name: "Suat Ozkorucuklu"
+    affil: [istanbul]
+  - name: "Aldo Penzo"
+    orcid: "0000-0003-3436-047X"
+    affil: [iowa]
+  - name: "Onur Potok"
+    affil: [istanbul]
+  - name: "Randal Ruchti"
+    orcid: "0000-0002-3151-1386"
+    affil: [notredame]
+  - name: "Mark Vigneault"
+    affil: [notredame]
+  - name: "Mitchell Wayne"
+    orcid: "0000-0001-8204-6157"
+    affil: [notredame]
+  - name: "Liyuan Zhang"
+    affil: [caltech]
+  - name: "Renyuan Zhu"
+    affil: [caltech]
+    note: "RETIRED - to be designated as retired; contributions too major to omit"
+  - name: "Caglar Zorbilmez"
+    affil: [istanbul]
+    note: "on pending confirmation with Suat"
+
+# Collaboration members credited in acknowledgements but not paper authors.
 contributors: []
+
+# OPEN ITEMS - resolve before this era's paper. Entries with current: off/undecided
+# are NOT in the author list above; current: on ARE included, pending the named check.
+pending_confirmation:
+  - name: "Ugur Akgun"
+    current: "undecided"
+    check_with: "James - your call on participation"
+  - name: "Ali Tosun"
+    current: "undecided"
+    check_with: "Suat"
+  - name: "Ayben Karasu Uysal"
+    current: "not addressed"
+    check_with: "NOT covered in the 2024+ pass - confirm on/off"
+  - name: "Reyhan Kurt"
+    current: "not addressed"
+    check_with: "NOT covered in the 2024+ pass - confirm on/off"
+  - name: "Berkan Kaynak"
+    current: "not addressed"
+    check_with: "NOT covered in the 2024+ pass - confirm on/off"
+  - name: "Salim Cerci"
+    current: "off"
+    check_with: "Suat"
+  - name: "Ilknur Hos"
+    current: "off"
+    check_with: "Suat"
+  - name: "Deniz Sunar Cerci"
+    current: "off"
+    check_with: "Suat"
+  - name: "Taylan Yetkin"
+    current: "off"
+    check_with: "Suat"
+  - name: "Gizem Gul Dincer"
+    current: "on"
+    check_with: "Suat"
+  - name: "Caglar Zorbilmez"
+    current: "on"
+    check_with: "Suat"
+  - name: "Ohannes Kamer Koseyan"
+    current: "on"
+    check_with: "Yasar"

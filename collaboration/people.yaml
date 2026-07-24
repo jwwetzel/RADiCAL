@@ -10,9 +10,12 @@ people:
       "2023": ["Coe College", "University of Iowa"]
   - name: "Thomas Anderson"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Virginia"]
+      "2024": ["University of Virginia"]
+      "2025": ["University of Virginia"]
+      "2026": ["University of Virginia"]
   - name: "Thomas Barbera"
     orcid: null
     years_active: ["2023"]
@@ -45,19 +48,28 @@ people:
       "2023": ["University of Virginia"]
   - name: "Bradley Cox"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Virginia"]
+      "2024": ["University of Virginia"]
+      "2025": ["University of Virginia"]
+      "2026": ["University of Virginia"]
   - name: "Paul Debbins"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Iowa"]
+      "2024": ["University of Iowa"]
+      "2025": ["University of Iowa"]
+      "2026": ["University of Iowa"]
   - name: "Gizem Gul Dincer"
     orcid: "0009-0001-1997-2841"
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Istanbul Technical University"]
+      "2024": ["Istanbul Technical University"]
+      "2025": ["Istanbul Technical University"]
+      "2026": ["Istanbul Technical University"]
   - name: "Max Dubnowski"
     orcid: null
     years_active: ["2023"]
@@ -65,14 +77,32 @@ people:
       "2023": ["University of Virginia"]
   - name: "Buse Duran"
     orcid: "0009-0006-6014-1544"
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Istanbul University"]
+      "2024": ["Istanbul University"]
+      "2025": ["Istanbul University"]
+      "2026": ["Istanbul University"]
+  - name: "Laura Fields"
+    orcid: null
+    years_active: ["2026"]
+    affiliations_by_era:
+      "2026": ["University of Notre Dame"]
+  - name: "Kiva Ford"
+    orcid: null
+    years_active: ["2024", "2025", "2026"]
+    affiliations_by_era:
+      "2024": ["University of Notre Dame"]
+      "2025": ["University of Pittsburgh"]
+      "2026": ["University of Pittsburgh"]
   - name: "Selbi Hatipoglu"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Istanbul University"]
+      "2024": ["Istanbul University"]
+      "2025": ["Istanbul University"]
+      "2026": ["Istanbul University"]
   - name: "Ilknur Hos"
     orcid: null
     years_active: ["2023"]
@@ -95,9 +125,12 @@ people:
       "2023": ["Istanbul University"]
   - name: "Ohannes Kamer Koseyan"
     orcid: "0000-0001-9040-3468"
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Hofstra University"]
+      "2024": ["Hofstra University"]
+      "2025": ["Hofstra University"]
+      "2026": ["Hofstra University"]
   - name: "Reyhan Kurt"
     orcid: null
     years_active: ["2023"]
@@ -105,29 +138,60 @@ people:
       "2023": ["Yildiz Technical University"]
   - name: "Alexander Ledovskoy"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Virginia"]
+      "2024": ["University of Virginia"]
+      "2025": ["University of Virginia"]
+      "2026": ["University of Virginia"]
   - name: "Alexi Mestvirishvili"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Iowa"]
+      "2024": ["University of Iowa"]
+      "2025": ["University of Iowa"]
+      "2026": ["University of Iowa"]
+  - name: "Donna Naples"
+    orcid: null
+    years_active: ["2026"]
+    affiliations_by_era:
+      "2026": ["University of Pittsburgh"]
+  - name: "Harvey Newman"
+    orcid: null
+    years_active: ["2025", "2026"]
+    affiliations_by_era:
+      "2025": ["California Institute of Technology"]
+      "2026": ["California Institute of Technology"]
   - name: "Yasar Onel"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Iowa"]
+      "2024": ["University of Iowa"]
+      "2025": ["University of Iowa"]
+      "2026": ["University of Iowa"]
   - name: "Suat Ozkorucuklu"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Istanbul University"]
+      "2024": ["Istanbul University"]
+      "2025": ["Istanbul University"]
+      "2026": ["Istanbul University"]
+  - name: "Vittorio Paolone"
+    orcid: null
+    years_active: ["2026"]
+    affiliations_by_era:
+      "2026": ["University of Pittsburgh"]
   - name: "Aldo Penzo"
     orcid: "0000-0003-3436-047X"
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Iowa"]
+      "2024": ["University of Iowa"]
+      "2025": ["University of Iowa"]
+      "2026": ["University of Iowa"]
   - name: "Carlos Perez-Lara"
     orcid: "0000-0003-0199-8864"
     years_active: ["2023"]
@@ -135,14 +199,20 @@ people:
       "2023": ["Hofstra University"]
   - name: "Onur Potok"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Istanbul University"]
+      "2024": ["Istanbul University"]
+      "2025": ["Istanbul University"]
+      "2026": ["Istanbul University"]
   - name: "Randal Ruchti"
     orcid: "0000-0002-3151-1386"
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Notre Dame"]
+      "2024": ["University of Notre Dame"]
+      "2025": ["University of Notre Dame"]
+      "2026": ["University of Notre Dame"]
   - name: "Daniel Ruggiero"
     orcid: null
     years_active: ["2023"]
@@ -160,9 +230,12 @@ people:
       "2023": ["Yildiz Technical University"]
   - name: "Mark Vigneault"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Notre Dame"]
+      "2024": ["University of Notre Dame"]
+      "2025": ["University of Notre Dame"]
+      "2026": ["University of Notre Dame"]
   - name: "Yuyi Wan"
     orcid: null
     years_active: ["2023"]
@@ -170,14 +243,20 @@ people:
       "2023": ["University of Notre Dame"]
   - name: "Mitchell Wayne"
     orcid: "0000-0001-8204-6157"
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["University of Notre Dame"]
+      "2024": ["University of Notre Dame"]
+      "2025": ["University of Notre Dame"]
+      "2026": ["University of Notre Dame"]
   - name: "James Wetzel"
     orcid: "0000-0003-4687-7302"
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Coe College", "University of Iowa"]
+      "2024": ["Coe College", "University of Iowa"]
+      "2025": ["Coe College", "University of Iowa"]
+      "2026": ["Coe College", "University of Iowa"]
   - name: "Taylan Yetkin"
     orcid: null
     years_active: ["2023"]
@@ -185,16 +264,25 @@ people:
       "2023": ["Yildiz Technical University"]
   - name: "Liyuan Zhang"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["California Institute of Technology"]
+      "2024": ["California Institute of Technology"]
+      "2025": ["California Institute of Technology"]
+      "2026": ["California Institute of Technology"]
   - name: "Renyuan Zhu"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["California Institute of Technology"]
+      "2024": ["California Institute of Technology"]
+      "2025": ["California Institute of Technology"]
+      "2026": ["California Institute of Technology"]
   - name: "Caglar Zorbilmez"
     orcid: null
-    years_active: ["2023"]
+    years_active: ["2023", "2024", "2025", "2026"]
     affiliations_by_era:
       "2023": ["Istanbul University"]
+      "2024": ["Istanbul University"]
+      "2025": ["Istanbul University"]
+      "2026": ["Istanbul University"]

@@ -39,6 +39,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "data"
 
+# Which era's roster populates the repo-level CITATION.cff. Pinned to the campaign
+# whose analysis this repository currently publishes — NOT "the latest era", which
+# would silently flip the citation to a future, unpublished roster. Override: --citation-era.
+CITATION_ERA = "2023"
+
 
 # ---------------------------------------------------------------------------
 # YAML loading — PyYAML if present, else a vendored strict-subset loader
@@ -434,8 +439,8 @@ def main():
         print("wrote data/%s/metadata/generated/{authors.tex,zenodo_creators.json}" % era)
 
     # repo-level CITATION.cff
-    cera = args.citation_era or (populated[-1][0] if populated else None)
-    if cera:
+    cera = args.citation_era or CITATION_ERA
+    if cera and cera in dict(eras):
         cdoc = dict(eras)[cera]
         (REPO / "CITATION.cff").write_text(gen_citation_cff(cdoc, eras), encoding="utf-8")
         print("wrote CITATION.cff (authors: %s era)" % cera)
